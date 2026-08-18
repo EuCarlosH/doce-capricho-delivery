@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#0A0A0A">
@@ -34,8 +34,8 @@ body { background: var(--bg-main); color: var(--text-main); font-family: 'Montse
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; }
 section, header { scroll-margin-top: 80px; }
 
-/* NAVBAR ESCURA */
-nav {
+/* NAVBAR DESKTOP */
+nav.top-nav {
   position: fixed; top: 0; width: 100%; background: rgba(10,10,10,0.95);
   -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
   z-index: 1000; padding: 15px 0; border-bottom: 1px solid var(--border-light);
@@ -49,7 +49,10 @@ nav {
 .status-badge { border: 1px solid var(--gold); color: var(--gold); padding: 6px 16px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .status-badge.fechado { border-color: var(--danger); color: var(--danger); }
 
-/* HERO SECTION ESCURO */
+/* BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) */
+.bottom-nav { display: none; }
+
+/* HERO SECTION */
 #home {
   min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px;
@@ -74,7 +77,7 @@ nav {
 .category-title { display: flex; align-items: center; font-size: 16px; color: var(--gold); margin: 40px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
 .category-title::after { content: ""; flex: 1; height: 1px; background: rgba(212,175,55,0.3); margin-left: 20px; }
 
-/* CARDS ESCUROS E IMAGEM PLACEHOLDER */
+/* CARDS E IMAGEM PLACEHOLDER */
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 .card {
   background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light);
@@ -82,25 +85,16 @@ nav {
 }
 .card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
-
-.card-img-wrap { 
-  width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; 
-  display: flex; align-items: center; justify-content: center;
-}
+.card-img-wrap { width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; opacity: 0.9; }
 .card:hover .card-img { transform: scale(1.05); opacity: 1; }
-
 .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
 .card-title { font-size: 15px; color: var(--white); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 .card-desc { font-size: 12px; color: var(--text-muted); font-weight: 400; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 700; color: var(--gold); font-size: 15px; }
 
-.btn-add {
-  background: transparent; border: 1px solid rgba(212,175,55,0.5); color: var(--gold);
-  width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.3s; font-size: 18px; font-weight: 400; line-height: 1;
-}
+.btn-add { background: transparent; border: 1px solid rgba(212,175,55,0.5); color: var(--gold); width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 18px; font-weight: 400; line-height: 1; }
 .btn-add:hover { background: var(--gold); color: var(--bg-main); }
 .card.selecionada .btn-add { background: var(--gold); color: var(--bg-main); border-color: var(--gold); }
 
@@ -112,21 +106,21 @@ nav {
 .extras-table td:last-child, .extras-table th:last-child { text-align: right; color: var(--gold); font-weight: 600; }
 .extras-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;}
 
-/* FLOATING CART */
-.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; background: var(--gold); color: var(--bg-main); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); cursor: pointer; z-index: 1000; transition: transform 0.3s; border: none; }
+/* FLOATING CART (DESKTOP) */
+.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; background: var(--gold); color: var(--bg-main); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); cursor: pointer; z-index: 999; transition: transform 0.3s; border: none; }
 .cart-floating-btn:hover { transform: scale(1.1); }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 .cart-count.show { display: flex; }
 
-/* MODAIS ESCUROS */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+/* MODAIS */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 12px; padding: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); }
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 26px; cursor: pointer; color: var(--text-muted); border: none; background: none; transition: color 0.3s; z-index: 10; }
 .close-modal:hover { color: var(--danger); }
 .modal-box h2 { color: var(--gold); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 700; padding-right: 30px; }
 
-/* BUILDER FORMS E NOVO DESIGN DE EXTRAS */
+/* BUILDER FORMS E EXTRAS MULTIPLOS */
 .builder-group { margin-bottom: 20px; border: none; }
 .builder-label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
 .builder-base { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-main); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-light); font-weight: 500; }
@@ -188,23 +182,58 @@ footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--bor
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
+/* ===================================================================
+   RESPONSIVO E NAVBAR INFERIOR (MOBILE)
+   =================================================================== */
 @media (max-width: 768px) {
-  .nav-container { flex-wrap: wrap; }
-  .nav-links { order: 3; width: 100%; justify-content: center; margin-top: 15px; gap: 20px; }
-  #home { padding-top: 140px; text-align: center; align-items: center; }
+  /* Altera a Nav Superior */
+  .nav-links { display: none; } /* Oculta os links no topo */
+  .nav-container { justify-content: space-between; }
+  .nav-logo-fallback { font-size: 15px; } 
+
+  #home { padding-top: 100px; text-align: center; align-items: center; }
   .hero-title { max-width: 100%; }
+  
+  /* Cria e Exibe a Nav Inferior (Tab Bar Estilo App) */
+  .bottom-nav {
+    display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+    background: rgba(10,10,10,0.98); -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+    border-top: 1px solid var(--border-light); z-index: 2000;
+    justify-content: space-around; 
+    /* safe-area-inset protege contra o risco de navegação dos iPhones novos */
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .bottom-nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--text-muted); text-decoration: none; background: none; border: none;
+    font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    cursor: pointer; gap: 6px; transition: color 0.3s;
+  }
+  .bottom-nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .bottom-nav-item:hover, .bottom-nav-item:active { color: var(--gold); }
+  
+  /* Bolinha de notificação exclusiva da barra inferior */
+  .bottom-nav-count {
+    position: absolute; top: -6px; right: -8px; background: var(--danger); color: #fff; font-size: 9px;
+    font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: none; align-items: center; justify-content: center; border: 1px solid var(--bg-main);
+  }
+  .bottom-nav-count.show { display: flex; }
+
+  /* Ajusta os botões e rodapé para não encavalar na barra inferior */
+  .cart-floating-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; font-size: 18px; }
+  footer { padding-bottom: 100px; }
 }
 </style>
 </head>
 <body>
 
-<nav>
+<!-- NAVBAR TOPO (Desktop e Logo Mobile) -->
+<nav class="top-nav">
   <div class="nav-container">
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
       <li><a href="#cardapio">Cardápio</a></li>
-      <!-- Botão simplificado: agora abre diretamente o carrinho -->
       <li><button type="button" id="btn-nav-order">Meus Pedidos</button></li>
     </ul>
     <div id="nav-status-badge" class="status-badge">ABERTO</div>
@@ -243,6 +272,34 @@ footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--bor
 <footer>
   <p>© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
+
+<!-- NAVBAR INFERIOR (Apenas Mobile) -->
+<nav class="bottom-nav">
+  <a href="#home" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+    </svg>
+    <span>Início</span>
+  </a>
+  <a href="#cardapio" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <span>Menu</span>
+  </a>
+  <button type="button" class="bottom-nav-item" id="btn-bottom-order">
+    <div style="position: relative;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span class="cart-count bottom-nav-count" id="bottom-cart-count">0</span>
+    </div>
+    <span>Pedidos</span>
+  </button>
+</nav>
 
 <button class="cart-floating-btn" id="btn-cart-float" aria-label="Abrir carrinho">
   🛒<span class="cart-count" id="cart-count">0</span>
@@ -533,7 +590,9 @@ function atualizarUI() {
   }).join('') : '<li class="cart-empty">Seu carrinho está vazio.</li>';
   
   const t = totais(); $('#cart-subtotal-value').textContent = brl(t.subtotal); $('#cart-taxa-value').textContent = brl(t.entrega); $('#cart-total-value').textContent = brl(t.total); $('#pix-valor-transferir').textContent = brl(t.total);
+  
   const badge = $('#cart-count'); badge.textContent = qtdTotal; badge.classList.toggle('show', qtdTotal > 0);
+  const badgeBottom = $('#bottom-cart-count'); if(badgeBottom) { badgeBottom.textContent = qtdTotal; badgeBottom.classList.toggle('show', qtdTotal > 0); }
   
   const entrega = $('#cli-tipo-pedido').value === 'Entrega'; 
   $('#box-endereco').style.display = entrega ? 'block' : 'none'; 
@@ -612,9 +671,10 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#cli-tipo-pedido').addEventListener('change', atualizarUI); $('#cli-pagamento').addEventListener('change', atualizarUI); $('#checkout-form').addEventListener('submit', finalizar);
 
-/* BOTÕES DE NAVEGAÇÃO SUPERIOR */
+/* BOTÕES DE NAVEGAÇÃO SUPERIOR E INFERIOR */
 $('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
 $('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
+$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
