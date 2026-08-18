@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
-<meta name="theme-color" content="#FAFAFA">
+<meta name="theme-color" content="#0A0A0A">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,18 +15,18 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <style>
-/* VARIÁVEIS TEMA CLARO */
+/* VARIÁVEIS TEMA ESCURO (PREMIUM) */
 :root {
-  --gold: #B8860B; /* Dourado levemente mais escuro para contraste no branco */
-  --gold-dark: #916A08;
-  --bg-main: ##0A0A0A; /* Fundo geral off-white */
-  --bg-card: #FFFFFF; /* Fundo dos cards puro branco */
-  --text-main: #1A1A1A; /* Texto principal escuro */
-  --text-muted: #666666; /* Texto secundário cinza */
+  --gold: #D4AF37; 
+  --gold-dark: #AA8C2C;
+  --bg-main: #0A0A0A; /* Fundo Preto */
+  --bg-card: #121212; /* Fundo das Caixas/Cards Cinza Escuro */
+  --text-main: #E0E0E0; /* Texto Claro */
+  --text-muted: #888888; /* Texto Secundário Cinza */
   --white: #FFFFFF;
   --whatsapp: #25D366;
   --danger: #E63946;
-  --border-light: rgba(0,0,0,0.08);
+  --border-light: rgba(255,255,255,0.05); /* Bordas sutis */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -34,12 +34,12 @@ body { background: var(--bg-main); color: var(--text-main); font-family: 'Montse
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; }
 section, header { scroll-margin-top: 80px; }
 
-/* NAVBAR CLARA */
+/* NAVBAR ESCURA */
 nav {
-  position: fixed; top: 0; width: 100%; background: rgba(250,250,250,0.95);
+  position: fixed; top: 0; width: 100%; background: rgba(10,10,10,0.95);
   -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
   z-index: 1000; padding: 15px 0; border-bottom: 1px solid var(--border-light);
-  transition: top 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  transition: top 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
 .nav-logo-fallback { color: var(--gold); font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 2px; }
@@ -49,11 +49,11 @@ nav {
 .status-badge { border: 1px solid var(--gold); color: var(--gold); padding: 6px 16px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .status-badge.fechado { border-color: var(--danger); color: var(--danger); }
 
-/* HERO SECTION CLARO */
+/* HERO SECTION ESCURO */
 #home {
   min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px;
-  background: linear-gradient(to right, rgba(250,250,250,0.95) 0%, rgba(250,250,250,0.8) 50%, rgba(250,250,250,0.2) 100%), url('hero-bg.jpg') center/cover no-repeat;
+  background: linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.6) 50%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat;
   border-bottom: 1px solid var(--border-light);
 }
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--gold); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; }
@@ -63,47 +63,47 @@ nav {
 
 /* MODO TOGGLE */
 .mode-toggle-area { display: flex; justify-content: center; margin-bottom: 50px; margin-top: 20px; }
-.mode-buttons { display: inline-flex; border: 1px solid rgba(184,134,11,0.3); border-radius: 30px; overflow: hidden; background: var(--bg-card); }
+.mode-buttons { display: inline-flex; border: 1px solid rgba(212,175,55,0.3); border-radius: 30px; overflow: hidden; background: var(--bg-card); }
 .mode-btn { padding: 12px 30px; background: transparent; border: none; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
-.mode-btn[aria-pressed="true"] { background: rgba(184,134,11,0.1); color: var(--gold); }
-.meio-banner { background: rgba(184,134,11,0.05); border: 1px solid rgba(184,134,11,0.3); border-radius: 8px; padding: 15px; margin-bottom: 40px; text-align: center; font-size: 13px; color: var(--gold); display: none; }
+.mode-btn[aria-pressed="true"] { background: rgba(212,175,55,0.1); color: var(--gold); }
+.meio-banner { background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; padding: 15px; margin-bottom: 40px; text-align: center; font-size: 13px; color: var(--gold); display: none; }
 .meio-banner.show { display: block; }
 .btn-link-cancel { background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 12px; margin-left: 8px; }
 
 /* CATEGORY TITLE */
 .category-title { display: flex; align-items: center; font-size: 16px; color: var(--gold); margin: 40px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
-.category-title::after { content: ""; flex: 1; height: 1px; background: rgba(184,134,11,0.3); margin-left: 20px; }
+.category-title::after { content: ""; flex: 1; height: 1px; background: rgba(212,175,55,0.3); margin-left: 20px; }
 
-/* CARDS CLAROS E IMAGEM PLACEHOLDER */
+/* CARDS ESCUROS E IMAGEM PLACEHOLDER */
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 .card {
   background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light);
-  display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+  display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
-.card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-.card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-color: rgba(212,175,55,0.3); }
+.card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
 
-/* Placeholder Cinza para quando não houver imagem */
+/* Placeholder Escuro para quando não houver imagem */
 .card-img-wrap { 
-  width: 100%; height: 200px; background: #EFEFEF; overflow: hidden; 
-  display: flex; align-items: center; justify-content: center; color: #CCC; font-size: 40px;
+  width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; 
+  display: flex; align-items: center; justify-content: center;
 }
-.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-.card:hover .card-img { transform: scale(1.05); }
+.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; opacity: 0.9; }
+.card:hover .card-img { transform: scale(1.05); opacity: 1; }
 
 .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-.card-title { font-size: 15px; color: var(--text-main); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.card-title { font-size: 15px; color: var(--white); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 .card-desc { font-size: 12px; color: var(--text-muted); font-weight: 400; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 700; color: var(--gold); font-size: 15px; }
 
 .btn-add {
-  background: transparent; border: 1px solid var(--gold); color: var(--gold);
+  background: transparent; border: 1px solid rgba(212,175,55,0.5); color: var(--gold);
   width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: all 0.3s; font-size: 18px; font-weight: 400; line-height: 1;
 }
-.btn-add:hover { background: var(--gold); color: var(--white); }
-.card.selecionada .btn-add { background: var(--gold); color: var(--white); }
+.btn-add:hover { background: var(--gold); color: var(--bg-main); }
+.card.selecionada .btn-add { background: var(--gold); color: var(--bg-main); border-color: var(--gold); }
 
 /* TABELA */
 .extras-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light); margin-top: 10px; }
@@ -114,15 +114,15 @@ nav {
 .extras-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;}
 
 /* FLOATING CART */
-.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; background: var(--gold); color: var(--white); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(184,134,11,0.4); cursor: pointer; z-index: 1000; transition: transform 0.3s; border: none; }
+.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; background: var(--gold); color: var(--bg-main); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); cursor: pointer; z-index: 1000; transition: transform 0.3s; border: none; }
 .cart-floating-btn:hover { transform: scale(1.1); }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 .cart-count.show { display: flex; }
 
-/* MODAIS CLAROS */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+/* MODAIS ESCUROS */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
-.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 12px; padding: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative; }
+.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 12px; padding: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); }
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 26px; cursor: pointer; color: var(--text-muted); border: none; background: none; transition: color 0.3s; }
 .close-modal:hover { color: var(--danger); }
 .modal-box h2 { color: var(--gold); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 700; }
@@ -132,23 +132,23 @@ nav {
 .builder-base { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-main); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-light); font-weight: 500; }
 .builder-base strong { color: var(--gold); font-size: 15px; font-weight: 700; }
 
-.builder-group select, .builder-group textarea { width: 100%; padding: 14px; border: 1px solid #E0E0E0; border-radius: 6px; background: #F9F9F9; color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 13px; margin-bottom: 10px; }
-.builder-group select:focus, .builder-group textarea:focus { border-color: var(--gold); outline: none; background: #FFF; }
+.builder-group select, .builder-group textarea { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 13px; margin-bottom: 10px; }
+.builder-group select:focus, .builder-group textarea:focus { border-color: var(--gold); outline: none; }
 
 .qty-row { display: flex; align-items: center; gap: 15px; }
-.qty-btn { width: 36px; height: 36px; border-radius: 6px; border: 1px solid #E0E0E0; background: #F9F9F9; color: var(--text-main); font-size: 18px; cursor: pointer; }
+.qty-btn { width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border-light); background: transparent; color: var(--text-main); font-size: 18px; cursor: pointer; transition: color 0.3s, border-color 0.3s; }
 .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
 .qty-val { font-size: 16px; font-weight: 700; min-width: 24px; text-align: center; color: var(--text-main); }
 
 .cart-total-line { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: var(--text-main); margin-top: 10px; padding-top: 15px; border-top: 1px dashed var(--border-light); }
-.btn-add-modal { background: var(--gold); color: var(--white); border: none; padding: 15px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin-top: 20px; transition: opacity 0.2s; }
+.btn-add-modal { background: var(--gold); color: var(--bg-main); border: none; padding: 15px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin-top: 20px; transition: opacity 0.2s; }
 .btn-add-modal:hover { opacity: 0.9; }
 
-/* CHECKOUT CLARO */
+/* CHECKOUT ESCURO */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
 .cart-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border-light); }
 .cart-item-info { flex: 1; }
-.cart-item-info strong { display: block; color: var(--text-main); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.cart-item-info strong { display: block; color: var(--white); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
 .cart-item-info small { display: block; color: var(--text-muted); font-size: 11px; line-height: 1.5; }
 .cart-item-price { font-weight: 700; color: var(--gold); font-size: 13px; }
 .remove-btn { background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; }
@@ -157,16 +157,16 @@ nav {
 
 .checkout-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 .checkout-form label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600;}
-.checkout-form input, .checkout-form select { width: 100%; padding: 14px; border: 1px solid #E0E0E0; border-radius: 6px; background: #F9F9F9; color: var(--text-main); font-family: inherit; font-size: 13px; }
-.checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; background: #FFF; }
+.checkout-form input, .checkout-form select { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--bg-main); color: var(--text-main); font-family: inherit; font-size: 13px; }
+.checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; }
 
-.box-destaque { background: rgba(184,134,11,0.05); border: 1px dashed rgba(184,134,11,0.3); border-radius: 8px; padding: 20px; text-align: center; margin-top: 10px; }
+.box-destaque { background: rgba(212,175,55,0.05); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 20px; text-align: center; margin-top: 10px; }
 .btn-copy-pix { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 12px; border-radius: 6px; font-weight: 600; font-size: 11px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: all 0.3s; }
-.btn-copy-pix:hover { background: var(--gold); color: var(--white); }
+.btn-copy-pix:hover { background: var(--gold); color: var(--bg-main); }
 .btn-finish { background: var(--whatsapp); color: #fff; border: none; padding: 16px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 10px; letter-spacing: 1px; transition: opacity 0.2s; }
 .btn-finish:hover:not(:disabled) { opacity: 0.9; }
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s; margin-top: -5px; }
-.btn-continue:hover { color: var(--text-main); }
+.btn-continue:hover { color: var(--white); }
 
 footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--border-light); color: var(--text-muted); font-size: 11px; letter-spacing: 1px; }
 
@@ -320,8 +320,7 @@ const FIREBASE_CONFIG = {
 /* 
    AQUI ESTÃO AS IMAGENS:
    Se o arquivo existir (ex: mussarela.jpg), a foto aparece. 
-   Se você ainda não tiver a foto, ou errar o nome, o sistema cria
-   um fundo cinza com um "🍽️" no lugar automaticamente.
+   Se não, o sistema exibe um fundo grafite escuro com um ícone de prato 🍽️.
 */
 const CARDAPIO = {
   tradicionais: [
@@ -401,11 +400,11 @@ function validarItem(item) {
   return true;
 }
 
-/* O HTML DO CARD COM PLACEHOLDER: O onerror substitui a img quebrada por um prato emoji se a foto não existir */
+/* O HTML DO CARD: O onerror substitui a img quebrada por um prato emoji com tom sutil escuro */
 const cardHTML = s => `
   <article class="card" data-sabor="${s.id}">
     <div class="card-img-wrap">
-      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onerror="this.style.display='none'; this.parentElement.innerHTML='🍽️';">
+      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#333;font-size:40px;\\'>🍽️</span>';">
     </div>
     <div class="card-content">
       <h4 class="card-title">${esc(s.nome)}</h4>
