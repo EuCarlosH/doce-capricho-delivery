@@ -7,6 +7,14 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#0A0A0A">
 
+<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Doce Capricho">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -178,6 +186,19 @@ nav.top-nav {
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s; margin-top: -5px; }
 .btn-continue:hover { color: var(--white); }
 
+/* HISTÓRICO DE PEDIDOS / TRACKING */
+.history-item { background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
+.history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.history-id { font-size: 13px; font-weight: 700; color: var(--white); text-transform: uppercase; }
+.history-date { font-size: 11px; color: var(--text-muted); }
+.history-details { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
+.status-badge-order { padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+.status-novo { background: rgba(255,255,255,0.1); color: var(--white); }
+.status-preparando { background: rgba(212,175,55,0.15); color: var(--gold); border: 1px solid rgba(212,175,55,0.3); }
+.status-saiuparaentrega { background: rgba(37,211,102,0.15); color: var(--whatsapp); border: 1px solid rgba(37,211,102,0.3); }
+.status-concluido { background: rgba(255,255,255,0.05); color: var(--text-muted); text-decoration: line-through; }
+
 /* FOOTER PREMIUM COM CONTATOS */
 footer {
   background: var(--bg-card);
@@ -208,7 +229,6 @@ footer {
    RESPONSIVO E NAVBAR INFERIOR (MOBILE)
    =================================================================== */
 @media (max-width: 768px) {
-  /* Altera a Nav Superior */
   .nav-links { display: none; } 
   .nav-container { justify-content: space-between; }
   .nav-logo-fallback { font-size: 15px; } 
@@ -216,7 +236,6 @@ footer {
   #home { padding-top: 100px; text-align: center; align-items: center; }
   .hero-title { max-width: 100%; }
   
-  /* Cria e Exibe a Nav Inferior (Tab Bar) */
   .bottom-nav {
     display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
     background: rgba(10,10,10,0.98); -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
@@ -238,7 +257,6 @@ footer {
   }
   .bottom-nav-count.show { display: flex; }
 
-  /* Ajusta os botões e rodapé para não encavalar na barra inferior */
   .cart-floating-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; font-size: 18px; }
   footer { padding-bottom: 120px; }
 }
@@ -246,7 +264,6 @@ footer {
 </head>
 <body>
 
-<!-- NAVBAR TOPO (Desktop e Logo Mobile) -->
 <nav class="top-nav">
   <div class="nav-container">
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
@@ -288,17 +305,13 @@ footer {
   </table>
 </section>
 
-<!-- FOOTER NOVO -->
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   
   <div class="footer-socials">
-    <!-- LINK DO INSTAGRAM AQUI -->
-    <a href="https://instagram.com/@docecapricho.atelier" target="_blank" aria-label="Nosso Instagram">
+    <a href="https://instagram.com/SEU_INSTAGRAM" target="_blank" aria-label="Nosso Instagram">
       <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
     </a>
-    
-    <!-- LINK DO WHATSAPP (PUXA DINAMICAMENTE DA SUA CONFIGURAÇÃO PELO JS) -->
     <a href="#" id="footer-wa-link" target="_blank" aria-label="Fale Conosco no WhatsApp">
       <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
     </a>
@@ -306,13 +319,12 @@ footer {
   
   <div class="footer-info">
     <p>São Miguel / RN</p>
-    <p>Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
+    <p>Atendimento: Terça a Domingo, 18:30 às 23:00</p>
   </div>
   
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
-<!-- NAVBAR INFERIOR (Apenas Mobile) -->
 <nav class="bottom-nav">
   <a href="#home" class="bottom-nav-item">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
@@ -428,6 +440,15 @@ footer {
   </div>
 </div>
 
+<!-- Modal de Histórico de Pedidos -->
+<div class="modal-overlay" id="history-overlay">
+  <div class="modal-box">
+    <button class="close-modal" data-close="history-overlay">&times;</button>
+    <h2 class="brand-font">Acompanhar Pedidos</h2>
+    <div id="history-list-container"></div>
+  </div>
+</div>
+
 <script>
 const CONFIG = {
   whatsapp:     '5585921440055',
@@ -437,7 +458,6 @@ const CONFIG = {
   usarFirebase: true               
 };
 
-// Sincroniza o link do rodapé com o número configurado
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 
 const HORARIO = { inicioH: 18, inicioM: 30, fimH: 23, fimM: 0 };
@@ -509,6 +529,7 @@ const rotuloAplicacao = a => a === 'metade' ? 'metade da pizza' : 'pizza inteira
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 const STORAGE_KEY = 'dca_carrinho_v3';
+const HISTORY_KEY = 'dca_historico_v1';
 
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
@@ -683,10 +704,60 @@ async function finalizar(ev) {
   const pedido = montarPedido(); 
   const id = await gravarFirestore(pedido); 
   
+  if (id) {
+    const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    hist.push({ id, time: new Date().getTime() });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+  }
+  
   let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   carrinho = []; salvar(); atualizarUI(); fecharModal('cart-overlay'); btn.textContent = 'Finalizar via WhatsApp'; btn.disabled = false;
+}
+
+/* HISTÓRICO SIMPLIFICADO: Caso o banco não consiga ler, exibe mensagem "Carrinho Vazio" a pedido do cliente */
+async function abrirHistorico() {
+  abrirModal('history-overlay');
+  const container = document.getElementById('history-list-container');
+  const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  
+  if (!hist.length) {
+    container.innerHTML = '<p class="cart-empty">Seu carrinho está vazio.</p>';
+    return;
+  }
+  
+  container.innerHTML = '<p style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:15px;">Buscando o status ao vivo na cozinha...</p>';
+  let html = '';
+  const recentes = hist.reverse().slice(0, 10); 
+  
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  
+  try {
+    for (const item of recentes) {
+      const doc = await firebase.firestore().collection('pedidos').doc(item.id).get();
+      if (doc.exists) {
+        const p = doc.data();
+        const dataPedido = new Date(item.time).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        const statusClean = p.status ? p.status.toLowerCase().replace(/\s/g, '') : 'novo';
+        const labelStatus = p.status || 'Novo';
+        html += `
+          <div class="history-item">
+            <div class="history-header">
+              <span class="history-id">Pedido #${item.id.slice(-5).toUpperCase()}</span>
+              <span class="status-badge-order status-${statusClean}">${labelStatus}</span>
+            </div>
+            <div class="history-details">
+              <strong>${p.itens.length} item(ns)</strong> • Feito em ${dataPedido}<br>
+              Total: ${brl(p.total_centavos)} (${p.forma_pagamento})
+            </div>
+          </div>`;
+      }
+    }
+    container.innerHTML = html || '<p class="cart-empty">Seu carrinho está vazio.</p>';
+  } catch(e) {
+    container.innerHTML = '<p class="cart-empty">Seu carrinho está vazio.</p>';
+  }
 }
 
 function abrirModal(id) { const ov = document.getElementById(id); ov.classList.add('open'); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); }
@@ -707,8 +778,8 @@ $('#cli-tipo-pedido').addEventListener('change', atualizarUI); $('#cli-pagamento
 
 /* BOTÕES DE NAVEGAÇÃO SUPERIOR E INFERIOR */
 $('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
-$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
-$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
+$('#btn-nav-order').addEventListener('click', () => { abrirHistorico(); });
+$('#btn-bottom-order').addEventListener('click', () => { abrirHistorico(); });
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
