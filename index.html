@@ -93,16 +93,25 @@ nav.top-nav {
 }
 .card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
-.card-img-wrap { width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+
+.card-img-wrap { 
+  width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; 
+  display: flex; align-items: center; justify-content: center;
+}
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; opacity: 0.9; }
 .card:hover .card-img { transform: scale(1.05); opacity: 1; }
+
 .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
 .card-title { font-size: 15px; color: var(--white); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 .card-desc { font-size: 12px; color: var(--text-muted); font-weight: 400; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 700; color: var(--gold); font-size: 15px; }
 
-.btn-add { background: transparent; border: 1px solid rgba(212,175,55,0.5); color: var(--gold); width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 18px; font-weight: 400; line-height: 1; }
+.btn-add {
+  background: transparent; border: 1px solid rgba(212,175,55,0.5); color: var(--gold);
+  width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s; font-size: 18px; font-weight: 400; line-height: 1;
+}
 .btn-add:hover { background: var(--gold); color: var(--bg-main); }
 .card.selecionada .btn-add { background: var(--gold); color: var(--bg-main); border-color: var(--gold); }
 
@@ -186,19 +195,6 @@ nav.top-nav {
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s; margin-top: -5px; }
 .btn-continue:hover { color: var(--white); }
 
-/* HISTÓRICO DE PEDIDOS / TRACKING */
-.history-item { background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
-.history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.history-id { font-size: 13px; font-weight: 700; color: var(--white); text-transform: uppercase; }
-.history-date { font-size: 11px; color: var(--text-muted); }
-.history-details { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
-.status-badge-order { padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-
-.status-novo { background: rgba(255,255,255,0.1); color: var(--white); }
-.status-preparando { background: rgba(212,175,55,0.15); color: var(--gold); border: 1px solid rgba(212,175,55,0.3); }
-.status-saiuparaentrega { background: rgba(37,211,102,0.15); color: var(--whatsapp); border: 1px solid rgba(37,211,102,0.3); }
-.status-concluido { background: rgba(255,255,255,0.05); color: var(--text-muted); text-decoration: line-through; }
-
 /* FOOTER PREMIUM COM CONTATOS */
 footer {
   background: var(--bg-card);
@@ -264,6 +260,7 @@ footer {
 </head>
 <body>
 
+<!-- NAVBAR TOPO -->
 <nav class="top-nav">
   <div class="nav-container">
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
@@ -305,6 +302,7 @@ footer {
   </table>
 </section>
 
+<!-- FOOTER COM CONTATOS -->
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   
@@ -325,6 +323,7 @@ footer {
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
+<!-- NAVBAR INFERIOR MOBILE -->
 <nav class="bottom-nav">
   <a href="#home" class="bottom-nav-item">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
@@ -378,7 +377,7 @@ footer {
   </div>
 </div>
 
-<!-- MODAL CARRINHO / MEUS PEDIDOS -->
+<!-- MODAL CARRINHO (O QUE O CLIENTE ESTÁ COMPRANDO AGORA) -->
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="cart-overlay">&times;</button>
@@ -440,15 +439,6 @@ footer {
   </div>
 </div>
 
-<!-- Modal de Histórico de Pedidos -->
-<div class="modal-overlay" id="history-overlay">
-  <div class="modal-box">
-    <button class="close-modal" data-close="history-overlay">&times;</button>
-    <h2 class="brand-font">Acompanhar Pedidos</h2>
-    <div id="history-list-container"></div>
-  </div>
-</div>
-
 <script>
 const CONFIG = {
   whatsapp:     '5585921440055',
@@ -458,6 +448,7 @@ const CONFIG = {
   usarFirebase: true               
 };
 
+// Sincroniza o link do rodapé com o número configurado
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 
 const HORARIO = { inicioH: 18, inicioM: 30, fimH: 23, fimM: 0 };
@@ -529,7 +520,6 @@ const rotuloAplicacao = a => a === 'metade' ? 'metade da pizza' : 'pizza inteira
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 const STORAGE_KEY = 'dca_carrinho_v3';
-const HISTORY_KEY = 'dca_historico_v1';
 
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
@@ -704,60 +694,10 @@ async function finalizar(ev) {
   const pedido = montarPedido(); 
   const id = await gravarFirestore(pedido); 
   
-  if (id) {
-    const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    hist.push({ id, time: new Date().getTime() });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
-  }
-  
   let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   carrinho = []; salvar(); atualizarUI(); fecharModal('cart-overlay'); btn.textContent = 'Finalizar via WhatsApp'; btn.disabled = false;
-}
-
-/* HISTÓRICO SIMPLIFICADO: Caso o banco não consiga ler, exibe mensagem "Carrinho Vazio" a pedido do cliente */
-async function abrirHistorico() {
-  abrirModal('history-overlay');
-  const container = document.getElementById('history-list-container');
-  const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  
-  if (!hist.length) {
-    container.innerHTML = '<p class="cart-empty">Seu carrinho está vazio.</p>';
-    return;
-  }
-  
-  container.innerHTML = '<p style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:15px;">Buscando o status ao vivo na cozinha...</p>';
-  let html = '';
-  const recentes = hist.reverse().slice(0, 10); 
-  
-  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-  
-  try {
-    for (const item of recentes) {
-      const doc = await firebase.firestore().collection('pedidos').doc(item.id).get();
-      if (doc.exists) {
-        const p = doc.data();
-        const dataPedido = new Date(item.time).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-        const statusClean = p.status ? p.status.toLowerCase().replace(/\s/g, '') : 'novo';
-        const labelStatus = p.status || 'Novo';
-        html += `
-          <div class="history-item">
-            <div class="history-header">
-              <span class="history-id">Pedido #${item.id.slice(-5).toUpperCase()}</span>
-              <span class="status-badge-order status-${statusClean}">${labelStatus}</span>
-            </div>
-            <div class="history-details">
-              <strong>${p.itens.length} item(ns)</strong> • Feito em ${dataPedido}<br>
-              Total: ${brl(p.total_centavos)} (${p.forma_pagamento})
-            </div>
-          </div>`;
-      }
-    }
-    container.innerHTML = html || '<p class="cart-empty">Seu carrinho está vazio.</p>';
-  } catch(e) {
-    container.innerHTML = '<p class="cart-empty">Seu carrinho está vazio.</p>';
-  }
 }
 
 function abrirModal(id) { const ov = document.getElementById(id); ov.classList.add('open'); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); }
@@ -776,10 +716,10 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#cli-tipo-pedido').addEventListener('change', atualizarUI); $('#cli-pagamento').addEventListener('change', atualizarUI); $('#checkout-form').addEventListener('submit', finalizar);
 
-/* BOTÕES DE NAVEGAÇÃO SUPERIOR E INFERIOR */
+/* OS BOTÕES 'MEUS PEDIDOS' AGORA ABREM O CARRINHO ATUAL! */
 $('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
-$('#btn-nav-order').addEventListener('click', () => { abrirHistorico(); });
-$('#btn-bottom-order').addEventListener('click', () => { abrirHistorico(); });
+$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
+$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta) { alert("Nossa loja está fechada."); return; } abrirModal('cart-overlay'); });
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
