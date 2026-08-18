@@ -3,144 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>Painel da Cozinha — Doce Capricho</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>Admin — Doce Capricho Atelier</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- SCRIPTS DO FIREBASE (INCLUINDO AUTH PARA O LOGIN) -->
+<script defer src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:#F4F7FE;color:#2B3674;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+/* VARIÁVEIS TEMA CLARO */
+:root {
+  --bg: #F4F6F9;
+  --surface: #FFFFFF;
+  --border: #E0E4E8;
+  --text: #2B2B2B;
+  --text-muted: #6C757D;
+  --gold: #B8860B; 
+  --danger: #DC3545;
+  --warning: #F59E0B;
+  --success: #198754;
+  --wp: #25D366;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-header{background:#fff;padding:16px 24px;box-shadow:0 4px 20px rgba(0,0,0,.05);display:flex;
-  justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;z-index:10}
-header h1{color:#A66C1E;font-size:20px;font-weight:700}
-.header-right{display:flex;align-items:center;gap:14px;font-size:13px;color:#666;flex-wrap:wrap}
-.badge-status{display:inline-flex;align-items:center;gap:6px}
-.dot{width:9px;height:9px;border-radius:50%;background:#2A9D8F}
-.dot.off{background:#E63946}
-.btn-plain{background:#F4F7FE;border:1px solid #dfe6f5;color:#2B3674;padding:8px 14px;border-radius:8px;
-  font-size:12px;font-weight:600;cursor:pointer}
-.btn-plain:hover{background:#e9eefb}
+/* TELA DE LOGIN */
+#login-screen {
+  position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  background: var(--surface); padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  width: 100%; max-width: 400px; text-align: center; border: 1px solid var(--border);
+}
+.login-box h2 { color: var(--gold); margin-bottom: 25px; font-family: 'Cinzel', serif; letter-spacing: 1px; }
+.login-box input {
+  width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px;
+  font-family: inherit; font-size: 14px; color: var(--text); background: #F8F9FA; transition: border-color 0.3s;
+}
+.login-box input:focus { border-color: var(--gold); outline: none; background: #FFF; }
+.login-box button {
+  width: 100%; background: var(--gold); color: #FFF; border: none; padding: 15px; border-radius: 6px;
+  font-weight: 700; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; letter-spacing: 1px;
+}
+.login-box button:hover { opacity: 0.9; }
 
-/* LOGIN */
-#login-screen{flex-grow:1;display:flex;align-items:center;justify-content:center;padding:24px}
-.login-box{background:#fff;padding:32px;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.07);
-  width:100%;max-width:380px}
-.login-box h2{color:#A66C1E;font-size:20px;margin-bottom:6px}
-.login-box p.sub{font-size:13px;color:#888;margin-bottom:22px}
-.login-box label{display:block;font-size:12px;font-weight:600;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.login-box input{width:100%;padding:14px;border:1px solid #e0e6f5;border-radius:10px;font-size:16px;margin-bottom:16px}
-.login-box input:focus{outline:none;border-color:#A66C1E}
-.login-box button{width:100%;padding:15px;background:#A66C1E;color:#fff;border:none;border-radius:10px;
-  font-size:14px;font-weight:700;cursor:pointer}
-.login-box button:disabled{background:#c9b18d;cursor:not-allowed}
-.login-erro{color:#E63946;font-size:13px;margin-top:14px;display:none;line-height:1.5}
-.login-erro.show{display:block}
+/* TELA DE INÍCIO (PARA DESTRAVAR O ÁUDIO) */
+#overlay-start {
+  position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+.btn-start { background: var(--gold); color: #FFF; border: none; padding: 20px 40px; font-size: 20px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(184,134,11,0.3); transition: transform 0.2s; }
+.btn-start:hover { transform: scale(1.05); }
 
-/* KANBAN */
-#painel{flex-grow:1;display:none;flex-direction:column;min-height:0}
-.kanban-board{display:flex;gap:16px;padding:20px;flex-grow:1;overflow-x:auto;align-items:stretch;min-height:0}
-.kanban-col{background:#fff;flex:1 0 300px;max-width:380px;border-radius:16px;padding:16px;display:flex;
-  flex-direction:column;box-shadow:0 4px 15px rgba(0,0,0,.03);min-height:0}
-.kanban-col h2{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
-  padding-bottom:12px;border-bottom:2px solid #F4F7FE;margin-bottom:12px;display:flex;
-  justify-content:space-between;align-items:center;flex-shrink:0}
-.col-content{overflow-y:auto;display:flex;flex-direction:column;gap:14px;flex-grow:1;min-height:0}
-.col-novo h2{color:#E63946;border-bottom-color:#E63946}
-.col-prep h2{color:#F4A261;border-bottom-color:#F4A261}
-.col-entrega h2{color:#2A9D8F;border-bottom-color:#2A9D8F}
-.col-concluido h2{color:#264653;border-bottom-color:#264653}
-.counter{background:#eee;padding:2px 10px;border-radius:20px;font-size:12px;color:#555}
-.col-vazia{font-size:13px;color:#aaa;text-align:center;padding:20px 0;font-weight:300}
+/* DASHBOARD SUPERIOR */
+header { background: var(--surface); padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10;}
+.logo { font-size: 18px; font-weight: 800; color: var(--gold); letter-spacing: 1px; font-family: 'Cinzel', serif;}
+.dashboard-stats { display: flex; gap: 20px; align-items: center; }
+.stat-box { background: #F8F9FA; border: 1px solid var(--border); padding: 8px 20px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-end; }
+.stat-box span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+.stat-box strong { font-size: 18px; color: var(--gold); font-weight: 700; }
+.btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 8px 15px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+.btn-logout:hover { background: var(--danger); color: #FFF; }
 
-.order-card{background:#FDF5E6;border:1px solid rgba(166,108,30,.2);border-radius:12px;padding:14px;
-  box-shadow:0 4px 6px rgba(0,0,0,.02);display:flex;flex-direction:column;gap:10px}
-.order-card.atrasado{border-color:#E63946;box-shadow:0 0 0 2px rgba(230,57,70,.15)}
-.order-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #ccc;padding-bottom:10px;gap:8px}
-.order-id{font-weight:700;color:#A66C1E;font-size:17px}
-.order-time{font-size:12px;color:#888;white-space:nowrap}
-.order-client strong{display:block;font-size:15px;color:#333}
-.order-client p{font-size:13px;color:#666;margin-top:3px;line-height:1.45}
-.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.tag{font-size:11px;font-weight:600;padding:4px 9px;border-radius:5px}
-.tag-pay{background:#e0f7fa;color:#00838f}
-.tag-entrega{background:#fdecef;color:#c1121f}
-.tag-retirada{background:#e8f5e9;color:#2e7d32}
-.order-items{background:#fff;padding:11px;border-radius:8px;font-size:13px}
-.order-items ul{list-style:none;margin-bottom:10px}
-.order-items li{margin-bottom:7px;border-bottom:1px solid #f0f0f0;padding-bottom:7px;line-height:1.5}
-.order-items li:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.item-sub{display:block;font-size:12px;color:#7a6a52;margin-top:3px;padding-left:12px}
-.item-obs{display:block;font-size:12px;color:#c1121f;font-weight:600;margin-top:3px;padding-left:12px}
-.order-total{font-weight:700;color:#E63946;font-size:15px;text-align:right}
-.order-actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn-action{flex:1;min-width:120px;padding:13px 10px;border:none;border-radius:8px;font-weight:600;
-  cursor:pointer;font-size:12px;transition:.2s;text-align:center;color:#fff}
-.btn-action:disabled{opacity:.5;cursor:wait}
-.btn-prep{background:#F4A261}.btn-prep:hover{background:#e08c4e}
-.btn-env{background:#2A9D8F}.btn-env:hover{background:#21867a}
-.btn-conc{background:#264653}.btn-conc:hover{background:#1a333d}
-.btn-zap{background:#25D366;flex:0 0 46px;min-width:46px;font-size:16px}
-.btn-cancel{background:#fff;color:#E63946;border:1px solid #E63946;flex:0 0 46px;min-width:46px;font-size:15px}
-.status-cancelado{background:#f5f5f5;border-color:#ddd;opacity:.65}
+/* KANBAN BOARD */
+.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px; flex-grow: 1; overflow: hidden; }
+.kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+.col-header { padding: 15px; border-bottom: 1px solid var(--border); text-align: center; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+.col-header .count { background: #FFF; padding: 4px 10px; border-radius: 12px; font-size: 11px; border: 1px solid var(--border); }
+.col-body { padding: 15px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; background: #F8F9FA; }
 
-::-webkit-scrollbar{width:7px;height:7px}
-::-webkit-scrollbar-track{background:#f1f1f1;border-radius:10px}
-::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:10px}
-@media(max-width:820px){.kanban-board{flex-direction:column;overflow-x:visible}
-  .kanban-col{max-width:none;flex:0 0 auto}.col-content{max-height:none}}
+/* CORES DOS CABEÇALHOS KANBAN */
+#col-novo .col-header { background: rgba(220, 53, 69, 0.05); color: var(--danger); border-top: 4px solid var(--danger); }
+#col-preparando .col-header { background: rgba(184, 134, 11, 0.05); color: var(--gold); border-top: 4px solid var(--gold); }
+#col-saiu .col-header { background: rgba(37, 211, 102, 0.05); color: var(--success); border-top: 4px solid var(--success); }
+#col-concluido .col-header { background: #F8F9FA; color: var(--text-muted); border-top: 4px solid var(--border); }
+
+/* CARDS DE PEDIDO */
+.card-pedido { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.3s; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.card-pedido.atencao { border-color: var(--warning); box-shadow: 0 0 10px rgba(245,158,11,0.2); }
+.card-pedido.atrasado { border-color: var(--danger); box-shadow: 0 0 15px rgba(220,53,69,0.3); animation: pulseRed 2s infinite; }
+
+@keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220,53,69,0.4); } 70% { box-shadow: 0 0 0 10px rgba(220,53,69,0); } 100% { box-shadow: 0 0 0 0 rgba(220,53,69,0); } }
+
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 10px; }
+.p-id { font-size: 14px; font-weight: 800; color: var(--gold); }
+.p-time { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+.p-time.timer-atencao { color: var(--warning); }
+.p-time.timer-atrasado { color: var(--danger); }
+
+.p-cliente { font-size: 13px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center; margin-top: 5px;}
+.p-tipo { font-size: 10px; background: #F1F3F5; border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); }
+
+.p-itens { font-size: 12px; color: var(--text); line-height: 1.5; padding: 5px 0; }
+.p-obs { font-size: 11px; color: #9A6700; font-style: italic; background: rgba(245,158,11,0.1); padding: 6px; border-radius: 4px; border-left: 3px solid var(--warning); margin-top: 5px;}
+
+.p-footer { border-top: 1px dashed var(--border); padding-top: 10px; font-size: 12px; }
+.p-pagamento { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.p-endereco { font-size: 11px; color: var(--text-muted); }
+
+/* BOTÕES DO CARD */
+.action-buttons { display: flex; gap: 8px; margin-top: 10px; }
+.btn-action { flex: 1; border: none; padding: 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; color: #fff; transition: opacity 0.2s; }
+.btn-action:hover { opacity: 0.8; }
+.btn-next { background: var(--gold); }
+.btn-wp { background: var(--wp); flex: 0.3; display: flex; align-items: center; justify-content: center; }
+.btn-print { background: var(--text-muted); flex: 0.3; display: flex; align-items: center; justify-content: center; }
+
+/* SCROLLBAR CUSTOMIZADA */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 </style>
 </head>
 <body>
 
+<!-- TELA DE LOGIN -->
 <div id="login-screen">
-  <form class="login-box" id="login-form">
-    <h2>🍕 Painel da Cozinha</h2>
-    <p class="sub">Acesso restrito à equipe Doce Capricho.</p>
-    <label for="email">E-mail</label>
-    <input type="email" id="email" autocomplete="username" required>
-    <label for="senha">Senha</label>
-    <input type="password" id="senha" autocomplete="current-password" required>
-    <button type="submit" id="btn-login">Entrar</button>
-    <p class="login-erro" id="login-erro" role="alert"></p>
+  <form class="login-box" id="form-login">
+    <h2>Acesso Restrito</h2>
+    <input type="email" id="admin-email" placeholder="E-mail" required>
+    <input type="password" id="admin-senha" placeholder="Senha" required>
+    <button type="submit">Entrar no Painel</button>
   </form>
 </div>
 
-<header id="topbar" style="display:none">
-  <h1>🍕 Painel da Cozinha</h1>
-  <div class="header-right">
-    <span class="badge-status"><span class="dot" id="conn-dot"></span><span id="conn-text">Atualização automática ativa</span></span>
-    <button type="button" class="btn-plain" id="btn-som">🔔 Som: ligado</button>
-    <button type="button" class="btn-plain" id="btn-sair">Sair</button>
+<!-- OVERLAY DE INICIALIZAÇÃO (PARA DESTRAVAR O ÁUDIO) -->
+<div id="overlay-start">
+  <h1 style="color:var(--gold); font-family:'Cinzel', serif; margin-bottom: 30px;">BEM-VINDO AO EXPEDIENTE</h1>
+  <button class="btn-start" onclick="iniciarSistema()">Iniciar Turno</button>
+</div>
+
+<!-- ELEMENTO DE ÁUDIO -->
+<!-- Certifique-se de ter um arquivo 'alerta.mp3' na mesma pasta -->
+<audio id="audio-alerta" src="alerta.mp3" loop preload="auto"></audio>
+
+<header>
+  <div class="logo">PAINEL ADMIN</div>
+  <div class="dashboard-stats">
+    <div class="stat-box"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
+    <div class="stat-box"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
+    <div class="stat-box"><span>Ticket Médio</span><strong id="dash-tkt">R$ 0,00</strong></div>
+    <button class="btn-logout" onclick="sair()">Sair</button>
   </div>
 </header>
 
-<div id="painel">
-  <div class="kanban-board">
-    <div class="kanban-col col-novo">
-      <h2>Novos <span class="counter" id="count-Novo">0</span></h2>
-      <div class="col-content" id="col-Novo"></div>
-    </div>
-    <div class="kanban-col col-prep">
-      <h2>No Forno <span class="counter" id="count-Preparando">0</span></h2>
-      <div class="col-content" id="col-Preparando"></div>
-    </div>
-    <div class="kanban-col col-entrega">
-      <h2>A Caminho <span class="counter" id="count-A Caminho">0</span></h2>
-      <div class="col-content" id="col-A Caminho"></div>
-    </div>
-    <div class="kanban-col col-concluido">
-      <h2>Finalizados (hoje) <span class="counter" id="count-Concluido">0</span></h2>
-      <div class="col-content" id="col-Concluido"></div>
-    </div>
+<div class="kanban-board">
+  <!-- COLUNA NOVO -->
+  <div class="kanban-col" id="col-novo">
+    <div class="col-header">Novos <span class="count" id="count-novo">0</span></div>
+    <div class="col-body" id="list-novo"></div>
+  </div>
+  <!-- COLUNA PREPARANDO -->
+  <div class="kanban-col" id="col-preparando">
+    <div class="col-header">Preparando <span class="count" id="count-preparando">0</span></div>
+    <div class="col-body" id="list-preparando"></div>
+  </div>
+  <!-- COLUNA SAIU -->
+  <div class="kanban-col" id="col-saiu">
+    <div class="col-header">Saiu p/ Entrega <span class="count" id="count-saiu">0</span></div>
+    <div class="col-body" id="list-saiu"></div>
+  </div>
+  <!-- COLUNA CONCLUÍDO -->
+  <div class="kanban-col" id="col-concluido">
+    <div class="col-header">Concluídos <span class="count" id="count-concluido">0</span></div>
+    <div class="col-body" id="list-concluido"></div>
   </div>
 </div>
 
 <script>
+// CONFIGURAÇÃO FIREBASE
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA",
   authDomain: "sistema-doce-capricho.firebaseapp.com",
@@ -149,245 +185,295 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "203794333208",
   appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d"
 };
-firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.firestore();
-const auth = firebase.auth();
 
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-const brl = c => (Number(c || 0) / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-const soDigitos = s => String(s || '').replace(/\D/g, '');
+// Inicializa o Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+}
 
-const COLUNAS = ['Novo', 'Preparando', 'A Caminho', 'Concluido'];
-const PROXIMO = { 'Novo':'Preparando', 'Preparando':'A Caminho', 'A Caminho':'Concluido' };
-const ROTULO  = { 'Preparando':'Aceitar (ir p/ forno)', 'A Caminho':'Enviar p/ entrega', 'Concluido':'Marcar entregue' };
-const CLASSE  = { 'Preparando':'btn-prep', 'A Caminho':'btn-env', 'Concluido':'btn-conc' };
+let db = firebase.firestore();
+let auth = firebase.auth();
+let pedidosMap = new Map(); 
+let intervalTimer = null;
+let listenerPedidos = null; 
 
-let somLigado = true, idsConhecidos = new Set(), primeiraCarga = true, unsub = null;
-
-/* ---------- LOGIN ---------- */
-$('#login-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = $('#btn-login'), err = $('#login-erro');
-  btn.disabled = true; btn.textContent = 'Entrando...'; err.classList.remove('show');
-  try {
-    await auth.signInWithEmailAndPassword($('#email').value.trim(), $('#senha').value);
-  } catch (ex) {
-    err.textContent = (ex.code === 'auth/invalid-credential' || ex.code === 'auth/wrong-password'
-      || ex.code === 'auth/user-not-found' || ex.code === 'auth/invalid-email')
-      ? 'E-mail ou senha incorretos.'
-      : 'Não foi possível entrar. Verifique a conexão. (' + ex.code + ')';
-    err.classList.add('show');
-  } finally { btn.disabled = false; btn.textContent = 'Entrar'; }
-});
-
-$('#btn-sair').addEventListener('click', () => auth.signOut());
-$('#btn-som').addEventListener('click', () => {
-  somLigado = !somLigado;
-  $('#btn-som').textContent = somLigado ? '🔔 Som: ligado' : '🔕 Som: desligado';
-  if (somLigado) beep();
-});
-
+// VERIFICAÇÃO DE LOGIN
 auth.onAuthStateChanged(user => {
   if (user) {
-    $('#login-screen').style.display = 'none';
-    $('#topbar').style.display = 'flex';
-    $('#painel').style.display = 'flex';
-    $('#senha').value = '';
-    if (!unsub) escutarPedidos();
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('overlay-start').style.display = 'flex';
   } else {
-    if (unsub) { unsub(); unsub = null; }
-    idsConhecidos = new Set(); primeiraCarga = true;
-    $('#login-screen').style.display = 'flex';
-    $('#topbar').style.display = 'none';
-    $('#painel').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('overlay-start').style.display = 'none';
+    
+    if(listenerPedidos) listenerPedidos(); 
+    pedidosMap.clear();
+    renderizarKanban();
+    atualizarDashboard();
+    gerenciarAudio(false);
   }
 });
 
-/* ---------- ALERTA SONORO ---------- */
-function beep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 260].forEach(atraso => setTimeout(() => {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine'; o.frequency.value = 880;
-      g.gain.setValueAtTime(.0001, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(.25, ctx.currentTime + .02);
-      g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + .22);
-      o.start(); o.stop(ctx.currentTime + .24);
-    }, atraso));
-    setTimeout(() => ctx.close(), 900);
-  } catch (e) {}
-}
-
-/* ---------- TEMPO ---------- */
-function hora(ts) {
-  if (!ts || !ts.toDate) return '—';
-  return ts.toDate().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-}
-function minutosDesde(ts) {
-  if (!ts || !ts.toDate) return 0;
-  return Math.floor((Date.now() - ts.toDate().getTime()) / 60000);
-}
-
-/* ---------- ESCUTA EM TEMPO REAL ---------- */
-function escutarPedidos() {
-  unsub = db.collection('pedidos')
-    .orderBy('data_pedido', 'desc')
-    .limit(80)
-    .onSnapshot(snap => {
-      $('#conn-dot').classList.remove('off');
-      $('#conn-text').textContent = 'Atualização automática ativa';
-
-      const inicioDoDia = new Date(); inicioDoDia.setHours(0, 0, 0, 0);
-      const grupos = { 'Novo':[], 'Preparando':[], 'A Caminho':[], 'Concluido':[] };
-      let novoChegou = false;
-
-      snap.forEach(doc => {
-        const p = doc.data() || {};
-        const status = COLUNAS.includes(p.status) ? p.status : 'Novo';
-        if (p.status === 'Cancelado') return;
-
-        /* Finalizados: só os de hoje, para o quadro não virar arquivo morto */
-        if (status === 'Concluido') {
-          const d = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate() : null;
-          if (d && d < inicioDoDia) return;
-        }
-        if (status === 'Novo' && !idsConhecidos.has(doc.id) && !primeiraCarga) novoChegou = true;
-        idsConhecidos.add(doc.id);
-        grupos[status].push({ id: doc.id, ...p });
-      });
-
-      /* Fila de produção na ordem de chegada (mais antigo primeiro) */
-      ['Novo', 'Preparando', 'A Caminho'].forEach(k => grupos[k].reverse());
-
-      COLUNAS.forEach(status => {
-        const alvo = document.getElementById('col-' + status);
-        alvo.innerHTML = grupos[status].length
-          ? grupos[status].map(cardHTML).join('')
-          : '<p class="col-vazia">Nenhum pedido</p>';
-        document.getElementById('count-' + status).textContent = grupos[status].length;
-      });
-
-      if (novoChegou && somLigado) beep();
-      primeiraCarga = false;
-    }, err => {
-      console.error(err);
-      $('#conn-dot').classList.add('off');
-      $('#conn-text').textContent = 'Sem conexão com o banco';
+// AÇÃO DE LOGIN
+document.getElementById('form-login').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('admin-email').value;
+  const senha = document.getElementById('admin-senha').value;
+  
+  auth.signInWithEmailAndPassword(email, senha)
+    .catch(error => {
+      alert("Erro ao fazer login: " + error.message);
     });
-}
-
-/* ---------- CARD ---------- */
-function cardHTML(p) {
-  const cod = '#' + p.id.slice(-5).toUpperCase();
-  const status = COLUNAS.includes(p.status) ? p.status : 'Novo';
-  const atrasado = status !== 'Concluido' && minutosDesde(p.data_pedido) >= 45;
-  const entrega = p.tipo_entrega !== 'Retirada';
-
-  const itens = Array.isArray(p.itens) && p.itens.length
-    ? p.itens.map(i => {
-        const extras = Array.isArray(i.extras) && i.extras.length
-          ? `<span class="item-sub">+ ${i.extras.map(e => esc(e.nome) + ' (' + esc(e.aplicacao) + ')').join(' · ')}</span>` : '';
-        const obs = i.obs ? `<span class="item-obs">⚠ ${esc(i.obs)}</span>` : '';
-        return `<li><strong>${esc(i.qtd || 1)}×</strong> ${esc(i.nome || 'Item')}${extras}${obs}</li>`;
-      }).join('')
-    : '<li>Pedido sem itens registrados</li>';
-
-  const prox = PROXIMO[status];
-  const acoes = [];
-  if (prox) acoes.push(`<button class="btn-action ${CLASSE[prox]}" data-avancar="${p.id}" data-para="${prox}">${ROTULO[prox]}</button>`);
-  if (p.cliente_telefone) acoes.push(`<button class="btn-action btn-zap" data-zap="${p.id}" title="Abrir WhatsApp do cliente">💬</button>`);
-  if (status === 'Novo') acoes.push(`<button class="btn-action btn-cancel" data-cancelar="${p.id}" title="Cancelar pedido">✕</button>`);
-
-  return `<div class="order-card${atrasado ? ' atrasado' : ''}" data-id="${p.id}">
-    <div class="order-header">
-      <span class="order-id">${cod}</span>
-      <span class="order-time">⏳ ${hora(p.data_pedido)}${atrasado ? ' · ' + minutosDesde(p.data_pedido) + 'min' : ''}</span>
-    </div>
-    <div class="order-client">
-      <strong>👤 ${esc(p.cliente_nome || 'Cliente')}</strong>
-      <p>📞 ${esc(p.cliente_telefone || 'não informado')}</p>
-      ${entrega ? `<p>📍 ${esc(p.cliente_endereco || 'endereço não informado')}</p>` : ''}
-      <div class="tags">
-        <span class="tag ${entrega ? 'tag-entrega' : 'tag-retirada'}">${entrega ? '🛵 Entrega' : '🏠 Retirada'}</span>
-        <span class="tag tag-pay">💳 ${esc(p.forma_pagamento || '—')}</span>
-      </div>
-    </div>
-    <div class="order-items">
-      <ul>${itens}</ul>
-      <div class="order-total">Total: ${brl(p.total_centavos)}</div>
-    </div>
-    ${acoes.length ? `<div class="order-actions">${acoes.join('')}</div>` : ''}
-  </div>`;
-}
-
-/* ---------- AÇÕES (delegação, sem onclick inline) ---------- */
-$('#painel').addEventListener('click', async e => {
-  const av = e.target.closest('[data-avancar]');
-  const zp = e.target.closest('[data-zap]');
-  const cc = e.target.closest('[data-cancelar]');
-
-  if (zp) return abrirWhats(zp.dataset.zap);
-
-  if (cc) {
-    if (!confirm('Cancelar este pedido? Ele sairá do quadro.')) return;
-    try { await atualizar(cc.dataset.cancelar, 'Cancelado'); }
-    catch (ex) { alert('Erro ao cancelar: ' + ex.message); }
-    return;
-  }
-
-  if (!av) return;
-  const { avancar: id, para } = av.dataset;
-  av.disabled = true;
-
-  /* Aba aberta ANTES do await: o iPad bloqueia popup depois de operação assíncrona */
-  let aba = null;
-  const dados = dadosDoCard(id);
-  if (para === 'A Caminho' && dados && dados.tel) aba = window.open('about:blank', '_blank');
-
-  try {
-    await atualizar(id, para);
-    if (aba && dados) {
-      const msg = `Olá, ${dados.nome}! 🛵 Seu pedido da Doce Capricho (#${id.slice(-5).toUpperCase()}) saiu do forno e já está a caminho!`;
-      aba.location.href = `https://wa.me/${normalizarTelefone(dados.tel)}?text=${encodeURIComponent(msg)}`;
-    }
-  } catch (ex) {
-    if (aba) aba.close();
-    av.disabled = false;
-    alert('Não foi possível atualizar o pedido: ' + ex.message);
-  }
 });
 
-function atualizar(id, status) {
-  return db.collection('pedidos').doc(id).update({
-    status,
-    atualizado_em: firebase.firestore.FieldValue.serverTimestamp()
+// AÇÃO DE LOGOUT
+function sair() {
+  auth.signOut();
+}
+
+// INICIAR TURNO (Após Logar)
+function iniciarSistema() {
+  document.getElementById('overlay-start').style.display = 'none';
+  
+  const audio = document.getElementById('audio-alerta');
+  audio.play().then(() => { audio.pause(); }).catch(e => console.log("Áudio bloqueado", e));
+  
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  listenerPedidos = db.collection('pedidos')
+    .where('data_pedido', '>=', hoje)
+    .orderBy('data_pedido', 'asc')
+    .onSnapshot(snapshot => {
+      let temNovo = false;
+      
+      snapshot.docChanges().forEach(change => {
+        const dados = change.doc.data();
+        dados.id = change.doc.id;
+        
+        if (change.type === 'added' || change.type === 'modified') {
+          pedidosMap.set(dados.id, dados);
+          if (dados.status === 'Novo') temNovo = true;
+        }
+        if (change.type === 'removed') {
+          pedidosMap.delete(dados.id);
+        }
+      });
+
+      renderizarKanban();
+      atualizarDashboard();
+      gerenciarAudio(temNovo);
+    });
+
+  if(intervalTimer) clearInterval(intervalTimer);
+  intervalTimer = setInterval(renderizarKanban, 60000);
+}
+
+function gerenciarAudio(temNovo) {
+  const audio = document.getElementById('audio-alerta');
+  const existeNovo = Array.from(pedidosMap.values()).some(p => p.status === 'Novo');
+  
+  if (existeNovo) {
+    if (audio.paused) audio.play().catch(e=>console.log(e));
+  } else {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+}
+
+const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
+function calcularTempo(timestamp) {
+  if (!timestamp) return { texto: 'Agora', minutos: 0 };
+  const ms = timestamp.toDate ? timestamp.toDate().getTime() : timestamp;
+  const dif = Math.floor((Date.now() - ms) / 60000);
+  if (dif < 1) return { texto: 'Agora', minutos: 0 };
+  if (dif < 60) return { texto: `${dif} min`, minutos: dif };
+  return { texto: `${Math.floor(dif/60)}h ${dif%60}m`, minutos: dif };
+}
+
+function gerarHTMLItens(itens) {
+  return itens.map(i => {
+    let extraHTML = i.extras && i.extras.length > 0 
+      ? i.extras.map(e => `<br>&nbsp;&nbsp;+ ${e.nome} (${e.aplicacao})`).join('') 
+      : '';
+    let obsHTML = i.obs ? `<div class="p-obs">Obs: ${i.obs}</div>` : '';
+    return `<div><strong>${i.qtd}x ${i.nome}</strong>${extraHTML}${obsHTML}</div>`;
+  }).join('');
+}
+
+// ATUALIZAR STATUS E ABRIR WHATSAPP AUTOMATICAMENTE NA SAÍDA PARA ENTREGA
+function avancarStatus(id, statusAtual) {
+  const p = pedidosMap.get(id); // Puxa os dados do cliente
+  const prox = {
+    'Novo': 'Preparando',
+    'Preparando': 'Saiu para Entrega',
+    'Saiu para Entrega': 'Concluído'
+  };
+  const novoStatus = prox[statusAtual];
+  
+  if(novoStatus) {
+    // 1. Atualiza no banco de dados e move o card
+    db.collection('pedidos').doc(id).update({ status: novoStatus });
+    
+    // 2. O Pulo do Gato: Abre o WhatsApp automático ao despachar
+    if (novoStatus === 'Saiu para Entrega') {
+      const primeiroNome = p.cliente_nome.split(' ')[0]; // Pega só o primeiro nome
+      const msg = `Olá, ${primeiroNome}! 🍕 Seu pedido do Doce Capricho Atelier acabou de sair para entrega e logo chega aí! 🛵`;
+      const url = `https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank'); // Abre a aba já com o texto pronto
+    }
+  }
+}
+
+// IMPRESSÃO TÉRMICA (CUPOM 80MM)
+function imprimirComanda(id) {
+  const p = pedidosMap.get(id);
+  if(!p) return;
+
+  const dataHora = p.data_pedido && p.data_pedido.toDate 
+    ? p.data_pedido.toDate().toLocaleString('pt-BR') 
+    : new Date().toLocaleString('pt-BR');
+
+  const printWindow = window.open('', '', 'width=400,height=600');
+  
+  let html = `
+    <html>
+    <head>
+      <style>
+        body { font-family: 'Courier New', Courier, monospace; width: 80mm; margin: 0; padding: 10px; color: #000; font-size: 14px; }
+        h2, h3 { text-align: center; margin: 5px 0; }
+        .linha { border-bottom: 1px dashed #000; margin: 10px 0; }
+        .flex { display: flex; justify-content: space-between; }
+        .bold { font-weight: bold; }
+        .item-row { margin-bottom: 5px; }
+        .extras { font-size: 12px; margin-left: 10px; }
+        .obs { font-size: 12px; margin-left: 10px; border: 1px solid #000; padding: 2px; margin-top: 3px; display: inline-block;}
+      </style>
+    </head>
+    <body>
+      <h2>DOCE CAPRICHO</h2>
+      <h3>Pedido #${id.slice(-5).toUpperCase()}</h3>
+      <p style="text-align:center; font-size:12px;">${dataHora}</p>
+      <div class="linha"></div>
+      
+      <p class="bold">Cliente: ${p.cliente_nome}</p>
+      <p>Tel: ${p.cliente_telefone}</p>
+      <p class="bold">Tipo: ${p.tipo_entrega}</p>
+      ${p.cliente_endereco ? `<p>End: ${p.cliente_endereco}</p>` : ''}
+      
+      <div class="linha"></div>
+      <h3 style="text-align:left;">ITENS:</h3>
+  `;
+
+  p.itens.forEach(i => {
+    html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`;
+    if(i.extras) {
+      i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; });
+    }
+    if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; }
+    html += `<br>`;
+  });
+
+  html += `
+      <div class="linha"></div>
+      <div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>
+      ${p.taxa_centavos ? `<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>` : ''}
+      <div class="linha"></div>
+      <div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div>
+      <p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p>
+      <br><br><br>.
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    printWindow.print();
+    printWindow.close();
+  }, 500);
+}
+
+function renderizarKanban() {
+  const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
+  
+  Array.from(pedidosMap.values()).sort((a,b) => {
+    const tA = a.data_pedido ? a.data_pedido.toMillis() : 0;
+    const tB = b.data_pedido ? b.data_pedido.toMillis() : 0;
+    return tA - tB;
+  }).forEach(p => {
+    const status = p.status || 'Novo';
+    if(cols[status]) cols[status].push(p);
+  });
+
+  Object.keys(cols).forEach(status => {
+    const containerId = status === 'Novo' ? 'list-novo' : status === 'Preparando' ? 'list-preparando' : status === 'Saiu para Entrega' ? 'list-saiu' : 'list-concluido';
+    const countId = status === 'Novo' ? 'count-novo' : status === 'Preparando' ? 'count-preparando' : status === 'Saiu para Entrega' ? 'count-saiu' : 'count-concluido';
+    
+    document.getElementById(countId).textContent = cols[status].length;
+    
+    let html = '';
+    cols[status].forEach(p => {
+      const tempo = calcularTempo(p.data_pedido);
+      
+      let corTempo = ''; let bordaCard = '';
+      if (status !== 'Concluído') {
+        if(tempo.minutos >= 40) { corTempo = 'timer-atrasado'; bordaCard = 'atrasado'; }
+        else if(tempo.minutos >= 20) { corTempo = 'timer-atencao'; bordaCard = 'atencao'; }
+      }
+
+      let btnAvancar = '';
+      if(status === 'Novo') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar</button>`;
+      else if(status === 'Preparando') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`;
+      else if(status === 'Saiu para Entrega') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Concluir</button>`;
+
+      const wpLink = `https://wa.me/55${p.cliente_telefone}`;
+
+      html += `
+        <div class="card-pedido ${bordaCard}">
+          <div class="card-header">
+            <span class="p-id">#${p.id.slice(-5).toUpperCase()}</span>
+            <span class="p-time ${corTempo}">⏱ ${tempo.texto}</span>
+          </div>
+          <div class="p-cliente">
+            ${p.cliente_nome}
+            <span class="p-tipo">${p.tipo_entrega}</span>
+          </div>
+          <div class="p-itens">${gerarHTMLItens(p.itens)}</div>
+          <div class="p-footer">
+            <div class="p-pagamento">
+              <strong>${brl(p.total_centavos)}</strong>
+              <span style="color:var(--gold); font-weight:700;">${p.forma_pagamento}</span>
+            </div>
+            ${p.cliente_endereco ? `<div class="p-endereco">📍 ${p.cliente_endereco}</div>` : ''}
+          </div>
+          <div class="action-buttons">
+            ${btnAvancar}
+            <a href="${wpLink}" target="_blank" class="btn-action btn-wp" title="WhatsApp">💬</a>
+            <button class="btn-action btn-print" onclick="imprimirComanda('${p.id}')" title="Imprimir">🖨️</button>
+          </div>
+        </div>
+      `;
+    });
+    
+    document.getElementById(containerId).innerHTML = html;
   });
 }
 
-/* Lê nome/telefone do próprio card já renderizado — evita ida extra ao banco */
-function dadosDoCard(id) {
-  const card = document.querySelector(`.order-card[data-id="${id}"]`);
-  if (!card) return null;
-  const nome = (card.querySelector('.order-client strong')?.textContent || '').replace('👤', '').trim();
-  const tel = soDigitos(card.querySelector('.order-client p')?.textContent || '');
-  return { nome: nome || 'cliente', tel };
-}
+function atualizarDashboard() {
+  let qtd = 0; let faturamento = 0;
+  Array.from(pedidosMap.values()).forEach(p => {
+    qtd++;
+    faturamento += p.total_centavos;
+  });
 
-async function abrirWhats(id) {
-  const d = dadosDoCard(id);
-  if (!d || !d.tel) return alert('Este pedido não tem telefone registrado.');
-  window.open(`https://wa.me/${normalizarTelefone(d.tel)}`, '_blank');
-}
+  const ticket = qtd > 0 ? faturamento / qtd : 0;
 
-/* 10 ou 11 dígitos = número nacional, acrescenta 55.
-   Não usa startsWith('55'): 55 também é DDD (Santa Maria/RS). */
-function normalizarTelefone(tel) {
-  const d = soDigitos(tel);
-  if (d.length === 10 || d.length === 11) return '55' + d;
-  return d;
+  document.getElementById('dash-qtd').textContent = qtd;
+  document.getElementById('dash-fat').textContent = brl(faturamento);
+  document.getElementById('dash-tkt').textContent = brl(ticket);
 }
 </script>
 </body>
