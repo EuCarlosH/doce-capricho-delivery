@@ -32,21 +32,29 @@ body::before { content: ""; position: fixed; top: 50%; left: 50%; transform: tra
 /* MODAIS */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
-.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; max-height: 80vh; display: flex; flex-direction: column; }
+.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; max-height: 90vh; display: flex; flex-direction: column; overflow-y: auto; }
 .close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); }
 .modal-box h2 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; }
 
-/* LISTA CATÁLOGO */
-.catalog-list { overflow-y: auto; padding-right: 10px; flex-grow: 1; }
-.catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed var(--border-light); }
-.catalog-info strong { display: block; font-size: 14px; }
-.catalog-info span { font-size: 11px; color: var(--text-muted); }
-.toggle-switch { position: relative; display: inline-block; width: 40px; height: 24px; }
+/* CHAVINHAS */
+.toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger); transition: .4s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider { background-color: var(--success); }
 input:checked + .slider:before { transform: translateX(16px); }
+
+.catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border-light); }
+.catalog-info strong { display: block; font-size: 13px; }
+.catalog-info span { font-size: 10px; color: var(--text-muted); }
+
+/* HORARIOS CSS */
+.dia-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: #F8FAFC; padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); }
+.dia-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; width: 110px; }
+.dia-inputs { display: flex; gap: 5px; align-items: center; }
+.dia-inputs input[type="time"] { padding: 6px; border: 1px solid var(--border-light); border-radius: 4px; font-size: 11px; font-family: inherit; color: var(--text-main); }
+.btn-save { background: var(--gold); color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; width: 100%; transition: opacity 0.3s; margin-top: 10px; }
+.btn-save:hover { opacity: 0.9; }
 
 /* LOGIN & START */
 #login-screen { position: fixed; inset: 0; background: var(--bg-main); z-index: 10000; display: flex; align-items: center; justify-content: center; }
@@ -146,7 +154,7 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
   <div class="dashboard-stats">
     <div class="stat-box"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
     <div class="stat-box"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
-    <button class="btn-header" onclick="abrirModalCatalogo()">🍕 Catálogo</button>
+    <button class="btn-header" onclick="abrirModalCatalogo()">⚙️ Configurações</button>
     <button class="btn-header" id="btn-toggle-loja" onclick="toggleStatusLoja()">Pausar Loja 🔴</button>
     <button class="btn-header btn-danger-outline" onclick="sair()">Encerrar</button>
   </div>
@@ -162,9 +170,28 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
 <div class="modal-overlay" id="modal-catalogo">
   <div class="modal-box">
     <button class="close-modal" onclick="fecharModalCatalogo()">&times;</button>
-    <h2>Controle de Estoque</h2>
-    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">Desligue a chave para marcar a pizza como "Esgotada" no site do cliente.</p>
-    <div class="catalog-list" id="catalog-list"></div>
+    <h2>Configurações da Loja</h2>
+    
+    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
+      <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários de Funcionamento (Automático)</strong>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Configure os dias em que a loja abre sozinha e os horários.</p>
+      
+      <div id="schedule-list"></div>
+      <button class="btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
+    </div>
+
+    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
+      <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Texto do Rodapé do Site</strong>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Texto visível para informar aos clientes seus dias habituais.</p>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="input-texto-funcionamento" placeholder="Ex: Quinta a Domingo, 18:30 às 23:00" style="flex: 1; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 13px;">
+        <button onclick="salvarTextoFuncionamento(event)" class="btn-save" style="width: auto; margin-top: 0;">Salvar</button>
+      </div>
+    </div>
+
+    <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Controle de Estoque (Pizzas)</strong>
+    <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Desligue a chave para marcar a pizza como "Esgotada" no site.</p>
+    <div id="catalog-list"></div>
   </div>
 </div>
 
@@ -174,6 +201,8 @@ const CARDAPIO = [
   { id:'calabresa', nome:'Calabresa' }, { id:'carnesol', nome:'Carne de Sol' }, { id:'frangocat', nome:'Frango c/ Catupiry' },
   { id:'nordestina', nome:'Nordestina' }, { id:'lombo', nome:'Lombo Canadense' }, { id:'arretada', nome:'Arretada' }, { id:'peru', nome:'Peito de Peru' }
 ];
+
+const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
 const icons = {
   clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
@@ -188,20 +217,14 @@ if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 let db = firebase.firestore();
 let auth = firebase.auth();
 let pedidosMap = new Map(); 
-let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [] };
+let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
 
 auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('login-screen').style.display = 'none'; document.getElementById('overlay-start').style.display = 'flex';
-  } else {
-    document.getElementById('login-screen').style.display = 'flex'; document.getElementById('overlay-start').style.display = 'none';
-  }
+  if (user) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('overlay-start').style.display = 'flex'; }
+  else { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('overlay-start').style.display = 'none'; }
 });
 
-document.getElementById('form-login').addEventListener('submit', (e) => {
-  e.preventDefault();
-  auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar."));
-});
+document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar.")); });
 function sair() { auth.signOut(); location.reload(); }
 
 function iniciarSistema() {
@@ -212,9 +235,10 @@ function iniciarSistema() {
     if(doc.exists) {
         configuracoesGlobais = doc.data();
         if(!configuracoesGlobais.itensEsgotados) configuracoesGlobais.itensEsgotados = [];
+        if(!configuracoesGlobais.horarios) configuracoesGlobais.horarios = {};
+        document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
     } else {
-        // Se não existir, cria o padrão vazio
-        configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [] };
+        configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
     }
     atualizarUIConfig();
   });
@@ -235,82 +259,98 @@ function iniciarSistema() {
   setInterval(renderizarKanban, 60000);
 }
 
-// ================= CORREÇÃO DO BOTÃO PAUSAR =================
 function atualizarUIConfig() {
   const btn = document.getElementById('btn-toggle-loja');
   if (configuracoesGlobais.forcarFechamento) {
     btn.innerHTML = 'Retomar Pedidos 🟢'; btn.classList.add('btn-warning-solid');
   } else {
-    btn.innerHTML = 'Pausar Loja 🔴'; btn.classList.remove('btn-warning-solid');
+    btn.innerHTML = 'Pausar Loja (Pânico) 🔴'; btn.classList.remove('btn-warning-solid');
   }
-  renderizarListaModal();
+  renderizarModaisConfig();
+}
+
+function renderizarModaisConfig() {
+  // Renderizar Estoque
+  const containerEstoque = document.getElementById('catalog-list'); 
+  const esgotados = configuracoesGlobais.itensEsgotados || [];
+  containerEstoque.innerHTML = CARDAPIO.map(item => {
+    const isAtivo = !esgotados.includes(item.id);
+    return `<div class="catalog-item"><div class="catalog-info"><strong>${item.nome}</strong><span>${isAtivo ? 'Disponível' : 'Esgotada'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
+  }).join('');
+
+  // Renderizar Calendário
+  const containerHorarios = document.getElementById('schedule-list');
+  let htmlHorarios = '';
+  for(let i=0; i<7; i++) {
+    // Config padrão se não existir no banco (ex: Qui, Sex, Sab, Dom abertos)
+    let h = configuracoesGlobais.horarios[i] || { ativo: (i===0 || (i>=4 && i<=6)), abre: '18:30', fecha: '23:00' }; 
+    htmlHorarios += `
+      <div class="dia-row">
+        <label class="dia-label">
+          <input type="checkbox" id="dia-ativo-${i}" ${h.ativo ? 'checked' : ''}> ${DIAS_SEMANA[i]}
+        </label>
+        <div class="dia-inputs">
+          <input type="time" id="dia-abre-${i}" value="${h.abre}">
+          <span style="font-size:11px; color:var(--text-muted);">às</span>
+          <input type="time" id="dia-fecha-${i}" value="${h.fecha}">
+        </div>
+      </div>
+    `;
+  }
+  containerHorarios.innerHTML = htmlHorarios;
+}
+
+function salvarHorarios(e) {
+  const btn = e.target; btn.textContent = 'Salvando...';
+  let novosHorarios = {};
+  for(let i=0; i<7; i++) {
+     novosHorarios[i] = {
+       ativo: document.getElementById(`dia-ativo-${i}`).checked,
+       abre: document.getElementById(`dia-abre-${i}`).value || '18:30',
+       fecha: document.getElementById(`dia-fecha-${i}`).value || '23:00'
+     };
+  }
+  db.collection('configuracoes').doc('geral').set({ horarios: novosHorarios }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo com sucesso!'; setTimeout(() => btn.textContent = 'Salvar Calendário', 2000);
+  }).catch(err => { alert("Erro ao salvar."); btn.textContent = 'Salvar Calendário'; });
+}
+
+function salvarTextoFuncionamento(e) {
+  const btn = e.target; const texto = document.getElementById('input-texto-funcionamento').value.trim(); btn.textContent = '...';
+  db.collection('configuracoes').doc('geral').set({ textoFuncionamento: texto }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar', 2000);
+  }).catch(err => { alert("Erro."); btn.textContent = 'Salvar'; });
 }
 
 function toggleStatusLoja() {
-  const btn = document.getElementById('btn-toggle-loja');
-  btn.innerHTML = 'Aguarde...'; // Feedback visual imediato
-  
-  // Usamos { merge: true } para criar o documento caso ele não exista no banco ainda
-  db.collection('configuracoes').doc('geral').set({
-    forcarFechamento: !configuracoesGlobais.forcarFechamento
-  }, { merge: true }).catch(err => {
-    alert("Falha na conexão ao pausar a loja.");
-    atualizarUIConfig();
-  });
+  const btn = document.getElementById('btn-toggle-loja'); btn.innerHTML = 'Aguarde...';
+  db.collection('configuracoes').doc('geral').set({ forcarFechamento: !configuracoesGlobais.forcarFechamento }, { merge: true }).catch(err => { alert("Falha ao pausar."); atualizarUIConfig(); });
 }
 
-function abrirModalCatalogo() { document.getElementById('modal-catalogo').classList.add('open'); renderizarListaModal(); }
+function abrirModalCatalogo() { document.getElementById('modal-catalogo').classList.add('open'); renderizarModaisConfig(); }
 function fecharModalCatalogo() { document.getElementById('modal-catalogo').classList.remove('open'); }
-
-function renderizarListaModal() {
-  const container = document.getElementById('catalog-list');
-  const esgotados = configuracoesGlobais.itensEsgotados || [];
-  container.innerHTML = CARDAPIO.map(item => {
-    const isAtivo = !esgotados.includes(item.id);
-    return `
-      <div class="catalog-item">
-        <div class="catalog-info"><strong>${item.nome}</strong><span>${isAtivo ? 'Disponível' : 'Esgotada'}</span></div>
-        <label class="toggle-switch">
-          <input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-    `;
-  }).join('');
-}
 
 function toggleItem(id, marcarComoAtivo) {
   let esgotados = [...(configuracoesGlobais.itensEsgotados || [])];
-  if (marcarComoAtivo) { esgotados = esgotados.filter(item => item !== id); } 
-  else { if (!esgotados.includes(id)) esgotados.push(id); }
-  
-  db.collection('configuracoes').doc('geral').set({ 
-      itensEsgotados: esgotados 
-  }, { merge: true }).catch(err => alert("Erro ao atualizar o estoque."));
+  if (marcarComoAtivo) { esgotados = esgotados.filter(item => item !== id); } else { if (!esgotados.includes(id)) esgotados.push(id); }
+  db.collection('configuracoes').doc('geral').set({ itensEsgotados: esgotados }, { merge: true }).catch(err => alert("Erro ao atualizar o estoque."));
 }
 
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 function avancarStatus(id, statusAtual) {
-  const p = pedidosMap.get(id); 
-  const prox = { 'Novo': 'Preparando', 'Preparando': 'Saiu para Entrega', 'Saiu para Entrega': 'Concluído' };
-  const novoStatus = prox[statusAtual];
+  const p = pedidosMap.get(id); const prox = { 'Novo': 'Preparando', 'Preparando': 'Saiu para Entrega', 'Saiu para Entrega': 'Concluído' }; const novoStatus = prox[statusAtual];
   if(novoStatus) {
     db.collection('pedidos').doc(id).update({ status: novoStatus });
     if (novoStatus === 'Saiu para Entrega') window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(`Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho Atelier acabou de sair para entrega! 🛵`)}`, '_blank'); 
   }
 }
 
-// (Função de impressão oculta para não alongar muito o código, continua funcionando normalmente)
 function imprimirComanda(id) { const p = pedidosMap.get(id); if(!p) return; const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR'); const printWindow = window.open('', '', 'width=400,height=600'); let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p><p class="bold">Tipo: ${p.tipo_entrega}</p>${p.cliente_endereco?`<p>End: ${p.cliente_endereco}</p>`:''}<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`; p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; }); html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`; printWindow.document.write(html); printWindow.document.close(); printWindow.focus(); setTimeout(() => { printWindow.print(); printWindow.close(); }, 500); }
 
 function renderizarKanban() {
   const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
   let fat = 0, qtd = 0;
-  Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => {
-    if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p);
-    qtd++; fat += p.total_centavos;
-  });
-  
+  Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p); qtd++; fat += p.total_centavos; });
   document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
 
   Object.keys(cols).forEach(status => {
