@@ -25,7 +25,12 @@
   --radius-lg: 12px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; position: relative;}
+
+/* CORREÇÃO DO BUG DE ALTURA E ROTAÇÃO NO iPAD (100dvh) */
+body { 
+  background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; 
+  height: 100dvh; overflow: hidden; display: flex; flex-direction: column; position: relative;
+}
 
 body::before { content: ""; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50vw; height: 50vw; max-width: 600px; max-height: 600px; background: url('logo.png') center/contain no-repeat; opacity: 0.04; pointer-events: none; z-index: 1; }
 
@@ -66,25 +71,43 @@ input:checked + .slider:before { transform: translateX(16px); }
 #overlay-start { position: fixed; inset: 0; background: rgba(244,247,246,0.95); backdrop-filter: blur(5px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .btn-start { background: var(--gold); color: #FFF; border: none; padding: 20px 50px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
 
-/* CABEÇALHO */
-header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 10;}
+/* CABEÇALHO RESILIENTE PARA TABLETS */
+header { 
+  background: var(--bg-card); padding: 20px 30px; border-bottom: 1px solid var(--border-light); 
+  display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); 
+  z-index: 10; flex-shrink: 0; flex-wrap: wrap; gap: 15px; 
+}
 .logo { font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 2px; font-family: 'Cinzel', serif;}
-.dashboard-stats { display: flex; gap: 20px; align-items: center; }
+.dashboard-stats { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .stat-box { display: flex; flex-direction: column; align-items: flex-end; }
 .stat-box span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
 .stat-box strong { font-size: 20px; color: var(--text-main); font-weight: 800; }
 
-.btn-header { background: #EDF2F7; border: none; color: var(--text-main); padding: 10px 15px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.3s; margin-left: 10px; }
+.btn-header { background: #EDF2F7; border: none; color: var(--text-main); padding: 10px 15px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.3s; margin-left: 5px; }
 .btn-header:hover { background: #E2E8F0; }
 .btn-danger-outline { border: 1px solid var(--danger); color: var(--danger); background: transparent; }
 .btn-danger-outline:hover { background: var(--danger); color: #FFF; }
 .btn-warning-solid { background: var(--warning); color: #FFF; }
 .btn-warning-solid:hover { background: #C05621; }
 
-/* KANBAN */
-.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; padding: 30px 40px; flex-grow: 1; overflow: hidden; position: relative; z-index: 2; }
-.kanban-col { background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
-.col-header { padding: 20px; text-align: center; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); }
+/* KANBAN: SCROLL HORIZONTAL ESTILO TRELLO PARA iPADS E MONITORES PEQUENOS */
+.kanban-board { 
+  display: flex; gap: 20px; padding: 20px 30px; flex-grow: 1; 
+  overflow-x: auto; overflow-y: hidden; position: relative; z-index: 2; 
+  -webkit-overflow-scrolling: touch; align-items: stretch;
+}
+.kanban-board::-webkit-scrollbar { height: 10px; }
+.kanban-board::-webkit-scrollbar-track { background: transparent; }
+.kanban-board::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 10px; border: 2px solid var(--bg-main); }
+
+.kanban-col { 
+  background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); 
+  border: 1px solid var(--border-light); border-radius: 16px; 
+  display: flex; flex-direction: column; overflow: hidden; 
+  flex: 1 0 300px; /* Fixa largura mínima de 300px por coluna para nunca espremer */
+  max-width: 400px; max-height: 100%;
+}
+.col-header { padding: 20px; text-align: center; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); flex-shrink: 0; }
 .col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-muted); }
 .col-body { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
 
@@ -94,7 +117,7 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
 #col-concluido .col-header { color: var(--text-muted); border-top: 4px solid var(--border-light); }
 
 /* CARDS E FORMATAÇÃO INTERNA */
-.card-pedido { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-md); position: relative; }
+.card-pedido { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-md); position: relative; flex-shrink: 0; }
 .card-pedido.atencao { border: 1px solid var(--warning); }
 .card-pedido.atrasado { border: 1px solid var(--danger); animation: pulseBorder 2s infinite; }
 @keyframes pulseBorder { 0% { box-shadow: 0 0 0 0 rgba(229,62,62,0.3); } 70% { box-shadow: 0 0 0 8px rgba(229,62,62,0); } 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0); } }
@@ -167,11 +190,13 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
   <div class="kanban-col" id="col-concluido"><div class="col-header">Entregues <span class="count" id="count-concluido">0</span></div><div class="col-body" id="list-concluido"></div></div>
 </div>
 
+<!-- MODAL CATÁLOGO E CONFIGURAÇÕES -->
 <div class="modal-overlay" id="modal-catalogo">
   <div class="modal-box">
     <button class="close-modal" onclick="fecharModalCatalogo()">&times;</button>
     <h2>Configurações da Loja</h2>
     
+    <!-- BLOCO 1: FUNCIONAMENTO AUTOMÁTICO -->
     <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
       <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários de Funcionamento (Automático)</strong>
       <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Configure os dias em que a loja abre sozinha e os horários.</p>
@@ -180,6 +205,7 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
       <button class="btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
     </div>
 
+    <!-- BLOCO 2: RODAPÉ -->
     <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
       <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Texto do Rodapé do Site</strong>
       <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Texto visível para informar aos clientes seus dias habituais.</p>
@@ -189,6 +215,7 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
       </div>
     </div>
 
+    <!-- BLOCO 3: ESTOQUE -->
     <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Controle de Estoque (Pizzas)</strong>
     <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Desligue a chave para marcar a pizza como "Esgotada" no site.</p>
     <div id="catalog-list"></div>
