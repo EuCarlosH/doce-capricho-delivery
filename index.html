@@ -94,7 +94,7 @@ nav.top-nav {
 .category-title { display: flex; align-items: center; font-size: 16px; color: var(--gold); margin: 40px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
 .category-title::after { content: ""; flex: 1; height: 1px; background: rgba(212,175,55,0.3); margin-left: 20px; }
 
-/* CARDS */
+/* CARDS E ETIQUETAS DE DESTAQUE */
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 .card {
   background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light);
@@ -103,7 +103,6 @@ nav.top-nav {
 .card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* ETIQUETAS DE DESTAQUE (BADGES) */
 .card-img-wrap { width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
 .badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 10; align-items: flex-end; pointer-events: none; }
 .badge-destaque {
@@ -113,12 +112,10 @@ nav.top-nav {
 }
 .badge-destaque.badge-top { background: var(--gold); color: var(--bg-main); border-color: var(--gold); }
 
-/* ESTADO DE PRODUTO ESGOTADO */
 .card.esgotado { opacity: 0.5; filter: grayscale(1); pointer-events: none; border-color: var(--border-light); }
 .card.esgotado .btn-add { background: var(--border-light); color: var(--text-muted); border-color: transparent; font-size: 10px; font-weight: 700; text-transform: uppercase; width: auto; padding: 0 10px; }
-.card.esgotado .badges-container { display: none; } /* Esconde badge se estiver esgotado */
+.card.esgotado .badges-container { display: none; } 
 
-/* ESTADO DE LOJA PAUSADA/FECHADA */
 body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: opacity 0.5s ease; }
 
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth); opacity: 0.9; }
@@ -213,7 +210,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-opt-card.active { border-color: var(--gold); background: rgba(212,175,55,0.08); color: var(--gold); }
 .extra-opt-card span { font-weight: 700; line-height: 1.2; }
 .extra-opt-card small { font-size: 9px; opacity: 0.8; }
-.extra-opt-full { grid-column: span 2; } /* Para o botão "Pizza Inteira" ocupar o espaço todo */
+.extra-opt-full { grid-column: span 2; } 
 
 .qty-row { display: flex; align-items: center; gap: 15px; }
 .qty-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-main); color: var(--text-main); font-size: 18px; cursor: pointer; transition: all 0.2s ease; }
@@ -330,7 +327,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   
-  <!-- BANNER PERMANENTE DE PAUSA -->
   <div id="banner-pausado">
     <h4 class="brand-font">Pausa Temporária 🛑</h4>
     <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
@@ -359,7 +355,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </table>
 </section>
 
-<!-- FOOTER COM CONTATOS -->
+<!-- FOOTER -->
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
@@ -400,7 +396,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- TELA DE SUCESSO AO ADICIONAR ITEM -->
+<!-- TELA DE SUCESSO -->
 <div class="modal-overlay" id="success-overlay">
   <div class="modal-box" style="text-align: center; max-width: 380px; padding: 40px 30px;">
     <button class="close-modal" data-close="success-overlay">&times;</button>
@@ -622,11 +618,12 @@ const CARDAPIO = {
   ]
 };
 
+// TODOS OS ADICIONAIS AGORA SÃO VARIÁVEIS (METADE/TODA) COM NOVOS PREÇOS (Catupiry atualizado para 750/1500)
 const EXTRAS = [
-  { id:'catupiry', nome:'Catupiry',     tipo:'metade_toda', precos:{ metade:1000, toda:1500 } },
-  { id:'cream',    nome:'Cream Cheese', tipo:'metade_toda', precos:{ metade:1000, toda:1500 } },
-  { id:'bacon',    nome:'Bacon',        tipo:'fixo',        preco:500 },
-  { id:'alho',     nome:'Alho Poró',    tipo:'fixo',        preco:500 }
+  { id:'catupiry', nome:'Catupiry',     tipo:'metade_toda', precos:{ metade:800,  toda:1600 } },
+  { id:'cream',    nome:'Cream Cheese', tipo:'metade_toda', precos:{ metade:750,  toda:1500 } },
+  { id:'bacon',    nome:'Bacon',        tipo:'metade_toda', precos:{ metade:400,  toda:800  } },
+  { id:'alho',     nome:'Alho Poró',    tipo:'metade_toda', precos:{ metade:250,  toda:500  } }
 ];
 
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
@@ -640,17 +637,15 @@ const rotuloAplicacao = (ap, sabores) => {
   return 'metade da pizza';
 };
 
-// 3. VARIÁVEIS DE ESTADO
 let lojaAberta = false;
 let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
 let lojaEstavaPausada = false; 
 let primeiraCargaPausa = true;
-let saborMaisPedido = null; // Armazena a pizza campeã de vendas
+let saborMaisPedido = null; 
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v10';
+const STORAGE_KEY = 'dca_carrinho_v11';
 
-// 4. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -720,18 +715,13 @@ function validarItem(item) {
   return true;
 }
 
-// NOVO: INSERÇÃO DINÂMICA DAS ETIQUETAS (BADGES)
 const cardHTML = s => {
   const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
   
   let badges = [];
-  if (s.id === 'peru' || s.id === 'nordestina') {
-      badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura do Chef</span>`);
-  }
-  if (s.id === saborMaisPedido && !isEsgotado) {
-      badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`);
-  }
+  if (s.id === 'peru' || s.id === 'nordestina') { badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura do Chef</span>`); }
+  if (s.id === saborMaisPedido && !isEsgotado) { badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`); }
   let badgeHTML = badges.length ? `<div class="badges-container">${badges.join('')}</div>` : '';
 
   return `
@@ -754,7 +744,7 @@ const cardHTML = s => {
 function renderCardapio() {
   $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
   $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
-  $('#extras-tbody').innerHTML = EXTRAS.map(e => e.tipo === 'fixo' ? `<tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.preco)}</td></tr>` : `<tr><td>${esc(e.nome)}</td><td>Metade da pizza</td><td>${brl(e.precos.metade)}</td></tr><tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.precos.toda)}</td></tr>`).join('');
+  $('#extras-tbody').innerHTML = EXTRAS.map(e => `<tr><td>${esc(e.nome)}</td><td>Metade da pizza</td><td>${brl(e.precos.metade)}</td></tr><tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.precos.toda)}</td></tr>`).join('');
   atualizarBotoes();
 }
 
@@ -791,9 +781,6 @@ function abrirBuilder(ids) {
   $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
   $('#builder-extras').innerHTML = EXTRAS.map(e => {
-    if (e.tipo === 'fixo') {
-      return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ ${brl(e.preco)}</span></div></div>`;
-    } else {
       let cards = '';
       if (ids.length === 2) {
           cards = `
@@ -812,7 +799,6 @@ function abrirBuilder(ids) {
           `;
       }
       return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ Variável</span></div>${cards}</div>`;
-    }
   }).join('');
 
   $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; atualizarBuilderTotal(); abrirModal('builder-overlay');
@@ -822,15 +808,11 @@ function lerExtras() {
   const selecionados = [];
   $$('.extra-chk:checked').forEach(chk => {
     const id = chk.value; const def = EXTRAS.find(x => x.id === id);
-    if(def.tipo === 'fixo') { 
-        selecionados.push({ id: def.id, nome: def.nome, aplicacao: 'toda', preco: def.preco }); 
-    } else { 
-        const row = chk.closest('.extra-row');
-        const activeCard = row.querySelector('.extra-opt-card.active');
-        const ap = activeCard ? activeCard.dataset.val : 'metade'; 
-        const priceKey = ap.startsWith('metade') ? 'metade' : 'toda';
-        selecionados.push({ id: def.id, nome: def.nome, aplicacao: ap, preco: def.precos[priceKey] }); 
-    }
+    const row = chk.closest('.extra-row');
+    const activeCard = row.querySelector('.extra-opt-card.active');
+    const ap = activeCard ? activeCard.dataset.val : 'metade'; 
+    const priceKey = ap.startsWith('metade') ? 'metade' : 'toda';
+    selecionados.push({ id: def.id, nome: def.nome, aplicacao: ap, preco: def.precos[priceKey] }); 
   });
   return selecionados;
 }
@@ -850,7 +832,6 @@ function adicionar() {
   salvar(); 
   atualizarUI(); 
   
-  // Feedback tátil (vibração) apenas em celulares compatíveis
   if (navigator.vibrate) navigator.vibrate(50);
   
   fecharModal('builder-overlay'); 
@@ -970,7 +951,15 @@ function montarPedido() {
   
   return { 
     status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: $('#cli-pagamento').value, 
-    itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), 
+    itens: carrinho.map(i => ({ 
+        nome: nomeItem(i), 
+        qtd: i.qtd, 
+        sabores: i.sabores, 
+        extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), 
+        obs: i.obs, 
+        unitario_centavos: i.unitario, 
+        total_centavos: i.total 
+    })), 
     subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total 
   };
 }
@@ -999,13 +988,10 @@ function montarMensagem(p) {
   return L.join('\n');
 }
 
-// NOVO: SISTEMA QUE SOMA VENDAS PARA ACHAR A PIZZA MAIS PEDIDA
 async function gravarFirestore(pedido) { 
   if (!CONFIG.usarFirebase || !window.firebase) return null; 
   try { 
     const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); 
-    
-    // Robô Invisível: Atualiza as Estatísticas de Vendas (Protegido com try-catch para não travar o cliente se faltar permissão no banco)
     try {
         const increment = firebase.firestore.FieldValue.increment(1);
         let updates = {};
@@ -1017,8 +1003,7 @@ async function gravarFirestore(pedido) {
         if (Object.keys(updates).length > 0) {
             await db.collection('configuracoes').doc('estatisticas').set(updates, { merge: true });
         }
-    } catch(errStats) { console.log("Modo leitura de estatisticas restrito."); }
-
+    } catch(errStats) {}
     return ref.id; 
   } catch (e) { return null; } 
 }
@@ -1044,7 +1029,6 @@ function fecharModal(id) { const ov = document.getElementById(id); ov.classList.
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
-// OUVINTE 1: CONFIGURAÇÕES DA LOJA
 db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   if(doc.exists) {
     configLoja = doc.data();
@@ -1060,7 +1044,6 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   }
 }, error => { console.log("Modo leitura local."); });
 
-// OUVINTE 2: ESTATÍSTICAS PARA A "MAIS PEDIDA"
 db.collection('configuracoes').doc('estatisticas').onSnapshot(doc => {
   if(doc.exists) {
     const dados = doc.data();
@@ -1071,13 +1054,12 @@ db.collection('configuracoes').doc('estatisticas').onSnapshot(doc => {
       }
       if(saborMaisPedido !== idMax) {
           saborMaisPedido = idMax;
-          renderCardapio(); // Re-renderiza para mostrar a estrela na campeã
+          renderCardapio(); 
       }
     }
   }
 }, err => { console.log("Leitura de estatísticas desativada nas regras."); });
 
-// LISTENERS DE CLIQUE E MÚLTIPLOS CARDS
 document.addEventListener('click', e => {
   const cardOpt = e.target.closest('.extra-opt-card');
   if (cardOpt) {
