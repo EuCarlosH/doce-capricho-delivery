@@ -7,117 +7,146 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- SCRIPTS DO FIREBASE (INCLUINDO AUTH PARA O LOGIN) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <style>
-/* VARIÁVEIS TEMA CLARO */
+/* VARIÁVEIS TEMA CLARO PREMIUM */
 :root {
-  --bg: #F4F6F9;
-  --surface: #FFFFFF;
-  --border: #E0E4E8;
-  --text: #2B2B2B;
-  --text-muted: #6C757D;
-  --gold: #B8860B; 
-  --danger: #DC3545;
-  --warning: #F59E0B;
-  --success: #198754;
+  --bg-main: #F4F7F6;
+  --bg-card: #FFFFFF;
+  --border-light: #E2E8F0;
+  --text-main: #2D3748;
+  --text-muted: #718096;
+  --gold: #C5A059; 
+  --gold-hover: #B08D4B;
+  --danger: #E53E3E;
+  --danger-light: #FED7D7;
+  --warning: #DD6B20;
+  --warning-light: #FEEBC8;
+  --success: #38A169;
+  --success-light: #C6F6D5;
   --wp: #25D366;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+  --radius-lg: 12px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-/* TELA DE LOGIN */
+/* TELA DE LOGIN LAPIDADA */
 #login-screen {
-  position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+  position: fixed; inset: 0; background: var(--bg-main); z-index: 10000;
   display: flex; align-items: center; justify-content: center;
 }
 .login-box {
-  background: var(--surface); padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-  width: 100%; max-width: 400px; text-align: center; border: 1px solid var(--border);
+  background: var(--bg-card); padding: 50px 40px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  width: 100%; max-width: 420px; text-align: center; border: 1px solid var(--border-light);
 }
-.login-box h2 { color: var(--gold); margin-bottom: 25px; font-family: 'Cinzel', serif; letter-spacing: 1px; }
+.login-box h2 { color: var(--gold); margin-bottom: 30px; font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 22px; }
 .login-box input {
-  width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px;
-  font-family: inherit; font-size: 14px; color: var(--text); background: #F8F9FA; transition: border-color 0.3s;
+  width: 100%; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px;
+  font-family: inherit; font-size: 14px; color: var(--text-main); background: #F7FAFC; transition: all 0.3s ease;
 }
-.login-box input:focus { border-color: var(--gold); outline: none; background: #FFF; }
+.login-box input:focus { border-color: var(--gold); outline: none; background: #FFF; box-shadow: 0 0 0 3px rgba(197,160,89,0.1); }
 .login-box button {
-  width: 100%; background: var(--gold); color: #FFF; border: none; padding: 15px; border-radius: 6px;
-  font-weight: 700; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; letter-spacing: 1px;
+  width: 100%; background: var(--gold); color: #FFF; border: none; padding: 16px; border-radius: 8px;
+  font-weight: 700; text-transform: uppercase; cursor: pointer; transition: background 0.3s ease; letter-spacing: 1px; font-size: 13px;
 }
-.login-box button:hover { opacity: 0.9; }
+.login-box button:hover { background: var(--gold-hover); }
 
-/* TELA DE INÍCIO (PARA DESTRAVAR O ÁUDIO) */
+/* TELA DE INÍCIO (ÁUDIO) */
 #overlay-start {
-  position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+  position: fixed; inset: 0; background: rgba(244,247,246,0.95); backdrop-filter: blur(5px); z-index: 9999;
   display: none; flex-direction: column; align-items: center; justify-content: center;
 }
-.btn-start { background: var(--gold); color: #FFF; border: none; padding: 20px 40px; font-size: 20px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(184,134,11,0.3); transition: transform 0.2s; }
-.btn-start:hover { transform: scale(1.05); }
+.btn-start { background: var(--gold); color: #FFF; border: none; padding: 20px 50px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 10px 25px rgba(197,160,89,0.3); transition: transform 0.3s ease; }
+.btn-start:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(197,160,89,0.4); }
 
-/* DASHBOARD SUPERIOR */
-header { background: var(--surface); padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10;}
-.logo { font-size: 18px; font-weight: 800; color: var(--gold); letter-spacing: 1px; font-family: 'Cinzel', serif;}
-.dashboard-stats { display: flex; gap: 20px; align-items: center; }
-.stat-box { background: #F8F9FA; border: 1px solid var(--border); padding: 8px 20px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-end; }
-.stat-box span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
-.stat-box strong { font-size: 18px; color: var(--gold); font-weight: 700; }
-.btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 8px 15px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+/* DASHBOARD SUPERIOR PREMIUM */
+header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 10;}
+.logo { font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 2px; font-family: 'Cinzel', serif;}
+.dashboard-stats { display: flex; gap: 25px; align-items: center; }
+.stat-box { display: flex; flex-direction: column; align-items: flex-end; }
+.stat-box span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.stat-box strong { font-size: 20px; color: var(--text-main); font-weight: 800; }
+.btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.3s ease; letter-spacing: 1px; margin-left: 15px; }
 .btn-logout:hover { background: var(--danger); color: #FFF; }
 
 /* KANBAN BOARD */
-.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px; flex-grow: 1; overflow: hidden; }
-.kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-.col-header { padding: 15px; border-bottom: 1px solid var(--border); text-align: center; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
-.col-header .count { background: #FFF; padding: 4px 10px; border-radius: 12px; font-size: 11px; border: 1px solid var(--border); }
-.col-body { padding: 15px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; background: #F8F9FA; }
+.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; padding: 30px 40px; flex-grow: 1; overflow: hidden; }
+.kanban-col { background: #F8FAFC; border: 1px solid var(--border-light); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
+.col-header { padding: 20px; text-align: center; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); }
+.col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-muted); box-shadow: var(--shadow-sm); }
+.col-body { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
 
 /* CORES DOS CABEÇALHOS KANBAN */
-#col-novo .col-header { background: rgba(220, 53, 69, 0.05); color: var(--danger); border-top: 4px solid var(--danger); }
-#col-preparando .col-header { background: rgba(184, 134, 11, 0.05); color: var(--gold); border-top: 4px solid var(--gold); }
-#col-saiu .col-header { background: rgba(37, 211, 102, 0.05); color: var(--success); border-top: 4px solid var(--success); }
-#col-concluido .col-header { background: #F8F9FA; color: var(--text-muted); border-top: 4px solid var(--border); }
+#col-novo .col-header { color: var(--danger); border-top: 4px solid var(--danger); background: linear-gradient(to bottom, rgba(229,62,62,0.05), transparent); }
+#col-preparando .col-header { color: var(--gold); border-top: 4px solid var(--gold); background: linear-gradient(to bottom, rgba(197,160,89,0.05), transparent); }
+#col-saiu .col-header { color: var(--success); border-top: 4px solid var(--success); background: linear-gradient(to bottom, rgba(56,161,105,0.05), transparent); }
+#col-concluido .col-header { color: var(--text-muted); border-top: 4px solid var(--border-light); background: linear-gradient(to bottom, rgba(0,0,0,0.02), transparent); }
 
-/* CARDS DE PEDIDO */
-.card-pedido { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.3s; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-.card-pedido.atencao { border-color: var(--warning); box-shadow: 0 0 10px rgba(245,158,11,0.2); }
-.card-pedido.atrasado { border-color: var(--danger); box-shadow: 0 0 15px rgba(220,53,69,0.3); animation: pulseRed 2s infinite; }
+/* CARTÕES DE PEDIDO (CARDS PREMIUM) */
+.card-pedido { 
+  background: var(--bg-card); border: 1px solid transparent; border-radius: var(--radius-lg); 
+  padding: 20px; display: flex; flex-direction: column; gap: 12px; 
+  box-shadow: var(--shadow-md); transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; 
+}
+.card-pedido:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
 
-@keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220,53,69,0.4); } 70% { box-shadow: 0 0 0 10px rgba(220,53,69,0); } 100% { box-shadow: 0 0 0 0 rgba(220,53,69,0); } }
+/* ESTADOS DE ATENÇÃO E ATRASO */
+.card-pedido.atencao { border: 1px solid var(--warning); box-shadow: 0 4px 15px rgba(221,107,32,0.15); }
+.card-pedido.atrasado { border: 1px solid var(--danger); box-shadow: 0 4px 15px rgba(229,62,62,0.2); animation: pulseBorder 2s infinite; }
+@keyframes pulseBorder { 0% { box-shadow: 0 0 0 0 rgba(229,62,62,0.3); } 70% { box-shadow: 0 0 0 8px rgba(229,62,62,0); } 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0); } }
 
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 10px; }
-.p-id { font-size: 14px; font-weight: 800; color: var(--gold); }
-.p-time { font-size: 11px; color: var(--text-muted); font-weight: 600; }
-.p-time.timer-atencao { color: var(--warning); }
-.p-time.timer-atrasado { color: var(--danger); }
+/* CABEÇALHO DO CARD */
+.card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; }
+.p-id { font-size: 15px; font-weight: 800; color: var(--gold); }
+.p-time { font-size: 11px; color: var(--text-muted); font-weight: 700; display: flex; align-items: center; gap: 5px; background: #F7FAFC; padding: 4px 10px; border-radius: 12px; }
+.p-time svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+.p-time.timer-atencao { color: var(--warning); background: var(--warning-light); }
+.p-time.timer-atrasado { color: var(--danger); background: var(--danger-light); }
 
-.p-cliente { font-size: 13px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center; margin-top: 5px;}
-.p-tipo { font-size: 10px; background: #F1F3F5; border: 1px solid var(--border); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); }
+/* DADOS DO CLIENTE */
+.p-cliente-area { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px; }
+.p-nome { font-size: 14px; font-weight: 700; color: var(--text-main); }
+.p-badge { font-size: 9px; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+.badge-entrega { background: #EBF4FF; color: #3182CE; }
+.badge-retirada { background: #E9D8FD; color: #805AD5; }
 
-.p-itens { font-size: 12px; color: var(--text); line-height: 1.5; padding: 5px 0; }
-.p-obs { font-size: 11px; color: #9A6700; font-style: italic; background: rgba(245,158,11,0.1); padding: 6px; border-radius: 4px; border-left: 3px solid var(--warning); margin-top: 5px;}
+/* ITENS DO PEDIDO */
+.p-itens { font-size: 13px; color: #4A5568; line-height: 1.6; padding: 5px 0; font-weight: 500; }
+.p-obs { font-size: 11px; color: var(--warning); font-style: italic; background: #FFFAF0; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--warning); margin-top: 8px; font-weight: 600;}
 
-.p-footer { border-top: 1px dashed var(--border); padding-top: 10px; font-size: 12px; }
-.p-pagamento { display: flex; justify-content: space-between; margin-bottom: 5px; }
-.p-endereco { font-size: 11px; color: var(--text-muted); }
+/* RODAPÉ DO CARD */
+.p-footer { border-top: 1px solid var(--border-light); padding-top: 15px; font-size: 12px; }
+.p-pagamento-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.p-total { font-size: 16px; font-weight: 800; color: var(--text-main); }
+.badge-pgto { background: #F1F5F9; color: #64748B; font-size: 10px; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; border: 1px solid #E2E8F0; }
 
-/* BOTÕES DO CARD */
-.action-buttons { display: flex; gap: 8px; margin-top: 10px; }
-.btn-action { flex: 1; border: none; padding: 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; color: #fff; transition: opacity 0.2s; }
-.btn-action:hover { opacity: 0.8; }
-.btn-next { background: var(--gold); }
-.btn-wp { background: var(--wp); flex: 0.3; display: flex; align-items: center; justify-content: center; }
-.btn-print { background: var(--text-muted); flex: 0.3; display: flex; align-items: center; justify-content: center; }
+.p-endereco { font-size: 11px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
+.p-endereco svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 2px;}
 
-/* SCROLLBAR CUSTOMIZADA */
-::-webkit-scrollbar { width: 6px; }
+/* BOTÕES DE AÇÃO */
+.action-buttons { display: flex; gap: 10px; margin-top: 15px; }
+.btn-action { flex: 1; border: none; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; color: #fff; transition: all 0.2s ease; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; }
+.btn-next { background: var(--gold); box-shadow: 0 4px 10px rgba(197,160,89,0.2); }
+.btn-next:hover { background: var(--gold-hover); transform: translateY(-1px); }
+
+.btn-icon-only { flex: 0 0 40px; background: #EDF2F7; color: #4A5568; }
+.btn-icon-only:hover { background: #E2E8F0; color: var(--text-main); }
+.btn-icon-only.btn-wp { background: #DCF8C6; color: var(--wp); }
+.btn-icon-only.btn-wp:hover { background: #C6F6D5; }
+.btn-icon-only svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* SCROLLBAR CUSTOMIZADA OTIMIZADA */
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 10px; border: 2px solid #F8FAFC; }
+::-webkit-scrollbar-thumb:hover { background: #A0AEC0; }
 </style>
 </head>
 <body>
@@ -132,51 +161,59 @@ header { background: var(--surface); padding: 15px 30px; border-bottom: 1px soli
   </form>
 </div>
 
-<!-- OVERLAY DE INICIALIZAÇÃO (PARA DESTRAVAR O ÁUDIO) -->
+<!-- OVERLAY DE INICIALIZAÇÃO -->
 <div id="overlay-start">
-  <h1 style="color:var(--gold); font-family:'Cinzel', serif; margin-bottom: 30px;">BEM-VINDO AO EXPEDIENTE</h1>
+  <h1 style="color:var(--gold); font-family:'Cinzel', serif; margin-bottom: 30px; letter-spacing: 2px; font-size: 28px; text-shadow: 0 2px 10px rgba(255,255,255,0.5);">BEM-VINDO AO EXPEDIENTE</h1>
   <button class="btn-start" onclick="iniciarSistema()">Iniciar Turno</button>
 </div>
 
 <!-- ELEMENTO DE ÁUDIO -->
-<!-- Certifique-se de ter um arquivo 'alerta.mp3' na mesma pasta -->
 <audio id="audio-alerta" src="alerta.mp3" loop preload="auto"></audio>
 
+<!-- CABEÇALHO -->
 <header>
   <div class="logo">PAINEL ADMIN</div>
   <div class="dashboard-stats">
     <div class="stat-box"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
     <div class="stat-box"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
     <div class="stat-box"><span>Ticket Médio</span><strong id="dash-tkt">R$ 0,00</strong></div>
-    <button class="btn-logout" onclick="sair()">Sair</button>
+    <button class="btn-logout" onclick="sair()">Encerrar Turno</button>
   </div>
 </header>
 
+<!-- QUADRO KANBAN -->
 <div class="kanban-board">
   <!-- COLUNA NOVO -->
   <div class="kanban-col" id="col-novo">
-    <div class="col-header">Novos <span class="count" id="count-novo">0</span></div>
+    <div class="col-header">Novos Pedidos <span class="count" id="count-novo">0</span></div>
     <div class="col-body" id="list-novo"></div>
   </div>
   <!-- COLUNA PREPARANDO -->
   <div class="kanban-col" id="col-preparando">
-    <div class="col-header">Preparando <span class="count" id="count-preparando">0</span></div>
+    <div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div>
     <div class="col-body" id="list-preparando"></div>
   </div>
   <!-- COLUNA SAIU -->
   <div class="kanban-col" id="col-saiu">
-    <div class="col-header">Saiu p/ Entrega <span class="count" id="count-saiu">0</span></div>
+    <div class="col-header">Em Rota <span class="count" id="count-saiu">0</span></div>
     <div class="col-body" id="list-saiu"></div>
   </div>
   <!-- COLUNA CONCLUÍDO -->
   <div class="kanban-col" id="col-concluido">
-    <div class="col-header">Concluídos <span class="count" id="count-concluido">0</span></div>
+    <div class="col-header">Entregues <span class="count" id="count-concluido">0</span></div>
     <div class="col-body" id="list-concluido"></div>
   </div>
 </div>
 
 <script>
-// CONFIGURAÇÃO FIREBASE
+// ÍCONES SVG PARA INJEÇÃO (Visual Limpo e Profissional)
+const icons = {
+  clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+  mapPin: `<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
+  whatsapp: `<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`,
+  printer: `<svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`
+};
+
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA",
   authDomain: "sistema-doce-capricho.firebaseapp.com",
@@ -186,10 +223,7 @@ const FIREBASE_CONFIG = {
   appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d"
 };
 
-// Inicializa o Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(FIREBASE_CONFIG);
-}
+if (!firebase.apps.length) { firebase.initializeApp(FIREBASE_CONFIG); }
 
 let db = firebase.firestore();
 let auth = firebase.auth();
@@ -197,7 +231,7 @@ let pedidosMap = new Map();
 let intervalTimer = null;
 let listenerPedidos = null; 
 
-// VERIFICAÇÃO DE LOGIN
+// LOGIN FLOW
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('login-screen').style.display = 'none';
@@ -205,7 +239,6 @@ auth.onAuthStateChanged(user => {
   } else {
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('overlay-start').style.display = 'none';
-    
     if(listenerPedidos) listenerPedidos(); 
     pedidosMap.clear();
     renderizarKanban();
@@ -214,24 +247,22 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// AÇÃO DE LOGIN
 document.getElementById('form-login').addEventListener('submit', (e) => {
   e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.textContent = 'Autenticando...';
   const email = document.getElementById('admin-email').value;
   const senha = document.getElementById('admin-senha').value;
   
   auth.signInWithEmailAndPassword(email, senha)
     .catch(error => {
-      alert("Erro ao fazer login: " + error.message);
+      alert("Erro ao fazer login. Verifique as credenciais.");
+      btn.textContent = 'Entrar no Painel';
     });
 });
 
-// AÇÃO DE LOGOUT
-function sair() {
-  auth.signOut();
-}
+function sair() { auth.signOut(); }
 
-// INICIAR TURNO (Após Logar)
 function iniciarSistema() {
   document.getElementById('overlay-start').style.display = 'none';
   
@@ -274,7 +305,7 @@ function gerenciarAudio(temNovo) {
   const existeNovo = Array.from(pedidosMap.values()).some(p => p.status === 'Novo');
   
   if (existeNovo) {
-    if (audio.paused) audio.play().catch(e=>console.log(e));
+    if (audio.paused) audio.play().catch(e=>{});
   } else {
     audio.pause();
     audio.currentTime = 0;
@@ -295,16 +326,15 @@ function calcularTempo(timestamp) {
 function gerarHTMLItens(itens) {
   return itens.map(i => {
     let extraHTML = i.extras && i.extras.length > 0 
-      ? i.extras.map(e => `<br>&nbsp;&nbsp;+ ${e.nome} (${e.aplicacao})`).join('') 
+      ? i.extras.map(e => `<br><span style="color:#718096; font-size:11px;">+ ${e.nome} (${e.aplicacao})</span>`).join('') 
       : '';
-    let obsHTML = i.obs ? `<div class="p-obs">Obs: ${i.obs}</div>` : '';
-    return `<div><strong>${i.qtd}x ${i.nome}</strong>${extraHTML}${obsHTML}</div>`;
+    let obsHTML = i.obs ? `<div class="p-obs">Importante: ${i.obs}</div>` : '';
+    return `<div style="margin-bottom: 8px;"><strong>${i.qtd}x ${i.nome}</strong>${extraHTML}${obsHTML}</div>`;
   }).join('');
 }
 
-// ATUALIZAR STATUS E ABRIR WHATSAPP AUTOMATICAMENTE NA SAÍDA PARA ENTREGA
 function avancarStatus(id, statusAtual) {
-  const p = pedidosMap.get(id); // Puxa os dados do cliente
+  const p = pedidosMap.get(id); 
   const prox = {
     'Novo': 'Preparando',
     'Preparando': 'Saiu para Entrega',
@@ -313,28 +343,22 @@ function avancarStatus(id, statusAtual) {
   const novoStatus = prox[statusAtual];
   
   if(novoStatus) {
-    // 1. Atualiza no banco de dados e move o card
     db.collection('pedidos').doc(id).update({ status: novoStatus });
     
-    // 2. O Pulo do Gato: Abre o WhatsApp automático ao despachar
     if (novoStatus === 'Saiu para Entrega') {
-      const primeiroNome = p.cliente_nome.split(' ')[0]; // Pega só o primeiro nome
+      const primeiroNome = p.cliente_nome.split(' ')[0]; 
       const msg = `Olá, ${primeiroNome}! 🍕 Seu pedido do Doce Capricho Atelier acabou de sair para entrega e logo chega aí! 🛵`;
       const url = `https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank'); // Abre a aba já com o texto pronto
+      window.open(url, '_blank'); 
     }
   }
 }
 
-// IMPRESSÃO TÉRMICA (CUPOM 80MM)
 function imprimirComanda(id) {
   const p = pedidosMap.get(id);
   if(!p) return;
 
-  const dataHora = p.data_pedido && p.data_pedido.toDate 
-    ? p.data_pedido.toDate().toLocaleString('pt-BR') 
-    : new Date().toLocaleString('pt-BR');
-
+  const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
   const printWindow = window.open('', '', 'width=400,height=600');
   
   let html = `
@@ -368,9 +392,7 @@ function imprimirComanda(id) {
 
   p.itens.forEach(i => {
     html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`;
-    if(i.extras) {
-      i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; });
-    }
+    if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); }
     if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; }
     html += `<br>`;
   });
@@ -390,10 +412,7 @@ function imprimirComanda(id) {
   printWindow.document.write(html);
   printWindow.document.close();
   printWindow.focus();
-  setTimeout(() => {
-    printWindow.print();
-    printWindow.close();
-  }, 500);
+  setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
 }
 
 function renderizarKanban() {
@@ -425,34 +444,35 @@ function renderizarKanban() {
       }
 
       let btnAvancar = '';
-      if(status === 'Novo') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar</button>`;
-      else if(status === 'Preparando') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`;
-      else if(status === 'Saiu para Entrega') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Concluir</button>`;
+      if(status === 'Novo') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar Pedido</button>`;
+      else if(status === 'Preparando') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar Rota</button>`;
+      else if(status === 'Saiu para Entrega') btnAvancar = `<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Finalizar</button>`;
 
       const wpLink = `https://wa.me/55${p.cliente_telefone}`;
+      const badgeTipoClass = p.tipo_entrega === 'Entrega' ? 'badge-entrega' : 'badge-retirada';
 
       html += `
         <div class="card-pedido ${bordaCard}">
           <div class="card-header">
             <span class="p-id">#${p.id.slice(-5).toUpperCase()}</span>
-            <span class="p-time ${corTempo}">⏱ ${tempo.texto}</span>
+            <span class="p-time ${corTempo}">${icons.clock} ${tempo.texto}</span>
           </div>
-          <div class="p-cliente">
-            ${p.cliente_nome}
-            <span class="p-tipo">${p.tipo_entrega}</span>
+          <div class="p-cliente-area">
+            <span class="p-nome">${p.cliente_nome}</span>
+            <span class="p-badge ${badgeTipoClass}">${p.tipo_entrega}</span>
           </div>
           <div class="p-itens">${gerarHTMLItens(p.itens)}</div>
           <div class="p-footer">
-            <div class="p-pagamento">
-              <strong>${brl(p.total_centavos)}</strong>
-              <span style="color:var(--gold); font-weight:700;">${p.forma_pagamento}</span>
+            <div class="p-pagamento-row">
+              <span class="p-total">${brl(p.total_centavos)}</span>
+              <span class="badge-pgto">${p.forma_pagamento}</span>
             </div>
-            ${p.cliente_endereco ? `<div class="p-endereco">📍 ${p.cliente_endereco}</div>` : ''}
+            ${p.cliente_endereco ? `<div class="p-endereco">${icons.mapPin} ${p.cliente_endereco}</div>` : ''}
           </div>
           <div class="action-buttons">
             ${btnAvancar}
-            <a href="${wpLink}" target="_blank" class="btn-action btn-wp" title="WhatsApp">💬</a>
-            <button class="btn-action btn-print" onclick="imprimirComanda('${p.id}')" title="Imprimir">🖨️</button>
+            <a href="${wpLink}" target="_blank" class="btn-action btn-icon-only btn-wp" title="Falar no WhatsApp">${icons.whatsapp}</a>
+            <button class="btn-action btn-icon-only" onclick="imprimirComanda('${p.id}')" title="Imprimir Comanda">${icons.printer}</button>
           </div>
         </div>
       `;
@@ -465,12 +485,10 @@ function renderizarKanban() {
 function atualizarDashboard() {
   let qtd = 0; let faturamento = 0;
   Array.from(pedidosMap.values()).forEach(p => {
-    qtd++;
-    faturamento += p.total_centavos;
+    qtd++; faturamento += p.total_centavos;
   });
 
   const ticket = qtd > 0 ? faturamento / qtd : 0;
-
   document.getElementById('dash-qtd').textContent = qtd;
   document.getElementById('dash-fat').textContent = brl(faturamento);
   document.getElementById('dash-tkt').textContent = brl(ticket);
