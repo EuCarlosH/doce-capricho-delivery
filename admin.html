@@ -175,6 +175,7 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
     <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
       <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários de Funcionamento (Automático)</strong>
       <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Configure os dias em que a loja abre sozinha e os horários.</p>
+      
       <div id="schedule-list"></div>
       <button class="btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
     </div>
@@ -341,7 +342,39 @@ function avancarStatus(id, statusAtual) {
   }
 }
 
-function imprimirComanda(id) { /* Impressora Oculta para espaço - Mantém-se inalterada na prática */ }
+// SOLUÇÃO DEFINITIVA DE IMPRESSÃO (IFRAME OCULTO BLINDADO CONTRA POPUP BLOCKER)
+function imprimirComanda(id) {
+  const p = pedidosMap.get(id);
+  if(!p) return;
+  const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
+  
+  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p><p class="bold">Tipo: ${p.tipo_entrega}</p>${p.cliente_endereco?`<p>End: ${p.cliente_endereco}</p>`:''}<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
+  
+  p.itens.forEach(i => {
+    html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`;
+    if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); }
+    if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; }
+    html += `<br>`;
+  });
+  
+  html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
+  
+  let iframe = document.getElementById('iframe-impressao');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'iframe-impressao';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+  iframe.contentWindow.document.open();
+  iframe.contentWindow.document.write(html);
+  iframe.contentWindow.document.close();
+  
+  setTimeout(() => {
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+  }, 500);
+}
 
 function renderizarKanban() {
   const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
@@ -362,7 +395,6 @@ function renderizarKanban() {
       let enderecoHTML = '';
       if (p.cliente_endereco) { enderecoHTML = `<div class="p-endereco">${icons.mapPin} <span>${p.cliente_endereco}</span></div>`; }
 
-      // FORMATAÇÃO DOS ITENS COM OS ADICIONAIS VISÍVEIS
       let itensHTML = p.itens.map(i => {
         let extrasHtml = (i.extras && i.extras.length > 0) 
           ? `<div style="margin-top: 3px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:11px;">+ ${e.nome} (${e.aplicacao})</span>`).join('') + `</div>` 
