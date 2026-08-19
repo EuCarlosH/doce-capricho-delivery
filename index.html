@@ -200,7 +200,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; }
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s; margin-top: -5px; }
 .btn-continue:hover { color: var(--white); }
 
-/* FOOTER PREMIUM COM CONTATOS */
+/* FOOTER PREMIUM COM CONTATOS E TEXTO DINÂMICO */
 footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid var(--border-light); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; }
 .footer-logo { font-size: 20px; color: var(--gold); letter-spacing: 2px; }
 .footer-socials { display: flex; gap: 15px; justify-content: center; }
@@ -304,7 +304,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
   <div class="footer-info">
     <p>São Miguel / RN</p>
-    <p>Atendimento: Terça a Domingo, 18:30 às 23:00</p>
+    <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
   </div>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
@@ -436,7 +436,6 @@ const CONFIG = {
 
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 
-const HORARIO = { inicioH: 18, inicioM: 30, fimH: 23, fimM: 0 };
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA",
   authDomain: "sistema-doce-capricho.firebaseapp.com",
@@ -471,31 +470,54 @@ const EXTRAS = [
 ];
 
 let lojaAberta = false;
-let configLoja = { forcarFechamento: false, itensEsgotados: [] }; 
-let lojaEstavaPausada = false; // Rastreia o estado anterior para abrir o modal
+let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
+let lojaEstavaPausada = false; 
 let primeiraCargaPausa = true;
 
-// --- FUNÇÃO DO RELÓGIO E TESTE ADMIN (HIERARQUIA CORRETA) ---
+// --- FUNÇÃO DO RELÓGIO COM SUPORTE AO CALENDÁRIO ---
 function verificarHorario() {
   const parametrosUrl = new URLSearchParams(window.location.search);
   const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
   
   const agora = new Date();
+  const diaHoje = agora.getDay(); // 0 a 6 (0=Domingo)
   const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
-  const tempoInicio = HORARIO.inicioH * 60 + HORARIO.inicioM;
-  const tempoFim = HORARIO.fimH * 60 + HORARIO.fimM;
-  let dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim);
+  
+  let dentroDoHorario = false;
+
+  // Busca a configuração do dia atual no banco
+  if (configLoja.horarios && configLoja.horarios[diaHoje]) {
+     const configHoje = configLoja.horarios[diaHoje];
+     
+     // Se a chavinha do dia estiver ligada
+     if (configHoje.ativo) {
+        const [abreH, abreM] = configHoje.abre.split(':').map(Number);
+        const [fechaH, fechaM] = configHoje.fecha.split(':').map(Number);
+        const tempoInicio = abreH * 60 + abreM;
+        const tempoFim = fechaH * 60 + fechaM;
+
+        if (tempoFim < tempoInicio) {
+          // Caso raro de passar da meia noite (ex: fecha às 01:00)
+          dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim);
+        } else {
+          // Normal
+          dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim);
+        }
+     }
+  } else {
+     // Fallback caso não tenha sido configurado ainda (Abre Qui a Dom)
+     if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) {
+        dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60));
+     }
+  }
   
   // HIERARQUIA DE REGRAS:
   if (configLoja.forcarFechamento === true) {
-    // 1. O botão "Pausar Loja" é SOBERANO. Fecha a loja inclusive no teste.
-    lojaAberta = false;
+    lojaAberta = false; // Pausado (Pânico)
   } else if (isTesteAdmin) {
-    // 2. Se NÃO está pausada e você está testando, abre a loja ignorando o relógio.
-    lojaAberta = true;
+    lojaAberta = true;  // Teste de Admin
   } else {
-    // 3. Se NÃO está pausada e é um cliente normal, obedece ao relógio.
-    lojaAberta = dentroDoHorario;
+    lojaAberta = dentroDoHorario; // Relógio + Calendário
   }
   
   atualizarStatusLoja();
@@ -511,12 +533,12 @@ function atualizarStatusLoja() {
       if(configLoja.forcarFechamento) { 
         badge.textContent = 'PEDIDOS PAUSADOS'; 
         badge.className = 'status-badge pausado'; 
-        if(bannerPausa) bannerPausa.style.display = 'block'; // Mostra banner permanente
+        if(bannerPausa) bannerPausa.style.display = 'block'; 
       }
       else { 
         badge.textContent = 'FECHADO'; 
         badge.className = 'status-badge fechado'; 
-        if(bannerPausa) bannerPausa.style.display = 'none'; // Esconde banner de pausa se for só relógio
+        if(bannerPausa) bannerPausa.style.display = 'none'; 
       }
     }
   } else {
@@ -534,8 +556,12 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   if(doc.exists) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
     
-    // A MÁGICA DO POP-UP AO VIVO: Se mudou para pausado enquanto o cliente está na tela, abre o aviso.
+    // Atualiza texto do rodapé ao vivo
+    const rodape = document.getElementById('footer-funcionamento');
+    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
+    
     if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) {
        abrirModal('modal-aviso-pausa');
     }
@@ -547,10 +573,9 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
     renderCardapio();   
   }
 }, error => {
-  console.log("Modo leitura local. Regras do banco bloqueadas.");
+  console.log("Modo leitura local.");
 });
 
-// Força a verificação do relógio assim que o site carrega
 verificarHorario();
 setInterval(verificarHorario, 60000); 
 
@@ -633,9 +658,9 @@ function atualizarBanner() {
 function escolherSabor(id) {
   if(!lojaAberta) { 
     if (configLoja.forcarFechamento) {
-      abrirModal('modal-aviso-pausa'); // Se o cliente ignorar o aviso cinza e tentar clicar, mostra o modal bonitinho
+      abrirModal('modal-aviso-pausa');
     } else {
-      alert("Nossa loja está fechada no momento. Atendemos das 18:30 às 23:00."); 
+      alert("Nossa loja está fechada no momento."); 
     }
     return; 
   }
