@@ -21,15 +21,18 @@
     }
   }
 
+  // Ao carregar a página: Verifica se tem tema salvo, se não, usa o do celular
   var savedTheme = localStorage.getItem('dca_theme_override');
   applyTheme(savedTheme || getSystemTheme());
   
+  // Se o usuário mudar a configuração do celular, obedecemos imediatamente e destravamos a escolha manual
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-     if (!localStorage.getItem('dca_theme_override')) {
-         applyTheme(e.matches ? 'dark' : 'light');
-     }
+     var newSystemTheme = e.matches ? 'dark' : 'light';
+     applyTheme(newSystemTheme);
+     localStorage.removeItem('dca_theme_override'); 
   });
   
+  // Botão manual (Sintaxe blindada para iOS/Android)
   window.toggleTheme = function() {
     var currentTheme = document.documentElement.getAttribute('data-theme');
     var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -142,17 +145,12 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .nav-links { display: flex; list-style: none; gap: 30px; align-items: center; }
 .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s ease; background: none; border: none; cursor: pointer; }
 .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
-
-/* BADGES E BOTÃO INSTALAR PWA */
 .status-badge { border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 16px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; }
 :root[data-theme="dark"] .status-badge { color: var(--gold); }
+
 .status-badge.fechado { border-color: var(--terracotta); color: var(--terracotta); }
 .status-badge.pausado { border-color: var(--gold); color: var(--gold-dark); background: rgba(221, 167, 58, 0.1); }
 :root[data-theme="dark"] .status-badge.pausado { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
-
-.btn-install { display: none; background: rgba(221, 167, 58, 0.1); border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; }
-:root[data-theme="dark"] .btn-install { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
-.btn-install:hover { background: var(--gold); color: var(--bg-main); }
 
 /* BOTÃO DE TROCA DE TEMA */
 .theme-toggle { background: transparent; border: 1px solid var(--border-light); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); transition: all 0.3s ease; }
@@ -165,7 +163,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 /* BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) */
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
+/* HERO SECTION - FUNDOS DINÂMICOS */
 #home {
   min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative;
@@ -217,6 +215,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .btn-link-cancel { color: var(--text-muted); }
 :root[data-theme="dark"] .btn-link-cancel:hover { color: var(--gold); opacity: 1; }
 
+/* BANNER DE PAUSA PERMANENTE */
 #banner-pausado { display: none; background: rgba(139, 58, 43, 0.05); border: 1px dashed var(--terracotta); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 40px; animation: slideDown 0.5s var(--smooth); }
 :root[data-theme="dark"] #banner-pausado { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.4); }
 
@@ -224,7 +223,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] #banner-pausado h4 { color: var(--warning); }
 #banner-pausado p { color: var(--text-main); font-size: 13px; line-height: 1.6; }
 
-/* CATEGORY TITLE */
+/* CATEGORY TITLE ORNAMENTADO DINÂMICO */
 .category-title { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 18px; color: var(--text-main); margin: 50px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; scroll-margin-top: 140px; }
 :root[data-theme="dark"] .category-title { color: var(--gold); }
 .category-title::before, .category-title::after { content: var(--cat-ornament); color: var(--cat-ornament-color); font-size: var(--cat-ornament-size); margin: 0 15px; opacity: var(--cat-ornament-op); line-height: 0; }
@@ -243,6 +242,8 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 /* WRAP DA IMAGEM E CORREÇÃO DAS SOMBRAS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--img-bg); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+
+/* Tema Escuro: com sombra preta na base da imagem para fundir com o fundo escuro */
 :root[data-theme="dark"] .card-img-wrap::after { 
     display: block; 
     content: ''; 
@@ -284,6 +285,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 .btn-add { background: transparent; border: 1px solid rgba(58, 42, 32, 0.15); color: var(--text-main); width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--smooth); font-size: 18px; font-weight: 500; line-height: 1; }
 :root[data-theme="dark"] .btn-add { border-color: rgba(212,175,55,0.5); color: var(--gold); border-radius: 4px; font-weight: 400; }
+
 .btn-add:hover { background: var(--gold); color: #FFF; border-color: var(--gold); transform: scale(1.1); }
 :root[data-theme="dark"] .btn-add:hover { color: var(--bg-main); }
 .card.selecionada .btn-add { background: var(--gold); color: #FFF; border-color: var(--gold); }
@@ -621,10 +623,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     </ul>
     
     <div style="display: flex; gap: 12px; align-items: center;">
-      <!-- BOTÃO DE INSTALAR (INVISÍVEL POR PADRÃO) -->
-      <button class="btn-install" id="btn-install-app" aria-label="Instalar Aplicativo">Instalar App</button>
-      
-      <!-- BOTÃO DE TEMA (SOL/LUA) -->
       <button class="theme-toggle" id="theme-toggle" aria-label="Mudar Tema" onclick="toggleTheme()">
         <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -894,45 +892,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </div>
 
 <script>
-// --- LÓGICA DE INSTALAÇÃO DO PWA (Adicionar à Tela) ---
-let deferredPrompt;
-const btnInstallApp = document.getElementById('btn-install-app');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault(); // Impede que o navegador mostre o aviso sozinho
-  deferredPrompt = e; // Guarda o evento
-  
-  // Mostra o nosso botão elegante no cabeçalho
-  if (btnInstallApp) {
-    btnInstallApp.style.display = 'block';
-  }
-});
-
-if (btnInstallApp) {
-  btnInstallApp.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('Cliente instalou o app!');
-      }
-      deferredPrompt = null;
-      btnInstallApp.style.display = 'none'; // Esconde o botão após a escolha
-    }
-  });
-}
-
-// Registra o Service Worker (Motor do PWA)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado com sucesso.'))
-      .catch(err => console.log('Erro ao registrar Service Worker.', err));
-  });
-}
-// ------------------------------------------------------
-
-
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
