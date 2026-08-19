@@ -36,9 +36,9 @@
   --whatsapp: #25D366;
   --danger: #8B3A2B;       
   --warning: #DDA73A;
-  --border-light: rgba(58, 42, 32, 0.12);
-  --shadow-sm: 0 4px 12px rgba(58, 42, 32, 0.05); 
-  --shadow-md: 0 8px 24px rgba(58, 42, 32, 0.08); 
+  --border-light: rgba(58, 42, 32, 0.12); /* Borda mais nítida, sem embaçar */
+  --shadow-sm: 0 4px 12px rgba(58, 42, 32, 0.05); /* Sombra mais contida */
+  --shadow-md: 0 8px 24px rgba(58, 42, 32, 0.08); /* Sombra focada para hover e modais */
   --smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -66,7 +66,7 @@ nav.top-nav {
 /* BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) */
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
+/* HERO SECTION - SEM SOMBRAS NO TEXTO, CORES SÓLIDAS E NÍTIDAS */
 #home {
   min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative;
@@ -80,13 +80,13 @@ nav.top-nav {
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
 
-/* STICKY MENU */
+/* STICKY MENU - CLEAN */
 .sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; background: rgba(248, 244, 238, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
 .sticky-menu-wrapper::-webkit-scrollbar { display: none; }
 .sticky-btn { white-space: nowrap; background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border-light); padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; }
 .sticky-btn:hover, .sticky-btn.active { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); border-color: var(--gold); }
 
-/* MODO TOGGLE E BANNERS */
+/* MODO TOGGLE E BANNERS - SEM SOMBRAS */
 .mode-toggle-area { display: flex; justify-content: center; margin-bottom: 30px; margin-top: 10px; }
 .mode-buttons { display: inline-flex; border: 1px solid var(--border-light); border-radius: 30px; overflow: hidden; background: var(--bg-card); transition: all 0.3s ease; }
 .mode-btn { padding: 12px 30px; background: transparent; border: none; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; }
@@ -105,7 +105,7 @@ nav.top-nav {
 .category-title { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 18px; color: var(--text-main); margin: 50px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; scroll-margin-top: 140px; }
 .category-title::before, .category-title::after { content: "•"; color: var(--gold); font-size: 20px; margin: 0 15px; opacity: 0.8; line-height: 0; }
 
-/* CARDS - DESIGN FLAT NÍTIDO */
+/* CARDS - DESIGN FLAT (SEM SOMBRA ATÉ O HOVER) */
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 .card {
   background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-light);
@@ -114,8 +114,8 @@ nav.top-nav {
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* IMAGENS DAS PIZZAS SEM SOMBRAS E SEM NÉVOA */
 .card-img-wrap { width: 100%; height: 200px; background: #EAE3DA; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+.card-img-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 0%, transparent 40%); pointer-events: none; z-index: 1; }
 .badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 2; align-items: flex-end; pointer-events: none; }
 .badge-destaque {
   background: rgba(255, 255, 255, 0.95); color: var(--text-main); border: 1px solid rgba(0,0,0,0.05);
@@ -130,8 +130,8 @@ nav.top-nav {
 
 body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: opacity 0.5s ease; }
 
-.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth); opacity: 1; }
-.card:hover .card-img { transform: scale(1.08); }
+.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth); opacity: 0.95; }
+.card:hover .card-img { transform: scale(1.08); opacity: 1; }
 .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; position: relative;}
 .card-title { font-size: 15px; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 .card-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
@@ -142,7 +142,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-add:hover { background: var(--gold); color: #FFF; border-color: var(--gold); transform: scale(1.1); }
 .card.selecionada .btn-add { background: var(--gold); color: #FFF; border-color: var(--gold); }
 
-/* TABELA DE EXTRAS INFO */
+/* TABELA DE EXTRAS INFO - CLEAN */
 .extras-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-light); margin-top: 10px; }
 .extras-table th, .extras-table td { padding: 15px 20px; text-align: left; font-size: 12px; border-bottom: 1px solid var(--border-light); }
 .extras-table th { color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; font-weight: 800; background: var(--bg-main);}
@@ -151,7 +151,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extras-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;}
 
 /* BOTÕES DE GRADIENTE METÁLICO (MOSTARDA/OURO) */
-.btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
+.btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer;}
 .btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 8px 20px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
@@ -191,7 +191,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal:hover { color: var(--terracotta); transform: scale(1.1) rotate(90deg); }
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; }
 
-/* TELA DE REVISÃO E SUCCESS */
+/* TELA DE REVISÃO E SUCCESS - CLEAN */
 .review-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; padding: 18px; margin-bottom: 15px; transition: all 0.3s ease; }
 .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
 .review-header h4 { font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
@@ -233,7 +233,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold-dark); cursor: pointer; flex-shrink: 0; }
 .extra-price { color: var(--text-main); font-weight: 700; font-size: 13px; margin-left: 10px; }
 
-/* MICRO-ANIMAÇÕES E OPÇÕES DE ADICIONAIS */
+/* MICRO-ANIMAÇÕES E OPÇÕES DE ADICIONAIS - CLEAN */
 .extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
 .extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
 .extra-opt-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
@@ -313,7 +313,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     background: rgba(255,255,255,0.98); -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
     border-top: 1px solid var(--border-light); z-index: 2000; justify-content: space-around; 
     padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
-    box-shadow: 0 -2px 10px rgba(58, 42, 32, 0.02);
   }
   .bottom-nav-item {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -701,7 +700,7 @@ let primeiraCargaPausa = true;
 let saborMaisPedido = null; 
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v16_sharp';
+const STORAGE_KEY = 'dca_carrinho_v15_clean';
 
 function showToast(msg, type='warning') {
   const container = document.getElementById('toast-container');
