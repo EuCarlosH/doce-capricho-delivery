@@ -75,7 +75,7 @@ nav.top-nav {
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
 
-/* STICKY MENU (NOVO) */
+/* STICKY MENU */
 .sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
 .sticky-menu-wrapper::-webkit-scrollbar { display: none; }
 .sticky-btn { white-space: nowrap; background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border-light); padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; }
@@ -144,13 +144,13 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extras-table td:last-child, .extras-table th:last-child { text-align: right; color: var(--gold); font-weight: 600; }
 .extras-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;}
 
-/* BOTÕES DE GRADIENTE METÁLICO (NOVO) */
+/* BOTÕES DE GRADIENTE METÁLICO */
 .btn-gradient { background: linear-gradient(135deg, #AA8C2C 0%, #F3E5AB 50%, #D4AF37 100%); background-size: 200% auto; color: var(--bg-main) !important; border: none; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; }
 .btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 5px 15px rgba(212,175,55,0.4); transform: translateY(-2px); }
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-/* FLOATING CART (DESKTOP) E BUMP ANIMATION */
+/* FLOATING CART E BUMP ANIMATION */
 .cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 999; }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 .cart-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
@@ -158,7 +158,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 @keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(-5deg); } 100% { transform: scale(1); } }
 .bump-anim { animation: bump 0.4s var(--smooth); }
 
-/* TOAST NOTIFICATIONS (NOVO) */
+/* TOAST NOTIFICATIONS */
 #toast-container { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 400px; }
 .toast { background: rgba(18,18,18,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--text-main); padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; align-items: center; gap: 12px; animation: toastIn 0.4s var(--smooth) forwards; border: 1px solid var(--border-light); width: 100%; }
 .toast.error { border-color: rgba(230,57,70,0.5); border-left: 4px solid var(--danger); }
@@ -175,6 +175,9 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 /* MODAIS BASE */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+/* Ajuste de Z-index crucial para a tela de pausa */
+.modal-overlay#modal-aviso-pausa { z-index: 4000 !important; }
+
 .modal-overlay.open { display: flex; opacity: 1; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); transform: translateY(50px); opacity: 0; transition: all 0.4s var(--smooth); }
 .modal-overlay.open .modal-box { transform: translateY(0); opacity: 1; }
@@ -225,6 +228,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
 .extra-price { color: var(--gold); font-weight: 600; font-size: 13px; margin-left: 10px; }
 
+/* OPÇÕES EM FORMATO DE CARDS PARA OS ADICIONAIS */
 .extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
 .extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
 .extra-opt-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
@@ -321,7 +325,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .cart-floating-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; font-size: 18px; }
   footer { padding-bottom: 120px; }
   
-  .sticky-menu-wrapper { top: 58px; } /* Ajuste de altura para não sobrepor navbar no celular */
+  .sticky-menu-wrapper { top: 58px; } 
 }
 </style>
 </head>
@@ -410,6 +414,21 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </nav>
 
 <button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
+
+<!-- MODAL DE AVISO AO VIVO (PAUSA) -->
+<div class="modal-overlay" id="modal-aviso-pausa">
+  <div class="modal-box" style="text-align: center; max-width: 400px; padding: 40px 30px;">
+    <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
+    <h2 class="brand-font" style="color: var(--warning); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
+    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6;">
+      Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.
+    </p>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">
+      Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.
+    </p>
+    <button type="button" class="btn-add-modal" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--warning); border: 1px solid var(--warning);">Compreendo</button>
+  </div>
+</div>
 
 <!-- TELA DE SUCESSO -->
 <div class="modal-overlay" id="success-overlay">
@@ -585,6 +604,9 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- ==============================================
+     CÓDIGO JAVASCRIPT BLINDADO E REORGANIZADO
+=============================================== -->
 <script>
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -861,16 +883,10 @@ function adicionar() {
   salvar(); 
   atualizarUI(); 
   
-  // Feedback físico no celular
   if (navigator.vibrate) navigator.vibrate(50);
   
-  // Pulo do Carrinho Flutuante
   const cartBtn = $('#btn-cart-float');
-  if(cartBtn) {
-    cartBtn.classList.remove('bump-anim');
-    void cartBtn.offsetWidth; // Força reinício da animação
-    cartBtn.classList.add('bump-anim');
-  }
+  if(cartBtn) { cartBtn.classList.remove('bump-anim'); void cartBtn.offsetWidth; cartBtn.classList.add('bump-anim'); }
 
   fecharModal('builder-overlay'); 
   abrirModal('success-overlay');
@@ -933,14 +949,8 @@ function validarCheckout() {
     if (bairro.value.trim().length < 3) { erros.push('Informe o bairro da entrega.'); bairro.classList.add('field-error'); }
   }
   
-  if (!carrinho.length) {
-    showToast('Adicione pelo menos uma pizza ao carrinho.', 'error');
-    return false;
-  }
-  
-  if (erros.length > 0) {
-    showToast('Por favor, preencha os dados corretamente.', 'error');
-  }
+  if (!carrinho.length) { showToast('Adicione pelo menos uma pizza ao carrinho.', 'error'); return false; }
+  if (erros.length > 0) { showToast('Por favor, preencha os dados corretamente.', 'error'); }
   
   return erros.length === 0;
 }
@@ -1070,13 +1080,13 @@ async function enviarPedidoFinal(ev) {
   setTimeout(() => showToast("Pedido enviado com sucesso!", "success"), 500);
 }
 
-function abrirModal(id) { const ov = document.getElementById(id); ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); }
-function fecharModal(id) { const ov = document.getElementById(id); ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; }
+function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); } }
+function fecharModal(id) { const ov = document.getElementById(id); if(ov){ ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; } }
 
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
-db.collection('configuracoes').doc('geral').onSnapshot(doc => {
+function processarConfig(doc) {
   if(doc.exists) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
@@ -1085,13 +1095,29 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
     const rodape = document.getElementById('footer-funcionamento');
     if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
     
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { abrirModal('modal-aviso-pausa'); }
-    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
-    verificarHorario(); renderCardapio();   
-  }
-}, error => { console.log("Modo leitura local."); });
+    // Mostra o pop-up de Pausa instantaneamente
+    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { 
+       fecharModal('builder-overlay');
+       fecharModal('cart-overlay');
+       fecharModal('review-overlay');
+       fecharModal('success-overlay');
+       abrirModal('modal-aviso-pausa'); 
+    }
+    
+    lojaEstavaPausada = configLoja.forcarFechamento; 
+    primeiraCargaPausa = false;
 
-db.collection('configuracoes').doc('estatisticas').onSnapshot(doc => {
+    verificarHorario(); 
+    renderCardapio();   
+  }
+}
+
+// OUVINTES COM REDUNDÂNCIA (HEARTBEAT)
+db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
+setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
+
+function processarEstatisticas(doc) {
   if(doc.exists) {
     const dados = doc.data();
     if(dados && dados.sabores) {
@@ -1105,16 +1131,14 @@ db.collection('configuracoes').doc('estatisticas').onSnapshot(doc => {
       }
     }
   }
-}, err => { console.log("Leitura de estatísticas desativada nas regras."); });
+}
+db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura de estatísticas desativada nas regras."); });
 
-// SCROLL SPY: Marca a categoria ativa no Sticky Menu ao rolar a página
 const sections = $$('h3.category-title');
 const navLinks = $$('.sticky-btn');
 window.addEventListener('scroll', () => {
   let current = '';
-  sections.forEach(sec => {
-    if (pageYOffset >= sec.offsetTop - 150) { current = sec.getAttribute('id'); }
-  });
+  sections.forEach(sec => { if (pageYOffset >= sec.offsetTop - 150) { current = sec.getAttribute('id'); } });
   navLinks.forEach(link => {
     link.classList.remove('active');
     if (link.getAttribute('href').includes(current)) { link.classList.add('active'); }
