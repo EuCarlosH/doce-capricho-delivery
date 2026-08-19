@@ -156,7 +156,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
 /* FLOATING CART E BUMP ANIMATION */
-.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 999; }
+.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 999; color: var(--bg-main); }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 .cart-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
 
@@ -272,6 +272,8 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .checkout-form label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600;}
 .checkout-form input, .checkout-form select { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-main); color: var(--text-main); font-family: inherit; font-size: 13px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
+.field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; }
+@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
 .endereco-row { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -327,7 +329,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   }
   .bottom-nav-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
 
-  .cart-floating-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; font-size: 18px; }
+  .cart-floating-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; }
   footer { padding-bottom: 120px; }
   
   .sticky-menu-wrapper { top: 58px; } 
@@ -431,7 +433,15 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </button>
 </nav>
 
-<button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
+<!-- CARRINHO SACÓLA DE LUXO FLUTUANTE -->
+<button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho">
+  <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
+    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <path d="M16 10a4 4 0 0 1-8 0"></path>
+  </svg>
+  <span class="cart-count" id="cart-count">0</span>
+</button>
 
 <div class="modal-overlay" id="modal-aviso-pausa">
   <div class="modal-box" style="text-align: center; max-width: 400px;">
@@ -521,7 +531,11 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         <input type="hidden" id="cli-tipo-pedido" value="Entrega">
         <div class="delivery-options">
           <div class="delivery-card active" data-tipo="Entrega" tabindex="0" role="button">
-            <svg viewBox="0 0 24 24"><path d="M5 11h14M5 15h14M8 7v10M16 7v10M3 11a2 2 0 1 0 0 4h18a2 2 0 1 0 0-4H3z"></path></svg>
+            <!-- MAP PIN ICON (NOVO E CHIQUE) -->
+            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
             <strong>Entrega</strong>
             <small id="text-taxa-card">Calculando...</small>
           </div>
