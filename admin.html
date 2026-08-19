@@ -35,7 +35,24 @@
   --radius-lg: 12px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; position: relative;}
+
+/* MARCA D'ÁGUA DO ATELIER */
+body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vw;
+  max-width: 600px;
+  max-height: 600px;
+  background: url('logo.png') center/contain no-repeat;
+  opacity: 0.04; /* Opacidade super sutil (4%) */
+  pointer-events: none; /* Não bloqueia os cliques do mouse */
+  z-index: 1; /* Fica no fundo, levemente por cima da base */
+}
 
 /* TELA DE LOGIN LAPIDADA */
 #login-screen {
@@ -77,8 +94,8 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
 .btn-logout:hover { background: var(--danger); color: #FFF; }
 
 /* KANBAN BOARD */
-.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; padding: 30px 40px; flex-grow: 1; overflow: hidden; }
-.kanban-col { background: #F8FAFC; border: 1px solid var(--border-light); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
+.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; padding: 30px 40px; flex-grow: 1; overflow: hidden; position: relative; z-index: 2; }
+.kanban-col { background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
 .col-header { padding: 20px; text-align: center; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); }
 .col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-muted); box-shadow: var(--shadow-sm); }
 .col-body { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
@@ -206,7 +223,7 @@ header { background: var(--bg-card); padding: 20px 40px; border-bottom: 1px soli
 </div>
 
 <script>
-// ÍCONES SVG PARA INJEÇÃO (Visual Limpo e Profissional)
+// ÍCONES SVG PARA INJEÇÃO
 const icons = {
   clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
   mapPin: `<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
@@ -231,7 +248,6 @@ let pedidosMap = new Map();
 let intervalTimer = null;
 let listenerPedidos = null; 
 
-// LOGIN FLOW
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('login-screen').style.display = 'none';
@@ -267,7 +283,7 @@ function iniciarSistema() {
   document.getElementById('overlay-start').style.display = 'none';
   
   const audio = document.getElementById('audio-alerta');
-  audio.play().then(() => { audio.pause(); }).catch(e => console.log("Áudio bloqueado", e));
+  audio.play().then(() => { audio.pause(); }).catch(e => {});
   
   const hoje = new Date();
   hoje.setHours(0,0,0,0);
