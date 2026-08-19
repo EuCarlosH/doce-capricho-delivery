@@ -7,6 +7,7 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#0A0A0A">
 
+<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -102,14 +103,24 @@ nav.top-nav {
 .card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
+/* ETIQUETAS DE DESTAQUE (BADGES) */
+.card-img-wrap { width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+.badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 10; align-items: flex-end; pointer-events: none; }
+.badge-destaque {
+  background: rgba(18, 18, 18, 0.7); color: var(--white); border: 1px solid rgba(255,255,255,0.2);
+  padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.badge-destaque.badge-top { background: var(--gold); color: var(--bg-main); border-color: var(--gold); }
+
 /* ESTADO DE PRODUTO ESGOTADO */
 .card.esgotado { opacity: 0.5; filter: grayscale(1); pointer-events: none; border-color: var(--border-light); }
 .card.esgotado .btn-add { background: var(--border-light); color: var(--text-muted); border-color: transparent; font-size: 10px; font-weight: 700; text-transform: uppercase; width: auto; padding: 0 10px; }
+.card.esgotado .badges-container { display: none; } /* Esconde badge se estiver esgotado */
 
 /* ESTADO DE LOJA PAUSADA/FECHADA */
 body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: opacity 0.5s ease; }
 
-.card-img-wrap { width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth); opacity: 0.9; }
 .card:hover .card-img { transform: scale(1.08); opacity: 1; }
 .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
@@ -299,6 +310,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </head>
 <body>
 
+<!-- NAVBAR TOPO -->
 <nav class="top-nav">
   <div class="nav-container">
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
@@ -318,6 +330,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   
+  <!-- BANNER PERMANENTE DE PAUSA -->
   <div id="banner-pausado">
     <h4 class="brand-font">Pausa Temporária 🛑</h4>
     <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
@@ -346,6 +359,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </table>
 </section>
 
+<!-- FOOTER COM CONTATOS -->
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
@@ -359,6 +373,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
+<!-- NAVBAR INFERIOR MOBILE -->
 <nav class="bottom-nav">
   <a href="#home" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
   <a href="#cardapio" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
@@ -370,6 +385,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <button class="cart-floating-btn" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
 
+<!-- MODAL DE AVISO AO VIVO (PAUSA) -->
 <div class="modal-overlay" id="modal-aviso-pausa">
   <div class="modal-box" style="text-align: center; max-width: 400px; padding: 40px 30px;">
     <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
@@ -384,6 +400,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- TELA DE SUCESSO AO ADICIONAR ITEM -->
 <div class="modal-overlay" id="success-overlay">
   <div class="modal-box" style="text-align: center; max-width: 380px; padding: 40px 30px;">
     <button class="close-modal" data-close="success-overlay">&times;</button>
@@ -404,6 +421,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- MODAL MONTAGEM DE PIZZA -->
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="builder-overlay">&times;</button>
@@ -434,6 +452,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- MODAL CARRINHO E DADOS -->
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="cart-overlay">&times;</button>
@@ -510,6 +529,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- MODAL DE REVISÃO FINAL -->
 <div class="modal-overlay" id="review-overlay">
   <div class="modal-box">
     <button class="close-modal" onclick="voltarParaCarrinho()">&times;</button>
@@ -556,6 +576,9 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- ==============================================
+     CÓDIGO JAVASCRIPT BLINDADO E REORGANIZADO
+=============================================== -->
 <script>
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -609,7 +632,6 @@ const EXTRAS = [
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
 const acharSabor = id => todosSabores().find(s => s.id === id);
 
-// NOVA LÓGICA DE RÓTULO DOS ADICIONAIS (Identifica a metade exata)
 const rotuloAplicacao = (ap, sabores) => {
   if (ap === 'toda') return 'pizza inteira';
   if (ap === 'metade') return 'metade da pizza';
@@ -618,14 +640,17 @@ const rotuloAplicacao = (ap, sabores) => {
   return 'metade da pizza';
 };
 
+// 3. VARIÁVEIS DE ESTADO
 let lojaAberta = false;
 let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
 let lojaEstavaPausada = false; 
 let primeiraCargaPausa = true;
+let saborMaisPedido = null; // Armazena a pizza campeã de vendas
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v9';
+const STORAGE_KEY = 'dca_carrinho_v10';
 
+// 4. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -695,10 +720,35 @@ function validarItem(item) {
   return true;
 }
 
+// NOVO: INSERÇÃO DINÂMICA DAS ETIQUETAS (BADGES)
 const cardHTML = s => {
   const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
-  return `<article class="${classeCard}" data-sabor="${s.id}"><div class="card-img-wrap"><img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#333;font-size:40px;\\'>🍽️</span>';"></div><div class="card-content"><h4 class="card-title">${esc(s.nome)}</h4><p class="card-desc">${esc(s.desc)}</p><div class="card-bottom"><span class="card-price-text">${brl(s.preco)}</span><button type="button" class="btn-add" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? 'Esgotado' : '+'}</button></div></div></article>`;
+  
+  let badges = [];
+  if (s.id === 'peru' || s.id === 'nordestina') {
+      badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura do Chef</span>`);
+  }
+  if (s.id === saborMaisPedido && !isEsgotado) {
+      badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`);
+  }
+  let badgeHTML = badges.length ? `<div class="badges-container">${badges.join('')}</div>` : '';
+
+  return `
+  <article class="${classeCard}" data-sabor="${s.id}">
+    <div class="card-img-wrap">
+      ${badgeHTML}
+      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#333;font-size:40px;\\'>🍽️</span>';">
+    </div>
+    <div class="card-content">
+      <h4 class="card-title">${esc(s.nome)}</h4>
+      <p class="card-desc">${esc(s.desc)}</p>
+      <div class="card-bottom">
+        <span class="card-price-text">${brl(s.preco)}</span>
+        <button type="button" class="btn-add" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? 'Esgotado' : '+'}</button>
+      </div>
+    </div>
+  </article>`;
 };
 
 function renderCardapio() {
@@ -735,7 +785,6 @@ function escolherSabor(id) {
   const par = [meioSelecionado, id]; meioSelecionado = null; atualizarBanner(); atualizarBotoes(); abrirBuilder(par);
 }
 
-// NOVA CONSTRUÇÃO DOS ADICIONAIS (CARDS NO LUGAR DO SELECT)
 function abrirBuilder(ids) {
   builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
@@ -769,7 +818,6 @@ function abrirBuilder(ids) {
   $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; atualizarBuilderTotal(); abrirModal('builder-overlay');
 }
 
-// NOVO LEITOR DE EXTRAS (Lê os cards ativos)
 function lerExtras() {
   const selecionados = [];
   $$('.extra-chk:checked').forEach(chk => {
@@ -801,6 +849,10 @@ function adicionar() {
   carrinho.push(item); 
   salvar(); 
   atualizarUI(); 
+  
+  // Feedback tátil (vibração) apenas em celulares compatíveis
+  if (navigator.vibrate) navigator.vibrate(50);
+  
   fecharModal('builder-overlay'); 
   abrirModal('success-overlay');
 }
@@ -938,7 +990,6 @@ function montarMensagem(p) {
   if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); 
   L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
   
-  // PIX NO WHATSAPP PARA RESGATE SEGURO
   if (p.forma_pagamento === 'PIX') {
       const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', p.total_centavos);
       L.push('', `*CHAVE PIX (Celular/Telefone):*`, CONFIG.pixChave);
@@ -948,7 +999,29 @@ function montarMensagem(p) {
   return L.join('\n');
 }
 
-async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
+// NOVO: SISTEMA QUE SOMA VENDAS PARA ACHAR A PIZZA MAIS PEDIDA
+async function gravarFirestore(pedido) { 
+  if (!CONFIG.usarFirebase || !window.firebase) return null; 
+  try { 
+    const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); 
+    
+    // Robô Invisível: Atualiza as Estatísticas de Vendas (Protegido com try-catch para não travar o cliente se faltar permissão no banco)
+    try {
+        const increment = firebase.firestore.FieldValue.increment(1);
+        let updates = {};
+        pedido.itens.forEach(item => {
+            if(item.sabores) {
+                item.sabores.forEach(saborId => { updates[`sabores.${saborId}`] = increment; });
+            }
+        });
+        if (Object.keys(updates).length > 0) {
+            await db.collection('configuracoes').doc('estatisticas').set(updates, { merge: true });
+        }
+    } catch(errStats) { console.log("Modo leitura de estatisticas restrito."); }
+
+    return ref.id; 
+  } catch (e) { return null; } 
+}
 
 async function enviarPedidoFinal(ev) {
   ev.preventDefault(); 
@@ -971,6 +1044,7 @@ function fecharModal(id) { const ov = document.getElementById(id); ov.classList.
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
+// OUVINTE 1: CONFIGURAÇÕES DA LOJA
 db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   if(doc.exists) {
     configLoja = doc.data();
@@ -986,9 +1060,25 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   }
 }, error => { console.log("Modo leitura local."); });
 
+// OUVINTE 2: ESTATÍSTICAS PARA A "MAIS PEDIDA"
+db.collection('configuracoes').doc('estatisticas').onSnapshot(doc => {
+  if(doc.exists) {
+    const dados = doc.data();
+    if(dados && dados.sabores) {
+      let max = 0; let idMax = null;
+      for(const [id, count] of Object.entries(dados.sabores)) {
+        if(count > max) { max = count; idMax = id; }
+      }
+      if(saborMaisPedido !== idMax) {
+          saborMaisPedido = idMax;
+          renderCardapio(); // Re-renderiza para mostrar a estrela na campeã
+      }
+    }
+  }
+}, err => { console.log("Leitura de estatísticas desativada nas regras."); });
+
 // LISTENERS DE CLIQUE E MÚLTIPLOS CARDS
 document.addEventListener('click', e => {
-  // Lida com o clique nas opções de metades (Cards novos)
   const cardOpt = e.target.closest('.extra-opt-card');
   if (cardOpt) {
       const grid = cardOpt.closest('.extra-options-grid');
@@ -1005,7 +1095,6 @@ $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.data
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
 
-// Quando marca/desmarca a caixa principal do adicional
 $('#builder-extras').addEventListener('change', e => { 
     if(e.target.classList.contains('extra-chk')) { 
         const row = e.target.closest('.extra-row'); 
