@@ -26,7 +26,7 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* CORREÇÃO DO BUG DE ALTURA E ROTAÇÃO NO iPAD (100dvh) */
+/* FIXANDO ALTURA PARA IPADS */
 body { 
   background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; 
   height: 100dvh; overflow: hidden; display: flex; flex-direction: column; position: relative;
@@ -71,7 +71,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 #overlay-start { position: fixed; inset: 0; background: rgba(244,247,246,0.95); backdrop-filter: blur(5px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .btn-start { background: var(--gold); color: #FFF; border: none; padding: 20px 50px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
 
-/* CABEÇALHO RESILIENTE PARA TABLETS */
+/* CABEÇALHO */
 header { 
   background: var(--bg-card); padding: 20px 30px; border-bottom: 1px solid var(--border-light); 
   display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); 
@@ -90,7 +90,7 @@ header {
 .btn-warning-solid { background: var(--warning); color: #FFF; }
 .btn-warning-solid:hover { background: #C05621; }
 
-/* KANBAN: SCROLL HORIZONTAL ESTILO TRELLO PARA iPADS E MONITORES PEQUENOS */
+/* KANBAN BASE (CELULAR / IPAD VERTICAL) COM SCROLL HORIZONTAL */
 .kanban-board { 
   display: flex; gap: 20px; padding: 20px 30px; flex-grow: 1; 
   overflow-x: auto; overflow-y: hidden; position: relative; z-index: 2; 
@@ -104,9 +104,23 @@ header {
   background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); 
   border: 1px solid var(--border-light); border-radius: 16px; 
   display: flex; flex-direction: column; overflow: hidden; 
-  flex: 1 0 300px; /* Fixa largura mínima de 300px por coluna para nunca espremer */
-  max-width: 400px; max-height: 100%;
+  flex: 1 0 280px; /* Largura mínima para legibilidade antes de gerar rolagem */
+  max-height: 100%;
 }
+
+/* KANBAN ADAPTÁVEL (IPAD HORIZONTAL E PC) SEM SCROLL HORIZONTAL */
+@media (min-width: 1000px) {
+  .kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); /* Força 4 colunas distribuídas perfeitamente */
+    overflow-x: hidden; /* Corta a rolagem, prende na tela */
+  }
+  .kanban-col {
+    flex: none; /* Desliga o flexbox para o Grid assumir o controle total */
+    width: 100%;
+  }
+}
+
 .col-header { padding: 20px; text-align: center; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); flex-shrink: 0; }
 .col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-muted); }
 .col-body { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
