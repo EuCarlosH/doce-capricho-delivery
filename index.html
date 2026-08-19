@@ -464,17 +464,25 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       
       <div id="box-endereco">
         <div class="endereco-row">
-          <div>
-            <label for="cli-cep">CEP</label>
-            <input type="tel" id="cli-cep" placeholder="59920-000" maxlength="9">
+          <div style="flex: 2;">
+            <label for="cli-rua">Rua</label>
+            <input type="text" id="cli-rua" placeholder="Ex: Rua Direita">
           </div>
-          <div>
-            <label>Cidade / Estado</label>
-            <input type="text" value="São Miguel / RN" disabled style="opacity:0.6; cursor:not-allowed;">
+          <div style="flex: 1;">
+            <label for="cli-numero">Número</label>
+            <input type="text" id="cli-numero" placeholder="Ex: 123">
           </div>
         </div>
-        <label for="cli-endereco">Rua, Número e Bairro</label>
-        <input type="text" id="cli-endereco" placeholder="Ex: Rua Direita, 123 - Centro">
+        <div class="endereco-row">
+          <div style="flex: 1.5;">
+            <label for="cli-bairro">Bairro</label>
+            <input type="text" id="cli-bairro" placeholder="Ex: Centro">
+          </div>
+          <div style="flex: 1;">
+            <label for="cli-cep">CEP</label>
+            <input type="tel" id="cli-cep" value="59920-000">
+          </div>
+        </div>
       </div>
 
       <div>
@@ -529,10 +537,11 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <div class="cart-total-line" style="border-top-color: rgba(212,175,55,0.3);"><span>Total a Pagar</span><span id="rev-total-value">R$ 0,00</span></div>
     </div>
 
-    <div class="box-destaque" id="box-pix" style="display:none; margin-bottom: 20px;">
+    <div class="box-destaque" id="rev-box-pix" style="display:none; margin-bottom: 20px;">
       <p style="font-size:11px; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase;">Transferência PIX:</p>
-      <button type="button" class="btn-copy-pix" id="btn-copy-pix">Copiar Código PIX</button>
-      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(Você enviará o comprovante no WhatsApp na próxima tela)</p>
+      <strong style="color:var(--gold); font-size:18px; display:block; margin-bottom: 10px;" id="rev-pix-valor">R$ 0,00</strong>
+      <button type="button" class="btn-copy-pix" id="rev-btn-copy-pix">Copiar Código PIX</button>
+      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(Você enviará o comprovante no WhatsApp)</p>
     </div>
 
     <button type="button" class="btn-finish" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
@@ -602,9 +611,9 @@ let lojaEstavaPausada = false;
 let primeiraCargaPausa = true;
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v7';
+const STORAGE_KEY = 'dca_carrinho_v7'; // Nova versão do cache
 
-// 4. FUNÇÕES DE RELÓGIO (COM PROTEÇÃO TRY-CATCH)
+// 4. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -803,8 +812,6 @@ function adicionar() {
   salvar(); 
   atualizarUI(); 
   fecharModal('builder-overlay'); 
-  
-  // NOVA AÇÃO: Abre o modal de sucesso perguntando o que fazer.
   abrirModal('success-overlay');
 }
 
@@ -830,6 +837,7 @@ function atualizarUI() {
   
   const entrega = $('#cli-tipo-pedido').value === 'Entrega'; 
   const boxEnd = $('#box-endereco');
+  
   if(entrega) {
       boxEnd.style.display = 'block';
       setTimeout(() => boxEnd.style.opacity = '1', 10);
@@ -838,50 +846,64 @@ function atualizarUI() {
       setTimeout(() => boxEnd.style.display = 'none', 300);
   }
 
-  $('#cli-cep').required = entrega; $('#cli-endereco').required = entrega; 
-  $('#btn-avancar').disabled = carrinho.length === 0;
+  // Tratamento anti-erros se o ID não existir no HTML (caso mude)
+  const rua = $('#cli-rua'); if(rua) rua.required = entrega;
+  const num = $('#cli-numero'); if(num) num.required = entrega;
+  const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
+  
+  const btnAvancar = $('#btn-avancar');
+  if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
 }
 
 function validarCheckout() {
-  const erros = []; const nome = $('#cli-nome'), tel = $('#cli-telefone'), end = $('#cli-endereco'), cep = $('#cli-cep'); 
-  [nome, tel, end, cep].forEach(c => c.classList.remove('field-error'));
+  const erros = []; 
+  const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
+  
+  [nome, tel, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
   
   if ($('#cli-tipo-pedido').value === 'Entrega') {
-    if (cep.value !== '59920-000') { erros.push('Atendemos apenas pedidos em São Miguel/RN (CEP 59920-000).'); cep.classList.add('field-error'); }
-    if (end.value.trim().length < 5) { erros.push('Informe a Rua, Número e Bairro da entrega.'); end.classList.add('field-error'); }
+    if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
+    if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
+    if (bairro.value.trim().length < 3) { erros.push('Informe o bairro da entrega.'); bairro.classList.add('field-error'); }
   }
   
   if (!carrinho.length) erros.push('Adicione pelo menos uma pizza.');
-  const msg = $('#form-msg'); msg.textContent = erros[0] || ''; msg.classList.toggle('show', erros.length > 0); return erros.length === 0;
+  const msg = $('#form-msg'); msg.textContent = erros[0] || ''; msg.classList.toggle('show', erros.length > 0); 
+  return erros.length === 0;
 }
 
+// 5.1 NOVA TELA DE REVISÃO
 function montarRevisao() {
   const t = totais();
   const tipo = $('#cli-tipo-pedido').value;
   const pgto = $('#cli-pagamento').value;
 
+  // Itens
   $('#review-items').innerHTML = carrinho.map(i => {
     return `<div class="review-item-line"><strong>${i.qtd}x ${esc(nomeItem(i))}</strong> <span>${brl(i.total)}</span></div>`;
   }).join('');
 
+  // Recebimento
   if(tipo === 'Entrega') {
-    $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-endereco').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
+    $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
   } else {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">Te avisaremos quando estiver pronto.</span>`;
   }
 
+  // Pagamento
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   
   if (pgto === 'PIX') {
-      $('#box-pix').style.display = 'block';
-      $('#pix-valor-transferir').textContent = brl(t.total);
+      $('#rev-box-pix').style.display = 'block';
+      $('#rev-pix-valor').textContent = brl(t.total);
   } else {
-      $('#box-pix').style.display = 'none';
+      $('#rev-box-pix').style.display = 'none';
   }
 
+  // Totais
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
   if(tipo === 'Entrega' && t.entrega > 0) {
     $('#rev-linha-taxa').style.display = 'flex';
@@ -907,7 +929,20 @@ function gerarPixPayload(chave, nome, cidade, valorCentavos) {
 
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
-  return { status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: tipo === 'Entrega' ? `${$('#cli-endereco').value.trim()} (São Miguel/RN)` : '', tipo_entrega: tipo, forma_pagamento: $('#cli-pagamento').value, itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total };
+  const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value})` : '';
+  
+  return { 
+    status: 'Novo', 
+    cliente_nome: $('#cli-nome').value.trim(), 
+    cliente_telefone: soDigitos($('#cli-telefone').value), 
+    cliente_endereco: endStr, 
+    tipo_entrega: tipo, 
+    forma_pagamento: $('#cli-pagamento').value, 
+    itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), 
+    subtotal_centavos: t.subtotal, 
+    taxa_centavos: t.entrega, 
+    total_centavos: t.total 
+  };
 }
 
 function montarMensagem(p) {
@@ -921,6 +956,7 @@ function montarMensagem(p) {
 
 async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
 
+// 5.2 ENVIAR PEDIDO FINAL APÓS REVISÃO
 async function enviarPedidoFinal(ev) {
   ev.preventDefault(); 
   if(!lojaAberta) { 
@@ -994,8 +1030,8 @@ $('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Ma
 $('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); });
 $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
-$('#cli-pagamento').addEventListener('change', atualizarUI); 
 
+// INTERCEPTA O SUBMIT DO CHECKOUT PARA MOSTRAR A REVISÃO
 $('#checkout-form').addEventListener('submit', e => {
   e.preventDefault(); 
   if(!lojaAberta) { 
@@ -1010,6 +1046,7 @@ $('#checkout-form').addEventListener('submit', e => {
   setTimeout(() => { abrirModal('review-overlay'); }, 150); 
 });
 
+// Listener do Cartão Entrega/Retirada
 $$('.delivery-card').forEach(card => {
   card.addEventListener('click', () => {
     $$('.delivery-card').forEach(c => c.classList.remove('active'));
@@ -1026,7 +1063,8 @@ $('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && confi
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
 
-$('#btn-copy-pix').addEventListener('click', async e => {
+// COPIAR PIX AGORA ESTÁ LIGADO AO NOVO ID DA REVISÃO
+$('#rev-btn-copy-pix').addEventListener('click', async e => {
   const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total);
   try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); }
   btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000);
