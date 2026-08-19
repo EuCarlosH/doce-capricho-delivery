@@ -184,17 +184,25 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .builder-base { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-main); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-light); font-weight: 500; }
 .builder-base strong { color: var(--gold); font-size: 15px; font-weight: 700; transition: color 0.3s; }
 
-.builder-group select, .builder-group textarea { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 13px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
-.builder-group select:focus, .builder-group textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
+.builder-group textarea { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 13px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.builder-group textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
 
-.extra-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 8px; transition: all 0.3s var(--smooth); }
-.extra-row.checked { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.08); transform: translateX(4px); }
-.extra-row label { display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-main); font-size: 13px; font-weight: 500; margin: 0; flex: 1; }
+.extra-row { display: flex; flex-direction: column; padding: 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 10px; transition: all 0.3s var(--smooth); }
+.extra-row.checked { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.05); }
+.extra-row-header { display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; }
+.extra-row-header label { display: flex; align-items: center; gap: 12px; color: var(--text-main); font-size: 13px; font-weight: 500; margin: 0; cursor: pointer; }
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
-.extra-price { color: var(--gold); font-weight: 600; font-size: 13px; white-space: nowrap; margin-left: 10px; }
-.extra-sub-select { width: 100%; margin-top: 12px; padding: 12px; background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-main); border-radius: 6px; font-size: 12px; display: none; font-family: 'Montserrat', sans-serif; transition: all 0.3s ease; }
-.extra-sub-select:focus { border-color: var(--gold); outline: none; }
-.extra-row.checked .extra-sub-select { display: block; animation: slideDown 0.3s var(--smooth); }
+.extra-price { color: var(--gold); font-weight: 600; font-size: 13px; margin-left: 10px; }
+
+/* OPÇÕES EM FORMATO DE CARDS PARA OS ADICIONAIS */
+.extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
+.extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
+.extra-opt-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
+.extra-opt-card:hover { border-color: rgba(212,175,55,0.4); }
+.extra-opt-card.active { border-color: var(--gold); background: rgba(212,175,55,0.08); color: var(--gold); }
+.extra-opt-card span { font-weight: 700; line-height: 1.2; }
+.extra-opt-card small { font-size: 9px; opacity: 0.8; }
+.extra-opt-full { grid-column: span 2; } /* Para o botão "Pizza Inteira" ocupar o espaço todo */
 
 .qty-row { display: flex; align-items: center; gap: 15px; }
 .qty-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-main); color: var(--text-main); font-size: 18px; cursor: pointer; transition: all 0.2s ease; }
@@ -541,7 +549,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <p style="font-size:11px; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase;">Transferência PIX:</p>
       <strong style="color:var(--gold); font-size:18px; display:block; margin-bottom: 10px;" id="rev-pix-valor">R$ 0,00</strong>
       <button type="button" class="btn-copy-pix" id="rev-btn-copy-pix">Copiar Código PIX</button>
-      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(A chave PIX também será enviada no WhatsApp)</p>
+      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
     </div>
 
     <button type="button" class="btn-finish" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
@@ -549,14 +557,12 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </div>
 
 <script>
-// 1. FERRAMENTAS DO SITE
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-// 2. CONFIGURAÇÕES E CARDÁPIO
 const CONFIG = {
   whatsapp:     '5585921440055',
   pixChave:     '+5585921440055',
@@ -603,7 +609,7 @@ const EXTRAS = [
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
 const acharSabor = id => todosSabores().find(s => s.id === id);
 
-// Lógica inteligente para nomear qual metade recebeu o adicional
+// NOVA LÓGICA DE RÓTULO DOS ADICIONAIS (Identifica a metade exata)
 const rotuloAplicacao = (ap, sabores) => {
   if (ap === 'toda') return 'pizza inteira';
   if (ap === 'metade') return 'metade da pizza';
@@ -612,63 +618,43 @@ const rotuloAplicacao = (ap, sabores) => {
   return 'metade da pizza';
 };
 
-// 3. VARIÁVEIS DE ESTADO
 let lojaAberta = false;
 let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
 let lojaEstavaPausada = false; 
 let primeiraCargaPausa = true;
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v8'; // Reset do cache
+const STORAGE_KEY = 'dca_carrinho_v9';
 
-// 4. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
     const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
-    
     const agora = new Date();
     const diaHoje = agora.getDay(); 
     const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
-    
     let dentroDoHorario = false;
 
     if (configLoja.horarios && configLoja.horarios[diaHoje]) {
        const configHoje = configLoja.horarios[diaHoje];
        if (configHoje.ativo) {
-          const strAbre = configHoje.abre || '18:30';
-          const strFecha = configHoje.fecha || '23:00';
-          const [abreH, abreM] = strAbre.split(':').map(Number);
-          const [fechaH, fechaM] = strFecha.split(':').map(Number);
+          const [abreH, abreM] = (configHoje.abre || '18:30').split(':').map(Number);
+          const [fechaH, fechaM] = (configHoje.fecha || '23:00').split(':').map(Number);
           const tempoInicio = (abreH || 18) * 60 + (abreM || 30);
           const tempoFim = (fechaH || 23) * 60 + (fechaM || 0);
-
-          if (tempoFim < tempoInicio) {
-            dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim);
-          } else {
-            dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim);
-          }
+          if (tempoFim < tempoInicio) { dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim);
+          } else { dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
        }
     } else {
-       if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) {
-          dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60));
-       }
+       if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); }
     }
     
-    if (configLoja.forcarFechamento === true) {
-      lojaAberta = false;
-    } else if (isTesteAdmin) {
-      lojaAberta = true;
-    } else {
-      lojaAberta = dentroDoHorario;
-    }
+    if (configLoja.forcarFechamento === true) { lojaAberta = false;
+    } else if (isTesteAdmin) { lojaAberta = true;
+    } else { lojaAberta = dentroDoHorario; }
     
     atualizarStatusLoja();
-  } catch (error) {
-    console.error("Erro ao verificar horário:", error);
-    lojaAberta = false; 
-    atualizarStatusLoja();
-  }
+  } catch (error) { lojaAberta = false; atualizarStatusLoja(); }
 }
 
 function atualizarStatusLoja() {
@@ -678,16 +664,8 @@ function atualizarStatusLoja() {
   if (!lojaAberta) {
     document.body.classList.add('loja-fechada');
     if(badge) {
-      if(configLoja.forcarFechamento) { 
-        badge.textContent = 'PEDIDOS PAUSADOS'; 
-        badge.className = 'status-badge pausado'; 
-        if(bannerPausa) bannerPausa.style.display = 'block'; 
-      }
-      else { 
-        badge.textContent = 'FECHADO'; 
-        badge.className = 'status-badge fechado'; 
-        if(bannerPausa) bannerPausa.style.display = 'none'; 
-      }
+      if(configLoja.forcarFechamento) { badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado'; if(bannerPausa) bannerPausa.style.display = 'block'; }
+      else { badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado'; if(bannerPausa) bannerPausa.style.display = 'none'; }
     }
   } else {
     document.body.classList.remove('loja-fechada');
@@ -696,10 +674,8 @@ function atualizarStatusLoja() {
   }
 }
 
-// 5. FUNÇÕES DE INTERFACE E CARRINHO
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
-
 const precoBaseVal = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
 
 function validarItem(item) {
@@ -708,12 +684,10 @@ function validarItem(item) {
   item.qtd = Math.min(20, Math.max(1, parseInt(item.qtd, 10) || 1));
   item.extras = (Array.isArray(item.extras) ? item.extras : []).filter(ex => {
     const def = EXTRAS.find(e => e.id === ex.id); if (!def) return false;
-    if (def.tipo === 'fixo') { 
-        ex.aplicacao = 'toda'; ex.preco = def.preco; 
+    if (def.tipo === 'fixo') { ex.aplicacao = 'toda'; ex.preco = def.preco; 
     } else { 
         if (!['metade', 'metade1', 'metade2', 'toda'].includes(ex.aplicacao)) return false; 
-        const pk = ex.aplicacao.startsWith('metade') ? 'metade' : 'toda'; 
-        ex.preco = def.precos[pk]; 
+        const pk = ex.aplicacao.startsWith('metade') ? 'metade' : 'toda'; ex.preco = def.precos[pk]; 
     }
     ex.nome = def.nome; return true;
   });
@@ -724,22 +698,7 @@ function validarItem(item) {
 const cardHTML = s => {
   const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
-  const textoBtn = isEsgotado ? 'Esgotado' : '+';
-
-  return `
-  <article class="${classeCard}" data-sabor="${s.id}">
-    <div class="card-img-wrap">
-      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#333;font-size:40px;\\'>🍽️</span>';">
-    </div>
-    <div class="card-content">
-      <h4 class="card-title">${esc(s.nome)}</h4>
-      <p class="card-desc">${esc(s.desc)}</p>
-      <div class="card-bottom">
-        <span class="card-price-text">${brl(s.preco)}</span>
-        <button type="button" class="btn-add" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${textoBtn}</button>
-      </div>
-    </div>
-  </article>`;
+  return `<article class="${classeCard}" data-sabor="${s.id}"><div class="card-img-wrap"><img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#333;font-size:40px;\\'>🍽️</span>';"></div><div class="card-content"><h4 class="card-title">${esc(s.nome)}</h4><p class="card-desc">${esc(s.desc)}</p><div class="card-bottom"><span class="card-price-text">${brl(s.preco)}</span><button type="button" class="btn-add" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? 'Esgotado' : '+'}</button></div></div></article>`;
 };
 
 function renderCardapio() {
@@ -768,22 +727,15 @@ function atualizarBanner() {
 }
 
 function escolherSabor(id) {
-  if(!lojaAberta) { 
-    if (configLoja.forcarFechamento) {
-      abrirModal('modal-aviso-pausa');
-    } else {
-      alert("Nossa loja está fechada no momento."); 
-    }
-    return; 
-  }
+  if(!lojaAberta) { if (configLoja.forcarFechamento) { abrirModal('modal-aviso-pausa'); } else { alert("Nossa loja está fechada no momento."); } return; }
   if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
-  
   if (modo === 'inteira') return abrirBuilder([id]);
   if (!meioSelecionado) { meioSelecionado = id; atualizarBanner(); atualizarBotoes(); return; }
   if (meioSelecionado === id) { meioSelecionado = null; atualizarBanner(); atualizarBotoes(); return; }
   const par = [meioSelecionado, id]; meioSelecionado = null; atualizarBanner(); atualizarBotoes(); abrirBuilder(par);
 }
 
+// NOVA CONSTRUÇÃO DOS ADICIONAIS (CARDS NO LUGAR DO SELECT)
 function abrirBuilder(ids) {
   builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
@@ -791,28 +743,33 @@ function abrirBuilder(ids) {
   
   $('#builder-extras').innerHTML = EXTRAS.map(e => {
     if (e.tipo === 'fixo') {
-      return `<div class="extra-row"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ ${brl(e.preco)}</span></div>`;
+      return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ ${brl(e.preco)}</span></div></div>`;
     } else {
-      let options = '';
+      let cards = '';
       if (ids.length === 2) {
-          options = `
-            <option value="metade1">Só na metade: ${esc(nomes[0])} (+ ${brl(e.precos.metade)})</option>
-            <option value="metade2">Só na metade: ${esc(nomes[1])} (+ ${brl(e.precos.metade)})</option>
-            <option value="toda">Na pizza inteira (+ ${brl(e.precos.toda)})</option>
+          cards = `
+            <div class="extra-options-grid">
+              <div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div>
+              <div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div>
+              <div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div>
+            </div>
           `;
       } else {
-          options = `
-            <option value="metade">Em metade da pizza (+ ${brl(e.precos.metade)})</option>
-            <option value="toda">Na pizza inteira (+ ${brl(e.precos.toda)})</option>
+          cards = `
+            <div class="extra-options-grid">
+              <div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div>
+              <div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div>
+            </div>
           `;
       }
-      return `<div class="extra-row"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><select class="extra-sub-select" id="sub-extra-${e.id}">${options}</select></div>`;
+      return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ Variável</span></div>${cards}</div>`;
     }
   }).join('');
 
   $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; atualizarBuilderTotal(); abrirModal('builder-overlay');
 }
 
+// NOVO LEITOR DE EXTRAS (Lê os cards ativos)
 function lerExtras() {
   const selecionados = [];
   $$('.extra-chk:checked').forEach(chk => {
@@ -820,7 +777,9 @@ function lerExtras() {
     if(def.tipo === 'fixo') { 
         selecionados.push({ id: def.id, nome: def.nome, aplicacao: 'toda', preco: def.preco }); 
     } else { 
-        const ap = $('#sub-extra-' + id).value; 
+        const row = chk.closest('.extra-row');
+        const activeCard = row.querySelector('.extra-opt-card.active');
+        const ap = activeCard ? activeCard.dataset.val : 'metade'; 
         const priceKey = ap.startsWith('metade') ? 'metade' : 'toda';
         selecionados.push({ id: def.id, nome: def.nome, aplicacao: ap, preco: def.precos[priceKey] }); 
     }
@@ -908,13 +867,9 @@ function validarCheckout() {
   return erros.length === 0;
 }
 
-// 5.1 NOVA TELA DE REVISÃO
 function montarRevisao() {
-  const t = totais();
-  const tipo = $('#cli-tipo-pedido').value;
-  const pgto = $('#cli-pagamento').value;
+  const t = totais(); const tipo = $('#cli-tipo-pedido').value; const pgto = $('#cli-pagamento').value;
 
-  // Renderiza os itens mostrando todos os detalhes
   $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
@@ -938,27 +893,16 @@ function montarRevisao() {
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   
-  if (pgto === 'PIX') {
-      $('#rev-box-pix').style.display = 'block';
-      $('#rev-pix-valor').textContent = brl(t.total);
-  } else {
-      $('#rev-box-pix').style.display = 'none';
-  }
+  if (pgto === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total);
+  } else { $('#rev-box-pix').style.display = 'none'; }
 
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
-  if(tipo === 'Entrega' && t.entrega > 0) {
-    $('#rev-linha-taxa').style.display = 'flex';
-    $('#rev-taxa-value').textContent = brl(t.entrega);
-  } else {
-    $('#rev-linha-taxa').style.display = 'none';
-  }
+  if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega);
+  } else { $('#rev-linha-taxa').style.display = 'none'; }
   $('#rev-total-value').textContent = brl(t.total);
 }
 
-function voltarParaCarrinho() {
-  fecharModal('review-overlay');
-  abrirModal('cart-overlay');
-}
+function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) {
     let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value;
@@ -973,24 +917,9 @@ function montarPedido() {
   const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value})` : '';
   
   return { 
-    status: 'Novo', 
-    cliente_nome: $('#cli-nome').value.trim(), 
-    cliente_telefone: soDigitos($('#cli-telefone').value), 
-    cliente_endereco: endStr, 
-    tipo_entrega: tipo, 
-    forma_pagamento: $('#cli-pagamento').value, 
-    itens: carrinho.map(i => ({ 
-        nome: nomeItem(i), 
-        qtd: i.qtd, 
-        sabores: i.sabores, 
-        extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), 
-        obs: i.obs, 
-        unitario_centavos: i.unitario, 
-        total_centavos: i.total 
-    })), 
-    subtotal_centavos: t.subtotal, 
-    taxa_centavos: t.entrega, 
-    total_centavos: t.total 
+    status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: $('#cli-pagamento').value, 
+    itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), 
+    subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total 
   };
 }
 
@@ -1016,20 +945,14 @@ function montarMensagem(p) {
       L.push('', `*PIX COPIA E COLA:*`, payload);
       L.push('', `Por favor, envie o comprovante de pagamento respondendo a esta mensagem. Obrigado!`);
   }
-  
   return L.join('\n');
 }
 
 async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
 
-// 5.2 ENVIAR PEDIDO FINAL APÓS REVISÃO
 async function enviarPedidoFinal(ev) {
   ev.preventDefault(); 
-  if(!lojaAberta) { 
-    if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa');
-    else alert("Nossa loja está fechada no momento.");
-    return; 
-  } 
+  if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else alert("Nossa loja está fechada no momento."); return; } 
   
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   const aba = window.open('about:blank', '_blank'); 
@@ -1042,22 +965,9 @@ async function enviarPedidoFinal(ev) {
   carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false;
 }
 
-function abrirModal(id) { 
-  const ov = document.getElementById(id); 
-  ov.style.display = 'flex'; 
-  setTimeout(() => ov.classList.add('open'), 10); 
-  document.body.style.overflow = 'hidden'; 
-  if (id === 'cart-overlay') atualizarUI(); 
-}
+function abrirModal(id) { const ov = document.getElementById(id); ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); }
+function fecharModal(id) { const ov = document.getElementById(id); ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; }
 
-function fecharModal(id) { 
-  const ov = document.getElementById(id);
-  ov.classList.remove('open'); 
-  setTimeout(() => { ov.style.display = 'none'; }, 300); 
-  if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; 
-}
-
-// 6. COMUNICAÇÃO COM O FIREBASE
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
@@ -1070,55 +980,57 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
     const rodape = document.getElementById('footer-funcionamento');
     if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
     
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) {
-       abrirModal('modal-aviso-pausa');
-    }
-    
-    lojaEstavaPausada = configLoja.forcarFechamento;
-    primeiraCargaPausa = false;
-
-    verificarHorario(); 
-    renderCardapio();   
+    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { abrirModal('modal-aviso-pausa'); }
+    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
+    verificarHorario(); renderCardapio();   
   }
-}, error => {
-  console.log("Modo leitura local.");
+}, error => { console.log("Modo leitura local."); });
+
+// LISTENERS DE CLIQUE E MÚLTIPLOS CARDS
+document.addEventListener('click', e => {
+  // Lida com o clique nas opções de metades (Cards novos)
+  const cardOpt = e.target.closest('.extra-opt-card');
+  if (cardOpt) {
+      const grid = cardOpt.closest('.extra-options-grid');
+      if (grid) {
+          grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active'));
+          cardOpt.classList.add('active');
+          atualizarBuilderTotal();
+      }
+  }
 });
 
-// 7. LISTENERS ESSENCIAIS DE CLIQUE
 $('#cardapio').addEventListener('click', e => { const b = e.target.closest('[data-escolher]'); if (b) escolherSabor(b.dataset.escolher); });
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
-
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
-$('#builder-extras').addEventListener('change', e => { if(e.target.classList.contains('extra-chk')) { const row = e.target.closest('.extra-row'); if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); } atualizarBuilderTotal(); });
+
+// Quando marca/desmarca a caixa principal do adicional
+$('#builder-extras').addEventListener('change', e => { 
+    if(e.target.classList.contains('extra-chk')) { 
+        const row = e.target.closest('.extra-row'); 
+        if(e.target.checked) row.classList.add('checked'); 
+        else row.classList.remove('checked'); 
+    } 
+    atualizarBuilderTotal(); 
+});
 
 $('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Math.max(1, parseInt($('#qty-val').textContent, 10) - 1); atualizarBuilderTotal(); });
 $('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); });
 $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 
-// INTERCEPTA O SUBMIT DO CHECKOUT PARA MOSTRAR A REVISÃO
 $('#checkout-form').addEventListener('submit', e => {
   e.preventDefault(); 
-  if(!lojaAberta) { 
-    if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa');
-    else alert("Nossa loja está fechada no momento.");
-    return; 
-  } 
+  if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else alert("Nossa loja está fechada no momento."); return; } 
   if (!validarCheckout()) return;
-  
-  montarRevisao();
-  fecharModal('cart-overlay');
-  setTimeout(() => { abrirModal('review-overlay'); }, 150); 
+  montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); 
 });
 
-// Listener do Cartão Entrega/Retirada
 $$('.delivery-card').forEach(card => {
   card.addEventListener('click', () => {
-    $$('.delivery-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    $('#cli-tipo-pedido').value = card.dataset.tipo;
-    atualizarUI();
+    $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active');
+    $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI();
   });
 });
 
@@ -1129,7 +1041,6 @@ $('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && confi
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
 
-// COPIAR PIX AGORA ESTÁ LIGADO AO NOVO ID DA REVISÃO
 $('#rev-btn-copy-pix').addEventListener('click', async e => {
   const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total);
   try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); }
@@ -1137,12 +1048,7 @@ $('#rev-btn-copy-pix').addEventListener('click', async e => {
 });
 $('#ano').textContent = new Date().getFullYear();
 
-// Inicialização segura
-verificarHorario();
-setInterval(verificarHorario, 60000); 
-renderCardapio(); 
-carregar(); 
-atualizarUI();
+verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); atualizarUI();
 </script>
 </body>
 </html>
