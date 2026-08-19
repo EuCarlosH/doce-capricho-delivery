@@ -35,7 +35,6 @@
   --danger: #E63946;
   --warning: #F59E0B;
   --border-light: rgba(255,255,255,0.05);
-  /* Curva de animação ultra fluida tipo iOS */
   --smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -137,13 +136,12 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 .cart-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
 
-/* ANIMAÇÕES FLUIDAS (MODAIS E BANNERS) */
+/* ANIMAÇÕES FLUIDAS */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes slideUpModal { 0% { transform: translateY(50px) scale(0.98); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
 @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 
-/* MODAIS */
+/* MODAIS BASE */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
 .modal-overlay.open { display: flex; opacity: 1; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); transform: translateY(50px); opacity: 0; transition: all 0.4s var(--smooth); }
@@ -153,7 +151,33 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal:hover { color: var(--danger); transform: scale(1.1) rotate(90deg); }
 .modal-box h2 { color: var(--gold); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 700; padding-right: 30px; }
 
-/* BUILDER FORMS E EXTRAS MULTIPLOS */
+/* TELA DE REVISÃO (NOVA) */
+.review-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 12px; padding: 18px; margin-bottom: 15px; transition: all 0.3s ease; }
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
+.review-header h4 { font-size: 13px; color: var(--gold); display: flex; align-items: center; gap: 8px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+.btn-edit-review { background: transparent; border: none; color: var(--text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: color 0.3s; padding: 4px 8px; border-radius: 4px; border: 1px solid transparent; }
+.btn-edit-review:hover { color: var(--gold); border-color: rgba(212,175,55,0.3); background: rgba(212,175,55,0.05); }
+.review-content { font-size: 13px; color: var(--text-main); line-height: 1.6; }
+.review-item-line { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.review-item-detalhe { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
+.review-total-box { background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+
+/* CARTÕES DE ENTREGA / RETIRADA */
+.delivery-options { display: flex; gap: 15px; margin-bottom: 10px; margin-top: 5px; }
+.delivery-card { flex: 1; border: 1px solid var(--border-light); border-radius: 12px; padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.3s var(--smooth); background: rgba(255,255,255,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; overflow: hidden; }
+.delivery-card::after { content: ''; position: absolute; inset: 0; border-radius: 12px; border: 2px solid transparent; transition: border-color 0.3s ease; pointer-events: none; }
+.delivery-card svg { width: 26px; height: 26px; stroke: var(--text-muted); fill: none; stroke-width: 1.5; transition: stroke 0.3s ease; }
+.delivery-card strong { font-size: 13px; font-weight: 700; color: var(--text-main); transition: color 0.3s ease; }
+.delivery-card small { font-size: 10px; color: var(--text-muted); transition: color 0.3s ease; }
+
+.delivery-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
+.delivery-card.active { background: rgba(212,175,55,0.08); transform: translateY(0); }
+.delivery-card.active::after { border-color: var(--gold); }
+.delivery-card.active svg { stroke: var(--gold); }
+.delivery-card.active strong { color: var(--gold); }
+.delivery-card.active small { color: var(--gold-dark); }
+
+/* FORMS E BUILDER */
 .builder-group { margin-bottom: 20px; border: none; }
 .builder-label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
 .builder-base { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-main); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-light); font-weight: 500; }
@@ -181,21 +205,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-add-modal { background: var(--gold); color: var(--bg-main); border: none; padding: 16px; border-radius: 8px; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin-top: 20px; transition: all 0.3s var(--smooth); }
 .btn-add-modal:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
 .btn-add-modal:active { transform: translateY(1px); }
-
-/* CARTÕES DE ENTREGA / RETIRADA */
-.delivery-options { display: flex; gap: 15px; margin-bottom: 10px; margin-top: 5px; }
-.delivery-card { flex: 1; border: 1px solid var(--border-light); border-radius: 12px; padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.3s var(--smooth); background: rgba(255,255,255,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; overflow: hidden; }
-.delivery-card::after { content: ''; position: absolute; inset: 0; border-radius: 12px; border: 2px solid transparent; transition: border-color 0.3s ease; pointer-events: none; }
-.delivery-card svg { width: 26px; height: 26px; stroke: var(--text-muted); fill: none; stroke-width: 1.5; transition: stroke 0.3s ease; }
-.delivery-card strong { font-size: 13px; font-weight: 700; color: var(--text-main); transition: color 0.3s ease; }
-.delivery-card small { font-size: 10px; color: var(--text-muted); transition: color 0.3s ease; }
-
-.delivery-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
-.delivery-card.active { background: rgba(212,175,55,0.08); transform: translateY(0); }
-.delivery-card.active::after { border-color: var(--gold); }
-.delivery-card.active svg { stroke: var(--gold); }
-.delivery-card.active strong { color: var(--gold); }
-.delivery-card.active small { color: var(--gold-dark); }
 
 /* CHECKOUT E CARRINHO */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
@@ -233,7 +242,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s ease; margin-top: -5px; }
 .btn-continue:hover { color: var(--white); }
 
-/* FOOTER PREMIUM COM CONTATOS E TEXTO DINÂMICO */
+/* FOOTER PREMIUM COM CONTATOS */
 footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid var(--border-light); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; }
 .footer-logo { font-size: 20px; color: var(--gold); letter-spacing: 2px; }
 .footer-socials { display: flex; gap: 15px; justify-content: center; }
@@ -399,17 +408,19 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="cart-overlay">&times;</button>
-    <h2 id="cart-title" class="brand-font">Seu Pedido</h2>
+    <h2 id="cart-title" class="brand-font">Seu Carrinho</h2>
     
     <ul class="cart-items-list" id="cart-items-list"></ul>
     
     <div class="cart-totals-area">
       <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
-      <div class="cart-sub-line" id="linha-taxa"><span>Taxa de entrega</span><span id="cart-taxa-value">R$ 0,00</span></div>
-      <div class="cart-total-line"><span>Total</span><span id="cart-total-value">R$ 0,00</span></div>
     </div>
     
     <form class="checkout-form" id="checkout-form" novalidate>
+      <div style="margin-top: 15px; border-top: 1px dashed var(--border-light); padding-top: 15px;">
+        <h4 class="brand-font" style="color:var(--gold); margin-bottom: 15px; font-size: 15px;">Dados do Pedido</h4>
+      </div>
+
       <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
       <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
       
@@ -453,17 +464,57 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
           <option value="Cartão">Cartão na entrega/retirada</option>
         </select>
       </div>
-      <div class="box-destaque" id="box-pix">
-        <p style="font-size:11px; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase;">Valor exato a transferir:</p>
-        <strong style="color:var(--gold); font-size:18px;" id="pix-valor-transferir">R$ 0,00</strong>
-        <button type="button" class="btn-copy-pix" id="btn-copy-pix">Copiar Código PIX</button>
-      </div>
       
       <p class="form-msg" id="form-msg"></p>
       
-      <button type="submit" class="btn-finish" id="btn-finish">Finalizar via WhatsApp</button>
+      <button type="submit" class="btn-finish" id="btn-avancar" style="background:var(--gold); color:var(--bg-main);">Avançar para Revisão</button>
       <button type="button" class="btn-continue" data-close="cart-overlay">Continuar Comprando</button>
     </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="review-overlay">
+  <div class="modal-box">
+    <button class="close-modal" onclick="voltarParaCarrinho()">&times;</button>
+    <h2 class="brand-font">Revisão do Pedido</h2>
+    
+    <div class="review-card">
+      <div class="review-header">
+        <h4>🛍️ Itens do Pedido</h4>
+        <button class="btn-edit-review" onclick="voltarParaCarrinho()">Editar</button>
+      </div>
+      <div class="review-content" id="review-items"></div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-header">
+        <h4>🛵 Recebimento</h4>
+        <button class="btn-edit-review" onclick="voltarParaCarrinho()">Editar</button>
+      </div>
+      <div class="review-content" id="review-delivery"></div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-header">
+        <h4>💳 Pagamento</h4>
+        <button class="btn-edit-review" onclick="voltarParaCarrinho()">Editar</button>
+      </div>
+      <div class="review-content" id="review-payment"></div>
+    </div>
+
+    <div class="review-total-box">
+      <div class="cart-sub-line"><span>Subtotal</span><span id="rev-subtotal-value">R$ 0,00</span></div>
+      <div class="cart-sub-line" id="rev-linha-taxa"><span>Taxa de entrega</span><span id="rev-taxa-value">R$ 0,00</span></div>
+      <div class="cart-total-line" style="border-top-color: rgba(212,175,55,0.3);"><span>Total a Pagar</span><span id="rev-total-value">R$ 0,00</span></div>
+    </div>
+
+    <div class="box-destaque" id="box-pix" style="display:none; margin-bottom: 20px;">
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase;">Transferência PIX:</p>
+      <button type="button" class="btn-copy-pix" id="btn-copy-pix">Copiar Código PIX</button>
+      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(Você enviará o comprovante no WhatsApp na próxima tela)</p>
+    </div>
+
+    <button type="button" class="btn-finish" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
   </div>
 </div>
 
@@ -532,7 +583,7 @@ let primeiraCargaPausa = true;
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 const STORAGE_KEY = 'dca_carrinho_v6';
 
-// 4. FUNÇÕES DE RELÓGIO (COM PROTEÇÃO TRY-CATCH)
+// 4. FUNÇÕES DE RELÓGIO E STATUS DA LOJA
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -607,7 +658,7 @@ function atualizarStatusLoja() {
   }
 }
 
-// 5. FUNÇÕES DE INTERFACE (CARRINHO E MODAIS)
+// 5. FUNÇÕES DE INTERFACE E CARRINHO
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
 
@@ -737,14 +788,13 @@ function atualizarUI() {
     return `<li class="cart-item"><div class="cart-item-info"><strong>${i.qtd}× ${esc(nomeItem(i))}</strong>${det.map(d => `<small>${d}</small>`).join('')}</div><span class="cart-item-price">${brl(i.total)}</span><button type="button" class="remove-btn" data-remover="${i.uid}">&times;</button></li>`;
   }).join('') : '<li class="cart-empty">Seu carrinho está vazio.</li>';
   
-  const t = totais(); $('#cart-subtotal-value').textContent = brl(t.subtotal); $('#cart-taxa-value').textContent = brl(t.entrega); $('#cart-total-value').textContent = brl(t.total); $('#pix-valor-transferir').textContent = brl(t.total);
+  const t = totais(); 
+  $('#cart-subtotal-value').textContent = brl(t.subtotal); 
   
   const badge = $('#cart-count'); badge.textContent = qtdTotal; badge.classList.toggle('show', qtdTotal > 0);
   const badgeBottom = $('#bottom-cart-count'); if(badgeBottom) { badgeBottom.textContent = qtdTotal; badgeBottom.classList.toggle('show', qtdTotal > 0); }
   
   const entrega = $('#cli-tipo-pedido').value === 'Entrega'; 
-  
-  // Animação fluida da altura da caixa de endereço
   const boxEnd = $('#box-endereco');
   if(entrega) {
       boxEnd.style.display = 'block';
@@ -755,9 +805,7 @@ function atualizarUI() {
   }
 
   $('#cli-cep').required = entrega; $('#cli-endereco').required = entrega; 
-  $('#linha-taxa').style.display = (entrega && CONFIG.taxaEntrega > 0) ? 'flex' : 'none'; 
-  $('#box-pix').style.display = $('#cli-pagamento').value === 'PIX' ? 'block' : 'none'; 
-  $('#btn-finish').disabled = carrinho.length === 0;
+  $('#btn-avancar').disabled = carrinho.length === 0;
 }
 
 function validarCheckout() {
@@ -774,6 +822,50 @@ function validarCheckout() {
   
   if (!carrinho.length) erros.push('Adicione pelo menos uma pizza.');
   const msg = $('#form-msg'); msg.textContent = erros[0] || ''; msg.classList.toggle('show', erros.length > 0); return erros.length === 0;
+}
+
+// 5.1 NOVA TELA DE REVISÃO
+function montarRevisao() {
+  const t = totais();
+  const tipo = $('#cli-tipo-pedido').value;
+  const pgto = $('#cli-pagamento').value;
+
+  // Itens
+  $('#review-items').innerHTML = carrinho.map(i => {
+    return `<div class="review-item-line"><strong>${i.qtd}x ${esc(nomeItem(i))}</strong> <span>${brl(i.total)}</span></div>`;
+  }).join('');
+
+  // Recebimento
+  if(tipo === 'Entrega') {
+    $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-endereco').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
+  } else {
+    $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">Te avisaremos quando estiver pronto.</span>`;
+  }
+
+  // Pagamento
+  $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
+  
+  if (pgto === 'PIX') {
+      $('#box-pix').style.display = 'block';
+      $('#pix-valor-transferir').textContent = brl(t.total);
+  } else {
+      $('#box-pix').style.display = 'none';
+  }
+
+  // Totais
+  $('#rev-subtotal-value').textContent = brl(t.subtotal);
+  if(tipo === 'Entrega' && t.entrega > 0) {
+    $('#rev-linha-taxa').style.display = 'flex';
+    $('#rev-taxa-value').textContent = brl(t.entrega);
+  } else {
+    $('#rev-linha-taxa').style.display = 'none';
+  }
+  $('#rev-total-value').textContent = brl(t.total);
+}
+
+function voltarParaCarrinho() {
+  fecharModal('review-overlay');
+  abrirModal('cart-overlay');
 }
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) {
@@ -800,16 +892,16 @@ function montarMensagem(p) {
 
 async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
 
-async function finalizar(ev) {
+// 5.2 ENVIAR PEDIDO FINAL APÓS REVISÃO
+async function enviarPedidoFinal(ev) {
   ev.preventDefault(); 
   if(!lojaAberta) { 
     if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa');
     else alert("Nossa loja está fechada no momento.");
     return; 
   } 
-  if (!validarCheckout()) return;
   
-  const btn = $('#btn-finish'); btn.disabled = true; btn.textContent = 'Enviando...';
+  const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   const aba = window.open('about:blank', '_blank'); 
   const pedido = montarPedido(); 
   const id = await gravarFirestore(pedido); 
@@ -817,12 +909,12 @@ async function finalizar(ev) {
   let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
-  carrinho = []; salvar(); atualizarUI(); fecharModal('cart-overlay'); btn.textContent = 'Finalizar via WhatsApp'; btn.disabled = false;
+  carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false;
 }
 
 function abrirModal(id) { 
   const ov = document.getElementById(id); 
-  ov.style.display = 'flex'; // Prepara para animar
+  ov.style.display = 'flex'; 
   setTimeout(() => ov.classList.add('open'), 10); 
   document.body.style.overflow = 'hidden'; 
   if (id === 'cart-overlay') atualizarUI(); 
@@ -831,11 +923,11 @@ function abrirModal(id) {
 function fecharModal(id) { 
   const ov = document.getElementById(id);
   ov.classList.remove('open'); 
-  setTimeout(() => { ov.style.display = 'none'; }, 300); // Espera a animação terminar
+  setTimeout(() => { ov.style.display = 'none'; }, 300); 
   if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; 
 }
 
-// 6. COMUNICAÇÃO COM O FIREBASE (Roda com tudo pronto)
+// 6. COMUNICAÇÃO COM O FIREBASE
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
@@ -874,7 +966,22 @@ $('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Ma
 $('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); });
 $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
-$('#cli-pagamento').addEventListener('change', atualizarUI); $('#checkout-form').addEventListener('submit', finalizar);
+$('#cli-pagamento').addEventListener('change', atualizarUI); 
+
+// INTERCEPTA O SUBMIT DO CHECKOUT PARA MOSTRAR A REVISÃO
+$('#checkout-form').addEventListener('submit', e => {
+  e.preventDefault(); 
+  if(!lojaAberta) { 
+    if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa');
+    else alert("Nossa loja está fechada no momento.");
+    return; 
+  } 
+  if (!validarCheckout()) return;
+  
+  montarRevisao();
+  fecharModal('cart-overlay');
+  setTimeout(() => { abrirModal('review-overlay'); }, 150); // Delay suave entre transições
+});
 
 // Listener do Cartão Entrega/Retirada
 $$('.delivery-card').forEach(card => {
