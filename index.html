@@ -33,6 +33,7 @@
   --white: #FFFFFF;
   --whatsapp: #25D366;
   --danger: #E63946;
+  --warning: #F59E0B;
   --border-light: rgba(255,255,255,0.05);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -55,7 +56,7 @@ nav.top-nav {
 .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
 .status-badge { border: 1px solid var(--gold); color: var(--gold); padding: 6px 16px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .status-badge.fechado { border-color: var(--danger); color: var(--danger); }
-.status-badge.pausado { border-color: #F59E0B; color: #F59E0B; background: rgba(245,158,11,0.1); }
+.status-badge.pausado { border-color: var(--warning); color: var(--warning); background: rgba(245,158,11,0.1); }
 
 /* BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) */
 .bottom-nav { display: none; }
@@ -72,14 +73,19 @@ nav.top-nav {
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
 
-/* MODO TOGGLE */
-.mode-toggle-area { display: flex; justify-content: center; margin-bottom: 50px; margin-top: 20px; }
+/* MODO TOGGLE E BANNERS */
+.mode-toggle-area { display: flex; justify-content: center; margin-bottom: 30px; margin-top: 20px; }
 .mode-buttons { display: inline-flex; border: 1px solid rgba(212,175,55,0.3); border-radius: 30px; overflow: hidden; background: var(--bg-card); }
 .mode-btn { padding: 12px 30px; background: transparent; border: none; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
 .mode-btn[aria-pressed="true"] { background: rgba(212,175,55,0.1); color: var(--gold); }
 .meio-banner { background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; padding: 15px; margin-bottom: 40px; text-align: center; font-size: 13px; color: var(--gold); display: none; }
 .meio-banner.show { display: block; }
 .btn-link-cancel { background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 12px; margin-left: 8px; }
+
+/* BANNER DE PAUSA PERMANENTE */
+#banner-pausado { display: none; background: rgba(245,158,11,0.08); border: 1px dashed rgba(245,158,11,0.4); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 40px; }
+#banner-pausado h4 { color: var(--warning); margin-bottom: 8px; font-size: 16px; letter-spacing: 1px; }
+#banner-pausado p { color: var(--text-main); font-size: 13px; line-height: 1.6; }
 
 /* CATEGORY TITLE */
 .category-title { display: flex; align-items: center; font-size: 16px; color: var(--gold); margin: 40px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
@@ -130,7 +136,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; }
 
 /* MODAIS */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
-.modal-overlay.open { display: flex; }
+.modal-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 12px; padding: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); }
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 26px; cursor: pointer; color: var(--text-muted); border: none; background: none; transition: color 0.3s; z-index: 10; }
 .close-modal:hover { color: var(--danger); }
@@ -204,7 +210,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 .footer-info { font-size: 12px; color: var(--text-muted); line-height: 1.8; letter-spacing: 1px; }
 .footer-copy { font-size: 10px; color: #555; margin-top: 10px; }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* RESPONSIVO E NAVBAR INFERIOR (MOBILE) */
 @media (max-width: 768px) {
@@ -261,6 +267,12 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </header>
 
 <section id="cardapio" class="section-container">
+  
+  <div id="banner-pausado">
+    <h4 class="brand-font">Pausa Temporária 🛑</h4>
+    <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
+  </div>
+
   <div class="mode-toggle-area">
     <div class="mode-buttons" role="group">
       <button type="button" class="mode-btn" id="btn-mode-inteira" aria-pressed="true" data-modo="inteira">Pizza Inteira</button>
@@ -307,6 +319,20 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </nav>
 
 <button class="cart-floating-btn" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
+
+<div class="modal-overlay" id="modal-aviso-pausa">
+  <div class="modal-box" style="text-align: center; max-width: 400px; padding: 40px 30px;">
+    <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
+    <h2 class="brand-font" style="color: var(--warning); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
+    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6;">
+      Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.
+    </p>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">
+      Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.
+    </p>
+    <button type="button" class="btn-add-modal" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--warning); border: 1px solid var(--warning);">Compreendo</button>
+  </div>
+</div>
 
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
@@ -446,6 +472,8 @@ const EXTRAS = [
 
 let lojaAberta = false;
 let configLoja = { forcarFechamento: false, itensEsgotados: [] }; 
+let lojaEstavaPausada = false; // Rastreia o estado anterior para abrir o modal
+let primeiraCargaPausa = true;
 
 // --- FUNÇÃO DO RELÓGIO E TESTE ADMIN (HIERARQUIA CORRETA) ---
 function verificarHorario() {
@@ -475,14 +503,25 @@ function verificarHorario() {
 
 function atualizarStatusLoja() {
   const badge = document.getElementById('nav-status-badge');
+  const bannerPausa = document.getElementById('banner-pausado');
+
   if (!lojaAberta) {
     document.body.classList.add('loja-fechada');
     if(badge) {
-      if(configLoja.forcarFechamento) { badge.textContent = 'PAUSADO'; badge.className = 'status-badge pausado'; }
-      else { badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado'; }
+      if(configLoja.forcarFechamento) { 
+        badge.textContent = 'PEDIDOS PAUSADOS'; 
+        badge.className = 'status-badge pausado'; 
+        if(bannerPausa) bannerPausa.style.display = 'block'; // Mostra banner permanente
+      }
+      else { 
+        badge.textContent = 'FECHADO'; 
+        badge.className = 'status-badge fechado'; 
+        if(bannerPausa) bannerPausa.style.display = 'none'; // Esconde banner de pausa se for só relógio
+      }
     }
   } else {
     document.body.classList.remove('loja-fechada');
+    if(bannerPausa) bannerPausa.style.display = 'none';
     if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; }
   }
 }
@@ -495,6 +534,15 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   if(doc.exists) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    
+    // A MÁGICA DO POP-UP AO VIVO: Se mudou para pausado enquanto o cliente está na tela, abre o aviso.
+    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) {
+       abrirModal('modal-aviso-pausa');
+    }
+    
+    lojaEstavaPausada = configLoja.forcarFechamento;
+    primeiraCargaPausa = false;
+
     verificarHorario(); 
     renderCardapio();   
   }
@@ -583,7 +631,14 @@ function atualizarBanner() {
 }
 
 function escolherSabor(id) {
-  if(!lojaAberta) { alert(configLoja.forcarFechamento ? "Nossa loja está pausada momentaneamente." : "Nossa loja está fechada no momento."); return; }
+  if(!lojaAberta) { 
+    if (configLoja.forcarFechamento) {
+      abrirModal('modal-aviso-pausa'); // Se o cliente ignorar o aviso cinza e tentar clicar, mostra o modal bonitinho
+    } else {
+      alert("Nossa loja está fechada no momento. Atendemos das 18:30 às 23:00."); 
+    }
+    return; 
+  }
   if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
   
   if (modo === 'inteira') return abrirBuilder([id]);
@@ -694,7 +749,14 @@ function montarMensagem(p) {
 async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
 
 async function finalizar(ev) {
-  ev.preventDefault(); if(!lojaAberta) { alert(configLoja.forcarFechamento ? "Nossa loja está pausada momentaneamente." : "Nossa loja está fechada no momento."); return; } if (!validarCheckout()) return;
+  ev.preventDefault(); 
+  if(!lojaAberta) { 
+    if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa');
+    else alert("Nossa loja está fechada no momento.");
+    return; 
+  } 
+  if (!validarCheckout()) return;
+  
   const btn = $('#btn-finish'); btn.disabled = true; btn.textContent = 'Enviando...';
   const aba = window.open('about:blank', '_blank'); 
   const pedido = montarPedido(); 
@@ -719,9 +781,9 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#cli-tipo-pedido').addEventListener('change', atualizarUI); $('#cli-pagamento').addEventListener('change', atualizarUI); $('#checkout-form').addEventListener('submit', finalizar);
 
-$('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta) { alert(configLoja.forcarFechamento ? "A loja está pausada." : "A loja está fechada."); return; } abrirModal('cart-overlay'); });
-$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta) { alert(configLoja.forcarFechamento ? "A loja está pausada." : "A loja está fechada."); return; } abrirModal('cart-overlay'); });
-$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta) { alert(configLoja.forcarFechamento ? "A loja está pausada." : "A loja está fechada."); return; } abrirModal('cart-overlay'); });
+$('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return alert("A loja está fechada."); abrirModal('cart-overlay'); });
+$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return alert("A loja está fechada."); abrirModal('cart-overlay'); });
+$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return alert("A loja está fechada."); abrirModal('cart-overlay'); });
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
