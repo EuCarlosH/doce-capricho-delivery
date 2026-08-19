@@ -126,7 +126,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <li><a href="#cardapio">Cardápio</a></li>
       <li><button type="button" id="btn-nav-order">Meus Pedidos</button></li>
     </ul>
-    <div id="nav-status-badge" class="status-badge">ABERTO</div>
+    <div id="nav-status-badge" class="status-badge">FECHADO</div>
   </div>
 </nav>
 
@@ -162,7 +162,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </button>
 </nav>
 
-<button class="cart-floating-btn" id="btn-cart-float">🛒<span class="cart-count" id="cart-count">0</span></button>
+<button class="cart-floating-btn" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
 
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
@@ -210,7 +210,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </div>
 
 <script>
-const CONFIG = { whatsapp: '5585921440055', taxaEntrega: 300, usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', taxaEntrega: 300 };
 const HORARIO = { inicioH: 18, inicioM: 30, fimH: 23, fimM: 0 };
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
 
@@ -221,46 +221,71 @@ const CARDAPIO = {
 
 const EXTRAS = [ { id:'catupiry', nome:'Catupiry', tipo:'metade_toda', precos:{ metade:1000, toda:1500 } }, { id:'cream', nome:'Cream Cheese', tipo:'metade_toda', precos:{ metade:1000, toda:1500 } }, { id:'bacon', nome:'Bacon', tipo:'fixo', preco:500 }, { id:'alho', nome:'Alho Poró', tipo:'fixo', preco:500 } ];
 
-let lojaAberta = true;
+let lojaAberta = false; // Começa como falso até a verificação rodar
 let configLoja = { forcarFechamento: false, itensEsgotados: [] }; 
 
-if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.firestore();
-
-// Trava de segurança (catch) para que o site não congele se o banco não responder
-db.collection('configuracoes').doc('geral').onSnapshot(doc => {
-  if(doc.exists) {
-    configLoja = doc.data();
-    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
-    verificarHorario(); 
-    renderCardapio();   
-  }
-}, error => {
-  console.log("Modo leitura local ativado.");
-});
-
+// --- FUNÇÃO DO RELÓGIO (AGORA RODA IMEDIATAMENTE) ---
 function verificarHorario() {
-  const agora = new Date(); const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
-  const tempoInicio = HORARIO.inicioH * 60 + HORARIO.inicioM; const tempoFim = HORARIO.fimH * 60 + HORARIO.fimM;
-  if (configLoja.forcarFechamento === true) { lojaAberta = false; } else { lojaAberta = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
+  const agora = new Date(); 
+  const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
+  const tempoInicio = HORARIO.inicioH * 60 + HORARIO.inicioM; 
+  const tempoFim = HORARIO.fimH * 60 + HORARIO.fimM;
+  
+  let dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim);
+  
+  // Se o Admin pausou, ignora o relógio. Senão, segue o relógio.
+  if (configLoja.forcarFechamento === true) { 
+    lojaAberta = false; 
+  } else { 
+    lojaAberta = dentroDoHorario; 
+  }
   atualizarStatusLoja();
 }
 
 function atualizarStatusLoja() {
   const badge = document.getElementById('nav-status-badge');
-  if (!lojaAberta) { document.body.classList.add('loja-fechada'); if(badge) { if(configLoja.forcarFechamento) { badge.textContent = 'PAUSADO'; badge.className = 'status-badge pausado'; } else { badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado'; } }
-  } else { document.body.classList.remove('loja-fechada'); if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } }
+  if (!lojaAberta) { 
+    document.body.classList.add('loja-fechada'); 
+    if(badge) { 
+      if(configLoja.forcarFechamento) { badge.textContent = 'PAUSADO'; badge.className = 'status-badge pausado'; } 
+      else { badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado'; } 
+    }
+  } else { 
+    document.body.classList.remove('loja-fechada'); 
+    if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } 
+  }
 }
+
+// Roda assim que o código carrega, não depende do banco!
+verificarHorario();
 setInterval(verificarHorario, 60000); 
+
+// --- CONEXÃO FIREBASE PARA VERIFICAR PAUSA / ESGOTADOS ---
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+db.collection('configuracoes').doc('geral').onSnapshot(doc => {
+  if(doc.exists) {
+    configLoja = doc.data();
+    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    verificarHorario(); // Atualiza a tela se o admin tiver pausado
+    renderCardapio();   // Atualiza os produtos esgotados
+  }
+}, error => {
+  console.log("Modo leitura local. Banco protegido contra leitura não autenticada.");
+});
 
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+const soDigitos = s => String(s).replace(/\D/g, '');
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
 const acharSabor = id => todosSabores().find(s => s.id === id);
+const rotuloAplicacao = a => a === 'metade' ? 'metade da pizza' : 'pizza inteira';
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v4';
+const STORAGE_KEY = 'dca_carrinho_v5';
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d; } catch (e) { carrinho = []; } }
 
