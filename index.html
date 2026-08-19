@@ -426,7 +426,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </div>
 
 <script>
-// 1. FERRAMENTAS DO SITE (Carregadas primeiro para não travar)
+// 1. FERRAMENTAS DO SITE
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
@@ -489,7 +489,7 @@ let primeiraCargaPausa = true;
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 const STORAGE_KEY = 'dca_carrinho_v5';
 
-// 4. FUNÇÕES DE RELÓGIO (COM PROTEÇÃO TRY-CATCH)
+// 4. FUNÇÕES DE RELÓGIO E STATUS DA LOJA
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -534,7 +534,7 @@ function verificarHorario() {
     atualizarStatusLoja();
   } catch (error) {
     console.error("Erro ao verificar horário:", error);
-    lojaAberta = false; // Em caso de falha severa, mantém fechado por segurança
+    lojaAberta = false; 
     atualizarStatusLoja();
   }
 }
@@ -564,11 +564,11 @@ function atualizarStatusLoja() {
   }
 }
 
-// 5. FUNÇÕES DE INTERFACE (CARRINHO E MODAIS)
+// 5. FUNÇÕES DE INTERFACE E CARRINHO
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
 
-const precoBase = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
+const precoBaseVal = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
 
 function validarItem(item) {
   if (!item || !Array.isArray(item.sabores) || !item.sabores.length || item.sabores.length > 2) return false;
@@ -579,7 +579,7 @@ function validarItem(item) {
     if (def.tipo === 'fixo') { ex.aplicacao = 'toda'; ex.preco = def.preco; } else { if (ex.aplicacao !== 'metade' && ex.aplicacao !== 'toda') return false; ex.preco = def.precos[ex.aplicacao]; }
     ex.nome = def.nome; return true;
   });
-  item.base = precoBase(item.sabores); item.unitario = item.base + item.extras.reduce((s, e) => s + e.preco, 0); item.total = item.unitario * item.qtd; item.obs = String(item.obs || '').slice(0, 200);
+  item.base = precoBaseVal(item.sabores); item.unitario = item.base + item.extras.reduce((s, e) => s + e.preco, 0); item.total = item.unitario * item.qtd; item.obs = String(item.obs || '').slice(0, 200);
   return true;
 }
 
@@ -649,7 +649,7 @@ function escolherSabor(id) {
 function abrirBuilder(ids) {
   builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
-  $('#builder-base-valor').textContent = brl(precoBase(ids));
+  $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
   $('#builder-extras').innerHTML = EXTRAS.map(e => {
     if (e.tipo === 'fixo') {
@@ -675,7 +675,7 @@ function lerExtras() {
 function atualizarBuilderTotal() { 
   if (!builder) return; builder.qtd = parseInt($('#qty-val').textContent, 10) || 1; 
   const extras = lerExtras().reduce((s, e) => s + e.preco, 0); 
-  $('#builder-subtotal').textContent = brl((precoBase(builder.sabores) + extras) * builder.qtd); 
+  $('#builder-subtotal').textContent = brl((precoBaseVal(builder.sabores) + extras) * builder.qtd); 
 }
 
 function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
@@ -797,10 +797,12 @@ db.collection('configuracoes').doc('geral').onSnapshot(doc => {
   console.log("Modo leitura local.");
 });
 
-// 7. LISTENERS E INICIALIZAÇÃO
+// 7. LISTENERS ESSENCIAIS DE CLIQUE (AS LINHAS QUE FALTARAM)
+$('#cardapio').addEventListener('click', e => { const b = e.target.closest('[data-escolher]'); if (b) escolherSabor(b.dataset.escolher); });
+$$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
-
 $('#builder-extras').addEventListener('change', e => { if(e.target.classList.contains('extra-chk')) { const row = e.target.closest('.extra-row'); if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); } atualizarBuilderTotal(); });
 
 $('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Math.max(1, parseInt($('#qty-val').textContent, 10) - 1); atualizarBuilderTotal(); });
