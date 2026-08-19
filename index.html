@@ -73,10 +73,16 @@ nav.top-nav {
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--gold); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; }
 .hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 400; letter-spacing: 1px; color: var(--text-main); max-width: 400px; line-height: 1.8; }
 
-.section-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+.section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
+
+/* STICKY MENU (NOVO) */
+.sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+.sticky-menu-wrapper::-webkit-scrollbar { display: none; }
+.sticky-btn { white-space: nowrap; background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border-light); padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; }
+.sticky-btn:hover, .sticky-btn.active { background: rgba(212,175,55,0.1); color: var(--gold); border-color: var(--gold); }
 
 /* MODO TOGGLE E BANNERS */
-.mode-toggle-area { display: flex; justify-content: center; margin-bottom: 30px; margin-top: 20px; }
+.mode-toggle-area { display: flex; justify-content: center; margin-bottom: 30px; margin-top: 10px; }
 .mode-buttons { display: inline-flex; border: 1px solid rgba(212,175,55,0.3); border-radius: 30px; overflow: hidden; background: var(--bg-card); transition: all 0.3s ease;}
 .mode-btn { padding: 12px 30px; background: transparent; border: none; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; }
 .mode-btn[aria-pressed="true"] { background: rgba(212,175,55,0.1); color: var(--gold); }
@@ -91,7 +97,7 @@ nav.top-nav {
 #banner-pausado p { color: var(--text-main); font-size: 13px; line-height: 1.6; }
 
 /* CATEGORY TITLE */
-.category-title { display: flex; align-items: center; font-size: 16px; color: var(--gold); margin: 40px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
+.category-title { display: flex; align-items: center; font-size: 16px; color: var(--gold); margin: 40px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; scroll-margin-top: 140px; }
 .category-title::after { content: ""; flex: 1; height: 1px; background: rgba(212,175,55,0.3); margin-left: 20px; }
 
 /* CARDS E ETIQUETAS DE DESTAQUE */
@@ -138,13 +144,30 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extras-table td:last-child, .extras-table th:last-child { text-align: right; color: var(--gold); font-weight: 600; }
 .extras-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;}
 
-/* FLOATING CART (DESKTOP) */
-.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; background: var(--gold); color: var(--bg-main); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); cursor: pointer; z-index: 999; transition: transform 0.4s var(--smooth); border: none; }
-.cart-floating-btn:hover { transform: scale(1.1) translateY(-5px); }
+/* BOTÕES DE GRADIENTE METÁLICO (NOVO) */
+.btn-gradient { background: linear-gradient(135deg, #AA8C2C 0%, #F3E5AB 50%, #D4AF37 100%); background-size: 200% auto; color: var(--bg-main) !important; border: none; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; }
+.btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 5px 15px rgba(212,175,55,0.4); transform: translateY(-2px); }
+.btn-gradient:active:not(:disabled) { transform: translateY(1px); }
+.btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+/* FLOATING CART (DESKTOP) E BUMP ANIMATION */
+.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 999; }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 .cart-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
 
-/* ANIMAÇÕES FLUIDAS */
+@keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(-5deg); } 100% { transform: scale(1); } }
+.bump-anim { animation: bump 0.4s var(--smooth); }
+
+/* TOAST NOTIFICATIONS (NOVO) */
+#toast-container { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 400px; }
+.toast { background: rgba(18,18,18,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--text-main); padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; align-items: center; gap: 12px; animation: toastIn 0.4s var(--smooth) forwards; border: 1px solid var(--border-light); width: 100%; }
+.toast.error { border-color: rgba(230,57,70,0.5); border-left: 4px solid var(--danger); }
+.toast.warning { border-color: rgba(245,158,11,0.5); border-left: 4px solid var(--warning); }
+.toast.success { border-color: rgba(212,175,55,0.5); border-left: 4px solid var(--gold); }
+@keyframes toastIn { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes toastOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+
+/* ANIMAÇÕES FLUIDAS GERAIS */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
@@ -202,7 +225,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
 .extra-price { color: var(--gold); font-weight: 600; font-size: 13px; margin-left: 10px; }
 
-/* OPÇÕES EM FORMATO DE CARDS PARA OS ADICIONAIS */
 .extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
 .extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
 .extra-opt-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
@@ -219,9 +241,8 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .qty-val { font-size: 16px; font-weight: 700; min-width: 24px; text-align: center; color: var(--text-main); }
 
 .cart-total-line { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: var(--text-main); margin-top: 10px; padding-top: 15px; border-top: 1px dashed var(--border-light); transition: all 0.3s ease;}
-.btn-add-modal { background: var(--gold); color: var(--bg-main); border: none; padding: 16px; border-radius: 8px; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin-top: 20px; transition: all 0.3s var(--smooth); }
-.btn-add-modal:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-.btn-add-modal:active { transform: translateY(1px); }
+
+.btn-add-modal { padding: 16px; border-radius: 8px; width: 100%; font-size: 12px; margin-top: 20px; }
 
 /* CHECKOUT E CARRINHO */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
@@ -242,9 +263,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; }
 @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
-.form-msg { font-size: 12px; color: var(--danger); display: none; background: rgba(230,57,70,0.1); padding: 10px; border-radius: 8px; border-left: 3px solid var(--danger); animation: slideDown 0.3s var(--smooth); }
-.form-msg.show { display: block; }
-
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
 .endereco-row { display: flex; gap: 10px; margin-bottom: 10px; }
 .endereco-row > div:first-child { flex: 1.2; }
@@ -253,9 +271,9 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .box-destaque { background: rgba(212,175,55,0.05); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 20px; text-align: center; margin-top: 10px; animation: slideDown 0.4s var(--smooth); }
 .btn-copy-pix { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 12px; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: all 0.3s var(--smooth); }
 .btn-copy-pix:hover { background: var(--gold); color: var(--bg-main); transform: translateY(-2px); }
-.btn-finish { background: var(--whatsapp); color: #fff; border: none; padding: 16px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 10px; letter-spacing: 1px; transition: all 0.3s var(--smooth); }
-.btn-finish:hover:not(:disabled) { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37,211,102,0.3); }
-.btn-finish:active:not(:disabled) { transform: translateY(1px); }
+
+.btn-finish { padding: 16px; border-radius: 8px; font-size: 12px; margin-top: 10px; }
+
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s ease; margin-top: -5px; }
 .btn-continue:hover { color: var(--white); }
 
@@ -302,10 +320,15 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
   .cart-floating-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; font-size: 18px; }
   footer { padding-bottom: 120px; }
+  
+  .sticky-menu-wrapper { top: 58px; } /* Ajuste de altura para não sobrepor navbar no celular */
 }
 </style>
 </head>
 <body>
+
+<!-- TOAST CONTAINER (NOVO) -->
+<div id="toast-container"></div>
 
 <!-- NAVBAR TOPO -->
 <nav class="top-nav">
@@ -327,6 +350,13 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   
+  <!-- MENU STICKY FLUIDO (NOVO) -->
+  <div class="sticky-menu-wrapper" id="sticky-menu">
+    <a href="#cat-tradicionais" class="sticky-btn active">Tradicionais</a>
+    <a href="#cat-premium" class="sticky-btn">Premium</a>
+    <a href="#cat-extras" class="sticky-btn">Extras</a>
+  </div>
+  
   <div id="banner-pausado">
     <h4 class="brand-font">Pausa Temporária 🛑</h4>
     <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
@@ -341,13 +371,13 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
   <div id="meio-banner" class="meio-banner" role="status"></div>
 
-  <h3 class="category-title brand-font">Sabores Tradicionais</h3>
+  <h3 class="category-title brand-font" id="cat-tradicionais">Sabores Tradicionais</h3>
   <div class="grid-menu" id="grid-tradicionais"></div>
 
-  <h3 class="category-title brand-font" style="margin-top: 60px;">Sabores Premium</h3>
+  <h3 class="category-title brand-font" id="cat-premium" style="margin-top: 60px;">Sabores Premium</h3>
   <div class="grid-menu" id="grid-premium"></div>
 
-  <h3 class="category-title brand-font" style="margin-top: 60px;">Toque Final (Extras)</h3>
+  <h3 class="category-title brand-font" id="cat-extras" style="margin-top: 60px;">Toque Final (Extras)</h3>
   <p class="extras-hint">Você poderá escolher múltiplos adicionais no momento de montar sua pizza.</p>
   <table class="extras-table">
     <thead><tr><th>Extra</th><th>Aplicação</th><th>Preço</th></tr></thead>
@@ -379,22 +409,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </button>
 </nav>
 
-<button class="cart-floating-btn" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
-
-<!-- MODAL DE AVISO AO VIVO (PAUSA) -->
-<div class="modal-overlay" id="modal-aviso-pausa">
-  <div class="modal-box" style="text-align: center; max-width: 400px; padding: 40px 30px;">
-    <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
-    <h2 class="brand-font" style="color: var(--warning); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
-    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6;">
-      Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.
-    </p>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">
-      Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.
-    </p>
-    <button type="button" class="btn-add-modal" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--warning); border: 1px solid var(--warning);">Compreendo</button>
-  </div>
-</div>
+<button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
 
 <!-- TELA DE SUCESSO -->
 <div class="modal-overlay" id="success-overlay">
@@ -411,7 +426,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       Sua escolha foi para o carrinho. O que deseja fazer agora?
     </p>
     <div style="display: flex; flex-direction: column; gap: 12px;">
-      <button type="button" class="btn-finish" onclick="irParaCarrinho()" style="margin-top: 0; background: var(--gold); color: var(--bg-main);">Finalizar Pedido</button>
+      <button type="button" class="btn-finish btn-gradient" onclick="irParaCarrinho()" style="margin-top: 0;">Finalizar Pedido</button>
       <button type="button" class="btn-continue" data-close="success-overlay" style="margin-top: 0; border: 1px solid var(--border-light); border-radius: 8px;">Continuar Comprando</button>
     </div>
   </div>
@@ -443,7 +458,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         </div>
       </div>
       <div class="cart-total-line"><span>Subtotal</span><span id="builder-subtotal">R$ 0,00</span></div>
-      <button type="submit" class="btn-add-modal">Adicionar ao Pedido</button>
+      <button type="submit" class="btn-add-modal btn-gradient">Adicionar ao Pedido</button>
     </form>
   </div>
 </div>
@@ -517,9 +532,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         </select>
       </div>
       
-      <p class="form-msg" id="form-msg"></p>
-      
-      <button type="submit" class="btn-finish" id="btn-avancar" style="background:var(--gold); color:var(--bg-main);">Avançar para Revisão</button>
+      <button type="submit" class="btn-finish btn-gradient" id="btn-avancar">Avançar para Revisão</button>
       <button type="button" class="btn-continue" data-close="cart-overlay">Continuar Comprando</button>
     </form>
   </div>
@@ -568,13 +581,10 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
     </div>
 
-    <button type="button" class="btn-finish" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
+    <button type="button" class="btn-finish btn-gradient" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
   </div>
 </div>
 
-<!-- ==============================================
-     CÓDIGO JAVASCRIPT BLINDADO E REORGANIZADO
-=============================================== -->
 <script>
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -618,7 +628,6 @@ const CARDAPIO = {
   ]
 };
 
-// TODOS OS ADICIONAIS AGORA SÃO VARIÁVEIS (METADE/TODA) COM NOVOS PREÇOS (Catupiry atualizado para 750/1500)
 const EXTRAS = [
   { id:'catupiry', nome:'Catupiry',     tipo:'metade_toda', precos:{ metade:800,  toda:1600 } },
   { id:'cream',    nome:'Cream Cheese', tipo:'metade_toda', precos:{ metade:750,  toda:1500 } },
@@ -637,6 +646,7 @@ const rotuloAplicacao = (ap, sabores) => {
   return 'metade da pizza';
 };
 
+// 3. VARIÁVEIS DE ESTADO
 let lojaAberta = false;
 let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
 let lojaEstavaPausada = false; 
@@ -644,8 +654,27 @@ let primeiraCargaPausa = true;
 let saborMaisPedido = null; 
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v11';
+const STORAGE_KEY = 'dca_carrinho_v12';
 
+// 4. FUNÇÃO TOAST (AVISOS ELEGANTES)
+function showToast(msg, type='warning') {
+  const container = document.getElementById('toast-container');
+  if(!container) return;
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icon = type === 'error' ? '⚠️' : type === 'success' ? '✨' : '🛑';
+  toast.innerHTML = `<span style="font-size:18px;">${icon}</span> <span>${esc(msg)}</span>`;
+  container.appendChild(toast);
+  
+  if (navigator.vibrate && type === 'error') navigator.vibrate([50, 50, 50]);
+
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.4s var(--smooth) forwards';
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
+// 5. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -767,7 +796,7 @@ function atualizarBanner() {
 }
 
 function escolherSabor(id) {
-  if(!lojaAberta) { if (configLoja.forcarFechamento) { abrirModal('modal-aviso-pausa'); } else { alert("Nossa loja está fechada no momento."); } return; }
+  if(!lojaAberta) { if (configLoja.forcarFechamento) { abrirModal('modal-aviso-pausa'); } else { showToast("Nossa loja está fechada no momento.", "error"); } return; }
   if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
   if (modo === 'inteira') return abrirBuilder([id]);
   if (!meioSelecionado) { meioSelecionado = id; atualizarBanner(); atualizarBotoes(); return; }
@@ -832,8 +861,17 @@ function adicionar() {
   salvar(); 
   atualizarUI(); 
   
+  // Feedback físico no celular
   if (navigator.vibrate) navigator.vibrate(50);
   
+  // Pulo do Carrinho Flutuante
+  const cartBtn = $('#btn-cart-float');
+  if(cartBtn) {
+    cartBtn.classList.remove('bump-anim');
+    void cartBtn.offsetWidth; // Força reinício da animação
+    cartBtn.classList.add('bump-anim');
+  }
+
   fecharModal('builder-overlay'); 
   abrirModal('success-overlay');
 }
@@ -895,8 +933,15 @@ function validarCheckout() {
     if (bairro.value.trim().length < 3) { erros.push('Informe o bairro da entrega.'); bairro.classList.add('field-error'); }
   }
   
-  if (!carrinho.length) erros.push('Adicione pelo menos uma pizza.');
-  const msg = $('#form-msg'); msg.textContent = erros[0] || ''; msg.classList.toggle('show', erros.length > 0); 
+  if (!carrinho.length) {
+    showToast('Adicione pelo menos uma pizza ao carrinho.', 'error');
+    return false;
+  }
+  
+  if (erros.length > 0) {
+    showToast('Por favor, preencha os dados corretamente.', 'error');
+  }
+  
   return erros.length === 0;
 }
 
@@ -1010,7 +1055,7 @@ async function gravarFirestore(pedido) {
 
 async function enviarPedidoFinal(ev) {
   ev.preventDefault(); 
-  if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else alert("Nossa loja está fechada no momento."); return; } 
+  if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } 
   
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   const aba = window.open('about:blank', '_blank'); 
@@ -1021,6 +1066,8 @@ async function enviarPedidoFinal(ev) {
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false;
+  
+  setTimeout(() => showToast("Pedido enviado com sucesso!", "success"), 500);
 }
 
 function abrirModal(id) { const ov = document.getElementById(id); ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); }
@@ -1060,6 +1107,20 @@ db.collection('configuracoes').doc('estatisticas').onSnapshot(doc => {
   }
 }, err => { console.log("Leitura de estatísticas desativada nas regras."); });
 
+// SCROLL SPY: Marca a categoria ativa no Sticky Menu ao rolar a página
+const sections = $$('h3.category-title');
+const navLinks = $$('.sticky-btn');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (pageYOffset >= sec.offsetTop - 150) { current = sec.getAttribute('id'); }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href').includes(current)) { link.classList.add('active'); }
+  });
+});
+
 document.addEventListener('click', e => {
   const cardOpt = e.target.closest('.extra-opt-card');
   if (cardOpt) {
@@ -1093,7 +1154,7 @@ $('#cart-items-list').addEventListener('click', e => { const b = e.target.closes
 
 $('#checkout-form').addEventListener('submit', e => {
   e.preventDefault(); 
-  if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else alert("Nossa loja está fechada no momento."); return; } 
+  if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } 
   if (!validarCheckout()) return;
   montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); 
 });
@@ -1105,9 +1166,9 @@ $$('.delivery-card').forEach(card => {
   });
 });
 
-$('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return alert("A loja está fechada."); abrirModal('cart-overlay'); });
-$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return alert("A loja está fechada."); abrirModal('cart-overlay'); });
-$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return alert("A loja está fechada."); abrirModal('cart-overlay'); });
+$('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
+$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
+$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
