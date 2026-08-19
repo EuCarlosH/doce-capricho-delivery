@@ -426,6 +426,14 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </div>
 
 <script>
+// 1. FERRAMENTAS DO SITE (Carregadas primeiro para não travar)
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+const soDigitos = s => String(s).replace(/\D/g, '');
+
+// 2. CONFIGURAÇÕES E CARDÁPIO
 const CONFIG = {
   whatsapp:     '5585921440055',
   pixChave:     '+5585921440055',
@@ -433,7 +441,6 @@ const CONFIG = {
   taxaEntrega:  300,               
   usarFirebase: true               
 };
-
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 
 const FIREBASE_CONFIG = {
@@ -469,58 +476,67 @@ const EXTRAS = [
   { id:'alho',     nome:'Alho Poró',    tipo:'fixo',        preco:500 }
 ];
 
+const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
+const acharSabor = id => todosSabores().find(s => s.id === id);
+const rotuloAplicacao = a => a === 'metade' ? 'metade da pizza' : 'pizza inteira';
+
+// 3. VARIÁVEIS DE ESTADO
 let lojaAberta = false;
 let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
 let lojaEstavaPausada = false; 
 let primeiraCargaPausa = true;
 
-// --- FUNÇÃO DO RELÓGIO COM SUPORTE AO CALENDÁRIO ---
+let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
+const STORAGE_KEY = 'dca_carrinho_v5';
+
+// 4. FUNÇÕES DE RELÓGIO (COM PROTEÇÃO TRY-CATCH)
 function verificarHorario() {
-  const parametrosUrl = new URLSearchParams(window.location.search);
-  const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
-  
-  const agora = new Date();
-  const diaHoje = agora.getDay(); // 0 a 6 (0=Domingo)
-  const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
-  
-  let dentroDoHorario = false;
+  try {
+    const parametrosUrl = new URLSearchParams(window.location.search);
+    const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
+    
+    const agora = new Date();
+    const diaHoje = agora.getDay(); 
+    const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
+    
+    let dentroDoHorario = false;
 
-  // Busca a configuração do dia atual no banco
-  if (configLoja.horarios && configLoja.horarios[diaHoje]) {
-     const configHoje = configLoja.horarios[diaHoje];
-     
-     // Se a chavinha do dia estiver ligada
-     if (configHoje.ativo) {
-        const [abreH, abreM] = configHoje.abre.split(':').map(Number);
-        const [fechaH, fechaM] = configHoje.fecha.split(':').map(Number);
-        const tempoInicio = abreH * 60 + abreM;
-        const tempoFim = fechaH * 60 + fechaM;
+    if (configLoja.horarios && configLoja.horarios[diaHoje]) {
+       const configHoje = configLoja.horarios[diaHoje];
+       if (configHoje.ativo) {
+          const strAbre = configHoje.abre || '18:30';
+          const strFecha = configHoje.fecha || '23:00';
+          const [abreH, abreM] = strAbre.split(':').map(Number);
+          const [fechaH, fechaM] = strFecha.split(':').map(Number);
+          const tempoInicio = (abreH || 18) * 60 + (abreM || 30);
+          const tempoFim = (fechaH || 23) * 60 + (fechaM || 0);
 
-        if (tempoFim < tempoInicio) {
-          // Caso raro de passar da meia noite (ex: fecha às 01:00)
-          dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim);
-        } else {
-          // Normal
-          dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim);
-        }
-     }
-  } else {
-     // Fallback caso não tenha sido configurado ainda (Abre Qui a Dom)
-     if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) {
-        dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60));
-     }
+          if (tempoFim < tempoInicio) {
+            dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim);
+          } else {
+            dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim);
+          }
+       }
+    } else {
+       if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) {
+          dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60));
+       }
+    }
+    
+    if (configLoja.forcarFechamento === true) {
+      lojaAberta = false;
+    } else if (isTesteAdmin) {
+      lojaAberta = true;
+    } else {
+      lojaAberta = dentroDoHorario;
+    }
+    
+    atualizarStatusLoja();
+  } catch (error) {
+    console.error("Erro ao verificar horário:", error);
+    lojaAberta = false; // Em caso de falha severa, mantém fechado por segurança
+    atualizarStatusLoja();
   }
-  
-  // HIERARQUIA DE REGRAS:
-  if (configLoja.forcarFechamento === true) {
-    lojaAberta = false; // Pausado (Pânico)
-  } else if (isTesteAdmin) {
-    lojaAberta = true;  // Teste de Admin
-  } else {
-    lojaAberta = dentroDoHorario; // Relógio + Calendário
-  }
-  
-  atualizarStatusLoja();
 }
 
 function atualizarStatusLoja() {
@@ -548,49 +564,7 @@ function atualizarStatusLoja() {
   }
 }
 
-// INICIALIZA FIREBASE NO APP DO CLIENTE E OUVE CONFIGURAÇÕES
-if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.firestore();
-
-db.collection('configuracoes').doc('geral').onSnapshot(doc => {
-  if(doc.exists) {
-    configLoja = doc.data();
-    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
-    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
-    
-    // Atualiza texto do rodapé ao vivo
-    const rodape = document.getElementById('footer-funcionamento');
-    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
-    
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) {
-       abrirModal('modal-aviso-pausa');
-    }
-    
-    lojaEstavaPausada = configLoja.forcarFechamento;
-    primeiraCargaPausa = false;
-
-    verificarHorario(); 
-    renderCardapio();   
-  }
-}, error => {
-  console.log("Modo leitura local.");
-});
-
-verificarHorario();
-setInterval(verificarHorario, 60000); 
-
-const $  = (s, c = document) => c.querySelector(s);
-const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
-const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-const soDigitos = s => String(s).replace(/\D/g, '');
-const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
-const acharSabor = id => todosSabores().find(s => s.id === id);
-const rotuloAplicacao = a => a === 'metade' ? 'metade da pizza' : 'pizza inteira';
-
-let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v5';
-
+// 5. FUNÇÕES DE INTERFACE (CARRINHO E MODAIS)
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
 
@@ -795,6 +769,35 @@ async function finalizar(ev) {
 
 function abrirModal(id) { const ov = document.getElementById(id); ov.classList.add('open'); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); }
 function fecharModal(id) { document.getElementById(id).classList.remove('open'); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; }
+
+// 6. COMUNICAÇÃO COM O FIREBASE (Roda com tudo pronto)
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+db.collection('configuracoes').doc('geral').onSnapshot(doc => {
+  if(doc.exists) {
+    configLoja = doc.data();
+    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
+    
+    const rodape = document.getElementById('footer-funcionamento');
+    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
+    
+    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) {
+       abrirModal('modal-aviso-pausa');
+    }
+    
+    lojaEstavaPausada = configLoja.forcarFechamento;
+    primeiraCargaPausa = false;
+
+    verificarHorario(); 
+    renderCardapio();   
+  }
+}, error => {
+  console.log("Modo leitura local.");
+});
+
+// 7. LISTENERS E INICIALIZAÇÃO
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
 
@@ -819,7 +822,13 @@ $('#btn-copy-pix').addEventListener('click', async e => {
   btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000);
 });
 $('#ano').textContent = new Date().getFullYear();
-renderCardapio(); carregar(); atualizarUI();
+
+// Inicialização segura
+verificarHorario();
+setInterval(verificarHorario, 60000); 
+renderCardapio(); 
+carregar(); 
+atualizarUI();
 </script>
 </body>
 </html>
