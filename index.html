@@ -63,15 +63,18 @@ nav.top-nav {
 /* BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) */
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
+/* HERO SECTION COM FUSÃO NO FUNDO PRETO */
 #home {
   min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
-  text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px;
-  background: linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.6) 50%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat;
-  border-bottom: 1px solid var(--border-light);
+  text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative;
+  background: 
+    linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%),
+    linear-gradient(to right, rgba(10,10,10,1) 0%, rgba(10,10,10,0.6) 20%, rgba(10,10,10,0.1) 80%, rgba(10,10,10,1) 100%), 
+    url('hero-bg.jpg') center/cover no-repeat;
+  border-bottom: none; 
 }
-.hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--gold); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; }
-.hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 400; letter-spacing: 1px; color: var(--text-main); max-width: 400px; line-height: 1.8; }
+.hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--gold); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; position: relative; z-index: 2;}
+.hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 400; letter-spacing: 1px; color: var(--text-main); max-width: 400px; line-height: 1.8; position: relative; z-index: 2;}
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
 
@@ -96,7 +99,7 @@ nav.top-nav {
 #banner-pausado h4 { color: var(--warning); margin-bottom: 8px; font-size: 16px; letter-spacing: 1px; }
 #banner-pausado p { color: var(--text-main); font-size: 13px; line-height: 1.6; }
 
-/* CATEGORY TITLE ORNAMENTADO (NOVO) */
+/* CATEGORY TITLE ORNAMENTADO */
 .category-title { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 18px; color: var(--gold); margin: 50px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; scroll-margin-top: 140px; }
 .category-title::before, .category-title::after { content: "♦"; color: var(--gold-dark); font-size: 12px; margin: 0 15px; opacity: 0.7; }
 
@@ -109,10 +112,10 @@ nav.top-nav {
 .card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* VIGNETTE EFFECT (NOVO) */
+/* VIGNETTE EFFECT NOS CARDS */
 .card-img-wrap { width: 100%; height: 200px; background: #1A1A1A; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
 .card-img-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0) 40%); pointer-events: none; z-index: 1; }
-.badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 2; align-items: flex-end; pointer-events: none; }
+.badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 10; align-items: flex-end; pointer-events: none; }
 .badge-destaque {
   background: rgba(18, 18, 18, 0.7); color: var(--white); border: 1px solid rgba(255,255,255,0.2);
   padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase;
@@ -175,7 +178,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 @keyframes checkmark { 0% { stroke-dashoffset: 50; } 100% { stroke-dashoffset: 0; } }
 
-/* MODAIS BASE E BOTTOM SHEET PARA MOBILE (NOVO) */
+/* MODAIS BASE E BOTTOM SHEET PARA MOBILE */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
 .modal-overlay#modal-aviso-pausa { z-index: 4000 !important; }
 
@@ -229,12 +232,12 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
 .extra-price { color: var(--gold); font-weight: 600; font-size: 13px; margin-left: 10px; }
 
-/* MICRO-ANIMAÇÕES (NOVO) */
+/* MICRO-ANIMAÇÕES E OPÇÕES DE ADICIONAIS */
 .extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
 .extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
 .extra-opt-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
 .extra-opt-card:hover { border-color: rgba(212,175,55,0.4); }
-.extra-opt-card:active { transform: scale(0.96); } /* Efeito de afundar */
+.extra-opt-card:active { transform: scale(0.96); } 
 .extra-opt-card.active { border-color: var(--gold); background: rgba(212,175,55,0.08); color: var(--gold); }
 .extra-opt-card span { font-weight: 700; line-height: 1.2; }
 .extra-opt-card small { font-size: 9px; opacity: 0.8; }
@@ -269,8 +272,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .checkout-form label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600;}
 .checkout-form input, .checkout-form select { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-main); color: var(--text-main); font-family: inherit; font-size: 13px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
-.field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; }
-@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
 .endereco-row { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -282,7 +283,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-copy-pix:hover { background: var(--gold); color: var(--bg-main); transform: translateY(-2px); }
 
 .btn-finish { padding: 16px; border-radius: 8px; font-size: 12px; margin-top: 10px; }
-
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s ease; margin-top: -5px; }
 .btn-continue:hover { color: var(--white); }
 
@@ -296,7 +296,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 .footer-info { font-size: 12px; color: var(--text-muted); line-height: 1.8; letter-spacing: 1px; }
 .footer-copy { font-size: 10px; color: #555; margin-top: 10px; }
 
-/* RESPONSIVO E BOTTOM SHEET (NOVO) */
+/* RESPONSIVO E BOTTOM SHEET */
 @media (max-width: 768px) {
   .nav-links { display: none; } 
   .nav-container { justify-content: space-between; }
@@ -354,10 +354,8 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </head>
 <body>
 
-<!-- TOAST CONTAINER -->
 <div id="toast-container"></div>
 
-<!-- NAVBAR TOPO -->
 <nav class="top-nav">
   <div class="nav-container">
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
@@ -377,7 +375,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   
-  <!-- MENU STICKY FLUIDO -->
   <div class="sticky-menu-wrapper" id="sticky-menu">
     <a href="#cat-tradicionais" class="sticky-btn active">Tradicionais</a>
     <a href="#cat-premium" class="sticky-btn">Premium</a>
@@ -412,11 +409,10 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </table>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
-    <a href="https://instagram.com/SEU_INSTAGRAM" target="_blank" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+    <a href="https://instagram.com/docecapricho.atelier" target="_blank" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
     <a href="#" id="footer-wa-link" target="_blank" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
   </div>
   <div class="footer-info">
@@ -426,7 +422,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
-<!-- NAVBAR INFERIOR MOBILE -->
 <nav class="bottom-nav">
   <a href="#home" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
   <a href="#cardapio" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
@@ -438,7 +433,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho">🛒<span class="cart-count" id="cart-count">0</span></button>
 
-<!-- MODAL DE AVISO AO VIVO (PAUSA) -->
 <div class="modal-overlay" id="modal-aviso-pausa">
   <div class="modal-box" style="text-align: center; max-width: 400px;">
     <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
@@ -453,7 +447,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- TELA DE SUCESSO -->
 <div class="modal-overlay" id="success-overlay">
   <div class="modal-box" style="text-align: center; max-width: 380px;">
     <button class="close-modal" data-close="success-overlay">&times;</button>
@@ -474,7 +467,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- MODAL MONTAGEM DE PIZZA -->
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="builder-overlay">&times;</button>
@@ -505,7 +497,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- MODAL CARRINHO E DADOS -->
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="cart-overlay">&times;</button>
@@ -580,7 +571,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- MODAL DE REVISÃO FINAL -->
 <div class="modal-overlay" id="review-overlay">
   <div class="modal-box">
     <button class="close-modal" onclick="voltarParaCarrinho()">&times;</button>
@@ -627,9 +617,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- ==============================================
-     CÓDIGO JAVASCRIPT BLINDADO E REORGANIZADO
-=============================================== -->
 <script>
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -698,9 +685,8 @@ let primeiraCargaPausa = true;
 let saborMaisPedido = null; 
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v13';
+const STORAGE_KEY = 'dca_carrinho_v13_dark_vignette';
 
-// 4. FUNÇÃO TOAST (AVISOS ELEGANTES)
 function showToast(msg, type='warning') {
   const container = document.getElementById('toast-container');
   if(!container) return;
@@ -716,7 +702,6 @@ function showToast(msg, type='warning') {
   }, 3000);
 }
 
-// 5. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
