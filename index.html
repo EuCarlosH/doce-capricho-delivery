@@ -541,7 +541,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <p style="font-size:11px; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase;">Transferência PIX:</p>
       <strong style="color:var(--gold); font-size:18px; display:block; margin-bottom: 10px;" id="rev-pix-valor">R$ 0,00</strong>
       <button type="button" class="btn-copy-pix" id="rev-btn-copy-pix">Copiar Código PIX</button>
-      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(Você enviará o comprovante no WhatsApp)</p>
+      <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">(A chave PIX também será enviada no WhatsApp)</p>
     </div>
 
     <button type="button" class="btn-finish" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
@@ -602,7 +602,15 @@ const EXTRAS = [
 
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
 const acharSabor = id => todosSabores().find(s => s.id === id);
-const rotuloAplicacao = a => a === 'metade' ? 'metade da pizza' : 'pizza inteira';
+
+// Lógica inteligente para nomear qual metade recebeu o adicional
+const rotuloAplicacao = (ap, sabores) => {
+  if (ap === 'toda') return 'pizza inteira';
+  if (ap === 'metade') return 'metade da pizza';
+  if (ap === 'metade1' && sabores && sabores.length === 2) return `só na metade: ${acharSabor(sabores[0]).nome}`;
+  if (ap === 'metade2' && sabores && sabores.length === 2) return `só na metade: ${acharSabor(sabores[1]).nome}`;
+  return 'metade da pizza';
+};
 
 // 3. VARIÁVEIS DE ESTADO
 let lojaAberta = false;
@@ -611,7 +619,7 @@ let lojaEstavaPausada = false;
 let primeiraCargaPausa = true;
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v7'; // Nova versão do cache
+const STORAGE_KEY = 'dca_carrinho_v8'; // Reset do cache
 
 // 4. FUNÇÕES DE RELÓGIO
 function verificarHorario() {
@@ -688,7 +696,7 @@ function atualizarStatusLoja() {
   }
 }
 
-// 5. FUNÇÕES DE INTERFACE (CARRINHO E MODAIS)
+// 5. FUNÇÕES DE INTERFACE E CARRINHO
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
 
@@ -700,7 +708,13 @@ function validarItem(item) {
   item.qtd = Math.min(20, Math.max(1, parseInt(item.qtd, 10) || 1));
   item.extras = (Array.isArray(item.extras) ? item.extras : []).filter(ex => {
     const def = EXTRAS.find(e => e.id === ex.id); if (!def) return false;
-    if (def.tipo === 'fixo') { ex.aplicacao = 'toda'; ex.preco = def.preco; } else { if (ex.aplicacao !== 'metade' && ex.aplicacao !== 'toda') return false; ex.preco = def.precos[ex.aplicacao]; }
+    if (def.tipo === 'fixo') { 
+        ex.aplicacao = 'toda'; ex.preco = def.preco; 
+    } else { 
+        if (!['metade', 'metade1', 'metade2', 'toda'].includes(ex.aplicacao)) return false; 
+        const pk = ex.aplicacao.startsWith('metade') ? 'metade' : 'toda'; 
+        ex.preco = def.precos[pk]; 
+    }
     ex.nome = def.nome; return true;
   });
   item.base = precoBaseVal(item.sabores); item.unitario = item.base + item.extras.reduce((s, e) => s + e.preco, 0); item.total = item.unitario * item.qtd; item.obs = String(item.obs || '').slice(0, 200);
@@ -779,7 +793,20 @@ function abrirBuilder(ids) {
     if (e.tipo === 'fixo') {
       return `<div class="extra-row"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ ${brl(e.preco)}</span></div>`;
     } else {
-      return `<div class="extra-row"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><select class="extra-sub-select" id="sub-extra-${e.id}"><option value="metade">Na metade (+ ${brl(e.precos.metade)})</option><option value="toda">Na pizza toda (+ ${brl(e.precos.toda)})</option></select></div>`;
+      let options = '';
+      if (ids.length === 2) {
+          options = `
+            <option value="metade1">Só na metade: ${esc(nomes[0])} (+ ${brl(e.precos.metade)})</option>
+            <option value="metade2">Só na metade: ${esc(nomes[1])} (+ ${brl(e.precos.metade)})</option>
+            <option value="toda">Na pizza inteira (+ ${brl(e.precos.toda)})</option>
+          `;
+      } else {
+          options = `
+            <option value="metade">Em metade da pizza (+ ${brl(e.precos.metade)})</option>
+            <option value="toda">Na pizza inteira (+ ${brl(e.precos.toda)})</option>
+          `;
+      }
+      return `<div class="extra-row"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><select class="extra-sub-select" id="sub-extra-${e.id}">${options}</select></div>`;
     }
   }).join('');
 
@@ -790,8 +817,13 @@ function lerExtras() {
   const selecionados = [];
   $$('.extra-chk:checked').forEach(chk => {
     const id = chk.value; const def = EXTRAS.find(x => x.id === id);
-    if(def.tipo === 'fixo') { selecionados.push({ id: def.id, nome: def.nome, aplicacao: 'toda', preco: def.preco }); } 
-    else { const ap = $('#sub-extra-' + id).value; selecionados.push({ id: def.id, nome: def.nome, aplicacao: ap, preco: def.precos[ap] }); }
+    if(def.tipo === 'fixo') { 
+        selecionados.push({ id: def.id, nome: def.nome, aplicacao: 'toda', preco: def.preco }); 
+    } else { 
+        const ap = $('#sub-extra-' + id).value; 
+        const priceKey = ap.startsWith('metade') ? 'metade' : 'toda';
+        selecionados.push({ id: def.id, nome: def.nome, aplicacao: ap, preco: def.precos[priceKey] }); 
+    }
   });
   return selecionados;
 }
@@ -804,7 +836,6 @@ function atualizarBuilderTotal() {
 
 function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
 
-// ADICIONAR ITEM E MOSTRAR NOVA TELA DE SUCESSO
 function adicionar() {
   const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
   if (!validarItem(item)) return; 
@@ -824,8 +855,11 @@ function totais() { const subtotal = carrinho.reduce((s, i) => s + i.total, 0); 
 
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
+  
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
-    const det = []; if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao))})`).join(' · ')); if (i.obs) det.push('Obs: ' + esc(i.obs));
+    const det = []; 
+    if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join(' · ')); 
+    if (i.obs) det.push('Obs: ' + esc(i.obs));
     return `<li class="cart-item"><div class="cart-item-info"><strong>${i.qtd}× ${esc(nomeItem(i))}</strong>${det.map(d => `<small>${d}</small>`).join('')}</div><span class="cart-item-price">${brl(i.total)}</span><button type="button" class="remove-btn" data-remover="${i.uid}">&times;</button></li>`;
   }).join('') : '<li class="cart-empty">Seu carrinho está vazio.</li>';
   
@@ -846,7 +880,6 @@ function atualizarUI() {
       setTimeout(() => boxEnd.style.display = 'none', 300);
   }
 
-  // Tratamento anti-erros se o ID não existir no HTML (caso mude)
   const rua = $('#cli-rua'); if(rua) rua.required = entrega;
   const num = $('#cli-numero'); if(num) num.required = entrega;
   const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
@@ -881,19 +914,28 @@ function montarRevisao() {
   const tipo = $('#cli-tipo-pedido').value;
   const pgto = $('#cli-pagamento').value;
 
-  // Itens
+  // Renderiza os itens mostrando todos os detalhes
   $('#review-items').innerHTML = carrinho.map(i => {
-    return `<div class="review-item-line"><strong>${i.qtd}x ${esc(nomeItem(i))}</strong> <span>${brl(i.total)}</span></div>`;
+    const det = [];
+    if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
+    if (i.obs) det.push(`Obs: ${esc(i.obs)}`);
+    const detalhesHTML = det.length > 0 ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4;">${det.join('<br>')}</div>` : '';
+    
+    return `<div class="review-item-line" style="flex-direction:column; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+              <div style="display:flex; justify-content:space-between; width:100%;">
+                <strong>${i.qtd}x ${esc(nomeItem(i))}</strong>
+                <span style="color:var(--gold); font-weight:700;">${brl(i.total)}</span>
+              </div>
+              ${detalhesHTML}
+            </div>`;
   }).join('');
 
-  // Recebimento
   if(tipo === 'Entrega') {
     $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
   } else {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">Te avisaremos quando estiver pronto.</span>`;
   }
 
-  // Pagamento
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   
   if (pgto === 'PIX') {
@@ -903,7 +945,6 @@ function montarRevisao() {
       $('#rev-box-pix').style.display = 'none';
   }
 
-  // Totais
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
   if(tipo === 'Entrega' && t.entrega > 0) {
     $('#rev-linha-taxa').style.display = 'flex';
@@ -938,7 +979,15 @@ function montarPedido() {
     cliente_endereco: endStr, 
     tipo_entrega: tipo, 
     forma_pagamento: $('#cli-pagamento').value, 
-    itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), 
+    itens: carrinho.map(i => ({ 
+        nome: nomeItem(i), 
+        qtd: i.qtd, 
+        sabores: i.sabores, 
+        extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), 
+        obs: i.obs, 
+        unitario_centavos: i.unitario, 
+        total_centavos: i.total 
+    })), 
     subtotal_centavos: t.subtotal, 
     taxa_centavos: t.entrega, 
     total_centavos: t.total 
@@ -949,9 +998,26 @@ function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
   if (p.cliente_endereco) L.push(`*Endereço:* ${p.cliente_endereco}`);
   L.push(`*Pagamento:* ${p.forma_pagamento}`, '', '*ITENS*');
-  p.itens.forEach((i, n) => { L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); if (i.obs) L.push(`    • Obs: ${i.obs}`); });
-  L.push('', `Subtotal: ${brl(p.subtotal_centavos)}`); if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
-  if (p.forma_pagamento === 'PIX') L.push('', `PIX copiado e colado! Segue em anexo o comprovante.`); return L.join('\n');
+  
+  p.itens.forEach((i, n) => { 
+      L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); 
+      i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); 
+      if (i.obs) L.push(`    • Obs: ${i.obs}`); 
+  });
+  
+  L.push('', `Subtotal: ${brl(p.subtotal_centavos)}`); 
+  if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); 
+  L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
+  
+  // PIX NO WHATSAPP PARA RESGATE SEGURO
+  if (p.forma_pagamento === 'PIX') {
+      const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', p.total_centavos);
+      L.push('', `*CHAVE PIX (Celular/Telefone):*`, CONFIG.pixChave);
+      L.push('', `*PIX COPIA E COLA:*`, payload);
+      L.push('', `Por favor, envie o comprovante de pagamento respondendo a esta mensagem. Obrigado!`);
+  }
+  
+  return L.join('\n');
 }
 
 async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
