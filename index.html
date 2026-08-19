@@ -140,6 +140,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes checkmark { 0% { stroke-dashoffset: 50; } 100% { stroke-dashoffset: 0; } }
 
 /* MODAIS BASE */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
@@ -151,7 +152,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal:hover { color: var(--danger); transform: scale(1.1) rotate(90deg); }
 .modal-box h2 { color: var(--gold); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 700; padding-right: 30px; }
 
-/* TELA DE REVISÃO (NOVA) */
+/* TELA DE REVISÃO E SUCCESS */
 .review-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 12px; padding: 18px; margin-bottom: 15px; transition: all 0.3s ease; }
 .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
 .review-header h4 { font-size: 13px; color: var(--gold); display: flex; align-items: center; gap: 8px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
@@ -375,6 +376,26 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<div class="modal-overlay" id="success-overlay">
+  <div class="modal-box" style="text-align: center; max-width: 380px; padding: 40px 30px;">
+    <button class="close-modal" data-close="success-overlay">&times;</button>
+    <div style="color: var(--gold); margin-bottom: 15px;">
+      <svg viewBox="0 0 24 24" width="56" height="56" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkmark 0.6s var(--smooth) forwards;">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <h2 class="brand-font" style="color: var(--gold); border-bottom: none; padding-bottom: 0; margin-bottom: 10px;">Adicionado!</h2>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px;">
+      Sua escolha foi para o carrinho. O que deseja fazer agora?
+    </p>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <button type="button" class="btn-finish" onclick="irParaCarrinho()" style="margin-top: 0; background: var(--gold); color: var(--bg-main);">Finalizar Pedido</button>
+      <button type="button" class="btn-continue" data-close="success-overlay" style="margin-top: 0; border: 1px solid var(--border-light); border-radius: 8px;">Continuar Comprando</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="builder-overlay">&times;</button>
@@ -581,9 +602,9 @@ let lojaEstavaPausada = false;
 let primeiraCargaPausa = true;
 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-const STORAGE_KEY = 'dca_carrinho_v6';
+const STORAGE_KEY = 'dca_carrinho_v7';
 
-// 4. FUNÇÕES DE RELÓGIO E STATUS DA LOJA
+// 4. FUNÇÕES DE RELÓGIO (COM PROTEÇÃO TRY-CATCH)
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -658,7 +679,7 @@ function atualizarStatusLoja() {
   }
 }
 
-// 5. FUNÇÕES DE INTERFACE E CARRINHO
+// 5. FUNÇÕES DE INTERFACE (CARRINHO E MODAIS)
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
 function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
 
@@ -774,9 +795,22 @@ function atualizarBuilderTotal() {
 
 function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
 
+// ADICIONAR ITEM E MOSTRAR NOVA TELA DE SUCESSO
 function adicionar() {
   const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
-  if (!validarItem(item)) return; carrinho.push(item); salvar(); atualizarUI(); fecharModal('builder-overlay'); abrirModal('cart-overlay');
+  if (!validarItem(item)) return; 
+  carrinho.push(item); 
+  salvar(); 
+  atualizarUI(); 
+  fecharModal('builder-overlay'); 
+  
+  // NOVA AÇÃO: Abre o modal de sucesso perguntando o que fazer.
+  abrirModal('success-overlay');
+}
+
+function irParaCarrinho() {
+  fecharModal('success-overlay');
+  setTimeout(() => { abrirModal('cart-overlay'); }, 150);
 }
 
 function totais() { const subtotal = carrinho.reduce((s, i) => s + i.total, 0); const entrega = ($('#cli-tipo-pedido').value === 'Entrega' && carrinho.length) ? CONFIG.taxaEntrega : 0; return { subtotal, entrega, total: subtotal + entrega }; }
@@ -824,25 +858,21 @@ function validarCheckout() {
   const msg = $('#form-msg'); msg.textContent = erros[0] || ''; msg.classList.toggle('show', erros.length > 0); return erros.length === 0;
 }
 
-// 5.1 NOVA TELA DE REVISÃO
 function montarRevisao() {
   const t = totais();
   const tipo = $('#cli-tipo-pedido').value;
   const pgto = $('#cli-pagamento').value;
 
-  // Itens
   $('#review-items').innerHTML = carrinho.map(i => {
     return `<div class="review-item-line"><strong>${i.qtd}x ${esc(nomeItem(i))}</strong> <span>${brl(i.total)}</span></div>`;
   }).join('');
 
-  // Recebimento
   if(tipo === 'Entrega') {
     $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-endereco').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
   } else {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">Te avisaremos quando estiver pronto.</span>`;
   }
 
-  // Pagamento
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   
   if (pgto === 'PIX') {
@@ -852,7 +882,6 @@ function montarRevisao() {
       $('#box-pix').style.display = 'none';
   }
 
-  // Totais
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
   if(tipo === 'Entrega' && t.entrega > 0) {
     $('#rev-linha-taxa').style.display = 'flex';
@@ -892,7 +921,6 @@ function montarMensagem(p) {
 
 async function gravarFirestore(pedido) { if (!CONFIG.usarFirebase || !window.firebase) return null; try { const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); return ref.id; } catch (e) { return null; } }
 
-// 5.2 ENVIAR PEDIDO FINAL APÓS REVISÃO
 async function enviarPedidoFinal(ev) {
   ev.preventDefault(); 
   if(!lojaAberta) { 
@@ -968,7 +996,6 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#cli-pagamento').addEventListener('change', atualizarUI); 
 
-// INTERCEPTA O SUBMIT DO CHECKOUT PARA MOSTRAR A REVISÃO
 $('#checkout-form').addEventListener('submit', e => {
   e.preventDefault(); 
   if(!lojaAberta) { 
@@ -980,10 +1007,9 @@ $('#checkout-form').addEventListener('submit', e => {
   
   montarRevisao();
   fecharModal('cart-overlay');
-  setTimeout(() => { abrirModal('review-overlay'); }, 150); // Delay suave entre transições
+  setTimeout(() => { abrirModal('review-overlay'); }, 150); 
 });
 
-// Listener do Cartão Entrega/Retirada
 $$('.delivery-card').forEach(card => {
   card.addEventListener('click', () => {
     $$('.delivery-card').forEach(c => c.classList.remove('active'));
