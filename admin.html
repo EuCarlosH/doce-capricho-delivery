@@ -14,12 +14,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <style>
-/* PALETA DOCE CAPRICHO (CREME ARTESANAL) */
+/* PALETA DOCE CAPRICHO (CREME ARTESANAL LAPIDADO) */
 :root {
   --gold: #DDA73A;         
   --gold-dark: #C28F2A;    
   --terracotta: #8B3A2B;   
   --bg-main: #F8F4EE;      
+  --bg-col: rgba(58, 42, 32, 0.03); /* Fundo sutil para destacar os cartões */
   --bg-card: #FFFFFF;      
   --text-main: #3A2A20;    
   --text-muted: #8C7A6B;   
@@ -31,7 +32,6 @@
   --border-light: rgba(58, 42, 32, 0.12);
   --shadow-sm: 0 4px 12px rgba(58, 42, 32, 0.05); 
   --shadow-md: 0 8px 24px rgba(58, 42, 32, 0.08); 
-  --radius-lg: 12px;
   --smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -52,27 +52,27 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .close-modal:hover { color: var(--terracotta); }
 .modal-box h2 { font-family: 'Cinzel', serif; color: var(--text-main); margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
 
-/* CHAVINHAS (TOGGLES) */
-.toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+/* CHAVINHAS ESTILO APPLE */
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(58, 42, 32, 0.2); transition: .4s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(58, 42, 32, 0.15); transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s var(--smooth); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 input:checked + .slider { background-color: var(--gold); }
-input:checked + .slider:before { transform: translateX(16px); }
+input:checked + .slider:before { transform: translateX(20px); }
 
 .catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border-light); }
-.catalog-info strong { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); }
+.catalog-info strong { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;}
 .catalog-info span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
 
 /* HORARIOS CSS */
-.dia-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: rgba(58, 42, 32, 0.02); padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); }
+.dia-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: rgba(58, 42, 32, 0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); }
 .dia-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; width: 110px; color: var(--text-main); }
 .dia-inputs { display: flex; gap: 5px; align-items: center; }
-.dia-inputs input[type="time"] { padding: 8px; border: 1px solid var(--border-light); border-radius: 4px; font-size: 11px; font-family: inherit; color: var(--text-main); font-weight: 600; background: var(--bg-card); }
+.dia-inputs input[type="time"] { padding: 8px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 11px; font-family: inherit; color: var(--text-main); font-weight: 600; background: var(--bg-card); transition: border-color 0.3s;}
 .dia-inputs input[type="time"]:focus { outline: none; border-color: var(--gold); }
 
 /* BOTÕES METÁLICOS */
-.btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; border-radius: 8px; }
+.btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; border-radius: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
 .btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 8px 20px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 
@@ -82,16 +82,16 @@ input:checked + .slider:before { transform: translateX(16px); }
 #login-screen { position: fixed; inset: 0; background: var(--bg-main); z-index: 10000; display: flex; align-items: center; justify-content: center; }
 .login-box { background: var(--bg-card); padding: 50px 40px; border-radius: 16px; width: 100%; max-width: 420px; text-align: center; border: 1px solid var(--border-light); box-shadow: var(--shadow-md); }
 .login-box h2 { color: var(--text-main); margin-bottom: 30px; letter-spacing: 2px; font-size: 24px; font-weight: 700; border-bottom: none; }
-.login-box input { width: 100%; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 13px; color: var(--text-main); background: var(--bg-main); font-weight: 500; transition: border-color 0.3s; }
+.login-box input { width: 100%; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 13px; color: var(--text-main); background: var(--bg-main); font-weight: 500; transition: all 0.3s; }
 .login-box input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(221, 167, 58, 0.2); background: var(--bg-card); }
 .login-box button { width: 100%; padding: 16px; }
 
-#overlay-start { position: fixed; inset: 0; background: rgba(248, 244, 238, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-.btn-start { padding: 20px 50px; font-size: 14px; border-radius: 50px; letter-spacing: 2px; }
+#overlay-start { position: fixed; inset: 0; background: rgba(248, 244, 238, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.btn-start { padding: 20px 50px; font-size: 14px; border-radius: 50px; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(221, 167, 58, 0.3);}
 
-/* CABEÇALHO */
+/* CABEÇALHO (GLASSMORPHISM) */
 header { 
-  background: var(--bg-card); padding: 15px 30px; border-bottom: 1px solid var(--border-light); 
+  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid var(--border-light); 
   display: flex; justify-content: space-between; align-items: center; 
   z-index: 10; flex-shrink: 0; flex-wrap: wrap; gap: 15px; 
 }
@@ -115,7 +115,7 @@ header {
   -webkit-overflow-scrolling: touch; align-items: stretch;
 }
 .kanban-col { 
-  background: transparent;
+  background: var(--bg-col); border: 1px solid rgba(58, 42, 32, 0.05); border-radius: 12px;
   display: flex; flex-direction: column; overflow: hidden; 
   flex: 1 0 300px; 
   max-height: 100%;
@@ -126,9 +126,13 @@ header {
   .kanban-col { flex: none; width: 100%; }
 }
 
-.col-header { padding: 0 0 15px 0; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-light); flex-shrink: 0; letter-spacing: 1px; }
+.col-header { padding: 15px 20px; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-light); flex-shrink: 0; letter-spacing: 1px; background: rgba(255,255,255,0.5);}
 .col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-main); font-weight: 800;}
-.col-body { padding: 15px 0; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+.col-body { padding: 15px 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+
+/* EMPTY STATES (ESTADO VAZIO) */
+.empty-state { text-align: center; padding: 40px 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; opacity: 0.6; display: flex; flex-direction: column; align-items: center; gap: 10px; letter-spacing: 1px;}
+.empty-state span { font-size: 28px; opacity: 0.8; filter: grayscale(1); }
 
 #col-novo .col-header { color: var(--terracotta); border-bottom-color: var(--terracotta); }
 #col-preparando .col-header { color: var(--gold-dark); border-bottom-color: var(--gold); }
@@ -136,8 +140,8 @@ header {
 #col-concluido .col-header { color: var(--text-muted); }
 
 /* CARDS E FORMATAÇÃO INTERNA (FLAT / SHARP) */
-.card-pedido { background: var(--bg-card); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-light); position: relative; flex-shrink: 0; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.card-pedido:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: rgba(58, 42, 32, 0.2); }
+.card-pedido { background: var(--bg-card); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-light); position: relative; flex-shrink: 0; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: var(--shadow-sm);}
+.card-pedido:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(58, 42, 32, 0.2); }
 
 /* ALERTAS SUTIS */
 .card-pedido.atencao { border-color: var(--warning); background: rgba(221, 167, 58, 0.02); }
@@ -170,7 +174,7 @@ header {
 .btn-action { flex: 1; border: none; padding: 14px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; letter-spacing: 1px; transition: opacity 0.3s; }
 .btn-action:hover { opacity: 0.9; }
 
-.btn-icon-only { flex: 0 0 42px; background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+.btn-icon-only { flex: 0 0 42px; background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 6px;}
 .btn-icon-only:hover { color: var(--text-main); border-color: rgba(58, 42, 32, 0.3); background: var(--bg-card); }
 .btn-icon-only.btn-wp { background: rgba(37, 211, 102, 0.1); color: var(--wp); border-color: rgba(37, 211, 102, 0.3); }
 .btn-icon-only.btn-wp:hover { background: var(--wp); color: #FFF; }
@@ -189,7 +193,7 @@ header {
 <div id="login-screen">
   <form class="login-box" id="form-login">
     <h2 class="brand-font">Acesso Restrito</h2>
-    <input type="email" id="admin-email" placeholder="E-mail" required>
+    <input type="email" id="admin-email" placeholder="E-mail Administrativo" required>
     <input type="password" id="admin-senha" placeholder="Senha" required>
     <button type="submit" class="btn-gradient">Entrar no Painel</button>
   </form>
@@ -207,6 +211,10 @@ header {
   <div class="dashboard-stats">
     <div class="stat-box"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
     <div class="stat-box" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
+    
+    <!-- NOVO BOTÃO DE CONTROLE DE SOM -->
+    <button class="btn-header" id="btn-sound" onclick="toggleSom()">🔊 Som Ligado</button>
+    
     <button class="btn-header" onclick="abrirModalCatalogo()">⚙️ Configurações</button>
     <button class="btn-header" id="btn-toggle-loja" onclick="toggleStatusLoja()">Pausar Loja 🔴</button>
     <button class="btn-header btn-danger-outline" onclick="sair()">Encerrar</button>
@@ -275,18 +283,29 @@ let db = firebase.firestore();
 let auth = firebase.auth();
 let pedidosMap = new Map(); 
 let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
+let somLigado = true; // Controle de Som
 
 auth.onAuthStateChanged(user => {
   if (user) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('overlay-start').style.display = 'flex'; }
   else { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('overlay-start').style.display = 'none'; }
 });
 
-document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar.")); });
+document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar. Verifique os dados.")); });
 function sair() { auth.signOut(); location.reload(); }
+
+function toggleSom() {
+  somLigado = !somLigado;
+  const btn = document.getElementById('btn-sound');
+  btn.innerHTML = somLigado ? '🔊 Som Ligado' : '🔇 Mutado';
+  if(!somLigado) {
+    const audio = document.getElementById('audio-alerta');
+    audio.pause(); audio.currentTime = 0;
+  }
+}
 
 function iniciarSistema() {
   document.getElementById('overlay-start').style.display = 'none';
-  document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{});
+  if(somLigado) { document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{}); }
   
   db.collection('configuracoes').doc('geral').onSnapshot(doc => {
     if(doc.exists) {
@@ -311,7 +330,7 @@ function iniciarSistema() {
     renderizarKanban();
     const existeNovo = Array.from(pedidosMap.values()).some(p => p.status === 'Novo');
     const audio = document.getElementById('audio-alerta');
-    if (existeNovo) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
+    if (existeNovo && somLigado) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
   });
   setInterval(renderizarKanban, 60000);
 }
@@ -399,7 +418,6 @@ function avancarStatus(id, statusAtual) {
   }
 }
 
-// IMPRESSÃO (IFRAME OCULTO)
 function imprimirComanda(id) {
   const p = pedidosMap.get(id);
   if(!p) return;
@@ -439,9 +457,18 @@ function renderizarKanban() {
   Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p); qtd++; fat += p.total_centavos; });
   document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
 
+  const iconeVazio = { 'Novo': '🛒', 'Preparando': '👨‍🍳', 'Saiu para Entrega': '🛵', 'Concluído': '✨' };
+
   Object.keys(cols).forEach(status => {
     const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : 'concluido';
     document.getElementById(`count-${cid}`).textContent = cols[status].length;
+    
+    // EMPTY STATE (ESTADO VAZIO)
+    if (cols[status].length === 0) {
+      document.getElementById(`list-${cid}`).innerHTML = `<div class="empty-state"><span>${iconeVazio[status]}</span> Aguardando pedidos...</div>`;
+      return;
+    }
+
     document.getElementById(`list-${cid}`).innerHTML = cols[status].map(p => {
       let dif = Math.floor((Date.now() - (p.data_pedido?.toMillis()||Date.now())) / 60000);
       let tText = dif<1?'Agora':dif<60?`${dif} min`:`${Math.floor(dif/60)}h`;
