@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Doce Capricho Atelier</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,194 +14,174 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <style>
-/* PALETA DOCE CAPRICHO (CREME ARTESANAL LAPIDADO) */
 :root {
-  --gold: #DDA73A;         
-  --gold-dark: #C28F2A;    
-  --terracotta: #8B3A2B;   
-  --bg-main: #F8F4EE;      
-  --bg-col: rgba(58, 42, 32, 0.03); /* Fundo sutil para destacar os cartões */
-  --bg-card: #FFFFFF;      
-  --text-main: #3A2A20;    
-  --text-muted: #8C7A6B;   
-  --danger: #8B3A2B;       
-  --warning: #DDA73A;
-  --success: #2F855A;
-  --wp: #25D366;
-  
-  --border-light: rgba(58, 42, 32, 0.12);
-  --shadow-sm: 0 4px 12px rgba(58, 42, 32, 0.05); 
-  --shadow-md: 0 8px 24px rgba(58, 42, 32, 0.08); 
-  --smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --bg-main: #F4F7F6; --bg-card: #FFFFFF; --border-light: #E2E8F0;
+  --text-main: #2D3748; --text-muted: #718096;
+  --gold: #C5A059; --gold-hover: #B08D4B;
+  --danger: #E53E3E; --danger-light: #FED7D7;
+  --warning: #DD6B20; --warning-light: #FEEBC8;
+  --success: #38A169; --success-light: #C6F6D5; --wp: #25D366;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.02); --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+  --radius-lg: 12px;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* FIXANDO ALTURA PARA IPADS */
 body { 
   background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; 
   height: 100dvh; overflow: hidden; display: flex; flex-direction: column; position: relative;
 }
 
-h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
+body::before { content: ""; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50vw; height: 50vw; max-width: 600px; max-height: 600px; background: url('logo.png') center/contain no-repeat; opacity: 0.04; pointer-events: none; z-index: 1; }
 
 /* MODAIS */
-.modal-overlay { position: fixed; inset: 0; background: rgba(58, 42, 32, 0.6); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
-.modal-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
-.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; border: 1px solid var(--border-light); box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; overflow-y: auto; }
-.close-modal { position: absolute; top: 20px; right: 20px; font-size: 26px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); transition: color 0.3s ease; }
-.close-modal:hover { color: var(--terracotta); }
-.modal-box h2 { font-family: 'Cinzel', serif; color: var(--text-main); margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; max-height: 90vh; display: flex; flex-direction: column; overflow-y: auto; }
+.close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); }
+.modal-box h2 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; }
 
-/* CHAVINHAS ESTILO APPLE */
-.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+/* CHAVINHAS */
+.toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(58, 42, 32, 0.15); transition: .4s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s var(--smooth); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-input:checked + .slider { background-color: var(--gold); }
-input:checked + .slider:before { transform: translateX(20px); }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger); transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--success); }
+input:checked + .slider:before { transform: translateX(16px); }
 
 .catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border-light); }
-.catalog-info strong { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;}
-.catalog-info span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+.catalog-info strong { display: block; font-size: 13px; }
+.catalog-info span { font-size: 10px; color: var(--text-muted); }
 
 /* HORARIOS CSS */
-.dia-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: rgba(58, 42, 32, 0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); }
-.dia-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; width: 110px; color: var(--text-main); }
+.dia-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: #F8FAFC; padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); }
+.dia-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; width: 110px; }
 .dia-inputs { display: flex; gap: 5px; align-items: center; }
-.dia-inputs input[type="time"] { padding: 8px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 11px; font-family: inherit; color: var(--text-main); font-weight: 600; background: var(--bg-card); transition: border-color 0.3s;}
-.dia-inputs input[type="time"]:focus { outline: none; border-color: var(--gold); }
-
-/* BOTÕES METÁLICOS */
-.btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; border-radius: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
-.btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 8px 20px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
-.btn-gradient:active:not(:disabled) { transform: translateY(1px); }
-
-.btn-save { padding: 14px; font-size: 11px; width: 100%; margin-top: 10px; }
+.dia-inputs input[type="time"] { padding: 6px; border: 1px solid var(--border-light); border-radius: 4px; font-size: 11px; font-family: inherit; color: var(--text-main); }
+.btn-save { background: var(--gold); color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; width: 100%; transition: opacity 0.3s; margin-top: 10px; }
+.btn-save:hover { opacity: 0.9; }
 
 /* LOGIN & START */
 #login-screen { position: fixed; inset: 0; background: var(--bg-main); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-.login-box { background: var(--bg-card); padding: 50px 40px; border-radius: 16px; width: 100%; max-width: 420px; text-align: center; border: 1px solid var(--border-light); box-shadow: var(--shadow-md); }
-.login-box h2 { color: var(--text-main); margin-bottom: 30px; letter-spacing: 2px; font-size: 24px; font-weight: 700; border-bottom: none; }
-.login-box input { width: 100%; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 13px; color: var(--text-main); background: var(--bg-main); font-weight: 500; transition: all 0.3s; }
-.login-box input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(221, 167, 58, 0.2); background: var(--bg-card); }
-.login-box button { width: 100%; padding: 16px; }
+.login-box { background: var(--bg-card); padding: 50px 40px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); width: 100%; max-width: 420px; text-align: center; border: 1px solid var(--border-light); }
+.login-box h2 { color: var(--gold); margin-bottom: 30px; font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 22px; }
+.login-box input { width: 100%; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 14px; color: var(--text-main); background: #F7FAFC; }
+.login-box button { width: 100%; background: var(--gold); color: #FFF; border: none; padding: 16px; border-radius: 8px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
 
-#overlay-start { position: fixed; inset: 0; background: rgba(248, 244, 238, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-.btn-start { padding: 20px 50px; font-size: 14px; border-radius: 50px; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(221, 167, 58, 0.3);}
+#overlay-start { position: fixed; inset: 0; background: rgba(244,247,246,0.95); backdrop-filter: blur(5px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.btn-start { background: var(--gold); color: #FFF; border: none; padding: 20px 50px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
 
-/* CABEÇALHO (GLASSMORPHISM) */
+/* CABEÇALHO */
 header { 
-  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid var(--border-light); 
-  display: flex; justify-content: space-between; align-items: center; 
+  background: var(--bg-card); padding: 20px 30px; border-bottom: 1px solid var(--border-light); 
+  display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); 
   z-index: 10; flex-shrink: 0; flex-wrap: wrap; gap: 15px; 
 }
-.logo { font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: 2px; font-family: 'Cinzel', serif;}
-.dashboard-stats { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-.stat-box { display: flex; flex-direction: column; align-items: flex-end; padding-right: 15px; border-right: 1px solid var(--border-light); }
-.stat-box span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-.stat-box strong { font-size: 22px; color: var(--gold); font-weight: 700; font-family: 'Cinzel', serif; margin-top: 2px;}
+.logo { font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 2px; font-family: 'Cinzel', serif;}
+.dashboard-stats { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.stat-box { display: flex; flex-direction: column; align-items: flex-end; }
+.stat-box span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+.stat-box strong { font-size: 20px; color: var(--text-main); font-weight: 800; }
 
-.btn-header { background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-main); padding: 10px 16px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.3s ease; letter-spacing: 1px; }
-.btn-header:hover { background: rgba(58, 42, 32, 0.05); border-color: rgba(58, 42, 32, 0.2); }
-.btn-danger-outline { color: var(--terracotta); border-color: rgba(139, 58, 43, 0.3); background: rgba(139, 58, 43, 0.05); }
-.btn-danger-outline:hover { background: var(--terracotta); color: #FFF; border-color: var(--terracotta); }
-.btn-warning-solid { background: var(--terracotta); color: #FFF; border-color: var(--terracotta); }
-.btn-warning-solid:hover { background: #6b2d22; }
+.btn-header { background: #EDF2F7; border: none; color: var(--text-main); padding: 10px 15px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.3s; margin-left: 5px; }
+.btn-header:hover { background: #E2E8F0; }
+.btn-danger-outline { border: 1px solid var(--danger); color: var(--danger); background: transparent; }
+.btn-danger-outline:hover { background: var(--danger); color: #FFF; }
+.btn-warning-solid { background: var(--warning); color: #FFF; }
+.btn-warning-solid:hover { background: #C05621; }
 
-/* KANBAN BASE */
+/* KANBAN BASE (CELULAR / IPAD VERTICAL) COM SCROLL HORIZONTAL */
 .kanban-board { 
-  display: flex; gap: 20px; padding: 25px 30px; flex-grow: 1; 
+  display: flex; gap: 20px; padding: 20px 30px; flex-grow: 1; 
   overflow-x: auto; overflow-y: hidden; position: relative; z-index: 2; 
   -webkit-overflow-scrolling: touch; align-items: stretch;
 }
+.kanban-board::-webkit-scrollbar { height: 10px; }
+.kanban-board::-webkit-scrollbar-track { background: transparent; }
+.kanban-board::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 10px; border: 2px solid var(--bg-main); }
+
 .kanban-col { 
-  background: var(--bg-col); border: 1px solid rgba(58, 42, 32, 0.05); border-radius: 12px;
+  background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); 
+  border: 1px solid var(--border-light); border-radius: 16px; 
   display: flex; flex-direction: column; overflow: hidden; 
-  flex: 1 0 300px; 
+  flex: 1 0 280px; /* Largura mínima para legibilidade antes de gerar rolagem */
   max-height: 100%;
 }
 
+/* KANBAN ADAPTÁVEL (IPAD HORIZONTAL E PC) SEM SCROLL HORIZONTAL */
 @media (min-width: 1000px) {
-  .kanban-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow-x: hidden; }
-  .kanban-col { flex: none; width: 100%; }
+  .kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); /* Força 4 colunas distribuídas perfeitamente */
+    overflow-x: hidden; /* Corta a rolagem, prende na tela */
+  }
+  .kanban-col {
+    flex: none; /* Desliga o flexbox para o Grid assumir o controle total */
+    width: 100%;
+  }
 }
 
-.col-header { padding: 15px 20px; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-light); flex-shrink: 0; letter-spacing: 1px; background: rgba(255,255,255,0.5);}
-.col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-main); font-weight: 800;}
-.col-body { padding: 15px 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+.col-header { padding: 20px; text-align: center; font-weight: 800; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); flex-shrink: 0; }
+.col-header .count { background: var(--bg-card); padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid var(--border-light); color: var(--text-muted); }
+.col-body { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
 
-/* EMPTY STATES (ESTADO VAZIO) */
-.empty-state { text-align: center; padding: 40px 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; opacity: 0.6; display: flex; flex-direction: column; align-items: center; gap: 10px; letter-spacing: 1px;}
-.empty-state span { font-size: 28px; opacity: 0.8; filter: grayscale(1); }
+#col-novo .col-header { color: var(--danger); border-top: 4px solid var(--danger); }
+#col-preparando .col-header { color: var(--gold); border-top: 4px solid var(--gold); }
+#col-saiu .col-header { color: var(--success); border-top: 4px solid var(--success); }
+#col-concluido .col-header { color: var(--text-muted); border-top: 4px solid var(--border-light); }
 
-#col-novo .col-header { color: var(--terracotta); border-bottom-color: var(--terracotta); }
-#col-preparando .col-header { color: var(--gold-dark); border-bottom-color: var(--gold); }
-#col-saiu .col-header { color: var(--success); border-bottom-color: var(--success); }
-#col-concluido .col-header { color: var(--text-muted); }
+/* CARDS E FORMATAÇÃO INTERNA */
+.card-pedido { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-md); position: relative; flex-shrink: 0; }
+.card-pedido.atencao { border: 1px solid var(--warning); }
+.card-pedido.atrasado { border: 1px solid var(--danger); animation: pulseBorder 2s infinite; }
+@keyframes pulseBorder { 0% { box-shadow: 0 0 0 0 rgba(229,62,62,0.3); } 70% { box-shadow: 0 0 0 8px rgba(229,62,62,0); } 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0); } }
 
-/* CARDS E FORMATAÇÃO INTERNA (FLAT / SHARP) */
-.card-pedido { background: var(--bg-card); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-light); position: relative; flex-shrink: 0; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: var(--shadow-sm);}
-.card-pedido:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(58, 42, 32, 0.2); }
-
-/* ALERTAS SUTIS */
-.card-pedido.atencao { border-color: var(--warning); background: rgba(221, 167, 58, 0.02); }
-.card-pedido.atrasado { border-color: var(--terracotta); background: rgba(139, 58, 43, 0.02); animation: subtlePulse 2s infinite; }
-@keyframes subtlePulse { 0% { box-shadow: 0 0 0 0 rgba(139,58,43,0.1); } 50% { box-shadow: 0 0 0 4px rgba(139,58,43,0); } 100% { box-shadow: 0 0 0 0 rgba(139,58,43,0); } }
-
-.card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 12px; }
-.p-id { font-size: 15px; font-weight: 800; color: var(--text-main); font-family: 'Cinzel', serif; letter-spacing: 1px;}
-.p-time { font-size: 10px; color: var(--text-muted); font-weight: 700; background: var(--bg-main); padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; border: 1px solid var(--border-light); letter-spacing: 1px;}
-.p-time.timer-atencao { color: var(--gold-dark); border-color: var(--gold); background: rgba(221, 167, 58, 0.1); }
-.p-time.timer-atrasado { color: var(--terracotta); border-color: var(--terracotta); background: rgba(139, 58, 43, 0.1); }
+.card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; }
+.p-id { font-size: 15px; font-weight: 800; color: var(--gold); }
+.p-time { font-size: 11px; color: var(--text-muted); font-weight: 700; background: #F7FAFC; padding: 4px 10px; border-radius: 12px; display: flex; align-items: center; gap: 5px;}
 
 .p-cliente-area { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px; }
-.p-nome { font-size: 14px; font-weight: 700; color: var(--text-main); }
-.p-badge { font-size: 9px; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border: 1px solid transparent; }
-.badge-entrega { background: rgba(139, 58, 43, 0.08); color: var(--terracotta); border-color: rgba(139, 58, 43, 0.2); }
-.badge-retirada { background: rgba(221, 167, 58, 0.08); color: var(--gold-dark); border-color: rgba(221, 167, 58, 0.2); }
+.p-nome { font-size: 14px; font-weight: 700; }
+.p-badge { font-size: 9px; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; font-weight: 800; }
+.badge-entrega { background: #EBF4FF; color: #3182CE; }
+.badge-retirada { background: #E9D8FD; color: #805AD5; }
 
-.p-itens { font-size: 12px; color: var(--text-main); line-height: 1.6; padding: 5px 0; font-weight: 500; }
-.p-obs { font-size: 11px; color: var(--text-main); background: var(--bg-main); padding: 10px; border-radius: 6px; border-left: 3px solid var(--gold); margin-top: 8px; font-weight: 600;}
+.p-itens { font-size: 13px; color: #4A5568; line-height: 1.6; padding: 5px 0; font-weight: 500; }
+.p-obs { font-size: 11px; color: var(--warning); background: #FFFAF0; padding: 8px; border-radius: 6px; border-left: 3px solid var(--warning); margin-top: 8px;}
 
-.p-footer { border-top: 1px dashed var(--border-light); padding-top: 15px; }
+.p-footer { border-top: 1px solid var(--border-light); padding-top: 15px; }
 .p-pagamento-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.p-total { font-size: 15px; font-weight: 800; color: var(--text-main); }
-.badge-pgto { background: var(--bg-main); color: var(--text-muted); border: 1px solid var(--border-light); font-size: 9px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+.p-total { font-size: 16px; font-weight: 800; }
+.badge-pgto { background: #F1F5F9; color: #64748B; font-size: 10px; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; }
 
-.p-endereco { font-size: 11px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; font-weight: 500;}
+.p-endereco { font-size: 11px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
 
-.action-buttons { display: flex; gap: 8px; margin-top: 15px; }
-.btn-action { flex: 1; border: none; padding: 14px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; letter-spacing: 1px; transition: opacity 0.3s; }
-.btn-action:hover { opacity: 0.9; }
-
-.btn-icon-only { flex: 0 0 42px; background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 6px;}
-.btn-icon-only:hover { color: var(--text-main); border-color: rgba(58, 42, 32, 0.3); background: var(--bg-card); }
-.btn-icon-only.btn-wp { background: rgba(37, 211, 102, 0.1); color: var(--wp); border-color: rgba(37, 211, 102, 0.3); }
-.btn-icon-only.btn-wp:hover { background: var(--wp); color: #FFF; }
+.action-buttons { display: flex; gap: 10px; margin-top: 15px; }
+.btn-action { flex: 1; border: none; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; }
+.btn-next { background: var(--gold); }
+.btn-icon-only { flex: 0 0 40px; background: #EDF2F7; color: #4A5568; display: flex; align-items: center; justify-content: center; }
+.btn-icon-only.btn-wp { background: #DCF8C6; color: var(--wp); }
 .btn-icon-only svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
 
-::-webkit-scrollbar { width: 6px; height: 6px;}
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(58, 42, 32, 0.15); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(58, 42, 32, 0.3); }
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 10px; }
 </style>
 </head>
 <body>
 
 <div id="login-screen">
   <form class="login-box" id="form-login">
-    <h2 class="brand-font">Acesso Restrito</h2>
-    <input type="email" id="admin-email" placeholder="E-mail Administrativo" required>
+    <h2>Acesso Restrito</h2>
+    <input type="email" id="admin-email" placeholder="E-mail" required>
     <input type="password" id="admin-senha" placeholder="Senha" required>
-    <button type="submit" class="btn-gradient">Entrar no Painel</button>
+    <button type="submit">Entrar no Painel</button>
   </form>
 </div>
 
 <div id="overlay-start">
-  <h1 class="brand-font" style="color:var(--text-main); margin-bottom: 30px; letter-spacing: 2px; font-size: 28px;">EXPEDIENTE</h1>
-  <button class="btn-gradient btn-start" onclick="iniciarSistema()">Iniciar Turno</button>
+  <h1 style="color:var(--gold); font-family:'Cinzel', serif; margin-bottom: 30px; letter-spacing: 2px; font-size: 28px;">EXPEDIENTE</h1>
+  <button class="btn-start" onclick="iniciarSistema()">Iniciar Turno</button>
 </div>
 
 <audio id="audio-alerta" src="alerta.mp3" loop preload="auto"></audio>
@@ -210,11 +190,7 @@ header {
   <div class="logo">PAINEL ADMIN</div>
   <div class="dashboard-stats">
     <div class="stat-box"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
-    <div class="stat-box" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
-    
-    <!-- NOVO BOTÃO DE CONTROLE DE SOM -->
-    <button class="btn-header" id="btn-sound" onclick="toggleSom()">🔊 Som Ligado</button>
-    
+    <div class="stat-box"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
     <button class="btn-header" onclick="abrirModalCatalogo()">⚙️ Configurações</button>
     <button class="btn-header" id="btn-toggle-loja" onclick="toggleStatusLoja()">Pausar Loja 🔴</button>
     <button class="btn-header btn-danger-outline" onclick="sair()">Encerrar</button>
@@ -237,25 +213,25 @@ header {
     <!-- BLOCO 1: FUNCIONAMENTO AUTOMÁTICO -->
     <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
       <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários de Funcionamento (Automático)</strong>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Configure os dias em que a loja abre sozinha e os horários.</p>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Configure os dias em que a loja abre sozinha e os horários.</p>
       
       <div id="schedule-list"></div>
-      <button class="btn-gradient btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
+      <button class="btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
     </div>
 
     <!-- BLOCO 2: RODAPÉ -->
     <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
       <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Texto do Rodapé do Site</strong>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height: 1.5;">Texto visível para informar aos clientes seus dias habituais.</p>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Texto visível para informar aos clientes seus dias habituais.</p>
       <div style="display: flex; gap: 10px;">
-        <input type="text" id="input-texto-funcionamento" placeholder="Ex: Quinta a Domingo, 18:30 às 23:00" style="flex: 1; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--text-main); background: var(--bg-main);">
-        <button onclick="salvarTextoFuncionamento(event)" class="btn-gradient btn-save" style="width: auto; margin-top: 0;">Salvar</button>
+        <input type="text" id="input-texto-funcionamento" placeholder="Ex: Quinta a Domingo, 18:30 às 23:00" style="flex: 1; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 13px;">
+        <button onclick="salvarTextoFuncionamento(event)" class="btn-save" style="width: auto; margin-top: 0;">Salvar</button>
       </div>
     </div>
 
     <!-- BLOCO 3: ESTOQUE -->
     <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Controle de Estoque (Pizzas)</strong>
-    <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Desligue a chave para marcar a pizza como "Esgotada" no site.</p>
+    <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Desligue a chave para marcar a pizza como "Esgotada" no site.</p>
     <div id="catalog-list"></div>
   </div>
 </div>
@@ -283,29 +259,18 @@ let db = firebase.firestore();
 let auth = firebase.auth();
 let pedidosMap = new Map(); 
 let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
-let somLigado = true; // Controle de Som
 
 auth.onAuthStateChanged(user => {
   if (user) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('overlay-start').style.display = 'flex'; }
   else { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('overlay-start').style.display = 'none'; }
 });
 
-document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar. Verifique os dados.")); });
+document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar.")); });
 function sair() { auth.signOut(); location.reload(); }
-
-function toggleSom() {
-  somLigado = !somLigado;
-  const btn = document.getElementById('btn-sound');
-  btn.innerHTML = somLigado ? '🔊 Som Ligado' : '🔇 Mutado';
-  if(!somLigado) {
-    const audio = document.getElementById('audio-alerta');
-    audio.pause(); audio.currentTime = 0;
-  }
-}
 
 function iniciarSistema() {
   document.getElementById('overlay-start').style.display = 'none';
-  if(somLigado) { document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{}); }
+  document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{});
   
   db.collection('configuracoes').doc('geral').onSnapshot(doc => {
     if(doc.exists) {
@@ -330,7 +295,7 @@ function iniciarSistema() {
     renderizarKanban();
     const existeNovo = Array.from(pedidosMap.values()).some(p => p.status === 'Novo');
     const audio = document.getElementById('audio-alerta');
-    if (existeNovo && somLigado) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
+    if (existeNovo) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
   });
   setInterval(renderizarKanban, 60000);
 }
@@ -418,6 +383,7 @@ function avancarStatus(id, statusAtual) {
   }
 }
 
+// SOLUÇÃO DEFINITIVA DE IMPRESSÃO (IFRAME OCULTO BLINDADO CONTRA POPUP BLOCKER)
 function imprimirComanda(id) {
   const p = pedidosMap.get(id);
   if(!p) return;
@@ -457,37 +423,28 @@ function renderizarKanban() {
   Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p); qtd++; fat += p.total_centavos; });
   document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
 
-  const iconeVazio = { 'Novo': '🛒', 'Preparando': '👨‍🍳', 'Saiu para Entrega': '🛵', 'Concluído': '✨' };
-
   Object.keys(cols).forEach(status => {
     const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : 'concluido';
     document.getElementById(`count-${cid}`).textContent = cols[status].length;
-    
-    // EMPTY STATE (ESTADO VAZIO)
-    if (cols[status].length === 0) {
-      document.getElementById(`list-${cid}`).innerHTML = `<div class="empty-state"><span>${iconeVazio[status]}</span> Aguardando pedidos...</div>`;
-      return;
-    }
-
     document.getElementById(`list-${cid}`).innerHTML = cols[status].map(p => {
       let dif = Math.floor((Date.now() - (p.data_pedido?.toMillis()||Date.now())) / 60000);
       let tText = dif<1?'Agora':dif<60?`${dif} min`:`${Math.floor(dif/60)}h`;
       let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
       let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
-      let btn = status==='Novo'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar Pedido</button>`:status==='Preparando'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`:status==='Saiu para Entrega'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Marcar Entregue</button>`:'';
+      let btn = status==='Novo'?`<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar</button>`:status==='Preparando'?`<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`:status==='Saiu para Entrega'?`<button class="btn-action btn-next" onclick="avancarStatus('${p.id}', '${status}')">Finalizar</button>`:'';
       
       let enderecoHTML = '';
       if (p.cliente_endereco) { enderecoHTML = `<div class="p-endereco">${icons.mapPin} <span>${p.cliente_endereco}</span></div>`; }
 
       let itensHTML = p.itens.map(i => {
         let extrasHtml = (i.extras && i.extras.length > 0) 
-          ? `<div style="margin-top: 4px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight: 600;">+ ${e.nome} (${e.aplicacao})</span>`).join('') + `</div>` 
+          ? `<div style="margin-top: 3px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:11px;">+ ${e.nome} (${e.aplicacao})</span>`).join('') + `</div>` 
           : '';
         let obsHtml = i.obs ? `<div class="p-obs">${i.obs}</div>` : '';
-        return `<div style="margin-bottom:10px;"><strong>${i.qtd}x ${i.nome}</strong>${extrasHtml}${obsHtml}</div>`;
+        return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${i.nome}</strong>${extrasHtml}${obsHtml}</div>`;
       }).join('');
 
-      return `<div class="card-pedido ${bCor}"><div class="card-header"><span class="p-id">#${p.id.slice(-5).toUpperCase()}</span><span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span></div><div class="p-cliente-area"><span class="p-nome">${p.cliente_nome}</span><span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span></div><div class="p-itens">${itensHTML}</div><div class="p-footer"><div class="p-pagamento-row"><span class="p-total">${brl(p.total_centavos)}</span><span class="badge-pgto">${p.forma_pagamento}</span></div>${enderecoHTML}</div><div class="action-buttons">${btn}<a href="https://wa.me/55${p.cliente_telefone}" target="_blank" class="btn-action btn-icon-only btn-wp" aria-label="WhatsApp">${icons.whatsapp}</a><button class="btn-action btn-icon-only" onclick="imprimirComanda('${p.id}')" aria-label="Imprimir">${icons.printer}</button></div></div>`;
+      return `<div class="card-pedido ${bCor}"><div class="card-header"><span class="p-id">#${p.id.slice(-5).toUpperCase()}</span><span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span></div><div class="p-cliente-area"><span class="p-nome">${p.cliente_nome}</span><span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span></div><div class="p-itens">${itensHTML}</div><div class="p-footer"><div class="p-pagamento-row"><span class="p-total">${brl(p.total_centavos)}</span><span class="badge-pgto">${p.forma_pagamento}</span></div>${enderecoHTML}</div><div class="action-buttons">${btn}<a href="https://wa.me/55${p.cliente_telefone}" target="_blank" class="btn-action btn-icon-only btn-wp">${icons.whatsapp}</a><button class="btn-action btn-icon-only" onclick="imprimirComanda('${p.id}')">${icons.printer}</button></div></div>`;
     }).join('');
   });
 }
