@@ -7,7 +7,6 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
 
-<!-- SCRIPT DE TEMA DINÂMICO E INTELIGENTE -->
 <script>
   function getSystemTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -38,7 +37,6 @@
   };
 </script>
 
-<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1311,6 +1309,43 @@ function fecharModal(id) { const ov = document.getElementById(id); if(ov){ ov.cl
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
+function atualizarEstoqueNoBuilder() {
+  if (!$('#builder-overlay').classList.contains('open') || !builder) return;
+  
+  const ids = builder.sabores;
+  const nomes = ids.map(i => acharSabor(i).nome);
+  const selecionados = lerExtras().map(e => ({ id: e.id, val: e.aplicacao }));
+
+  $('#builder-extras').innerHTML = EXTRAS.map(e => {
+      const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(e.id);
+      if (isEsgotado) {
+          return `<div class="extra-row" style="opacity: 0.5; pointer-events: none; background: var(--bg-main);">
+                    <div class="extra-row-header">
+                      <label style="color: var(--text-muted);"><input type="checkbox" disabled> <del>${esc(e.nome)}</del> <span style="font-size:10px; color:var(--terracotta); margin-left:5px; font-weight:800;">ESGOTADO</span></label>
+                    </div>
+                  </div>`;
+      }
+      let cards = '';
+      if (ids.length === 2) {
+          cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
+      } else {
+          cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
+      }
+      return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ Variável</span></div>${cards}</div>`;
+  }).join('');
+
+  $$('.extra-chk').forEach(chk => {
+     const sel = selecionados.find(s => s.id === chk.value);
+     if (sel) {
+        chk.checked = true;
+        const row = chk.closest('.extra-row');
+        row.classList.add('checked');
+        row.querySelectorAll('.extra-opt-card').forEach(c => { c.classList.toggle('active', c.dataset.val === sel.val); });
+     }
+  });
+  atualizarBuilderTotal();
+}
+
 function processarConfig(doc) {
   if(doc.exists) {
     configLoja = doc.data();
@@ -1320,7 +1355,8 @@ function processarConfig(doc) {
     if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
     if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
     lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
-    verificarHorario(); renderCardapio();   
+    verificarHorario(); renderCardapio();
+    atualizarEstoqueNoBuilder();   
   }
 }
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
