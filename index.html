@@ -7,6 +7,7 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
 
+<!-- SCRIPT DE TEMA DINÂMICO E INTELIGENTE -->
 <script>
   function getSystemTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -37,6 +38,7 @@
   };
 </script>
 
+<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -403,9 +405,10 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-row.checked { border-color: rgba(221, 167, 58, 0.5); background: rgba(221, 167, 58, 0.05); }
 :root[data-theme="dark"] .extra-row.checked { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.05); }
 
-.extra-row-header { display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; }
-.extra-row-header label { display: flex; align-items: center; gap: 12px; color: var(--text-main); font-size: 13px; font-weight: 600; margin: 0; cursor: pointer; }
-:root[data-theme="dark"] .extra-row-header label { font-weight: 500; }
+/* ATUALIZAÇÃO DA ÁREA DE CLIQUE DOS EXTRAS (UX Melhorado) */
+.extra-row-header { display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; margin: 0; }
+.extra-title-area { display: flex; align-items: center; gap: 12px; color: var(--text-main); font-size: 13px; font-weight: 600; margin: 0; }
+:root[data-theme="dark"] .extra-title-area { font-weight: 500; }
 
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold-dark); cursor: pointer; flex-shrink: 0; }
 :root[data-theme="dark"] .extra-row input[type="checkbox"] { accent-color: var(--gold); }
@@ -1099,15 +1102,6 @@ function abrirBuilder(ids) {
   $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
   $('#builder-extras').innerHTML = EXTRAS.map(e => {
-      const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(e.id);
-      if (isEsgotado) {
-          return `<div class="extra-row" style="opacity: 0.5; pointer-events: none; background: var(--bg-main);">
-                    <div class="extra-row-header">
-                      <label style="color: var(--text-muted);"><input type="checkbox" disabled> <del>${esc(e.nome)}</del> <span style="font-size:10px; color:var(--terracotta); margin-left:5px; font-weight:800;">ESGOTADO</span></label>
-                    </div>
-                  </div>`;
-      }
-      
       let cards = '';
       if (ids.length === 2) {
           cards = `
@@ -1125,10 +1119,48 @@ function abrirBuilder(ids) {
             </div>
           `;
       }
-      return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ Variável</span></div>${cards}</div>`;
+      return `<div class="extra-row" data-id="${e.id}">
+                <label class="extra-row-header">
+                  <div class="extra-title-area">
+                    <input type="checkbox" class="extra-chk" value="${e.id}"> 
+                    <span class="extra-name-text">${esc(e.nome)}</span>
+                  </div>
+                  <span class="extra-price">+ Variável</span>
+                </label>
+                ${cards}
+              </div>`;
   }).join('');
 
-  $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; atualizarBuilderTotal(); abrirModal('builder-overlay');
+  $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; 
+  atualizarEstoqueNoBuilder(); // Aplica os bloqueios de estoque sem piscar
+  abrirModal('builder-overlay');
+}
+
+function atualizarEstoqueNoBuilder() {
+  if (!$('#builder-overlay').classList.contains('open') || !builder) return;
+  
+  $$('.extra-row').forEach(row => {
+    const chk = row.querySelector('.extra-chk');
+    if (!chk) return;
+    const id = chk.value;
+    const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id);
+    const nameText = row.querySelector('.extra-name-text');
+    
+    if (isEsgotado) {
+       row.style.opacity = '0.5';
+       row.style.pointerEvents = 'none';
+       chk.disabled = true;
+       chk.checked = false; 
+       row.classList.remove('checked');
+       if (nameText) nameText.innerHTML = `<del>${esc(EXTRAS.find(x => x.id === id).nome)}</del> <span style="font-size:10px; color:var(--terracotta); margin-left:5px; font-weight:800;">ESGOTADO</span>`;
+    } else {
+       row.style.opacity = '1';
+       row.style.pointerEvents = 'auto';
+       chk.disabled = false;
+       if (nameText) nameText.innerHTML = esc(EXTRAS.find(x => x.id === id).nome);
+    }
+  });
+  atualizarBuilderTotal();
 }
 
 function lerExtras() {
@@ -1309,43 +1341,6 @@ function fecharModal(id) { const ov = document.getElementById(id); if(ov){ ov.cl
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
-function atualizarEstoqueNoBuilder() {
-  if (!$('#builder-overlay').classList.contains('open') || !builder) return;
-  
-  const ids = builder.sabores;
-  const nomes = ids.map(i => acharSabor(i).nome);
-  const selecionados = lerExtras().map(e => ({ id: e.id, val: e.aplicacao }));
-
-  $('#builder-extras').innerHTML = EXTRAS.map(e => {
-      const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(e.id);
-      if (isEsgotado) {
-          return `<div class="extra-row" style="opacity: 0.5; pointer-events: none; background: var(--bg-main);">
-                    <div class="extra-row-header">
-                      <label style="color: var(--text-muted);"><input type="checkbox" disabled> <del>${esc(e.nome)}</del> <span style="font-size:10px; color:var(--terracotta); margin-left:5px; font-weight:800;">ESGOTADO</span></label>
-                    </div>
-                  </div>`;
-      }
-      let cards = '';
-      if (ids.length === 2) {
-          cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
-      } else {
-          cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
-      }
-      return `<div class="extra-row"><div class="extra-row-header"><label><input type="checkbox" class="extra-chk" value="${e.id}"> ${esc(e.nome)}</label><span class="extra-price">+ Variável</span></div>${cards}</div>`;
-  }).join('');
-
-  $$('.extra-chk').forEach(chk => {
-     const sel = selecionados.find(s => s.id === chk.value);
-     if (sel) {
-        chk.checked = true;
-        const row = chk.closest('.extra-row');
-        row.classList.add('checked');
-        row.querySelectorAll('.extra-opt-card').forEach(c => { c.classList.toggle('active', c.dataset.val === sel.val); });
-     }
-  });
-  atualizarBuilderTotal();
-}
-
 function processarConfig(doc) {
   if(doc.exists) {
     configLoja = doc.data();
@@ -1392,7 +1387,15 @@ $('#cardapio').addEventListener('click', e => { const b = e.target.closest('[dat
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
-$('#builder-extras').addEventListener('change', e => { if(e.target.classList.contains('extra-chk')) { const row = e.target.closest('.extra-row'); if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); } atualizarBuilderTotal(); });
+
+$('#builder-extras').addEventListener('change', e => { 
+  if(e.target.classList.contains('extra-chk')) { 
+    const row = e.target.closest('.extra-row'); 
+    if(e.target.checked) row.classList.add('checked'); 
+    else row.classList.remove('checked'); 
+  } 
+  atualizarBuilderTotal(); 
+});
 
 $('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Math.max(1, parseInt($('#qty-val').textContent, 10) - 1); atualizarBuilderTotal(); popQtyVal(); });
 $('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); popQtyVal(); });
