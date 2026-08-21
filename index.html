@@ -790,6 +790,14 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         </div>
       </div>
 
+      <div id="box-retirada" style="display: none; opacity: 0; transition: all 0.4s var(--smooth);">
+        <div class="box-destaque" style="margin-top: 0; text-align: left; padding: 15px;">
+          <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 5px; letter-spacing: 1px;">📍 Endereço para Retirada</p>
+          <strong style="color: var(--text-main); font-size: 13px;" id="text-endereco-loja">Sua Rua, 123 - Centro, São Miguel / RN</strong>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">Aguarde nossa confirmação no WhatsApp antes de sair.</p>
+        </div>
+      </div>
+
       <div>
         <label for="cli-pagamento">Pagamento</label>
         <select id="cli-pagamento">
@@ -892,10 +900,16 @@ const CONFIG = {
   pixChave:     '+5585921440055',
   pixNome:      'Doce Capricho Atelier',
   taxaEntrega:  300,               
-  usarFirebase: true               
+  usarFirebase: true,
+  // COLOQUE O ENDEREÇO DA SUA LOJA AQUI:
+  enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN'
 };
+
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 document.getElementById('text-taxa-card').textContent = CONFIG.taxaEntrega > 0 ? '+ ' + brl(CONFIG.taxaEntrega) : 'Grátis';
+
+const elEndLoja = document.getElementById('text-endereco-loja');
+if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA",
@@ -1132,7 +1146,7 @@ function abrirBuilder(ids) {
   }).join('');
 
   $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; 
-  atualizarEstoqueNoBuilder(); // Aplica os bloqueios de estoque sem piscar
+  atualizarEstoqueNoBuilder(); 
   abrirModal('builder-overlay');
 }
 
@@ -1227,8 +1241,15 @@ function atualizarUI() {
   
   const entrega = $('#cli-tipo-pedido').value === 'Entrega'; 
   const boxEnd = $('#box-endereco');
-  if(entrega) { boxEnd.style.display = 'block'; setTimeout(() => boxEnd.style.opacity = '1', 10);
-  } else { boxEnd.style.opacity = '0'; setTimeout(() => boxEnd.style.display = 'none', 300); }
+  const boxRet = $('#box-retirada');
+
+  if(entrega) { 
+    if(boxRet) { boxRet.style.opacity = '0'; setTimeout(() => boxRet.style.display = 'none', 300); }
+    boxEnd.style.display = 'block'; setTimeout(() => boxEnd.style.opacity = '1', 10);
+  } else { 
+    boxEnd.style.opacity = '0'; setTimeout(() => boxEnd.style.display = 'none', 300); 
+    if(boxRet) { boxRet.style.display = 'block'; setTimeout(() => boxRet.style.opacity = '1', 10); }
+  }
 
   const rua = $('#cli-rua'); if(rua) rua.required = entrega;
   const num = $('#cli-numero'); if(num) num.required = entrega;
@@ -1267,8 +1288,11 @@ function montarRevisao() {
     return `<div class="review-item-line" style="flex-direction:column; margin-bottom:12px; border-bottom:1px solid var(--border-light); padding-bottom:8px;"><div style="display:flex; justify-content:space-between; width:100%;"><strong>${i.qtd}x ${esc(nomeItem(i))}</strong><span style="color:var(--text-main); font-weight:800;">${brl(i.total)}</span></div>${detalhesHTML}</div>`;
   }).join('');
 
-  if(tipo === 'Entrega') { $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
-  } else { $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">Te avisaremos quando estiver pronto.</span>`; }
+  if(tipo === 'Entrega') { 
+    $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
+  } else { 
+    $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`; 
+  }
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   if (pgto === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total);
