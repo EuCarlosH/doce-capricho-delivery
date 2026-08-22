@@ -385,6 +385,21 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .delivery-card.active small { color: var(--text-main); font-weight: 600;}
 :root[data-theme="dark"] .delivery-card.active small { color: var(--gold-dark); font-weight: 400;}
 
+/* NOVOS CARTÕES DE ZONAS DE ENTREGA */
+.zonas-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.zona-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 10px; padding: 14px 15px; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center; }
+:root[data-theme="dark"] .zona-card { background: var(--bg-main); }
+.zona-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.zona-card.active { border-color: var(--gold); background: rgba(221, 167, 58, 0.05); box-shadow: 0 0 0 1px var(--gold); }
+:root[data-theme="dark"] .zona-card.active { background: rgba(212, 175, 55, 0.08); }
+
+.zona-info { display: flex; flex-direction: column; gap: 4px; }
+.zona-nome { font-size: 13px; font-weight: 700; color: var(--text-main); }
+:root[data-theme="dark"] .zona-nome { font-weight: 600; color: var(--white); }
+.zona-desc { font-size: 10px; color: var(--text-muted); }
+.zona-preco { font-size: 13px; font-weight: 800; color: var(--gold-dark); background: rgba(221, 167, 58, 0.1); padding: 4px 8px; border-radius: 6px; }
+:root[data-theme="dark"] .zona-preco { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+
 /* FORMS E BUILDER */
 .builder-group { margin-bottom: 20px; border: none; }
 .builder-label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 700; }
@@ -757,7 +772,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
             <strong>Entrega</strong>
-            <small id="text-taxa-card">Taxa por Bairro</small>
+            <small id="text-taxa-card">Calculando...</small>
           </div>
           <div class="delivery-card" data-tipo="Retirada" tabindex="0" role="button">
             <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -768,26 +783,54 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       </div>
       
       <div id="box-endereco">
-        <div class="endereco-row">
-          <div style="flex: 1.5;">
-            <label for="cli-bairro">Bairro</label>
-            <select id="cli-bairro" required>
-               <!-- As opções serão injetadas pelo JavaScript -->
-            </select>
+        <!-- NOVOS CARTÕES DE REGIÃO DE ENTREGA -->
+        <div id="box-taxas-entrega" style="margin-bottom: 20px;">
+          <label style="margin-bottom: 5px;">Qual a região da entrega?</label>
+          <input type="hidden" id="cli-taxa-id" value="">
+          <input type="hidden" id="cli-taxa-nome" value="">
+          <div class="zonas-grid">
+            <div class="zona-card" data-taxa="300" data-nome="Centro/Proximidades (2km)">
+              <div class="zona-info">
+                <span class="zona-nome">Centro/Proximidades (2km)</span>
+              </div>
+              <span class="zona-preco">+ R$ 3,00</span>
+            </div>
+            <div class="zona-card" data-taxa="600" data-nome="Localidades Afastadas">
+              <div class="zona-info">
+                <span class="zona-nome">Localidades Afastadas</span>
+                <span class="zona-desc">ex.: Sítio Lagoa Nova</span>
+              </div>
+              <span class="zona-preco">+ R$ 6,00</span>
+            </div>
+            <div class="zona-card" data-taxa="1000" data-nome="Zonas Extremas">
+              <div class="zona-info">
+                <span class="zona-nome">Zonas Extremas</span>
+                <span class="zona-desc">ex.: Sede Brisanet, Bairro Oiteiro</span>
+              </div>
+              <span class="zona-preco">+ R$ 10,00</span>
+            </div>
           </div>
-          <div style="flex: 1;">
-            <label for="cli-cep">CEP</label>
-            <input type="tel" id="cli-cep" value="59920-000">
-          </div>
+          <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; text-align: center;">A taxa e o endereço passarão por conferência da central no WhatsApp.</p>
         </div>
+
         <div class="endereco-row">
           <div style="flex: 2;">
-            <label for="cli-rua">Rua</label>
+            <label for="cli-rua">Rua / Sítio</label>
             <input type="text" id="cli-rua" placeholder="Ex: Rua Direita">
           </div>
           <div style="flex: 1;">
             <label for="cli-numero">Número</label>
-            <input type="text" id="cli-numero" placeholder="Ex: 123">
+            <input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N">
+          </div>
+        </div>
+        <div class="endereco-row">
+          <div style="flex: 1.5;">
+            <label for="cli-bairro">Bairro / Ponto de Ref.</label>
+            <input type="text" id="cli-bairro" placeholder="Ex: Perto do Posto">
+          </div>
+          <div style="flex: 1;">
+            <label for="cli-cep">CEP</label>
+            <input type="tel" id="cli-cep" value="59920-000" readonly style="background: rgba(58,42,32,0.05); cursor: not-allowed; opacity: 0.8;">
           </div>
         </div>
       </div>
@@ -897,9 +940,6 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-// ==========================================
-// CONFIGURAÇÕES GERAIS E TAXAS DE ENTREGA
-// ==========================================
 const CONFIG = {
   whatsapp:     '5585921440055',
   pixChave:     '+5585921440055',
@@ -908,28 +948,9 @@ const CONFIG = {
   usarFirebase: true               
 };
 
-// EDITE OS BAIRROS E AS TAXAS (EM CENTAVOS) AQUI:
-// Ex: 300 = R$ 3,00 | 450 = R$ 4,50
-const BAIRROS_ENTREGA = [
-  { nome: "Centro", taxa: 300 },
-  { nome: "Núcleo de Guadalupe", taxa: 400 },
-  { nome: "Manoel Vieira", taxa: 500 },
-  { nome: "Alto de Santa Tereza", taxa: 500 },
-  { nome: "Bairro de Fátima", taxa: 450 },
-  { nome: "São Luís", taxa: 350 },
-  { nome: "Outro Bairro...", taxa: 600 }
-];
-
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja');
 if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
-
-const selBairro = $('#cli-bairro');
-if (selBairro) {
-  selBairro.innerHTML = '<option value="" disabled selected>Selecione seu bairro...</option>' + 
-    BAIRROS_ENTREGA.map(b => `<option value="${b.nome}">${b.nome} (+ ${brl(b.taxa)})</option>`).join('');
-  selBairro.addEventListener('change', atualizarUI);
-}
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA",
@@ -1247,9 +1268,8 @@ function totais() {
   const subtotal = carrinho.reduce((s, i) => s + i.total, 0); 
   let entrega = 0;
   if ($('#cli-tipo-pedido').value === 'Entrega' && carrinho.length) {
-     const bairroSel = $('#cli-bairro').value;
-     const bInfo = BAIRROS_ENTREGA.find(b => b.nome === bairroSel);
-     if (bInfo) entrega = bInfo.taxa;
+     const val = parseInt($('#cli-taxa-id').value, 10);
+     if(!isNaN(val)) entrega = val;
   }
   return { subtotal, entrega, total: subtotal + entrega }; 
 }
@@ -1275,13 +1295,20 @@ function atualizarUI() {
   if(entrega) { 
     if(boxRet) { boxRet.style.opacity = '0'; setTimeout(() => boxRet.style.display = 'none', 300); }
     boxEnd.style.display = 'block'; setTimeout(() => boxEnd.style.opacity = '1', 10);
+    
+    // Atualiza texto do card de entrega
+    const taxaValor = parseInt($('#cli-taxa-id').value, 10);
+    $('#text-taxa-card').textContent = isNaN(taxaValor) ? "Selecione a região" : `+ ${brl(taxaValor)}`;
+
   } else { 
     boxEnd.style.opacity = '0'; setTimeout(() => boxEnd.style.display = 'none', 300); 
     if(boxRet) { boxRet.style.display = 'block'; setTimeout(() => boxRet.style.opacity = '1', 10); }
+    $('#text-taxa-card').textContent = "Calculando...";
   }
 
   const rua = $('#cli-rua'); if(rua) rua.required = entrega;
   const num = $('#cli-numero'); if(num) num.required = entrega;
+  const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
   
   const btnAvancar = $('#btn-avancar');
   if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
@@ -1296,13 +1323,14 @@ function validarCheckout() {
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
   
   if ($('#cli-tipo-pedido').value === 'Entrega') {
-    if (bairro.value.trim() === '') { erros.push('Selecione o bairro da entrega.'); bairro.classList.add('field-error'); }
+    if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
+    if (bairro.value.trim().length < 3) { erros.push('Informe o bairro/ponto de referência.'); bairro.classList.add('field-error'); }
   }
   
   if (!carrinho.length) { showToast('Adicione pelo menos uma pizza ao carrinho.', 'error'); return false; }
-  if (erros.length > 0) { showToast('Por favor, preencha os dados corretamente.', 'error'); }
+  if (erros.length > 0) { showToast(erros[0], 'error'); setTimeout(() => {$$('.zona-card').forEach(c => c.style.animation = '')}, 500); }
   return erros.length === 0;
 }
 
@@ -1317,7 +1345,8 @@ function montarRevisao() {
   }).join('');
 
   if(tipo === 'Entrega') { 
-    $('#review-delivery').innerHTML = `<strong>Entrega</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
+    const nomeZona = $('#cli-taxa-nome').value;
+    $('#review-delivery').innerHTML = `<strong>Entrega: ${esc(nomeZona)}</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
   } else { 
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`; 
   }
@@ -1344,7 +1373,7 @@ function gerarPixPayload(chave, nome, cidade, valorCentavos) {
 
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
-  const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value})` : '';
+  const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value}) | Região: ${$('#cli-taxa-nome').value}` : '';
   return { status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: $('#cli-pagamento').value, itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total };
 }
 
@@ -1455,7 +1484,17 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#checkout-form').addEventListener('submit', e => { e.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } if (!validarCheckout()) return; montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); });
 
+// EVENTOS DOS NOVOS CARTÕES
 $$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
+$$('.zona-card').forEach(card => { 
+  card.addEventListener('click', () => { 
+    $$('.zona-card').forEach(c => c.classList.remove('active')); 
+    card.classList.add('active'); 
+    $('#cli-taxa-id').value = card.dataset.taxa; 
+    $('#cli-taxa-nome').value = card.dataset.nome; 
+    atualizarUI(); 
+  }); 
+});
 
 $('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
 $('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
