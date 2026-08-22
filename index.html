@@ -636,7 +636,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
-    <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+    <a href="https://www.instagram.com/SUA_CONTA_AQUI/" target="_blank" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
     <a href="#" id="footer-wa-link" target="_blank" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
   </div>
   <div class="footer-info">
@@ -757,7 +757,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
             <strong>Entrega</strong>
-            <small id="text-taxa-card">Calculando...</small>
+            <small id="text-taxa-card">Taxa por Bairro</small>
           </div>
           <div class="delivery-card" data-tipo="Retirada" tabindex="0" role="button">
             <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -769,6 +769,18 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       
       <div id="box-endereco">
         <div class="endereco-row">
+          <div style="flex: 1.5;">
+            <label for="cli-bairro">Bairro</label>
+            <select id="cli-bairro" required>
+               <!-- As opções serão injetadas pelo JavaScript -->
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label for="cli-cep">CEP</label>
+            <input type="tel" id="cli-cep" value="59920-000">
+          </div>
+        </div>
+        <div class="endereco-row">
           <div style="flex: 2;">
             <label for="cli-rua">Rua</label>
             <input type="text" id="cli-rua" placeholder="Ex: Rua Direita">
@@ -778,22 +790,12 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
             <input type="text" id="cli-numero" placeholder="Ex: 123">
           </div>
         </div>
-        <div class="endereco-row">
-          <div style="flex: 1.5;">
-            <label for="cli-bairro">Bairro</label>
-            <input type="text" id="cli-bairro" placeholder="Ex: Centro">
-          </div>
-          <div style="flex: 1;">
-            <label for="cli-cep">CEP</label>
-            <input type="tel" id="cli-cep" value="59920-000">
-          </div>
-        </div>
       </div>
 
       <div id="box-retirada" style="display: none; opacity: 0; transition: all 0.4s var(--smooth);">
         <div class="box-destaque" style="margin-top: 0; text-align: left; padding: 15px;">
           <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 5px; letter-spacing: 1px;">📍 Endereço para Retirada</p>
-          <strong style="color: var(--text-main); font-size: 13px;" id="text-endereco-loja">Sua Rua, 123 - Centro, São Miguel / RN</strong>
+          <strong style="color: var(--text-main); font-size: 13px;" id="text-endereco-loja">Carregando...</strong>
           <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">Aguarde nossa confirmação no WhatsApp antes de sair.</p>
         </div>
       </div>
@@ -895,21 +897,39 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
+// ==========================================
+// CONFIGURAÇÕES GERAIS E TAXAS DE ENTREGA
+// ==========================================
 const CONFIG = {
   whatsapp:     '5585921440055',
   pixChave:     '+5585921440055',
   pixNome:      'Doce Capricho Atelier',
-  taxaEntrega:  300,               
-  usarFirebase: true,
-  // COLOQUE O ENDEREÇO DA SUA LOJA AQUI:
-  enderecoLoja: 'Rua Monsenhor José Aires, 188, Centro - São Miguel/RN'
+  enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN',
+  usarFirebase: true               
 };
 
-document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
-document.getElementById('text-taxa-card').textContent = CONFIG.taxaEntrega > 0 ? '+ ' + brl(CONFIG.taxaEntrega) : 'Grátis';
+// EDITE OS BAIRROS E AS TAXAS (EM CENTAVOS) AQUI:
+// Ex: 300 = R$ 3,00 | 450 = R$ 4,50
+const BAIRROS_ENTREGA = [
+  { nome: "Centro", taxa: 300 },
+  { nome: "Núcleo de Guadalupe", taxa: 400 },
+  { nome: "Manoel Vieira", taxa: 500 },
+  { nome: "Alto de Santa Tereza", taxa: 500 },
+  { nome: "Bairro de Fátima", taxa: 450 },
+  { nome: "São Luís", taxa: 350 },
+  { nome: "Outro Bairro...", taxa: 600 }
+];
 
+document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja');
 if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
+
+const selBairro = $('#cli-bairro');
+if (selBairro) {
+  selBairro.innerHTML = '<option value="" disabled selected>Selecione seu bairro...</option>' + 
+    BAIRROS_ENTREGA.map(b => `<option value="${b.nome}">${b.nome} (+ ${brl(b.taxa)})</option>`).join('');
+  selBairro.addEventListener('change', atualizarUI);
+}
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA",
@@ -1223,7 +1243,16 @@ function irParaCarrinho() {
   setTimeout(() => { abrirModal('cart-overlay'); }, 150);
 }
 
-function totais() { const subtotal = carrinho.reduce((s, i) => s + i.total, 0); const entrega = ($('#cli-tipo-pedido').value === 'Entrega' && carrinho.length) ? CONFIG.taxaEntrega : 0; return { subtotal, entrega, total: subtotal + entrega }; }
+function totais() { 
+  const subtotal = carrinho.reduce((s, i) => s + i.total, 0); 
+  let entrega = 0;
+  if ($('#cli-tipo-pedido').value === 'Entrega' && carrinho.length) {
+     const bairroSel = $('#cli-bairro').value;
+     const bInfo = BAIRROS_ENTREGA.find(b => b.nome === bairroSel);
+     if (bInfo) entrega = bInfo.taxa;
+  }
+  return { subtotal, entrega, total: subtotal + entrega }; 
+}
 
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
@@ -1253,7 +1282,6 @@ function atualizarUI() {
 
   const rua = $('#cli-rua'); if(rua) rua.required = entrega;
   const num = $('#cli-numero'); if(num) num.required = entrega;
-  const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
   
   const btnAvancar = $('#btn-avancar');
   if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
@@ -1268,9 +1296,9 @@ function validarCheckout() {
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
   
   if ($('#cli-tipo-pedido').value === 'Entrega') {
+    if (bairro.value.trim() === '') { erros.push('Selecione o bairro da entrega.'); bairro.classList.add('field-error'); }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
-    if (bairro.value.trim().length < 3) { erros.push('Informe o bairro da entrega.'); bairro.classList.add('field-error'); }
   }
   
   if (!carrinho.length) { showToast('Adicione pelo menos uma pizza ao carrinho.', 'error'); return false; }
