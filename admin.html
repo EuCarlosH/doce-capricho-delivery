@@ -12,6 +12,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<!-- BIBLIOTECA DE GRÁFICOS (CHART.JS) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 /* PALETA DOCE CAPRICHO (CREME ARTESANAL LAPIDADO) */
@@ -75,7 +77,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; border-radius: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
 .btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 8px 20px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
-
 .btn-save { padding: 14px; font-size: 11px; width: 100%; margin-top: 10px; }
 
 /* LOGIN & START */
@@ -89,7 +90,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 #overlay-start { position: fixed; inset: 0; background: rgba(248, 244, 238, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .btn-start { padding: 20px 50px; font-size: 14px; border-radius: 50px; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(221, 167, 58, 0.3);}
 
-/* CABEÇALHO (GLASSMORPHISM) */
+/* CABEÇALHO */
 header { 
   background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid var(--border-light); 
   display: flex; justify-content: space-between; align-items: center; 
@@ -139,11 +140,10 @@ header {
 #col-saiu .col-header { color: var(--success); border-bottom-color: var(--success); }
 #col-concluido .col-header { color: var(--text-muted); }
 
-/* CARDS E FORMATAÇÃO INTERNA (FLAT / SHARP) */
+/* CARDS E FORMATAÇÃO INTERNA */
 .card-pedido { background: var(--bg-card); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-light); position: relative; flex-shrink: 0; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: var(--shadow-sm);}
 .card-pedido:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(58, 42, 32, 0.2); }
 
-/* ALERTAS SUTIS */
 .card-pedido.atencao { border-color: var(--warning); background: rgba(221, 167, 58, 0.02); }
 .card-pedido.atrasado { border-color: var(--terracotta); background: rgba(139, 58, 43, 0.02); animation: subtlePulse 2s infinite; }
 @keyframes subtlePulse { 0% { box-shadow: 0 0 0 0 rgba(139,58,43,0.1); } 50% { box-shadow: 0 0 0 4px rgba(139,58,43,0); } 100% { box-shadow: 0 0 0 0 rgba(139,58,43,0); } }
@@ -209,9 +209,13 @@ header {
 <header>
   <div class="logo">PAINEL ADMIN</div>
   <div class="dashboard-stats">
-    <div class="stat-box"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
-    <div class="stat-box" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
+    <div class="stat-box" id="hdr-stat-qtd"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
+    <div class="stat-box" id="hdr-stat-fat" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
     
+    <!-- NOVOS BOTÕES DE NAVEGAÇÃO -->
+    <button class="btn-header" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">📊 Relatórios</button>
+    <button class="btn-header" id="btn-nav-kanban" onclick="alternarTela('kanban')" style="display:none; color: var(--gold-dark); border-color: var(--gold);">🏠 Operação</button>
+
     <button class="btn-header" id="btn-sound" onclick="toggleSom()">🔊 Som Ligado</button>
     <button class="btn-header" onclick="abrirModalCatalogo()">⚙️ Configurações</button>
     <button class="btn-header" id="btn-toggle-loja" onclick="toggleStatusLoja()">Pausar Loja 🔴</button>
@@ -219,11 +223,58 @@ header {
   </div>
 </header>
 
-<div class="kanban-board">
+<!-- TELA 1: OPERAÇÃO KANBAN (PADRÃO) -->
+<div class="kanban-board" id="view-kanban">
   <div class="kanban-col" id="col-novo"><div class="col-header">Novos <span class="count" id="count-novo">0</span></div><div class="col-body" id="list-novo"></div></div>
   <div class="kanban-col" id="col-preparando"><div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div><div class="col-body" id="list-preparando"></div></div>
   <div class="kanban-col" id="col-saiu"><div class="col-header">Em Rota <span class="count" id="count-saiu">0</span></div><div class="col-body" id="list-saiu"></div></div>
   <div class="kanban-col" id="col-concluido"><div class="col-header">Entregues <span class="count" id="count-concluido">0</span></div><div class="col-body" id="list-concluido"></div></div>
+</div>
+
+<!-- TELA 2: DASHBOARD FINANCEIRO -->
+<div id="view-relatorios" style="display:none; padding: 25px 30px; overflow-y: auto; flex-grow: 1; background: var(--bg-main);">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <h2 class="brand-font" style="color: var(--text-main); font-size: 24px; border:none; margin:0;">Dashboard Financeiro</h2>
+    <div style="display: flex; gap: 10px; align-items: center; background: var(--bg-card); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+      <input type="date" id="rel-inicio" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 12px;">
+      <span style="color: var(--text-muted); font-size: 11px; font-weight: 700;">ATÉ</span>
+      <input type="date" id="rel-fim" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 12px;">
+      <button class="btn-gradient" onclick="gerarRelatorio()" style="padding: 10px 20px; border-radius: 6px; font-size: 11px; width: auto; margin:0;">Analisar</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div class="card-pedido" style="align-items: center; text-align: center; border-color: rgba(47, 133, 90, 0.3);">
+      <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Faturamento Bruto</span>
+      <strong id="kpi-fat" style="font-size: 26px; color: var(--success); font-family: 'Cinzel', serif; margin-top: 5px;">R$ 0,00</strong>
+    </div>
+    <div class="card-pedido" style="align-items: center; text-align: center;">
+      <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Pedidos Concluídos</span>
+      <strong id="kpi-qtd" style="font-size: 26px; color: var(--gold-dark); font-family: 'Cinzel', serif; margin-top: 5px;">0</strong>
+    </div>
+    <div class="card-pedido" style="align-items: center; text-align: center;">
+      <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Ticket Médio</span>
+      <strong id="kpi-ticket" style="font-size: 26px; color: var(--text-main); font-family: 'Cinzel', serif; margin-top: 5px;">R$ 0,00</strong>
+    </div>
+    <div class="card-pedido" style="align-items: center; text-align: center; border-color: rgba(139, 58, 43, 0.3); background: rgba(139, 58, 43, 0.02);">
+      <span style="font-size: 11px; color: var(--terracotta); text-transform: uppercase; font-weight: 700;">Falhas / Cancelados</span>
+      <strong id="kpi-falhas" style="font-size: 26px; color: var(--terracotta); font-family: 'Cinzel', serif; margin-top: 5px;">0</strong>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; padding-bottom: 50px;">
+    <div class="card-pedido" style="height: 340px;">
+      <h3 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight:800;">Faturamento Diário</h3>
+      <canvas id="chart-fat"></canvas>
+    </div>
+    <div class="card-pedido" style="height: 340px; overflow-y: auto;">
+      <h3 style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-weight:800;">Top Mais Vendidos</h3>
+      <div id="lista-top-produtos" style="display: flex; flex-direction: column; gap: 8px;">
+         <div class="empty-state" style="padding: 20px;">Use o filtro acima para ver os dados.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-catalogo">
@@ -262,7 +313,6 @@ header {
 </div>
 
 <script>
-// Array atualizado com o atributo "tipo" para separar as listas automaticamente
 const CARDAPIO = [
   { id:'mussarela', nome:'Mussarela', tipo: 'pizza' }, { id:'mista', nome:'Mista', tipo: 'pizza' }, { id:'frango', nome:'Frango', tipo: 'pizza' },
   { id:'calabresa', nome:'Calabresa', tipo: 'pizza' }, { id:'carnesol', nome:'Carne de Sol', tipo: 'pizza' }, { id:'frangocat', nome:'Frango c/ Catupiry', tipo: 'pizza' },
@@ -287,6 +337,7 @@ let auth = firebase.auth();
 let pedidosMap = new Map(); 
 let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
 let somLigado = true; 
+let chartInstance = null;
 
 auth.onAuthStateChanged(user => {
   if (user) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('overlay-start').style.display = 'flex'; }
@@ -304,6 +355,147 @@ function toggleSom() {
     const audio = document.getElementById('audio-alerta');
     audio.pause(); audio.currentTime = 0;
   }
+}
+
+function alternarTela(tela) {
+  if (tela === 'relatorios') {
+    document.getElementById('view-kanban').style.display = 'none';
+    document.getElementById('view-relatorios').style.display = 'flex';
+    document.getElementById('view-relatorios').style.flexDirection = 'column';
+    document.getElementById('btn-nav-relatorios').style.display = 'none';
+    document.getElementById('btn-nav-kanban').style.display = 'inline-block';
+    
+    // Esconder estatisticas rapidas do cabecalho pra focar no dashboard
+    document.getElementById('hdr-stat-qtd').style.display = 'none';
+    document.getElementById('hdr-stat-fat').style.display = 'none';
+    
+    // Setar a data padrao para os ultimos 7 dias se estiver vazio
+    if(!document.getElementById('rel-inicio').value) {
+       const hoje = new Date();
+       const inicio = new Date(hoje);
+       inicio.setDate(hoje.getDate() - 7);
+       document.getElementById('rel-inicio').value = inicio.toISOString().split('T')[0];
+       document.getElementById('rel-fim').value = hoje.toISOString().split('T')[0];
+       gerarRelatorio();
+    }
+  } else {
+    document.getElementById('view-kanban').style.display = 'flex';
+    document.getElementById('view-relatorios').style.display = 'none';
+    document.getElementById('btn-nav-relatorios').style.display = 'inline-block';
+    document.getElementById('btn-nav-kanban').style.display = 'none';
+    
+    document.getElementById('hdr-stat-qtd').style.display = 'flex';
+    document.getElementById('hdr-stat-fat').style.display = 'flex';
+  }
+}
+
+async function gerarRelatorio() {
+  const dataIniInput = document.getElementById('rel-inicio').value;
+  const dataFimInput = document.getElementById('rel-fim').value;
+  if(!dataIniInput || !dataFimInput) return alert("Selecione a data de início e fim.");
+  
+  const btn = event ? event.target : null;
+  if(btn && btn.tagName === 'BUTTON') btn.textContent = 'Buscando...';
+
+  // Configura hora 00:00 e 23:59:59 para pegar os dias cheios
+  const dtInicio = new Date(dataIniInput + 'T00:00:00');
+  const dtFim = new Date(dataFimInput + 'T23:59:59');
+
+  try {
+    const snapshot = await db.collection('pedidos')
+      .where('data_pedido', '>=', dtInicio)
+      .where('data_pedido', '<=', dtFim)
+      .get();
+      
+    let faturamento = 0; let qtdConcluidos = 0; let qtdFalhas = 0;
+    let fatPorDia = {}; let itensCount = {};
+
+    snapshot.forEach(doc => {
+      const p = doc.data();
+      
+      if (p.status === 'Cancelado') {
+        qtdFalhas++;
+      } 
+      // Contabiliza apenas os que chegaram a Concluido
+      else if (p.status === 'Concluído') {
+        qtdConcluidos++;
+        faturamento += (p.total_centavos || 0);
+        
+        const dataStr = p.data_pedido.toDate().toLocaleDateString('pt-BR');
+        if (!fatPorDia[dataStr]) fatPorDia[dataStr] = 0;
+        fatPorDia[dataStr] += (p.total_centavos || 0);
+        
+        if(p.itens) {
+           p.itens.forEach(item => {
+              if(!itensCount[item.nome]) itensCount[item.nome] = 0;
+              itensCount[item.nome] += item.qtd;
+              if(item.extras) {
+                 item.extras.forEach(ext => {
+                    const extName = "Adicional: " + ext.nome;
+                    if(!itensCount[extName]) itensCount[extName] = 0;
+                    itensCount[extName] += item.qtd;
+                 });
+              }
+           });
+        }
+      }
+    });
+
+    document.getElementById('kpi-fat').textContent = brl(faturamento);
+    document.getElementById('kpi-qtd').textContent = qtdConcluidos;
+    document.getElementById('kpi-ticket').textContent = qtdConcluidos > 0 ? brl(faturamento / qtdConcluidos) : 'R$ 0,00';
+    document.getElementById('kpi-falhas').textContent = qtdFalhas;
+
+    const topItens = Object.entries(itensCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const boxLista = document.getElementById('lista-top-produtos');
+    if(topItens.length === 0) {
+        boxLista.innerHTML = `<div class="empty-state" style="padding: 20px;">Nenhum produto concluído no período.</div>`;
+    } else {
+        boxLista.innerHTML = topItens.map(([nome, qtd], idx) => `
+          <div style="display:flex; justify-content: space-between; padding: 12px; background: var(--bg-main); border-radius: 6px; border: 1px solid var(--border-light); align-items:center;">
+             <span style="font-size: 13px; font-weight:600; color:var(--text-main);"><span style="color:var(--gold-dark); margin-right:8px; font-weight:800;">${idx+1}º</span> ${nome}</span>
+             <span style="font-size: 11px; font-weight:800; background:var(--bg-card); border: 1px solid var(--border-light); padding: 4px 10px; border-radius:12px;">${qtd} un</span>
+          </div>
+        `).join('');
+    }
+
+    const labels = Object.keys(fatPorDia).sort((a,b) => {
+       const [da, ma, ya] = a.split('/'); const [db, mb, yb] = b.split('/');
+       return new Date(`${ya}-${ma}-${da}`) - new Date(`${yb}-${mb}-${db}`);
+    });
+    const dataVals = labels.map(l => fatPorDia[l] / 100);
+
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('chart-fat').getContext('2d');
+    
+    // Cores em degradê para o gráfico
+    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(194, 143, 42, 0.8)');
+    gradient.addColorStop(1, 'rgba(221, 167, 58, 0.2)');
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Faturamento Bruto (R$)',
+          data: dataVals,
+          backgroundColor: gradient,
+          borderColor: '#C28F2A',
+          borderWidth: 1,
+          borderRadius: 6,
+          barPercentage: 0.6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ' R$ ' + context.parsed.y.toFixed(2).replace('.',','); } } } },
+        scales: { y: { beginAtZero: true, grid: { color: 'rgba(58,42,32,0.05)' } }, x: { grid: { display: false } } }
+      }
+    });
+
+  } catch(e) { console.error(e); alert("Erro ao buscar relatório."); }
+  if(btn && btn.tagName === 'BUTTON') btn.textContent = 'Analisar';
 }
 
 function iniciarSistema() {
@@ -350,14 +542,10 @@ function atualizarUIConfig() {
 
 function renderizarModaisConfig() {
   const esgotados = configuracoesGlobais.itensEsgotados || [];
-  
-  // Função auxiliar para renderizar cada item
   const renderItem = (item) => {
     const isAtivo = !esgotados.includes(item.id);
     return `<div class="catalog-item"><div class="catalog-info"><strong>${item.nome}</strong><span>${isAtivo ? 'Disponível' : 'Esgotada'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
   };
-
-  // Separa as listas na renderização
   document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
   document.getElementById('catalog-list-extras').innerHTML = CARDAPIO.filter(i => i.tipo === 'extra').map(renderItem).join('');
 
@@ -418,11 +606,18 @@ function toggleItem(id, marcarComoAtivo) {
 }
 
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
 function avancarStatus(id, statusAtual) {
   const p = pedidosMap.get(id); const prox = { 'Novo': 'Preparando', 'Preparando': 'Saiu para Entrega', 'Saiu para Entrega': 'Concluído' }; const novoStatus = prox[statusAtual];
   if(novoStatus) {
     db.collection('pedidos').doc(id).update({ status: novoStatus });
     if (novoStatus === 'Saiu para Entrega') window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(`Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho Atelier acabou de sair para entrega! 🛵`)}`, '_blank'); 
+  }
+}
+
+function cancelarPedido(id) {
+  if(confirm("🛑 ATENÇÃO!\nTem certeza que deseja MARCAR ESTE PEDIDO COMO CANCELADO (Falha/Trote/Não pago)?\n\nEle sairá da sua tela de produção e será enviado para a contagem de perdas no seu Relatório Financeiro.")) {
+    db.collection('pedidos').doc(id).update({ status: 'Cancelado' });
   }
 }
 
@@ -462,8 +657,18 @@ function imprimirComanda(id) {
 function renderizarKanban() {
   const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
   let fat = 0, qtd = 0;
-  Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p); qtd++; fat += p.total_centavos; });
-  document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
+  
+  // Ignora os Cancelados no Kanban (eles aparecem só no relatório agora)
+  Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { 
+      if(p.status !== 'Cancelado') {
+          if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p); 
+          qtd++; 
+          if(p.status === 'Concluído') { fat += p.total_centavos; }
+      }
+  });
+  
+  document.getElementById('dash-qtd').textContent = qtd; 
+  document.getElementById('dash-fat').textContent = brl(fat);
 
   const iconeVazio = { 'Novo': '🛒', 'Preparando': '👨‍🍳', 'Saiu para Entrega': '🛵', 'Concluído': '✨' };
 
@@ -481,8 +686,9 @@ function renderizarKanban() {
       let tText = dif<1?'Agora':dif<60?`${dif} min`:`${Math.floor(dif/60)}h`;
       let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
       let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
-      let btn = status==='Novo'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar Pedido</button>`:status==='Preparando'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`:status==='Saiu para Entrega'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Marcar Entregue</button>`:'';
-      
+      let btnNext = status==='Novo'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar Pedido</button>`:status==='Preparando'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`:status==='Saiu para Entrega'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Marcar Entregue</button>`:'';
+      let btnCancel = status !== 'Concluído' ? `<button class="btn-action btn-danger-outline" style="flex:0 0 auto; padding: 14px 10px;" onclick="cancelarPedido('${p.id}')" title="Marcar como Falha/Cancelado">❌</button>` : '';
+
       let enderecoHTML = '';
       if (p.cliente_endereco) { enderecoHTML = `<div class="p-endereco">${icons.mapPin} <span>${p.cliente_endereco}</span></div>`; }
 
@@ -494,7 +700,7 @@ function renderizarKanban() {
         return `<div style="margin-bottom:10px;"><strong>${i.qtd}x ${i.nome}</strong>${extrasHtml}${obsHtml}</div>`;
       }).join('');
 
-      return `<div class="card-pedido ${bCor}"><div class="card-header"><span class="p-id">#${p.id.slice(-5).toUpperCase()}</span><span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span></div><div class="p-cliente-area"><span class="p-nome">${p.cliente_nome}</span><span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span></div><div class="p-itens">${itensHTML}</div><div class="p-footer"><div class="p-pagamento-row"><span class="p-total">${brl(p.total_centavos)}</span><span class="badge-pgto">${p.forma_pagamento}</span></div>${enderecoHTML}</div><div class="action-buttons">${btn}<a href="https://wa.me/55${p.cliente_telefone}" target="_blank" class="btn-action btn-icon-only btn-wp" aria-label="WhatsApp">${icons.whatsapp}</a><button class="btn-action btn-icon-only" onclick="imprimirComanda('${p.id}')" aria-label="Imprimir">${icons.printer}</button></div></div>`;
+      return `<div class="card-pedido ${bCor}"><div class="card-header"><span class="p-id">#${p.id.slice(-5).toUpperCase()}</span><span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span></div><div class="p-cliente-area"><span class="p-nome">${p.cliente_nome}</span><span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span></div><div class="p-itens">${itensHTML}</div><div class="p-footer"><div class="p-pagamento-row"><span class="p-total">${brl(p.total_centavos)}</span><span class="badge-pgto">${p.forma_pagamento}</span></div>${enderecoHTML}</div><div class="action-buttons">${btnNext}${btnCancel}<a href="https://wa.me/55${p.cliente_telefone}" target="_blank" class="btn-action btn-icon-only btn-wp" aria-label="WhatsApp">${icons.whatsapp}</a><button class="btn-action btn-icon-only" onclick="imprimirComanda('${p.id}')" aria-label="Imprimir">${icons.printer}</button></div></div>`;
     }).join('');
   });
 }
