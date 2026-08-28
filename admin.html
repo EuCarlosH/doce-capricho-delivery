@@ -48,10 +48,19 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 /* MODAIS */
 .modal-overlay { position: fixed; inset: 0; background: rgba(58, 42, 32, 0.6); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
-.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; border: 1px solid var(--border-light); box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; overflow-y: auto; }
-.close-modal { position: absolute; top: 20px; right: 20px; font-size: 26px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); transition: color 0.3s ease; }
+.modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; border: 1px solid var(--border-light); box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; overflow-y: hidden; }
+.close-modal { position: absolute; top: 20px; right: 20px; font-size: 26px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); transition: color 0.3s ease; z-index: 10;}
 .close-modal:hover { color: var(--terracotta); }
-.modal-box h2 { font-family: 'Cinzel', serif; color: var(--text-main); margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
+.modal-box h2 { font-family: 'Cinzel', serif; color: var(--text-main); margin-bottom: 20px; font-size: 18px; padding-bottom: 5px; font-weight: 700; letter-spacing: 1px; }
+
+/* SISTEMA DE ABAS (TABS) */
+.tabs-header { display: flex; gap: 15px; border-bottom: 2px solid var(--border-light); margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+.tabs-header::-webkit-scrollbar { display: none; }
+.tab-btn { background: none; border: none; padding: 10px 5px; font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.3s ease; white-space: nowrap; font-family: inherit;}
+.tab-btn:hover { color: var(--text-main); }
+.tab-btn.active { color: var(--gold-dark); border-bottom-color: var(--gold); }
+.tab-content { display: none; flex-grow: 1; overflow-y: auto; padding-right: 5px;}
+.tab-content.active { display: block; animation: fadeIn 0.4s var(--smooth); }
 
 /* CHAVINHAS ESTILO APPLE */
 .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -64,6 +73,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-light); }
 .catalog-info strong { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;}
 .catalog-info span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+.section-subtitle { font-size: 12px; color: var(--text-main); margin: 15px 0 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase; font-weight: 800; background: var(--bg-main); padding: 8px; border-radius: 6px; }
 
 /* HORARIOS CSS */
 .dia-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: rgba(58, 42, 32, 0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); }
@@ -211,6 +221,7 @@ header {
     <div class="stat-box" id="hdr-stat-qtd"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
     <div class="stat-box" id="hdr-stat-fat" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
     
+    <!-- NOVOS BOTÕES DE NAVEGAÇÃO -->
     <button class="btn-header" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">📊 Relatórios</button>
     <button class="btn-header" id="btn-nav-kanban" onclick="alternarTela('kanban')" style="display:none; color: var(--gold-dark); border-color: var(--gold);">🏠 Operação</button>
 
@@ -276,44 +287,67 @@ header {
 </div>
 
 <div class="modal-overlay" id="modal-catalogo">
-  <div class="modal-box">
+  <div class="modal-box" style="height: 85vh;">
     <button class="close-modal" onclick="fecharModalCatalogo()">&times;</button>
     <h2>Configurações da Loja</h2>
     
-    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
-      <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários de Funcionamento (Automático)</strong>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Configure os dias em que a loja abre sozinha e os horários.</p>
-      
-      <div id="schedule-list"></div>
-      <button class="btn-gradient btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
+    <!-- TABS MENU -->
+    <div class="tabs-header">
+      <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">🕒 Expediente</button>
+      <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">🍕 Pizzas & Extras</button>
+      <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">🥟 Esfihas</button>
     </div>
 
-    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
-      <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Texto do Rodapé do Site</strong>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height: 1.5;">Texto visível para informar aos clientes seus dias habituais.</p>
-      <div style="display: flex; gap: 10px;">
-        <input type="text" id="input-texto-funcionamento" placeholder="Ex: Quinta a Domingo, 18:30 às 23:00" style="flex: 1; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--text-main); background: var(--bg-main);">
-        <button onclick="salvarTextoFuncionamento(event)" class="btn-gradient btn-save" style="width: auto; margin-top: 0;">Salvar</button>
+    <!-- TAB 1: EXPEDIENTE -->
+    <div id="tab-expediente" class="tab-content active">
+      <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários Automáticos</strong>
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Dias e horários em que a loja abre sozinha.</p>
+        <div id="schedule-list"></div>
+        <button class="btn-gradient btn-save" id="btn-save-horarios" onclick="salvarHorarios(event)">Salvar Calendário</button>
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Texto do Rodapé do Site</strong>
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height: 1.5;">Exibido aos clientes na parte debaixo do site.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <input type="text" id="input-texto-funcionamento" placeholder="Ex: Quinta a Domingo, 18:30 às 23:00" style="padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--text-main); background: var(--bg-main);">
+          <button onclick="salvarTextoFuncionamento(event)" class="btn-gradient btn-save" style="margin-top: 0;">Salvar Rodapé</button>
+        </div>
       </div>
     </div>
 
-    <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Controle de Estoque</strong>
-    <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Desligue a chave para marcar o item como "Esgotado" no site.</p>
-    
-    <div style="background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 8px; padding: 15px;">
-        <h4 style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase;">🍕 Pizzas</h4>
-        <div id="catalog-list-pizzas" style="margin-bottom: 20px;"></div>
+    <!-- TAB 2: PIZZAS & EXTRAS -->
+    <div id="tab-pizzas" class="tab-content">
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Desligue a chave de um item para ele aparecer como "Esgotado" e ser bloqueado para venda.</p>
+      
+      <h4 class="section-subtitle">🍕 Pizzas</h4>
+      <div id="catalog-list-pizzas" style="margin-bottom: 25px;"></div>
 
-        <h4 style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase;">🥟 Esfihas</h4>
-        <div id="catalog-list-esfihas" style="margin-bottom: 20px;"></div>
-
-        <h4 style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase;">🧀 Adicionais</h4>
-        <div id="catalog-list-extras"></div>
+      <h4 class="section-subtitle">🧀 Adicionais Extras</h4>
+      <div id="catalog-list-extras" style="margin-bottom: 20px;"></div>
     </div>
+
+    <!-- TAB 3: ESFIHAS -->
+    <div id="tab-esfihas" class="tab-content">
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Desligue a chave para bloquear a venda. <strong>Lembre-se:</strong> Elas aparecem com destaque no site automaticamente todo Sábado!</p>
+      
+      <h4 class="section-subtitle">🥟 Esfihas</h4>
+      <div id="catalog-list-esfihas" style="margin-bottom: 20px;"></div>
+    </div>
+
   </div>
 </div>
 
 <script>
+// FUNÇÃO PARA MUDAR AS ABAS
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
 const CARDAPIO = [
   // Pizzas
   { id:'mussarela', nome:'Mussarela', tipo: 'pizza' }, { id:'mista', nome:'Mista', tipo: 'pizza' }, { id:'frango', nome:'Frango', tipo: 'pizza' },
@@ -321,22 +355,22 @@ const CARDAPIO = [
   { id:'nordestina', nome:'Nordestina', tipo: 'pizza' }, { id:'lombo', nome:'Lombo Canadense', tipo: 'pizza' }, { id:'arretada', nome:'Arretada', tipo: 'pizza' }, { id:'peru', nome:'Peito de Peru', tipo: 'pizza' },
   
   // Esfihas
-  { id:'esf_mussarela', nome:'Esfiha: Mussarela', tipo: 'esfiha' },
-  { id:'esf_mista', nome:'Esfiha: Mista', tipo: 'esfiha' },
-  { id:'esf_frango_mus', nome:'Esfiha: Frango c/ Mus.', tipo: 'esfiha' },
-  { id:'esf_calabresa_mus', nome:'Esfiha: Calabresa c/ Mus.', tipo: 'esfiha' },
-  { id:'esf_carnesol_mus', nome:'Esfiha: C. de Sol c/ Mus.', tipo: 'esfiha' },
-  { id:'esf_carnemoida', nome:'Esfiha: Carne Moída', tipo: 'esfiha' },
-  { id:'esf_frango_coalho', nome:'Esfiha: Frango c/ Coalho', tipo: 'esfiha' },
-  { id:'esf_frango_catupiry', nome:'Esfiha: Frango c/ Catupiry', tipo: 'esfiha' },
-  { id:'esf_frango_cream', nome:'Esfiha: Frango c/ Cream', tipo: 'esfiha' },
-  { id:'esf_carnesol_coalho', nome:'Esfiha: C. Sol c/ Coalho', tipo: 'esfiha' },
-  { id:'esf_carnesol_catupiry', nome:'Esfiha: C. Sol c/ Catupiry', tipo: 'esfiha' },
-  { id:'esf_carnesol_cream', nome:'Esfiha: C. Sol c/ Cream', tipo: 'esfiha' },
-  { id:'esf_calabresa_coalho', nome:'Esfiha: Cal. c/ Coalho', tipo: 'esfiha' },
-  { id:'esf_calabresa_catupiry', nome:'Esfiha: Cal. c/ Catupiry', tipo: 'esfiha' },
-  { id:'esf_calabresa_cream', nome:'Esfiha: Cal. c/ Cream', tipo: 'esfiha' },
-  { id:'esf_peru', nome:'Esfiha: Peito de Peru', tipo: 'esfiha' },
+  { id:'esf_mussarela', nome:'Esf. Mussarela', tipo: 'esfiha' },
+  { id:'esf_mista', nome:'Esf. Mista', tipo: 'esfiha' },
+  { id:'esf_frango_mus', nome:'Esf. Frango c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_calabresa_mus', nome:'Esf. Calabresa c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_carnesol_mus', nome:'Esf. C. de Sol c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_carnemoida', nome:'Esf. Carne Moída', tipo: 'esfiha' },
+  { id:'esf_frango_coalho', nome:'Esf. Frango c/ Coalho', tipo: 'esfiha' },
+  { id:'esf_frango_catupiry', nome:'Esf. Frango c/ Catupiry', tipo: 'esfiha' },
+  { id:'esf_frango_cream', nome:'Esf. Frango c/ Cream', tipo: 'esfiha' },
+  { id:'esf_carnesol_coalho', nome:'Esf. C. Sol c/ Coalho', tipo: 'esfiha' },
+  { id:'esf_carnesol_catupiry', nome:'Esf. C. Sol c/ Catupiry', tipo: 'esfiha' },
+  { id:'esf_carnesol_cream', nome:'Esf. C. Sol c/ Cream', tipo: 'esfiha' },
+  { id:'esf_calabresa_coalho', nome:'Esf. Cal. c/ Coalho', tipo: 'esfiha' },
+  { id:'esf_calabresa_catupiry', nome:'Esf. Cal. c/ Catupiry', tipo: 'esfiha' },
+  { id:'esf_calabresa_cream', nome:'Esf. Cal. c/ Cream', tipo: 'esfiha' },
+  { id:'esf_peru', nome:'Esf. Peito de Peru', tipo: 'esfiha' },
 
   // Extras
   { id:'catupiry', nome:'Catupiry', tipo: 'extra' }, { id:'cream', nome:'Cream Cheese', tipo: 'extra' }, { id:'bacon', nome:'Bacon', tipo: 'extra' }, { id:'alho', nome:'Alho Poró', tipo: 'extra' }
