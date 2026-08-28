@@ -172,13 +172,13 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
   background: 
     linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%),
     linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), 
-    url('hero-bg.jpg') center/cover no-repeat;
+    url('img/hero-bg.jpg') center/cover no-repeat;
 }
 :root[data-theme="dark"] #home {
   background: 
     linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%),
     linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), 
-    url('hero-bg.jpg') center/cover no-repeat;
+    url('img/hero-bg.jpg') center/cover no-repeat;
 }
 
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; position: relative; z-index: 2; }
@@ -978,46 +978,46 @@ const FIREBASE_CONFIG = {
 
 // ==============================================================================================
 // PARA ADICIONAR NOVOS SABORES NO FUTURO, É SÓ COPIAR UMA LINHA DESSAS E TROCAR NOME E PREÇO
-// Exemplo: { id:'novo_id', img:'foto.jpg', nome:'Sua Nova Esfiha', desc:'Descrição', preco: 1000 } -> 1000 = R$ 10,00
+// Exemplo: { id:'novo_id', img:'img/foto.jpg', nome:'Sua Nova Esfiha', desc:'Descrição', preco: 1000 } -> 1000 = R$ 10,00
 // ==============================================================================================
 const CARDAPIO = {
   tradicionais: [
-    { id:'mussarela', img:'mussarela.jpg',       nome:'Mussarela',           desc:'Molho, mussarela e tomate',                    preco:4500 },
-    { id:'mista',     img:'mista.jpg',           nome:'Mista',               desc:'Molho, presunto e mussarela',                  preco:4500 },
-    { id:'frango',    img:'frango.jpg',          nome:'Frango',              desc:'Molho, mussarela e frango',                    preco:4500 },
-    { id:'calabresa', img:'calabresa.jpg',       nome:'Calabresa',           desc:'Molho, mussarela, calabresa e cebola',         preco:4500 },
-    { id:'carnesol',  img:'carnedesol.jpg',      nome:'Carne de Sol',        desc:'Molho, mussarela, carne de sol e cebola roxa', preco:4500 },
-    { id:'frangocat', img:'frangocatupiry.jpg',  nome:'Frango com Catupiry', desc:'Molho, mussarela, frango e catupiry',          preco:5500 }
+    { id:'mussarela', img:'img/mussarela.jpg',       nome:'Mussarela',           desc:'Molho, mussarela e tomate',                    preco:4500 },
+    { id:'mista',     img:'img/mista.jpg',           nome:'Mista',               desc:'Molho, presunto e mussarela',                  preco:4500 },
+    { id:'frango',    img:'img/frango.jpg',          nome:'Frango',              desc:'Molho, mussarela e frango',                    preco:4500 },
+    { id:'calabresa', img:'img/calabresa.jpg',       nome:'Calabresa',           desc:'Molho, mussarela, calabresa e cebola',         preco:4500 },
+    { id:'carnesol',  img:'img/carnedesol.jpg',      nome:'Carne de Sol',        desc:'Molho, mussarela, carne de sol e cebola roxa', preco:4500 },
+    { id:'frangocat', img:'img/frangocatupiry.jpg',  nome:'Frango com Catupiry', desc:'Molho, mussarela, frango e catupiry',          preco:5500 }
   ],
   premium: [
-    { id:'nordestina', img:'nordestina.jpg',     nome:'Nordestina',       desc:'Molho, mussarela, cream cheese, carne de sol e queijo coalho',              preco:6000 },
-    { id:'lombo',      img:'lombo.jpg',          nome:'Lombo Canadense',  desc:'Molho, mussarela, lombo canadense e catupiry',                              preco:7000 },
-    { id:'arretada',   img:'arretada.jpg',       nome:'Arretada',         desc:'Molho, mussarela, calabresa, queijo coalho e bacon',                        preco:7000 },
-    { id:'peru',       img:'peitodeperu.jpg',    nome:'Peito de Peru',    desc:'Molho, mussarela, cream cheese, peito de peru, bacon, alho poró e parmesão', preco:7400 }
+    { id:'nordestina', img:'img/nordestina.jpg',     nome:'Nordestina',       desc:'Molho, mussarela, cream cheese, carne de sol e queijo coalho',              preco:6000 },
+    { id:'lombo',      img:'img/lombo.jpg',          nome:'Lombo Canadense',  desc:'Molho, mussarela, lombo canadense e catupiry',                              preco:7000 },
+    { id:'arretada',   img:'img/arretada.jpg',       nome:'Arretada',         desc:'Molho, mussarela, calabresa, queijo coalho e bacon',                        preco:7000 },
+    { id:'peru',       img:'img/peitodeperu.jpg',    nome:'Peito de Peru',    desc:'Molho, mussarela, cream cheese, peito de peru, bacon, alho poró e parmesão', preco:7400 }
   ],
   esfihas_tradicionais: [
-    { id:'esf_mussarela', img:'esf_mus.jpg', nome:'Esfiha Mussarela', desc:'Esfiha aberta com queijo mussarela derretido.', preco:500 },
-    { id:'esf_mista', img:'esf_mista.jpg', nome:'Esfiha Mista', desc:'Esfiha aberta com presunto e mussarela.', preco:500 },
-    { id:'esf_frango_mus', img:'esf_frango_mus.jpg', nome:'Esfiha Frango c/ Mussarela', desc:'Frango desfiado com mussarela.', preco:500 },
-    { id:'esf_calabresa_mus', img:'esf_calabresa_mus.jpg', nome:'Esfiha Calabresa c/ Mus.', desc:'Calabresa fatiada com mussarela.', preco:500 },
-    { id:'esf_carnesol_mus', img:'esf_carnesol_mus.jpg', nome:'Esfiha C. de Sol c/ Mus.', desc:'Carne de sol desfiada com mussarela.', preco:500 },
-    { id:'esf_carnemoida', img:'esf_carnemoida.jpg', nome:'Esfiha Carne Moída', desc:'Carne moída perfeitamente temperada.', preco:500 }
+    { id:'esf_mussarela', img:'img/esf_mus.jpg', nome:'Esfiha Mussarela', desc:'Esfiha aberta com queijo mussarela derretido.', preco:500 },
+    { id:'esf_mista', img:'img/esf_mista.jpg', nome:'Esfiha Mista', desc:'Esfiha aberta com presunto e mussarela.', preco:500 },
+    { id:'esf_frango_mus', img:'img/esf_frango_mus.jpg', nome:'Esfiha Frango c/ Mussarela', desc:'Frango desfiado com mussarela.', preco:500 },
+    { id:'esf_calabresa_mus', img:'img/esf_calabresa_mus.jpg', nome:'Esfiha Calabresa c/ Mus.', desc:'Calabresa fatiada com mussarela.', preco:500 },
+    { id:'esf_carnesol_mus', img:'img/esf_carnesol_mus.jpg', nome:'Esfiha C. de Sol c/ Mus.', desc:'Carne de sol desfiada com mussarela.', preco:500 },
+    { id:'esf_carnemoida', img:'img/esf_carnemoida.jpg', nome:'Esfiha Carne Moída', desc:'Carne moída perfeitamente temperada.', preco:500 }
   ],
   esfihas_premium: [
-    { id:'esf_frango_coalho', img:'esf_frango_coalho.jpg', nome:'Esfiha Frango c/ Coalho', desc:'Frango com queijo coalho artesanal.', preco:700 },
-    { id:'esf_frango_catupiry', img:'esf_frango_cat.jpg', nome:'Esfiha Frango c/ Catupiry', desc:'Frango com verdadeiro Catupiry.', preco:800 },
-    { id:'esf_frango_cream', img:'esf_frango_cream.jpg', nome:'Esfiha Frango c/ Cream', desc:'Frango com cream cheese.', preco:800 },
-    { id:'esf_carnesol_coalho', img:'esf_carnesol_coalho.jpg', nome:'Esfiha C. Sol c/ Coalho', desc:'Carne de sol com queijo coalho.', preco:700 },
-    { id:'esf_carnesol_catupiry', img:'esf_carnesol_cat.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
-    { id:'esf_carnesol_cream', img:'esf_carnesol_cream.jpg', nome:'Esfiha C. Sol c/ Cream', desc:'Carne de sol com cream cheese.', preco:800 },
-    { id:'esf_calabresa_coalho', img:'esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
-    { id:'esf_calabresa_catupiry', img:'esf_calabresa_cat.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
-    { id:'esf_calabresa_cream', img:'esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 }
+    { id:'esf_frango_coalho', img:'img/esf_frango_coalho.jpg', nome:'Esfiha Frango c/ Coalho', desc:'Frango com queijo coalho artesanal.', preco:700 },
+    { id:'esf_frango_catupiry', img:'img/esf_frango_cat.jpg', nome:'Esfiha Frango c/ Catupiry', desc:'Frango com verdadeiro Catupiry.', preco:800 },
+    { id:'esf_frango_cream', img:'img/esf_frango_cream.jpg', nome:'Esfiha Frango c/ Cream', desc:'Frango com cream cheese.', preco:800 },
+    { id:'esf_carnesol_coalho', img:'img/esf_carnesol_coalho.jpg', nome:'Esfiha C. Sol c/ Coalho', desc:'Carne de sol com queijo coalho.', preco:700 },
+    { id:'esf_carnesol_catupiry', img:'img/esf_carnesol_cat.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
+    { id:'esf_carnesol_cream', img:'img/esf_carnesol_cream.jpg', nome:'Esfiha C. Sol c/ Cream', desc:'Carne de sol com cream cheese.', preco:800 },
+    { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
+    { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_cat.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
+    { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
+    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 }
   ],
   esfihas_doces: [
-    { id:'esf_choc_leite', img:'esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
-    { id:'esf_choc_mm', img:'esf_choc_mm.jpg', nome:'Esfiha Chocolate c/ M&M\'s', desc:'Chocolate ao leite coberto com confetes coloridos.', preco:900 }
+    { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
+    { id:'esf_choc_mm', img:'img/esf_choc_mm.jpg', nome:'Esfiha Chocolate c/ M&M\'s', desc:'Chocolate ao leite coberto com confetes coloridos.', preco:900 }
   ]
 };
 
