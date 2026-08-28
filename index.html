@@ -318,8 +318,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 @keyframes toastIn { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 @keyframes toastOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
-
-/* ANIMAÇÕES FLUIDAS GERAIS */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
@@ -493,6 +491,14 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 :root[data-theme="dark"] .checkout-form input, :root[data-theme="dark"] .checkout-form select { font-weight: 400; }
 .checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(221, 167, 58, 0.2); background: var(--bg-card);}
 :root[data-theme="dark"] .checkout-form input:focus, :root[data-theme="dark"] .checkout-form select:focus { box-shadow: 0 0 0 2px rgba(212,175,55,0.2); background: var(--bg-main); }
+
+.field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; }
+@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+#box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
+.endereco-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.endereco-row > div:first-child { flex: 1.2; }
+.endereco-row > div:last-child { flex: 2; }
 
 .box-destaque { background: rgba(221, 167, 58, 0.05); border: 1px dashed rgba(221, 167, 58, 0.3); border-radius: 8px; padding: 20px; text-align: center; margin-top: 10px; animation: slideDown 0.4s var(--smooth); }
 :root[data-theme="dark"] .box-destaque { background: rgba(212,175,55,0.05); border-color: rgba(212,175,55,0.3); }
@@ -1161,7 +1167,7 @@ function renderCardapio() {
   
   // LOGICA DO SÁBADO DA ESFIHA
   const hojeDia = new Date().getDay();
-  if (hojeDia === 6) { 
+  if (hojeDia === 6) { // 6 = Sábado
       $('#wrap-esfihas').style.order = '1';
       $('#sabado-esfiha-banner').style.display = 'block';
   } else {
@@ -1196,8 +1202,11 @@ function escolherSabor(id) {
   
   const isEsfiha = id.startsWith('esf_');
   if (isEsfiha) {
-     if (meioSelecionado) { showToast("Não é possível misturar Pizza e Esfiha.", "warning"); return; }
-     return abrirBuilder([id]); 
+     if (meioSelecionado) {
+        showToast("Não é possível misturar Pizza e Esfiha.", "warning");
+        return;
+     }
+     return abrirBuilder([id]); // Esfihas vão direto, sem meio a meio
   }
 
   if (modo === 'inteira') return abrirBuilder([id]);
@@ -1317,7 +1326,6 @@ function atualizarUI() {
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join(' · ')); 
     if (i.obs) det.push('Obs: ' + esc(i.obs));
     
-    // Puxar a foto do primeiro sabor da pizza/esfiha para a miniatura
     const saborObj = acharSabor(i.sabores[0]);
     const imgSrc = saborObj ? saborObj.img : '';
 
@@ -1423,6 +1431,44 @@ function montarRevisao() {
 
 function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
+// ==========================================
+// FUNÇÕES DE MEMÓRIA DO CLIENTE (NOVIDADE)
+// ==========================================
+function salvarDadosCliente() {
+  const userData = {
+    nome: $('#cli-nome').value,
+    telefone: $('#cli-telefone').value,
+    rua: $('#cli-rua').value,
+    numero: $('#cli-numero').value,
+    bairro: $('#cli-bairro').value,
+    taxaId: $('#cli-taxa-id').value,
+    taxaNome: $('#cli-taxa-nome').value
+  };
+  localStorage.setItem('dca_user_data', JSON.stringify(userData));
+}
+
+function carregarDadosCliente() {
+  try {
+    const data = JSON.parse(localStorage.getItem('dca_user_data'));
+    if (data) {
+      if(data.nome) $('#cli-nome').value = data.nome;
+      if(data.telefone) $('#cli-telefone').value = data.telefone;
+      if(data.rua) $('#cli-rua').value = data.rua;
+      if(data.numero) $('#cli-numero').value = data.numero;
+      if(data.bairro) $('#cli-bairro').value = data.bairro;
+      
+      if(data.taxaId) {
+         $('#cli-taxa-id').value = data.taxaId;
+         $('#cli-taxa-nome').value = data.taxaNome;
+         $$('.zona-card').forEach(c => {
+            c.classList.remove('active');
+            if(c.dataset.taxa === data.taxaId) c.classList.add('active');
+         });
+      }
+    }
+  } catch(e) {}
+}
+
 function gerarPixPayload(chave, nome, cidade, valorCentavos) {
     let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value;
     const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key);
@@ -1466,6 +1512,10 @@ async function enviarPedidoFinal(ev) {
   if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } 
   
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
+  
+  // Salva os dados do cliente no celular dele antes de enviar
+  salvarDadosCliente();
+
   const aba = window.open('about:blank', '_blank'); 
   const pedido = montarPedido(); const id = await gravarFirestore(pedido); 
   
@@ -1566,7 +1616,8 @@ $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value)
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
 
-verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); atualizarUI();
+// Carrega os dados na tela
+verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
 </html>
