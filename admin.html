@@ -12,7 +12,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<!-- BIBLIOTECA DE GRÁFICOS (CHART.JS) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -212,7 +211,6 @@ header {
     <div class="stat-box" id="hdr-stat-qtd"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
     <div class="stat-box" id="hdr-stat-fat" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
     
-    <!-- NOVOS BOTÕES DE NAVEGAÇÃO -->
     <button class="btn-header" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">📊 Relatórios</button>
     <button class="btn-header" id="btn-nav-kanban" onclick="alternarTela('kanban')" style="display:none; color: var(--gold-dark); border-color: var(--gold);">🏠 Operação</button>
 
@@ -306,6 +304,9 @@ header {
         <h4 style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase;">🍕 Pizzas</h4>
         <div id="catalog-list-pizzas" style="margin-bottom: 20px;"></div>
 
+        <h4 style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase;">🥟 Esfihas</h4>
+        <div id="catalog-list-esfihas" style="margin-bottom: 20px;"></div>
+
         <h4 style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px; text-transform: uppercase;">🧀 Adicionais</h4>
         <div id="catalog-list-extras"></div>
     </div>
@@ -314,9 +315,30 @@ header {
 
 <script>
 const CARDAPIO = [
+  // Pizzas
   { id:'mussarela', nome:'Mussarela', tipo: 'pizza' }, { id:'mista', nome:'Mista', tipo: 'pizza' }, { id:'frango', nome:'Frango', tipo: 'pizza' },
   { id:'calabresa', nome:'Calabresa', tipo: 'pizza' }, { id:'carnesol', nome:'Carne de Sol', tipo: 'pizza' }, { id:'frangocat', nome:'Frango c/ Catupiry', tipo: 'pizza' },
   { id:'nordestina', nome:'Nordestina', tipo: 'pizza' }, { id:'lombo', nome:'Lombo Canadense', tipo: 'pizza' }, { id:'arretada', nome:'Arretada', tipo: 'pizza' }, { id:'peru', nome:'Peito de Peru', tipo: 'pizza' },
+  
+  // Esfihas
+  { id:'esf_mussarela', nome:'Esfiha: Mussarela', tipo: 'esfiha' },
+  { id:'esf_mista', nome:'Esfiha: Mista', tipo: 'esfiha' },
+  { id:'esf_frango_mus', nome:'Esfiha: Frango c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_calabresa_mus', nome:'Esfiha: Calabresa c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_carnesol_mus', nome:'Esfiha: C. de Sol c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_carnemoida', nome:'Esfiha: Carne Moída', tipo: 'esfiha' },
+  { id:'esf_frango_coalho', nome:'Esfiha: Frango c/ Coalho', tipo: 'esfiha' },
+  { id:'esf_frango_catupiry', nome:'Esfiha: Frango c/ Catupiry', tipo: 'esfiha' },
+  { id:'esf_frango_cream', nome:'Esfiha: Frango c/ Cream', tipo: 'esfiha' },
+  { id:'esf_carnesol_coalho', nome:'Esfiha: C. Sol c/ Coalho', tipo: 'esfiha' },
+  { id:'esf_carnesol_catupiry', nome:'Esfiha: C. Sol c/ Catupiry', tipo: 'esfiha' },
+  { id:'esf_carnesol_cream', nome:'Esfiha: C. Sol c/ Cream', tipo: 'esfiha' },
+  { id:'esf_calabresa_coalho', nome:'Esfiha: Cal. c/ Coalho', tipo: 'esfiha' },
+  { id:'esf_calabresa_catupiry', nome:'Esfiha: Cal. c/ Catupiry', tipo: 'esfiha' },
+  { id:'esf_calabresa_cream', nome:'Esfiha: Cal. c/ Cream', tipo: 'esfiha' },
+  { id:'esf_peru', nome:'Esfiha: Peito de Peru', tipo: 'esfiha' },
+
+  // Extras
   { id:'catupiry', nome:'Catupiry', tipo: 'extra' }, { id:'cream', nome:'Cream Cheese', tipo: 'extra' }, { id:'bacon', nome:'Bacon', tipo: 'extra' }, { id:'alho', nome:'Alho Poró', tipo: 'extra' }
 ];
 
@@ -365,11 +387,9 @@ function alternarTela(tela) {
     document.getElementById('btn-nav-relatorios').style.display = 'none';
     document.getElementById('btn-nav-kanban').style.display = 'inline-block';
     
-    // Esconder estatisticas rapidas do cabecalho pra focar no dashboard
     document.getElementById('hdr-stat-qtd').style.display = 'none';
     document.getElementById('hdr-stat-fat').style.display = 'none';
     
-    // Setar a data padrao para os ultimos 7 dias se estiver vazio
     if(!document.getElementById('rel-inicio').value) {
        const hoje = new Date();
        const inicio = new Date(hoje);
@@ -397,7 +417,6 @@ async function gerarRelatorio() {
   const btn = event ? event.target : null;
   if(btn && btn.tagName === 'BUTTON') btn.textContent = 'Buscando...';
 
-  // Configura hora 00:00 e 23:59:59 para pegar os dias cheios
   const dtInicio = new Date(dataIniInput + 'T00:00:00');
   const dtFim = new Date(dataFimInput + 'T23:59:59');
 
@@ -412,12 +431,9 @@ async function gerarRelatorio() {
 
     snapshot.forEach(doc => {
       const p = doc.data();
-      
       if (p.status === 'Cancelado') {
         qtdFalhas++;
-      } 
-      // Contabiliza apenas os que chegaram a Concluido
-      else if (p.status === 'Concluído') {
+      } else if (p.status === 'Concluído') {
         qtdConcluidos++;
         faturamento += (p.total_centavos || 0);
         
@@ -468,7 +484,6 @@ async function gerarRelatorio() {
     if (chartInstance) chartInstance.destroy();
     const ctx = document.getElementById('chart-fat').getContext('2d');
     
-    // Cores em degradê para o gráfico
     let gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(194, 143, 42, 0.8)');
     gradient.addColorStop(1, 'rgba(221, 167, 58, 0.2)');
@@ -546,7 +561,9 @@ function renderizarModaisConfig() {
     const isAtivo = !esgotados.includes(item.id);
     return `<div class="catalog-item"><div class="catalog-info"><strong>${item.nome}</strong><span>${isAtivo ? 'Disponível' : 'Esgotada'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
   };
+  
   document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
+  document.getElementById('catalog-list-esfihas').innerHTML = CARDAPIO.filter(i => i.tipo === 'esfiha').map(renderItem).join('');
   document.getElementById('catalog-list-extras').innerHTML = CARDAPIO.filter(i => i.tipo === 'extra').map(renderItem).join('');
 
   const containerHorarios = document.getElementById('schedule-list');
@@ -658,7 +675,6 @@ function renderizarKanban() {
   const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
   let fat = 0, qtd = 0;
   
-  // Ignora os Cancelados no Kanban (eles aparecem só no relatório agora)
   Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { 
       if(p.status !== 'Cancelado') {
           if(cols[p.status||'Novo']) cols[p.status||'Novo'].push(p); 
