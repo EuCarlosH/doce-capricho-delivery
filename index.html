@@ -7,29 +7,18 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
 
-<!-- SCRIPT DE TEMA DINÂMICO E INTELIGENTE -->
 <script>
-  function getSystemTheme() {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  
+  function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     var metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) {
-      metaTheme.setAttribute('content', theme === 'dark' ? '#0A0A0A' : '#F8F4EE');
-    }
+    if (metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#0A0A0A' : '#F8F4EE');
   }
-
   var savedTheme = localStorage.getItem('dca_theme_override');
   applyTheme(savedTheme || getSystemTheme());
-  
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-     if (!localStorage.getItem('dca_theme_override')) {
-         applyTheme(e.matches ? 'dark' : 'light');
-     }
+     if (!localStorage.getItem('dca_theme_override')) applyTheme(e.matches ? 'dark' : 'light');
   });
-  
   window.toggleTheme = function() {
     var currentTheme = document.documentElement.getAttribute('data-theme');
     var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -38,18 +27,15 @@
   };
 </script>
 
-<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Doce Capricho">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
@@ -67,24 +53,19 @@
   --whatsapp: #25D366;
   --danger: #8B3A2B;       
   --warning: #DDA73A;
-  
   --border-light: rgba(58, 42, 32, 0.12);
   --shadow-sm: 0 4px 12px rgba(58, 42, 32, 0.05); 
   --shadow-md: 0 8px 24px rgba(58, 42, 32, 0.08); 
-  
   --img-bg: #EAE3DA;
   --badge-bg: rgba(255, 255, 255, 0.95);
   --badge-text: #3A2A20;
-  
   --btn-grad-1: #C28F2A; --btn-grad-2: #E8C87A; --btn-grad-3: #DDA73A;
   --btn-grad-text: #FFFFFF;
   --btn-grad-shadow: rgba(221, 167, 58, 0.3);
-  
   --cat-ornament: "•";
   --cat-ornament-size: 20px;
   --cat-ornament-op: 0.8;
   --cat-ornament-color: var(--gold);
-  
   --bottom-sheet-bg: rgba(58, 42, 32, 0.4);
   --handle-bg: #CBD5E0;
   --smooth: cubic-bezier(0.16, 1, 0.3, 1);
@@ -99,27 +80,21 @@
   --bg-card: #121212; 
   --text-main: #E0E0E0; 
   --text-muted: #888888; 
-  
   --danger: #E63946;
   --warning: #F59E0B;
-  
   --border-light: rgba(255,255,255,0.05);
   --shadow-sm: 0 4px 12px rgba(0,0,0,0.5); 
   --shadow-md: 0 8px 24px rgba(0,0,0,0.8); 
-  
   --img-bg: #1A1A1A;
   --badge-bg: rgba(18, 18, 18, 0.7);
   --badge-text: #FFFFFF;
-  
   --btn-grad-1: #AA8C2C; --btn-grad-2: #F3E5AB; --btn-grad-3: #D4AF37;
   --btn-grad-text: #0A0A0A;
   --btn-grad-shadow: rgba(212, 175, 55, 0.4);
-  
   --cat-ornament: "♦";
   --cat-ornament-size: 12px;
   --cat-ornament-op: 0.7;
   --cat-ornament-color: var(--gold-dark);
-  
   --bottom-sheet-bg: rgba(0,0,0,0.85);
   --handle-bg: #888888;
 }
@@ -143,7 +118,6 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s ease; background: none; border: none; cursor: pointer; }
 .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
 
-/* BADGES E BOTÃO INSTALAR PWA */
 .status-badge { border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 16px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; }
 :root[data-theme="dark"] .status-badge { color: var(--gold); }
 .status-badge.fechado { border-color: var(--terracotta); color: var(--terracotta); }
@@ -154,7 +128,6 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .btn-install { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 .btn-install:hover { background: var(--gold); color: var(--bg-main); }
 
-/* BOTÃO DE TROCA DE TEMA */
 .theme-toggle { background: transparent; border: 1px solid var(--border-light); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); transition: all 0.3s ease; }
 .theme-toggle:hover { border-color: var(--gold); color: var(--gold); }
 .theme-toggle svg { width: 16px; height: 16px; fill: currentColor; }
@@ -162,55 +135,39 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .icon-moon { display: block; }
 :root[data-theme="dark"] .icon-sun { display: none; }
 
-/* BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) */
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
 #home {
   min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative;
-  background: 
-    linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%),
-    linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), 
-    url('hero-bg.jpg') center/cover no-repeat;
+  background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat;
 }
-:root[data-theme="dark"] #home {
-  background: 
-    linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%),
-    linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), 
-    url('hero-bg.jpg') center/cover no-repeat;
-}
+:root[data-theme="dark"] #home { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
 
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; position: relative; z-index: 2; }
 .hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; position: relative; z-index: 2; }
-
 :root[data-theme="dark"] .hero-title { color: var(--gold); text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
 :root[data-theme="dark"] .hero-subtitle { font-weight: 400; text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
 
-/* STICKY MENU */
 .sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; transition: background-color 0.4s ease; }
 :root[data-theme="light"] .sticky-menu-wrapper { background: rgba(248, 244, 238, 0.95); }
 :root[data-theme="dark"] .sticky-menu-wrapper { background: rgba(10, 10, 10, 0.95); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-
 .sticky-menu-wrapper::-webkit-scrollbar { display: none; }
 .sticky-btn { white-space: nowrap; background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border-light); padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; }
 .sticky-btn:hover, .sticky-btn.active { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); border-color: var(--gold); }
 :root[data-theme="dark"] .sticky-btn:hover, :root[data-theme="dark"] .sticky-btn.active { background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 
-/* MODO TOGGLE E BANNERS */
 .mode-toggle-area { display: flex; justify-content: center; margin-bottom: 30px; margin-top: 10px; }
 .mode-buttons { display: inline-flex; border: 1px solid var(--border-light); border-radius: 30px; overflow: hidden; background: var(--bg-card); transition: all 0.3s ease; }
 :root[data-theme="dark"] .mode-buttons { border-color: rgba(212,175,55,0.3); }
-
 .mode-btn { padding: 12px 30px; background: transparent; border: none; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; }
 .mode-btn[aria-pressed="true"] { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); }
 :root[data-theme="dark"] .mode-btn[aria-pressed="true"] { background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 
 .meio-banner { background: var(--bg-card); border: 1px solid var(--gold); border-radius: 8px; padding: 15px; margin-bottom: 40px; text-align: center; font-size: 13px; color: var(--text-main); display: none; animation: fadeIn 0.4s var(--smooth); }
 :root[data-theme="dark"] .meio-banner { background: rgba(212,175,55,0.05); border-color: rgba(212,175,55,0.3); color: var(--gold); }
-
 .meio-banner.show { display: block; }
 .btn-link-cancel { background: none; border: none; color: var(--terracotta); text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 12px; margin-left: 8px; transition: opacity 0.3s ease; font-weight: 600;}
 .btn-link-cancel:hover { opacity: 0.8; }
@@ -219,29 +176,21 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 #banner-pausado { display: none; background: rgba(139, 58, 43, 0.05); border: 1px dashed var(--terracotta); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 40px; animation: slideDown 0.5s var(--smooth); }
 :root[data-theme="dark"] #banner-pausado { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.4); }
-
 #banner-pausado h4 { color: var(--terracotta); margin-bottom: 8px; font-size: 16px; letter-spacing: 1px; }
 :root[data-theme="dark"] #banner-pausado h4 { color: var(--warning); }
 #banner-pausado p { color: var(--text-main); font-size: 13px; line-height: 1.6; }
 
-/* CATEGORY TITLE */
 .category-title { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 18px; color: var(--text-main); margin: 50px 0 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; scroll-margin-top: 140px; }
 :root[data-theme="dark"] .category-title { color: var(--gold); }
 .category-title::before, .category-title::after { content: var(--cat-ornament); color: var(--cat-ornament-color); font-size: var(--cat-ornament-size); margin: 0 15px; opacity: var(--cat-ornament-op); line-height: 0; }
 
-/* CARDS */
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-.card {
-  background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-light);
-  display: flex; flex-direction: column; transition: transform 0.3s var(--smooth), box-shadow 0.3s ease, border-color 0.3s ease; 
-}
+.card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-light); display: flex; flex-direction: column; transition: transform 0.3s var(--smooth), box-shadow 0.3s ease, border-color 0.3s ease; }
 :root[data-theme="dark"] .card { border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); }
 :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
-
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* WRAP DA IMAGEM E CORREÇÃO DAS SOMBRAS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--img-bg); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
 :root[data-theme="dark"] .card-img-wrap::after { display: block; content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 0%, transparent 50%); pointer-events: none; z-index: 1; }
 
@@ -253,7 +202,6 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card.esgotado { opacity: 0.5; filter: grayscale(1); pointer-events: none; border-color: var(--border-light); }
 .card.esgotado .btn-add { background: var(--bg-main); color: var(--text-muted); border-color: var(--border-light); font-size: 10px; font-weight: 700; text-transform: uppercase; width: auto; padding: 0 10px; }
 .card.esgotado .badges-container { display: none; } 
-
 body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: opacity 0.5s ease; }
 
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth); opacity: 1; }
@@ -277,7 +225,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .card.selecionada .btn-add { background: var(--gold); color: #FFF; border-color: var(--gold); }
 :root[data-theme="dark"] .card.selecionada .btn-add { color: var(--bg-main); }
 
-/* TABELA DE EXTRAS INFO */
 .extras-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-light); margin-top: 10px; }
 :root[data-theme="dark"] .extras-table { border-radius: 8px; }
 .extras-table th, .extras-table td { padding: 15px 20px; text-align: left; font-size: 12px; border-bottom: 1px solid var(--border-light); }
@@ -289,14 +236,12 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 :root[data-theme="dark"] .extras-table td:last-child, :root[data-theme="dark"] .extras-table th:last-child { color: var(--gold); font-weight: 600; }
 .extras-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;}
 
-/* BOTÕES DE GRADIENTE METÁLICO */
 .btn-gradient { background: linear-gradient(135deg, var(--btn-grad-1) 0%, var(--btn-grad-2) 50%, var(--btn-grad-3) 100%); background-size: 200% auto; color: var(--btn-grad-text) !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s var(--smooth); cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
 :root[data-theme="dark"] .btn-gradient { font-weight: 700; text-shadow: none; }
 .btn-gradient:hover:not(:disabled) { background-position: right center; box-shadow: 0 8px 20px var(--btn-grad-shadow); transform: translateY(-2px); }
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-/* FLOATING CART E BUMP ANIMATION */
 .cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 999; }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--terracotta); color: #fff; font-size: 11px; font-weight: 800; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 :root[data-theme="dark"] .cart-count { background: var(--danger); font-weight: 700; }
@@ -305,7 +250,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 @keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(-5deg); } 100% { transform: scale(1); } }
 .bump-anim { animation: bump 0.4s var(--smooth); }
 
-/* TOAST NOTIFICATIONS */
 #toast-container { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 400px; }
 .toast { background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--text-main); padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 12px; animation: toastIn 0.4s var(--smooth) forwards; border: 1px solid var(--border-light); width: 100%; }
 :root[data-theme="dark"] .toast { background: rgba(18,18,18,0.95); font-weight: 600; }
@@ -318,19 +262,14 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 @keyframes toastIn { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 @keyframes toastOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
-
-/* ANIMAÇÕES FLUIDAS GERAIS */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 @keyframes checkmark { 0% { stroke-dashoffset: 50; } 100% { stroke-dashoffset: 0; } }
 
-/* MODAIS BASE */
 .modal-overlay { position: fixed; inset: 0; background: rgba(58, 42, 32, 0.6); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
 :root[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
-
 .modal-overlay#modal-aviso-pausa { z-index: 4000 !important; }
-
 .modal-overlay.open { display: flex; opacity: 1; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); transform: translateY(50px); opacity: 0; transition: all 0.4s var(--smooth); }
 .modal-overlay.open .modal-box { transform: translateY(0); opacity: 1; }
@@ -342,14 +281,11 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; }
 :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
 
-/* TELA DE REVISÃO E SUCCESS */
 .review-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; padding: 18px; margin-bottom: 15px; transition: all 0.3s ease; }
 :root[data-theme="dark"] .review-card { background: rgba(255,255,255,0.02); }
-
 .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
 .review-header h4 { font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
 :root[data-theme="dark"] .review-header h4 { color: var(--gold); font-weight: 700; }
-
 .btn-edit-review { background: transparent; border: none; color: var(--text-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: color 0.3s; padding: 4px 8px; border-radius: 4px; border: 1px solid transparent; }
 :root[data-theme="dark"] .btn-edit-review { font-weight: 700; }
 .btn-edit-review:hover { color: var(--gold-dark); border-color: rgba(221, 167, 58, 0.3); background: rgba(221, 167, 58, 0.05); }
@@ -362,19 +298,15 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .review-total-box { background: rgba(221, 167, 58, 0.05); border: 1px solid rgba(221, 167, 58, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
 :root[data-theme="dark"] .review-total-box { background: rgba(212,175,55,0.08); border-color: rgba(212,175,55,0.3); }
 
-/* CARTÕES DE ENTREGA / RETIRADA */
 .delivery-options { display: flex; gap: 15px; margin-bottom: 10px; margin-top: 5px; }
 .delivery-card { flex: 1; border: 1px solid var(--border-light); border-radius: 12px; padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.3s var(--smooth); background: var(--bg-main); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; overflow: hidden; }
 :root[data-theme="dark"] .delivery-card { background: rgba(255,255,255,0.02); }
-
 .delivery-card::after { content: ''; position: absolute; inset: 0; border-radius: 12px; border: 2px solid transparent; transition: border-color 0.3s ease; pointer-events: none; }
 .delivery-card svg { width: 26px; height: 26px; stroke: var(--text-muted); fill: none; stroke-width: 1.5; transition: stroke 0.3s ease; }
 .delivery-card strong { font-size: 13px; font-weight: 700; color: var(--text-main); transition: color 0.3s ease; }
 .delivery-card small { font-size: 10px; color: var(--text-muted); transition: color 0.3s ease; }
-
 .delivery-card:hover { transform: translateY(-2px); border-color: rgba(221, 167, 58, 0.3); }
 :root[data-theme="dark"] .delivery-card:hover { border-color: transparent; background: rgba(255,255,255,0.05); }
-
 .delivery-card.active { background: rgba(221, 167, 58, 0.05); transform: translateY(0); }
 :root[data-theme="dark"] .delivery-card.active { background: rgba(212,175,55,0.08); }
 .delivery-card.active::after { border-color: var(--gold); }
@@ -385,14 +317,12 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .delivery-card.active small { color: var(--text-main); font-weight: 600;}
 :root[data-theme="dark"] .delivery-card.active small { color: var(--gold-dark); font-weight: 400;}
 
-/* NOVOS CARTÕES DE ZONAS DE ENTREGA */
 .zonas-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 .zona-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 10px; padding: 14px 15px; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center; }
 :root[data-theme="dark"] .zona-card { background: var(--bg-main); }
 .zona-card:hover { border-color: var(--gold); transform: translateY(-2px); }
 .zona-card.active { border-color: var(--gold); background: rgba(221, 167, 58, 0.05); box-shadow: 0 0 0 1px var(--gold); }
 :root[data-theme="dark"] .zona-card.active { background: rgba(212, 175, 55, 0.08); }
-
 .zona-info { display: flex; flex-direction: column; gap: 4px; }
 .zona-nome { font-size: 13px; font-weight: 700; color: var(--text-main); }
 :root[data-theme="dark"] .zona-nome { font-weight: 600; color: var(--white); }
@@ -400,11 +330,9 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .zona-preco { font-size: 13px; font-weight: 800; color: var(--gold-dark); background: rgba(221, 167, 58, 0.1); padding: 4px 8px; border-radius: 6px; }
 :root[data-theme="dark"] .zona-preco { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
-/* FORMS E BUILDER */
 .builder-group { margin-bottom: 20px; border: none; }
 .builder-label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 700; }
 :root[data-theme="dark"] .builder-label { font-weight: 600; }
-
 .builder-base { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-main); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-light); font-weight: 600; }
 :root[data-theme="dark"] .builder-base { font-weight: 500; }
 .builder-base strong { color: var(--text-main); font-size: 15px; font-weight: 800; transition: color 0.3s; }
@@ -416,22 +344,17 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 .extra-row { display: flex; flex-direction: column; padding: 14px; background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 10px; transition: all 0.3s var(--smooth); }
 :root[data-theme="dark"] .extra-row { background: rgba(255,255,255,0.02); }
-
 .extra-row.checked { border-color: rgba(221, 167, 58, 0.5); background: rgba(221, 167, 58, 0.05); }
 :root[data-theme="dark"] .extra-row.checked { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.05); }
 
-/* ATUALIZAÇÃO DA ÁREA DE CLIQUE DOS EXTRAS (UX Melhorado) */
 .extra-row-header { display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; margin: 0; }
 .extra-title-area { display: flex; align-items: center; gap: 12px; color: var(--text-main); font-size: 13px; font-weight: 600; margin: 0; }
 :root[data-theme="dark"] .extra-title-area { font-weight: 500; }
-
 .extra-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold-dark); cursor: pointer; flex-shrink: 0; }
 :root[data-theme="dark"] .extra-row input[type="checkbox"] { accent-color: var(--gold); }
-
 .extra-price { color: var(--text-main); font-weight: 700; font-size: 13px; margin-left: 10px; }
 :root[data-theme="dark"] .extra-price { color: var(--gold); font-weight: 600; }
 
-/* MICRO-ANIMAÇÕES E OPÇÕES DE ADICIONAIS */
 .extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
 .extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
 .extra-opt-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
@@ -455,15 +378,11 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .qty-val { font-size: 16px; font-weight: 800; min-width: 24px; text-align: center; color: var(--text-main); display: inline-block; transition: color 0.2s ease;}
 :root[data-theme="dark"] .qty-val { font-weight: 700; }
 
-@keyframes popQty { 0% { transform: scale(1); } 50% { transform: scale(1.3); color: var(--gold); } 100% { transform: scale(1); color: var(--text-main); } }
-.qty-val.pop { animation: popQty 0.3s var(--smooth); }
-
 .cart-total-line { display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; color: var(--text-main); margin-top: 10px; padding-top: 15px; border-top: 1px dashed var(--border-light); transition: all 0.3s ease;}
 :root[data-theme="dark"] .cart-total-line { font-weight: 700; }
 
 .btn-add-modal { padding: 16px; border-radius: 8px; width: 100%; font-size: 12px; margin-top: 20px; }
 
-/* CHECKOUT E CARRINHO */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
 .cart-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border-light); animation: fadeIn 0.4s var(--smooth); }
 .cart-item-info { flex: 1; }
@@ -484,14 +403,11 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .checkout-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 .checkout-form label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 700;}
 :root[data-theme="dark"] .checkout-form label { font-weight: 600; }
-
 .checkout-form input, .checkout-form select { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-main); color: var(--text-main); font-family: inherit; font-size: 13px; transition: border-color 0.3s ease, box-shadow 0.3s ease; font-weight: 500;}
 :root[data-theme="dark"] .checkout-form input, :root[data-theme="dark"] .checkout-form select { font-weight: 400; }
 .checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(221, 167, 58, 0.2); background: var(--bg-card);}
 :root[data-theme="dark"] .checkout-form input:focus, :root[data-theme="dark"] .checkout-form select:focus { box-shadow: 0 0 0 2px rgba(212,175,55,0.2); background: var(--bg-main); }
-
 .field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; }
-@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
 .endereco-row { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -512,7 +428,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-continue:hover { color: var(--text-main); }
 :root[data-theme="dark"] .btn-continue:hover { color: var(--white); }
 
-/* FOOTER */
 footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid var(--border-light); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; transition: background-color 0.4s ease; }
 .footer-logo { font-size: 20px; color: var(--text-main); letter-spacing: 2px; }
 :root[data-theme="dark"] .footer-logo { color: var(--gold); }
@@ -528,12 +443,10 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 .footer-copy { font-size: 10px; color: #A0AEC0; margin-top: 10px; font-weight: 500;}
 :root[data-theme="dark"] .footer-copy { color: #555; font-weight: 400; }
 
-/* RESPONSIVO E BOTTOM SHEET */
 @media (max-width: 768px) {
   .nav-links { display: none; } 
   .nav-container { justify-content: space-between; }
   .nav-logo-fallback { font-size: 15px; } 
-
   #home { padding-top: 100px; text-align: center; align-items: center; }
   .hero-title { max-width: 100%; }
   
@@ -554,7 +467,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     cursor: pointer; gap: 6px; transition: color 0.3s;
   }
   :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
-
   .bottom-nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--smooth); }
   .bottom-nav-item:hover, .bottom-nav-item:active { color: var(--gold-dark); }
   :root[data-theme="dark"] .bottom-nav-item:hover, :root[data-theme="dark"] .bottom-nav-item:active { color: var(--gold); }
@@ -573,11 +485,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .sticky-menu-wrapper { top: 58px; } 
 
   .modal-overlay { align-items: flex-end; padding: 0; background: var(--bottom-sheet-bg); }
-  .modal-box { 
-    border-radius: 24px 24px 0 0; margin-top: auto; border: none; 
-    border-top: 1px solid var(--border-light); transform: translateY(100%); 
-    padding-top: 40px; max-height: 85vh;
-  }
+  .modal-box { border-radius: 24px 24px 0 0; margin-top: auto; border: none; border-top: 1px solid var(--border-light); transform: translateY(100%); padding-top: 40px; max-height: 85vh; }
   :root[data-theme="light"] .modal-box { box-shadow: 0 -10px 40px rgba(58, 42, 32, 0.1); }
   .modal-overlay.open .modal-box { transform: translateY(0); }
   .modal-box::before { content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--handle-bg); border-radius: 2px; }
@@ -610,14 +518,14 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <header id="home">
   <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
-  <p class="hero-subtitle">Agora em pizzas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+  <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
 </header>
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
-    <a href="#cat-tradicionais" class="sticky-btn active">Tradicionais</a>
-    <a href="#cat-premium" class="sticky-btn">Premium</a>
-    <a href="#cat-extras" class="sticky-btn">Extras</a>
+    <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
+    <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
+    <a href="#wrap-extras" class="sticky-btn">Extras</a>
   </div>
   
   <div id="banner-pausado">
@@ -625,33 +533,53 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
   </div>
 
-  <div class="mode-toggle-area">
-    <div class="mode-buttons" role="group">
-      <button type="button" class="mode-btn" id="btn-mode-inteira" aria-pressed="true" data-modo="inteira">Pizza Inteira</button>
-      <button type="button" class="mode-btn" id="btn-mode-meio" aria-pressed="false" data-modo="meio">Meio a Meio</button>
+  <div id="menu-wrapper" style="display: flex; flex-direction: column;">
+    
+    <!-- BLOCO DAS PIZZAS -->
+    <div id="wrap-pizzas" style="order: 2;">
+      <div class="mode-toggle-area">
+        <div class="mode-buttons" role="group">
+          <button type="button" class="mode-btn" id="btn-mode-inteira" aria-pressed="true" data-modo="inteira">Pizza Inteira</button>
+          <button type="button" class="mode-btn" id="btn-mode-meio" aria-pressed="false" data-modo="meio">Meio a Meio</button>
+        </div>
+      </div>
+      <div id="meio-banner" class="meio-banner" role="status"></div>
+      <h3 class="category-title brand-font" id="cat-tradicionais">Pizzas Tradicionais</h3>
+      <div class="grid-menu" id="grid-tradicionais"></div>
+      <h3 class="category-title brand-font" id="cat-premium" style="margin-top: 60px;">Pizzas Premium</h3>
+      <div class="grid-menu" id="grid-premium"></div>
     </div>
-  </div>
 
-  <div id="meio-banner" class="meio-banner" role="status"></div>
+    <!-- BLOCO DAS ESFIHAS (FICA NO TOPO AOS SÁBADOS) -->
+    <div id="wrap-esfihas" style="order: 3; padding-top: 60px;">
+      <div id="sabado-esfiha-banner" style="display:none; background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%); color: #FFF; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; box-shadow: var(--shadow-md);">
+        <h3 class="brand-font" style="margin-bottom: 5px; font-size: 20px;">✨ SÁBADO DA ESFIHA ✨</h3>
+        <p style="font-size: 13px; font-weight: 600;">O formato perfeito para o seu fim de semana. Peça a sua!</p>
+      </div>
 
-  <h3 class="category-title brand-font" id="cat-tradicionais">Sabores Tradicionais</h3>
-  <div class="grid-menu" id="grid-tradicionais"></div>
+      <h3 class="category-title brand-font" id="cat-esfihas-trad" style="margin-top: 0;">Esfihas Tradicionais</h3>
+      <div class="grid-menu" id="grid-esfihas-trad"></div>
+      <h3 class="category-title brand-font" id="cat-esfihas-prem" style="margin-top: 60px;">Esfihas Premium</h3>
+      <div class="grid-menu" id="grid-esfihas-prem"></div>
+    </div>
 
-  <h3 class="category-title brand-font" id="cat-premium" style="margin-top: 60px;">Sabores Premium</h3>
-  <div class="grid-menu" id="grid-premium"></div>
+    <!-- BLOCO DE EXTRAS -->
+    <div id="wrap-extras" style="order: 4; padding-top: 60px;">
+      <h3 class="category-title brand-font" id="cat-extras" style="margin-top: 0;">Toque Final</h3>
+      <p class="extras-hint">Você poderá escolher múltiplos adicionais no momento de montar sua pizza.</p>
+      <table class="extras-table">
+        <thead><tr><th>Extra</th><th>Aplicação</th><th>Preço</th></tr></thead>
+        <tbody id="extras-tbody"></tbody>
+      </table>
+    </div>
 
-  <h3 class="category-title brand-font" id="cat-extras" style="margin-top: 60px;">Toque Final</h3>
-  <p class="extras-hint">Você poderá escolher múltiplos adicionais no momento de montar sua pizza.</p>
-  <table class="extras-table">
-    <thead><tr><th>Extra</th><th>Aplicação</th><th>Preço</th></tr></thead>
-    <tbody id="extras-tbody"></tbody>
-  </table>
+  </div> <!-- FIM DO MENU WRAPPER -->
 </section>
 
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
-    <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+    <a href="https://www.instagram.com/SUA_CONTA_AQUI/" target="_blank" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
     <a href="#" id="footer-wa-link" target="_blank" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
   </div>
   <div class="footer-info">
@@ -683,12 +611,8 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <div class="modal-box" style="text-align: center; max-width: 400px;">
     <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
     <h2 class="brand-font" style="color: var(--terracotta); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
-    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">
-      Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.
-    </p>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">
-      Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.
-    </p>
+    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.</p>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.</p>
     <button type="button" class="btn-add-modal" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--terracotta); border: 1px solid var(--terracotta);">Compreendo</button>
   </div>
 </div>
@@ -703,9 +627,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       </svg>
     </div>
     <h2 class="brand-font" style="color: var(--text-main); border-bottom: none; padding-bottom: 0; margin-bottom: 10px;">Adicionado!</h2>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; font-weight: 500;">
-      Sua escolha foi para o carrinho. O que deseja fazer agora?
-    </p>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; font-weight: 500;">Sua escolha foi para o carrinho. O que deseja fazer agora?</p>
     <div style="display: flex; flex-direction: column; gap: 12px;">
       <button type="button" class="btn-finish btn-gradient" onclick="irParaCarrinho()" style="margin-top: 0;">Finalizar Pedido</button>
       <button type="button" class="btn-continue" data-close="success-overlay" style="margin-top: 0; border: 1px solid var(--border-light); border-radius: 8px;">Continuar Comprando</button>
@@ -716,11 +638,11 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
     <button class="close-modal" data-close="builder-overlay">&times;</button>
-    <h2 id="builder-title" class="brand-font">Montar Pizza</h2>
+    <h2 id="builder-title" class="brand-font">Montar</h2>
     <form id="builder-form" novalidate>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
       
-      <fieldset class="builder-group">
+      <fieldset class="builder-group" id="builder-extras-container">
         <span class="builder-label" style="margin-bottom: 15px;">Adicionais (Múltipla Escolha)</span>
         <div id="builder-extras"></div>
       </fieldset>
@@ -783,7 +705,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       </div>
       
       <div id="box-endereco">
-        <!-- NOVOS CARTÕES DE REGIÃO DE ENTREGA -->
         <div id="box-taxas-entrega" style="margin-bottom: 20px;">
           <label style="margin-bottom: 5px;">Qual a região da entrega?</label>
           <input type="hidden" id="cli-taxa-id" value="">
@@ -928,9 +849,7 @@ if (btnInstallApp) {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado com sucesso.'))
-      .catch(err => console.log('Erro ao registrar Service Worker.', err));
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Erro:', err));
   });
 }
 
@@ -975,6 +894,26 @@ const CARDAPIO = {
     { id:'lombo',      img:'lombo.jpg',          nome:'Lombo Canadense',  desc:'Molho, mussarela, lombo canadense e catupiry',                              preco:7000 },
     { id:'arretada',   img:'arretada.jpg',       nome:'Arretada',         desc:'Molho, mussarela, calabresa, queijo coalho e bacon',                        preco:7000 },
     { id:'peru',       img:'peitodeperu.jpg',    nome:'Peito de Peru',    desc:'Molho, mussarela, cream cheese, peito de peru, bacon, alho poró e parmesão', preco:7400 }
+  ],
+  esfihas_tradicionais: [
+    { id:'esf_mussarela', img:'esf_mus.jpg', nome:'Esfiha Mussarela', desc:'Esfiha aberta com queijo mussarela derretido.', preco:500 },
+    { id:'esf_mista', img:'esf_mista.jpg', nome:'Esfiha Mista', desc:'Esfiha aberta com presunto e mussarela.', preco:500 },
+    { id:'esf_frango_mus', img:'esf_frango_mus.jpg', nome:'Esfiha Frango c/ Mussarela', desc:'Frango desfiado com mussarela.', preco:500 },
+    { id:'esf_calabresa_mus', img:'esf_calabresa_mus.jpg', nome:'Esfiha Calabresa c/ Mus.', desc:'Calabresa fatiada com mussarela.', preco:500 },
+    { id:'esf_carnesol_mus', img:'esf_carnesol_mus.jpg', nome:'Esfiha C. de Sol c/ Mus.', desc:'Carne de sol desfiada com mussarela.', preco:500 },
+    { id:'esf_carnemoida', img:'esf_carnemoida.jpg', nome:'Esfiha Carne Moída', desc:'Carne moída perfeitamente temperada.', preco:500 }
+  ],
+  esfihas_premium: [
+    { id:'esf_frango_coalho', img:'esf_frango_coalho.jpg', nome:'Esfiha Frango c/ Coalho', desc:'Frango com queijo coalho artesanal.', preco:700 },
+    { id:'esf_frango_catupiry', img:'esf_frango_cat.jpg', nome:'Esfiha Frango c/ Catupiry', desc:'Frango com verdadeiro Catupiry.', preco:800 },
+    { id:'esf_frango_cream', img:'esf_frango_cream.jpg', nome:'Esfiha Frango c/ Cream', desc:'Frango com cream cheese.', preco:800 },
+    { id:'esf_carnesol_coalho', img:'esf_carnesol_coalho.jpg', nome:'Esfiha C. Sol c/ Coalho', desc:'Carne de sol com queijo coalho.', preco:700 },
+    { id:'esf_carnesol_catupiry', img:'esf_carnesol_cat.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
+    { id:'esf_carnesol_cream', img:'esf_carnesol_cream.jpg', nome:'Esfiha C. Sol c/ Cream', desc:'Carne de sol com cream cheese.', preco:800 },
+    { id:'esf_calabresa_coalho', img:'esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
+    { id:'esf_calabresa_catupiry', img:'esf_calabresa_cat.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
+    { id:'esf_calabresa_cream', img:'esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
+    { id:'esf_peru', img:'esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 }
   ]
 };
 
@@ -985,7 +924,7 @@ const EXTRAS = [
   { id:'alho',     nome:'Alho Poró',    tipo:'metade_toda', precos:{ metade:250,  toda:500  } }
 ];
 
-const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
+const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium, ...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium];
 const acharSabor = id => todosSabores().find(s => s.id === id);
 
 const rotuloAplicacao = (ap, sabores) => {
@@ -1090,7 +1029,7 @@ const cardHTML = s => {
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
   
   let badges = [];
-  if (s.id === 'peru' || s.id === 'nordestina') { badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura do Chef</span>`); }
+  if (s.id === 'peru' || s.id === 'nordestina' || s.id === 'esf_peru') { badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura</span>`); }
   if (s.id === saborMaisPedido && !isEsgotado) { badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`); }
   let badgeHTML = badges.length ? `<div class="badges-container">${badges.join('')}</div>` : '';
 
@@ -1114,13 +1053,25 @@ const cardHTML = s => {
 function renderCardapio() {
   $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
   $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
+  $('#grid-esfihas-trad').innerHTML = CARDAPIO.esfihas_tradicionais.map(cardHTML).join('');
+  $('#grid-esfihas-prem').innerHTML = CARDAPIO.esfihas_premium.map(cardHTML).join('');
+
   $('#extras-tbody').innerHTML = EXTRAS.map(e => {
     const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(e.id);
-    if(isEsgotado) {
-      return `<tr style="opacity: 0.5;"><td><del>${esc(e.nome)}</del> <span style="color:var(--terracotta); font-size:10px; font-weight:bold;">(Esgotado)</span></td><td>-</td><td>-</td></tr>`;
-    }
+    if(isEsgotado) return `<tr style="opacity: 0.5;"><td><del>${esc(e.nome)}</del> <span style="color:var(--terracotta); font-size:10px; font-weight:bold;">(Esgotado)</span></td><td>-</td><td>-</td></tr>`;
     return `<tr><td>${esc(e.nome)}</td><td>Metade da pizza</td><td>${brl(e.precos.metade)}</td></tr><tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.precos.toda)}</td></tr>`;
   }).join('');
+  
+  // LOGICA DO SÁBADO DA ESFIHA
+  const hojeDia = new Date().getDay();
+  if (hojeDia === 6) { // 6 = Sábado
+      $('#wrap-esfihas').style.order = '1';
+      $('#sabado-esfiha-banner').style.display = 'block';
+  } else {
+      $('#wrap-esfihas').style.order = '3';
+      $('#sabado-esfiha-banner').style.display = 'none';
+  }
+
   atualizarBotoes();
 }
 
@@ -1145,6 +1096,16 @@ function atualizarBanner() {
 function escolherSabor(id) {
   if(!lojaAberta) { if (configLoja.forcarFechamento) { abrirModal('modal-aviso-pausa'); } else { showToast("Nossa loja está fechada no momento.", "error"); } return; }
   if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
+  
+  const isEsfiha = id.startsWith('esf_');
+  if (isEsfiha) {
+     if (meioSelecionado) {
+        showToast("Não é possível misturar Pizza e Esfiha.", "warning");
+        return;
+     }
+     return abrirBuilder([id]); // Esfihas vão direto, sem meio a meio
+  }
+
   if (modo === 'inteira') return abrirBuilder([id]);
   if (!meioSelecionado) { meioSelecionado = id; atualizarBanner(); atualizarBotoes(); return; }
   if (meioSelecionado === id) { meioSelecionado = null; atualizarBanner(); atualizarBotoes(); return; }
@@ -1153,46 +1114,35 @@ function escolherSabor(id) {
 
 function abrirBuilder(ids) {
   builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
+  const isEsfiha = ids[0].startsWith('esf_');
+  
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
   $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
-  $('#builder-extras').innerHTML = EXTRAS.map(e => {
-      let cards = '';
-      if (ids.length === 2) {
-          cards = `
-            <div class="extra-options-grid">
-              <div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div>
-              <div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div>
-              <div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div>
-            </div>
-          `;
-      } else {
-          cards = `
-            <div class="extra-options-grid">
-              <div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div>
-              <div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div>
-            </div>
-          `;
-      }
-      return `<div class="extra-row" data-id="${e.id}">
-                <label class="extra-row-header">
-                  <div class="extra-title-area">
-                    <input type="checkbox" class="extra-chk" value="${e.id}"> 
-                    <span class="extra-name-text">${esc(e.nome)}</span>
-                  </div>
-                  <span class="extra-price">+ Variável</span>
-                </label>
-                ${cards}
-              </div>`;
-  }).join('');
+  if (isEsfiha) {
+     $('#builder-extras-container').style.display = 'none';
+     $('#builder-extras').innerHTML = '';
+  } else {
+     $('#builder-extras-container').style.display = 'block';
+     $('#builder-extras').innerHTML = EXTRAS.map(e => {
+        let cards = '';
+        if (ids.length === 2) {
+            cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
+        } else {
+            cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
+        }
+        return `<div class="extra-row" data-id="${e.id}"><label class="extra-row-header"><div class="extra-title-area"><input type="checkbox" class="extra-chk" value="${e.id}"> <span class="extra-name-text">${esc(e.nome)}</span></div><span class="extra-price">+ Variável</span></label>${cards}</div>`;
+    }).join('');
+  }
 
   $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; 
-  atualizarEstoqueNoBuilder(); 
+  if(!isEsfiha) atualizarEstoqueNoBuilder(); 
+  atualizarBuilderTotal();
   abrirModal('builder-overlay');
 }
 
 function atualizarEstoqueNoBuilder() {
-  if (!$('#builder-overlay').classList.contains('open') || !builder) return;
+  if (!$('#builder-overlay').classList.contains('open') || !builder || builder.sabores[0].startsWith('esf_')) return;
   
   $$('.extra-row').forEach(row => {
     const chk = row.querySelector('.extra-chk');
@@ -1202,16 +1152,10 @@ function atualizarEstoqueNoBuilder() {
     const nameText = row.querySelector('.extra-name-text');
     
     if (isEsgotado) {
-       row.style.opacity = '0.5';
-       row.style.pointerEvents = 'none';
-       chk.disabled = true;
-       chk.checked = false; 
-       row.classList.remove('checked');
+       row.style.opacity = '0.5'; row.style.pointerEvents = 'none'; chk.disabled = true; chk.checked = false; row.classList.remove('checked');
        if (nameText) nameText.innerHTML = `<del>${esc(EXTRAS.find(x => x.id === id).nome)}</del> <span style="font-size:10px; color:var(--terracotta); margin-left:5px; font-weight:800;">ESGOTADO</span>`;
     } else {
-       row.style.opacity = '1';
-       row.style.pointerEvents = 'auto';
-       chk.disabled = false;
+       row.style.opacity = '1'; row.style.pointerEvents = 'auto'; chk.disabled = false;
        if (nameText) nameText.innerHTML = esc(EXTRAS.find(x => x.id === id).nome);
     }
   });
@@ -1259,10 +1203,7 @@ function adicionar() {
   abrirModal('success-overlay');
 }
 
-function irParaCarrinho() {
-  fecharModal('success-overlay');
-  setTimeout(() => { abrirModal('cart-overlay'); }, 150);
-}
+function irParaCarrinho() { fecharModal('success-overlay'); setTimeout(() => { abrirModal('cart-overlay'); }, 150); }
 
 function totais() { 
   const subtotal = carrinho.reduce((s, i) => s + i.total, 0); 
@@ -1295,11 +1236,8 @@ function atualizarUI() {
   if(entrega) { 
     if(boxRet) { boxRet.style.opacity = '0'; setTimeout(() => boxRet.style.display = 'none', 300); }
     boxEnd.style.display = 'block'; setTimeout(() => boxEnd.style.opacity = '1', 10);
-    
-    // Atualiza texto do card de entrega
     const taxaValor = parseInt($('#cli-taxa-id').value, 10);
     $('#text-taxa-card').textContent = isNaN(taxaValor) ? "Selecione a região" : `+ ${brl(taxaValor)}`;
-
   } else { 
     boxEnd.style.opacity = '0'; setTimeout(() => boxEnd.style.display = 'none', 300); 
     if(boxRet) { boxRet.style.display = 'block'; setTimeout(() => boxRet.style.opacity = '1', 10); }
@@ -1308,16 +1246,13 @@ function atualizarUI() {
 
   const rua = $('#cli-rua'); if(rua) rua.required = entrega;
   const num = $('#cli-numero'); if(num) num.required = entrega;
-  const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
-  
-  const btnAvancar = $('#btn-avancar');
-  if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
+  const btnAvancar = $('#btn-avancar'); if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
 }
 
 function validarCheckout() {
   const erros = []; 
-  const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
-  [nome, tel, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
+  const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'); 
+  [nome, tel, rua, num].forEach(c => { if(c) c.classList.remove('field-error') });
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
@@ -1326,10 +1261,9 @@ function validarCheckout() {
     if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
-    if (bairro.value.trim().length < 3) { erros.push('Informe o bairro/ponto de referência.'); bairro.classList.add('field-error'); }
   }
   
-  if (!carrinho.length) { showToast('Adicione pelo menos uma pizza ao carrinho.', 'error'); return false; }
+  if (!carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return false; }
   if (erros.length > 0) { showToast(erros[0], 'error'); setTimeout(() => {$$('.zona-card').forEach(c => c.style.animation = '')}, 500); }
   return erros.length === 0;
 }
@@ -1484,17 +1418,8 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#checkout-form').addEventListener('submit', e => { e.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } if (!validarCheckout()) return; montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); });
 
-// EVENTOS DOS NOVOS CARTÕES
 $$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
-$$('.zona-card').forEach(card => { 
-  card.addEventListener('click', () => { 
-    $$('.zona-card').forEach(c => c.classList.remove('active')); 
-    card.classList.add('active'); 
-    $('#cli-taxa-id').value = card.dataset.taxa; 
-    $('#cli-taxa-nome').value = card.dataset.nome; 
-    atualizarUI(); 
-  }); 
-});
+$$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
 
 $('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
 $('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
@@ -1502,7 +1427,6 @@ $('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && confi
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
-
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
 
