@@ -7,7 +7,6 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
 
-<!-- SCRIPT DE TEMA DINÂMICO E INTELIGENTE -->
 <script>
   function getSystemTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -38,7 +37,6 @@
   };
 </script>
 
-<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -172,13 +170,13 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
   background: 
     linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%),
     linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), 
-    url('img/hero-bg.jpg') center/cover no-repeat;
+    url('hero-bg.jpg') center/cover no-repeat;
 }
 :root[data-theme="dark"] #home {
   background: 
     linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%),
     linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), 
-    url('img/hero-bg.jpg') center/cover no-repeat;
+    url('hero-bg.jpg') center/cover no-repeat;
 }
 
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; position: relative; z-index: 2; }
@@ -340,9 +338,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; }
 :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
 
-/* ========================================================================= */
-/* NOVAS CLASSES PARA AS FOTOS NO CARRINHO E NA REVISÃO */
-/* ========================================================================= */
+/* FOTOS NO CARRINHO E REVISÃO */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
 .cart-item { display: flex; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border-light); animation: fadeIn 0.4s var(--smooth); }
 .cart-item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); margin-top: 2px;}
@@ -359,7 +355,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .remove-btn:hover { transform: scale(1.2); }
 .cart-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 30px 0; font-weight: 500; display: block; width: 100%;}
 :root[data-theme="dark"] .cart-empty { font-weight: 400; }
-
 .review-item-img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); }
 
 /* RESTANTE DAS CLASSES DO CHECKOUT */
@@ -434,7 +429,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 .extra-row { display: flex; flex-direction: column; padding: 14px; background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 10px; transition: all 0.3s var(--smooth); }
 :root[data-theme="dark"] .extra-row { background: rgba(255,255,255,0.02); }
-
 .extra-row.checked { border-color: rgba(221, 167, 58, 0.5); background: rgba(221, 167, 58, 0.05); }
 :root[data-theme="dark"] .extra-row.checked { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.05); }
 
@@ -448,7 +442,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .extra-price { color: var(--text-main); font-weight: 700; font-size: 13px; margin-left: 10px; }
 :root[data-theme="dark"] .extra-price { color: var(--gold); font-weight: 600; }
 
-/* MICRO-ANIMAÇÕES E OPÇÕES DE ADICIONAIS */
 .extra-options-grid { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; width: 100%; }
 .extra-row.checked .extra-options-grid { display: grid; animation: fadeIn 0.3s var(--smooth); }
 .extra-opt-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display:flex; flex-direction: column; justify-content: center; align-items:center; gap:4px; }
@@ -629,7 +622,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
   <div id="menu-wrapper" style="display: flex; flex-direction: column;">
     
-    <!-- BLOCO DAS PIZZAS -->
     <div id="wrap-pizzas" style="order: 2;">
       <div class="mode-toggle-area">
         <div class="mode-buttons" role="group">
@@ -644,7 +636,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <div class="grid-menu" id="grid-premium"></div>
     </div>
 
-    <!-- BLOCO DAS ESFIHAS -->
     <div id="wrap-esfihas" style="order: 3; padding-top: 60px;">
       <div id="sabado-esfiha-banner" style="display:none; background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%); color: #FFF; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; box-shadow: var(--shadow-md);">
         <h3 class="brand-font" style="margin-bottom: 5px; font-size: 20px;">✨ SÁBADO DA ESFIHA ✨</h3>
@@ -661,7 +652,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <div class="grid-menu" id="grid-esfihas-doces"></div>
     </div>
 
-    <!-- BLOCO DE EXTRAS -->
     <div id="wrap-extras" style="order: 4; padding-top: 60px;">
       <h3 class="category-title brand-font" id="cat-extras" style="margin-top: 0;">Toque Final</h3>
       <p class="extras-hint">Você poderá escolher múltiplos adicionais no momento de montar sua pizza.</p>
@@ -869,6 +859,12 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
           <option value="Dinheiro">Dinheiro</option>
           <option value="Cartão">Cartão na entrega/retirada</option>
         </select>
+      </div>
+
+      <!-- NOVA CAIXA DE TROCO -->
+      <div id="box-troco" style="display: none; margin-top: 15px; animation: slideDown 0.3s ease;">
+        <label for="cli-troco" style="color: var(--gold-dark);">Precisa de troco para quanto? (Opcional)</label>
+        <input type="text" id="cli-troco" placeholder="Ex: 50 reais ou deixe em branco">
       </div>
       
       <button type="submit" class="btn-finish btn-gradient" id="btn-avancar">Avançar para Revisão</button>
@@ -1167,7 +1163,7 @@ function renderCardapio() {
   
   // LOGICA DO SÁBADO DA ESFIHA
   const hojeDia = new Date().getDay();
-  if (hojeDia === 6) { // 6 = Sábado
+  if (hojeDia === 6) { 
       $('#wrap-esfihas').style.order = '1';
       $('#sabado-esfiha-banner').style.display = 'block';
   } else {
@@ -1202,11 +1198,8 @@ function escolherSabor(id) {
   
   const isEsfiha = id.startsWith('esf_');
   if (isEsfiha) {
-     if (meioSelecionado) {
-        showToast("Não é possível misturar Pizza e Esfiha.", "warning");
-        return;
-     }
-     return abrirBuilder([id]); // Esfihas vão direto, sem meio a meio
+     if (meioSelecionado) { showToast("Não é possível misturar Pizza e Esfiha.", "warning"); return; }
+     return abrirBuilder([id]); 
   }
 
   if (modo === 'inteira') return abrirBuilder([id]);
@@ -1326,6 +1319,7 @@ function atualizarUI() {
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join(' · ')); 
     if (i.obs) det.push('Obs: ' + esc(i.obs));
     
+    // Puxar a foto do primeiro sabor da pizza/esfiha para a miniatura
     const saborObj = acharSabor(i.sabores[0]);
     const imgSrc = saborObj ? saborObj.img : '';
 
@@ -1368,6 +1362,17 @@ function atualizarUI() {
   const btnAvancar = $('#btn-avancar'); if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
 }
 
+// TOGGLE DO TROCO NO FORMULÁRIO DE PAGAMENTO
+$('#cli-pagamento').addEventListener('change', e => {
+  const boxTroco = $('#box-troco');
+  if(e.target.value === 'Dinheiro') {
+      boxTroco.style.display = 'block';
+  } else {
+      boxTroco.style.display = 'none';
+      $('#cli-troco').value = '';
+  }
+});
+
 function validarCheckout() {
   const erros = []; 
   const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'); 
@@ -1388,14 +1393,20 @@ function validarCheckout() {
 }
 
 function montarRevisao() {
-  const t = totais(); const tipo = $('#cli-tipo-pedido').value; const pgto = $('#cli-pagamento').value;
+  const t = totais(); const tipo = $('#cli-tipo-pedido').value; 
+  let pgto = $('#cli-pagamento').value;
+  
+  // Incluir texto de troco na revisão
+  if(pgto === 'Dinheiro' && $('#cli-troco').value.trim() !== '') {
+     pgto += ` (Troco para: ${$('#cli-troco').value.trim()})`;
+  }
+
   $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
     if (i.obs) det.push(`Obs: ${esc(i.obs)}`);
     const detalhesHTML = det.length > 0 ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4;">${det.join('<br>')}</div>` : '';
     
-    // Foto na revisão
     const saborObj = acharSabor(i.sabores[0]);
     const imgSrc = saborObj ? saborObj.img : '';
 
@@ -1420,7 +1431,7 @@ function montarRevisao() {
   }
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
-  if (pgto === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total);
+  if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total);
   } else { $('#rev-box-pix').style.display = 'none'; }
 
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
@@ -1431,9 +1442,7 @@ function montarRevisao() {
 
 function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
-// ==========================================
-// FUNÇÕES DE MEMÓRIA DO CLIENTE (NOVIDADE)
-// ==========================================
+// MEMÓRIA DO CLIENTE
 function salvarDadosCliente() {
   const userData = {
     nome: $('#cli-nome').value,
@@ -1480,7 +1489,14 @@ function gerarPixPayload(chave, nome, cidade, valorCentavos) {
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
   const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value}) | Região: ${$('#cli-taxa-nome').value}` : '';
-  return { status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: $('#cli-pagamento').value, itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total };
+  
+  // Formatando o pagamento para incluir o Troco, se for Dinheiro
+  let pgtoStr = $('#cli-pagamento').value;
+  if (pgtoStr === 'Dinheiro' && $('#cli-troco').value.trim() !== '') {
+      pgtoStr += ` (Troco para: ${$('#cli-troco').value.trim()})`;
+  }
+
+  return { status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: pgtoStr, itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total };
 }
 
 function montarMensagem(p) {
@@ -1513,7 +1529,6 @@ async function enviarPedidoFinal(ev) {
   
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   
-  // Salva os dados do cliente no celular dele antes de enviar
   salvarDadosCliente();
 
   const aba = window.open('about:blank', '_blank'); 
@@ -1594,17 +1609,8 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
 $('#checkout-form').addEventListener('submit', e => { e.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } if (!validarCheckout()) return; montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); });
 
-// EVENTOS DOS NOVOS CARTÕES
 $$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
-$$('.zona-card').forEach(card => { 
-  card.addEventListener('click', () => { 
-    $$('.zona-card').forEach(c => c.classList.remove('active')); 
-    card.classList.add('active'); 
-    $('#cli-taxa-id').value = card.dataset.taxa; 
-    $('#cli-taxa-nome').value = card.dataset.nome; 
-    atualizarUI(); 
-  }); 
-});
+$$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
 
 $('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
 $('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
@@ -1616,7 +1622,6 @@ $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value)
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
 
-// Carrega os dados na tela
 verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
