@@ -236,7 +236,7 @@ header {
 <div class="kanban-board" id="view-kanban">
   <div class="kanban-col" id="col-novo"><div class="col-header">Novos <span class="count" id="count-novo">0</span></div><div class="col-body" id="list-novo"></div></div>
   <div class="kanban-col" id="col-preparando"><div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div><div class="col-body" id="list-preparando"></div></div>
-  <div class="kanban-col" id="col-saiu"><div class="col-header">Em Rota <span class="count" id="count-saiu">0</span></div><div class="col-body" id="list-saiu"></div></div>
+  <div class="kanban-col" id="col-saiu"><div class="col-header">Em Rota / Pronto <span class="count" id="count-saiu">0</span></div><div class="col-body" id="list-saiu"></div></div>
   <div class="kanban-col" id="col-concluido"><div class="col-header">Entregues <span class="count" id="count-concluido">0</span></div><div class="col-body" id="list-concluido"></div></div>
 </div>
 
@@ -663,10 +663,20 @@ function toggleItem(id, marcarComoAtivo) {
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 
 function avancarStatus(id, statusAtual) {
-  const p = pedidosMap.get(id); const prox = { 'Novo': 'Preparando', 'Preparando': 'Saiu para Entrega', 'Saiu para Entrega': 'Concluído' }; const novoStatus = prox[statusAtual];
+  const p = pedidosMap.get(id); 
+  const prox = { 'Novo': 'Preparando', 'Preparando': 'Saiu para Entrega', 'Saiu para Entrega': 'Concluído' }; 
+  const novoStatus = prox[statusAtual];
   if(novoStatus) {
     db.collection('pedidos').doc(id).update({ status: novoStatus });
-    if (novoStatus === 'Saiu para Entrega') window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(`Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho Atelier acabou de sair para entrega! 🛵`)}`, '_blank'); 
+    if (novoStatus === 'Saiu para Entrega') {
+      let msg = '';
+      if (p.tipo_entrega === 'Retirada') {
+         msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho Atelier já está PRONTO para retirada! 🛍️ Te aguardamos em nosso endereço.`;
+      } else {
+         msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho Atelier acabou de sair para entrega! 🛵`;
+      }
+      window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+    }
   }
 }
 
@@ -740,7 +750,11 @@ function renderizarKanban() {
       let tText = dif<1?'Agora':dif<60?`${dif} min`:`${Math.floor(dif/60)}h`;
       let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
       let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
-      let btnNext = status==='Novo'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar Pedido</button>`:status==='Preparando'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Despachar</button>`:status==='Saiu para Entrega'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Marcar Entregue</button>`:'';
+      
+      let txtBtnPrep = p.tipo_entrega === 'Retirada' ? 'Marcar Pronto' : 'Despachar';
+      let txtBtnSaiu = p.tipo_entrega === 'Retirada' ? 'Entregue no Balcão' : 'Marcar Entregue';
+
+      let btnNext = status==='Novo'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">Aceitar Pedido</button>`:status==='Preparando'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">${txtBtnPrep}</button>`:status==='Saiu para Entrega'?`<button class="btn-action btn-gradient btn-next" onclick="avancarStatus('${p.id}', '${status}')">${txtBtnSaiu}</button>`:'';
       let btnCancel = status !== 'Concluído' ? `<button class="btn-action btn-danger-outline" style="flex:0 0 auto; padding: 14px 10px;" onclick="cancelarPedido('${p.id}')" title="Marcar como Falha/Cancelado">❌</button>` : '';
 
       let enderecoHTML = '';
