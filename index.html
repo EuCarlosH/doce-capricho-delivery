@@ -58,7 +58,7 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 80px; }
 
-/* EFEITO RIPPLE */
+/* EFEITO RIPPLE (ONDAS DE TOQUE) */
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
 .ripple:active::after { transform: scale(0, 0); opacity: .3; transition: 0s; }
@@ -80,7 +80,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 .bottom-nav { display: none; }
 
-/* HERO SECTION - hero-bg.jpg mantido na raiz */
+/* HERO SECTION */
 #home { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
 :root[data-theme="dark"] #home { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; z-index: 2; }
@@ -115,18 +115,36 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); } :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* SKELETON LOADING BLINDADO (CORREÇÃO DE OPACIDADE) */
+/* CORREÇÃO DO SKELETON LOADING BLINDADO PARA IMAGENS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--border-light); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-.skeleton-bg { position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); background-size: 200% 100%; animation: skeletonShimmer 1.5s infinite linear; z-index: 0; }
-:root[data-theme="dark"] .skeleton-bg { background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); background-size: 200% 100%; }
-@keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth); z-index: 1; position: relative; }
-.card:hover .card-img { transform: scale(1.08); } 
-.card-img-wrap.error-img .skeleton-bg { display: none; }
-.card-img-wrap.error-img::before { content: '🍽️'; font-size: 40px; position: relative; z-index: 2; color: #333; }
-:root[data-theme="dark"] .card-img-wrap::after { display: block; content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 0%, transparent 50%); pointer-events: none; z-index: 1; }
 
-.badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 2; align-items: flex-end; pointer-events: none; }
+.skeleton-bg { 
+  background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); 
+  background-size: 200% 100%; 
+  animation: skeletonShimmer 1.5s infinite linear; 
+}
+:root[data-theme="dark"] .skeleton-bg { 
+  background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); 
+  background-size: 200% 100%; 
+}
+@keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+.card-img { 
+  width: 100%; height: 100%; 
+  object-fit: cover; 
+  transition: transform 0.6s var(--smooth), opacity 0.4s ease; 
+  opacity: 0; 
+  z-index: 2; 
+  position: relative; 
+}
+.card-img.loaded { opacity: 1; }
+.card:hover .card-img { transform: scale(1.08); } 
+
+.card-img-wrap.error-img { background: var(--img-bg); }
+.card-img-wrap.error-img::before { content: '🍽️'; font-size: 40px; position: relative; z-index: 2; color: #333; }
+:root[data-theme="dark"] .card-img-wrap::after { display: block; content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 0%, transparent 50%); pointer-events: none; z-index: 3; }
+
+.badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 4; align-items: flex-end; pointer-events: none; }
 .badge-destaque { background: var(--badge-bg); color: var(--badge-text); border: 1px solid var(--border-light); padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 .badge-destaque.badge-top { background: var(--gold); color: #FFF; border-color: var(--gold); } :root[data-theme="dark"] .badge-destaque.badge-top { color: var(--bg-main); }
 
@@ -140,7 +158,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .card-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; } :root[data-theme="dark"] .card-desc { font-weight: 400; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 800; color: var(--text-main); font-size: 15px; } :root[data-theme="dark"] .card-price-text { color: var(--gold); font-weight: 700; }
-
 .btn-add { background: transparent; border: 1px solid rgba(58, 42, 32, 0.15); color: var(--text-main); width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--smooth); font-size: 18px; font-weight: 500; line-height: 1; }
 :root[data-theme="dark"] .btn-add { border-color: rgba(212,175,55,0.5); color: var(--gold); border-radius: 4px; font-weight: 400; }
 .btn-add:hover { background: var(--gold); color: #FFF; border-color: var(--gold); transform: scale(1.1); } :root[data-theme="dark"] .btn-add:hover { color: var(--bg-main); }
@@ -189,10 +206,9 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal:hover { color: var(--terracotta); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .close-modal:hover { color: var(--danger); }
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; } :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
 
-/* MINIATURAS CARRINHO/REVISÃO */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
 .cart-item { display: flex; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border-light); animation: fadeIn 0.4s var(--smooth); }
-.cart-item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); margin-top: 2px; position: relative; z-index: 1;}
+.cart-item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); margin-top: 2px; position: relative;}
 .cart-item-info { flex: 1; }
 .cart-item-info strong { display: block; color: var(--text-main); font-weight: 700; font-size: 13px; margin-bottom: 4px; } :root[data-theme="dark"] .cart-item-info strong { color: var(--white); font-weight: 600; }
 .cart-item-info small { display: block; color: var(--text-muted); font-size: 11px; line-height: 1.5; font-weight: 500;} :root[data-theme="dark"] .cart-item-info small { font-weight: 400; }
@@ -200,7 +216,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .cart-item-price { font-weight: 800; color: var(--text-main); font-size: 13px; } :root[data-theme="dark"] .cart-item-price { color: var(--gold); font-weight: 700; }
 .remove-btn { background: none; border: none; color: var(--terracotta); font-size: 22px; cursor: pointer; padding: 0 5px; transition: transform 0.2s ease; line-height: 0.8;} :root[data-theme="dark"] .remove-btn { color: var(--danger); } .remove-btn:hover { transform: scale(1.2); }
 .cart-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 30px 0; font-weight: 500; display: block; width: 100%;} :root[data-theme="dark"] .cart-empty { font-weight: 400; }
-.review-item-img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); position: relative; z-index: 1;}
+.review-item-img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); position: relative;}
 
 .review-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; padding: 18px; margin-bottom: 15px; transition: all 0.3s ease; } :root[data-theme="dark"] .review-card { background: rgba(255,255,255,0.02); }
 .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
@@ -685,7 +701,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188, Centro, São Miguel / RN', usarFirebase: true };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -833,7 +849,7 @@ const cardHTML = s => {
   <article class="${classeCard}" data-sabor="${s.id}">
     <div class="card-img-wrap skeleton-bg">
       ${badgeHTML}
-      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded')" onerror="this.style.display='none'; this.parentElement.classList.add('error-img');">
+      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
     </div>
     <div class="card-content">
       <h4 class="card-title">${esc(s.nome)}</h4>
@@ -1064,8 +1080,8 @@ function atualizarUI() {
 
     return `
       <li class="cart-item">
-        <div class="cart-item-img skeleton-bg" style="overflow:hidden;">
-          <img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover;" onload="this.parentElement.classList.remove('skeleton-bg')" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.innerHTML='<span style=\\'font-size:24px; display:flex; align-items:center; justify-content:center; height:100%;\\'>🍽️</span>';">
+        <div class="cart-item-img skeleton-bg">
+          <img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover; opacity: 0; transition: opacity 0.4s ease;" onload="this.style.opacity='1'; this.parentElement.classList.remove('skeleton-bg')" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.innerHTML='<span style=\\'font-size:24px; display:flex; align-items:center; justify-content:center; height:100%;\\'>🍽️</span>';">
         </div>
         <div class="cart-item-info">
           <strong>${i.qtd}× ${esc(nomeItem(i))}</strong>
@@ -1134,8 +1150,8 @@ function montarRevisao() {
 
     return `
       <div class="review-item-line" style="display:flex; gap:12px; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-light); padding-bottom:12px;">
-        <div class="review-item-img skeleton-bg" style="overflow:hidden;">
-          <img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover;" onload="this.parentElement.classList.remove('skeleton-bg')" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.innerHTML='<span style=\\'font-size:24px; display:flex; align-items:center; justify-content:center; height:100%;\\'>🍽️</span>';">
+        <div class="review-item-img skeleton-bg">
+          <img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover; opacity: 0; transition: opacity 0.4s ease;" onload="this.style.opacity='1'; this.parentElement.classList.remove('skeleton-bg')" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.innerHTML='<span style=\\'font-size:24px; display:flex; align-items:center; justify-content:center; height:100%;\\'>🍽️</span>';">
         </div>
         <div style="flex:1;">
           <div style="display:flex; justify-content:space-between; width:100%;">
