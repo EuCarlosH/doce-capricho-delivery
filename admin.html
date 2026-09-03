@@ -40,14 +40,22 @@
 
 body { 
   background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; 
-  height: 100dvh; overflow: hidden; display: flex;
+  height: 100dvh; width: 100vw; overflow: hidden; margin: 0;
 }
 
 h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 
 /* ========================================= */
-/* LAYOUT PRINCIPAL (SIDEBAR + CONTEÚDO)     */
+/* LAYOUT PRINCIPAL (CORRIGIDO: LADO A LADO) */
 /* ========================================= */
+.app-container {
+  display: flex;
+  flex-direction: row;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
 .sidebar {
   width: 260px;
   background: var(--bg-sidebar);
@@ -87,7 +95,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .nav-btn.danger { color: #E63946; } .nav-btn.danger:hover { background: rgba(230, 57, 70, 0.1); }
 
 .main-content {
-  flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;
+  flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-main);
 }
 
 /* ========================================= */
@@ -99,9 +107,8 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
   align-items: stretch;
 }
 .kanban-col { 
-  background: transparent;
   display: flex; flex-direction: column; 
-  flex: 1 0 320px; min-width: 320px;
+  flex: 0 0 320px; /* Largura fixa, não encolhe */
   max-height: 100%;
   border-radius: 12px;
   transition: background 0.3s;
@@ -113,7 +120,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
   display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; letter-spacing: 1px; color: var(--text-main);
 }
 .col-header .count { background: #E2E8F0; padding: 4px 12px; border-radius: 20px; font-size: 11px; color: var(--text-main); font-weight: 800;}
-.col-body { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; padding-right: 5px; }
+.col-body { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; padding: 5px; padding-bottom: 20px; }
 
 /* ========================================= */
 /* CARDS REFINADOS (DRAGGABLE)               */
@@ -122,8 +129,8 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
   background: var(--bg-card); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-light); flex-shrink: 0; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-sm);
   cursor: grab;
 }
-.card-pedido:active { cursor: grabbing; }
-.card-pedido.dragging { opacity: 0.6; transform: scale(0.98); box-shadow: none; }
+.card-pedido:active { cursor: grabbing; transform: scale(0.98); }
+.card-pedido.dragging { opacity: 0.5; transform: scale(0.95); box-shadow: none; border: 2px dashed var(--gold); }
 
 .card-pedido.atencao { border-left: 4px solid var(--warning); }
 .card-pedido.atrasado { border-left: 4px solid var(--danger); animation: subtlePulse 2s infinite; }
@@ -211,6 +218,20 @@ input:checked + .slider:before { transform: translateX(20px); }
 .kpi-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 5px;}
 .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
 .kpi-value { font-size: 28px; font-family: 'Cinzel', serif; font-weight: 700; color: var(--text-main); }
+
+@media (max-width: 768px) {
+  .app-container { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; flex-direction: row; align-items: center; padding: 10px 15px; }
+  .sidebar-header { padding: 0; border: none; flex-grow: 1;}
+  .sidebar-logo { font-size: 16px; }
+  .sidebar-logo span { display: none; }
+  .stats-container { display: none; }
+  .sidebar-nav { padding: 0; flex-direction: row; overflow-x: auto; gap: 10px; margin-left: 15px;}
+  .nav-btn { padding: 8px 12px; font-size: 11px; white-space: nowrap; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+  .nav-btn svg { display: none; }
+  .nav-btn.active { border-left: none; background: var(--gold); color: var(--bg-sidebar); }
+  .kanban-col { flex: 0 0 85vw; min-width: 85vw; }
+}
 </style>
 </head>
 <body>
@@ -233,7 +254,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div class="app-container">
   
-  <!-- NOVO MENU LATERAL FIXO -->
+  <!-- MENU LATERAL FIXO -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo brand-font">DOCE CAPRICHO<span>PAINEL OPERACIONAL</span></div>
