@@ -58,7 +58,7 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 80px; }
 
-/* EFEITO RIPPLE (ONDAS DE TOQUE) */
+/* EFEITO RIPPLE */
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
 .ripple:active::after { transform: scale(0, 0); opacity: .3; transition: 0s; }
@@ -80,7 +80,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
+/* HERO SECTION - hero-bg.jpg mantido na raiz */
 #home { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
 :root[data-theme="dark"] #home { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
 .hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; z-index: 2; }
@@ -115,7 +115,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); } :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* CORREÇÃO DO SKELETON LOADING BLINDADO PARA IMAGENS */
+/* SKELETON LOADING BLINDADO PARA IMAGENS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--border-light); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
 
 .skeleton-bg { 
@@ -352,7 +352,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
       <li><a href="#cardapio">Cardápio</a></li>
-      <li><button type="button" id="btn-nav-order">Meus Pedidos</button></li>
+      <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
     <div style="display: flex; gap: 12px; align-items: center;">
       <button class="btn-install ripple" id="btn-install-app" aria-label="Instalar Aplicativo">Instalar App</button>
@@ -430,7 +430,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
-    <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+    <a href="https://www.instagram.com/SUA_CONTA_AQUI/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
     <a href="#" id="footer-wa-link" target="_blank" class="ripple" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
   </div>
   <div class="footer-info">
@@ -441,15 +441,15 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </footer>
 
 <nav class="bottom-nav">
-  <a href="#home" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
-  <a href="#cardapio" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
-  <button type="button" class="bottom-nav-item" id="btn-bottom-order">
+  <a href="#home" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
+  <a href="#cardapio" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
+  <button type="button" class="bottom-nav-item ripple" id="btn-bottom-order">
     <div style="position: relative;"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span class="cart-count bottom-nav-count" id="bottom-cart-count">0</span></div>
     <span>Pedidos</span>
   </button>
 </nav>
 
-<button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho" style="overflow: visible;">
+<button class="cart-floating-btn btn-gradient ripple" id="btn-cart-float" aria-label="Abrir carrinho" style="overflow: visible;">
   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -460,7 +460,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="modal-aviso-pausa">
   <div class="modal-box" style="text-align: center; max-width: 400px;">
-    <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
+    <button class="close-modal ripple" data-close="modal-aviso-pausa">&times;</button>
     <h2 class="brand-font" style="color: var(--terracotta); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
     <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.</p>
     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.</p>
@@ -470,7 +470,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="success-overlay">
   <div class="modal-box" style="text-align: center; max-width: 380px;">
-    <button class="close-modal" data-close="success-overlay">&times;</button>
+    <button class="close-modal ripple" data-close="success-overlay">&times;</button>
     <div style="color: var(--gold); margin-bottom: 15px;">
       <svg viewBox="0 0 24 24" width="56" height="56" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkmark 0.6s var(--smooth) forwards;">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -488,7 +488,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
-    <button class="close-modal" data-close="builder-overlay">&times;</button>
+    <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
     <h2 id="builder-title" class="brand-font">Montar</h2>
     <form id="builder-form" novalidate>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
@@ -518,7 +518,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
-    <button class="close-modal" data-close="cart-overlay">&times;</button>
+    <button class="close-modal ripple" data-close="cart-overlay">&times;</button>
     <h2 id="cart-title" class="brand-font">Seu Carrinho</h2>
     
     <ul class="cart-items-list" id="cart-items-list"></ul>
@@ -676,7 +676,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
 <div class="modal-overlay" id="promo-banner-overlay">
   <div class="modal-box" style="padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 380px; border-radius: 16px;">
-    <button class="btn-close-promo" data-close="promo-banner-overlay">&times;</button>
+    <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
     <div style="background: var(--gold-dark); width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; position: relative;">
       <img id="promo-banner-img" src="img/banner-promo.jpg" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" onerror="this.style.display='none'">
       <h1 class="brand-font" style="color: #FFF; font-size: 40px; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);" id="promo-banner-emoj">🎉</h1>
@@ -703,7 +703,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', usarFirebase: true };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -737,10 +737,10 @@ const CARDAPIO = {
     { id:'esf_frango_catupiry', img:'img/esf_frango_cat.jpg', nome:'Esfiha Frango c/ Catupiry', desc:'Frango com verdadeiro Catupiry.', preco:800 },
     { id:'esf_frango_cream', img:'img/esf_frango_cream.jpg', nome:'Esfiha Frango c/ Cream', desc:'Frango com cream cheese.', preco:800 },
     { id:'esf_carnesol_coalho', img:'img/esf_carnesol_coalho.jpg', nome:'Esfiha C. Sol c/ Coalho', desc:'Carne de sol com queijo coalho.', preco:700 },
-    { id:'esf_carnesol_catupiry', img:'img/esf_carnesol_cat.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
+    { id:'esf_carnesol_catupiry', img:'img/esf_carnesol_catupiry.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
     { id:'esf_carnesol_cream', img:'img/esf_carnesol_cream.jpg', nome:'Esfiha C. Sol c/ Cream', desc:'Carne de sol com cream cheese.', preco:800 },
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
-    { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_cat.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
+    { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
     { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 }
   ],
@@ -869,7 +869,7 @@ function checkBannerPromo() {
   const jaViu = sessionStorage.getItem('dca_banner_visto');
   
   if (!jaViu) {
-    if (hojeDia === 5) { // SEXTA
+    if (hojeDia === 4) { // TESTE PARA QUINTA-FEIRA (Originalmente 5)
       $('#promo-banner-title').textContent = "Sextou com Esfihas!";
       $('#promo-banner-desc').textContent = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
       $('#promo-banner-emoj').textContent = "🥟";
@@ -907,7 +907,7 @@ function renderCardapio() {
   const wrapCombos = $('#wrap-combos');
   const btnScrollCombos = $('#btn-scroll-combos');
 
-  if (hojeDia === 5) { // SEXTA (ESFIHAS)
+  if (hojeDia === 4) { // TESTE PARA QUINTA-FEIRA (Originalmente 5)
       wrapCombos.style.display = 'block';
       btnScrollCombos.style.display = 'inline-block';
       $('#grid-combos').innerHTML = CARDAPIO.combos_sexta.map(cardHTML).join('');
