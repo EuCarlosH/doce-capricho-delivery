@@ -339,7 +339,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 /* BANNER PROMOCIONAL POP-UP E MODAL DE PROMOÇÕES */
 .modal-overlay#promo-banner-overlay { z-index: 5000 !important; align-items: center; justify-content: center; padding: 20px;}
-#promo-banner-overlay .modal-box { padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto; }
+#promo-banner-overlay .modal-box { padding: 0; overflow: hidden; background: var(--bg-card); border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto; }
 #promo-banner-overlay.open .modal-box { transform: scale(1); }
 .btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
 .btn-close-promo:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
@@ -688,11 +688,10 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
 <div class="modal-overlay" id="promo-banner-overlay">
-  <div class="modal-box" style="padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 380px; border-radius: 16px;">
+  <div class="modal-box" style="padding: 0; overflow: hidden; background: var(--bg-card); border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto;">
     <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
-    <div style="background: var(--gold-dark); width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; position: relative;">
-      <img id="promo-banner-img" src="img/banner-promo.jpg" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" onerror="this.style.display='none'">
-      <h1 class="brand-font" style="color: #FFF; font-size: 40px; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);" id="promo-banner-emoj">🎉</h1>
+    <div style="width: 100%; position: relative; background: var(--bg-main);">
+      <img id="promo-banner-img" src="img/banner-promo.jpg" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;" onerror="this.style.display='none'">
     </div>
     <div class="promo-content">
       <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
@@ -882,8 +881,6 @@ let bannerJaMostrado = false;
 function checkBannerPromo() {
   const hojeDia = new Date().getDay();
   
-  // TRAVA DE TESTE: Alterada para permitir múltiplos testes na mesma aba
-  // Quando for enviar para os clientes oficiais, voltamos com o sessionStorage.
   if (!bannerJaMostrado) {
     if (hojeDia === 4) { // TESTE PARA QUINTA (Mude para 5 no dia oficial)
       $('#promo-banner-title').textContent = "Sextou com Esfihas!";
@@ -924,18 +921,15 @@ function renderCardapio() {
   const hojeDia = new Date().getDay();
   let combosHoje = [];
 
-  // TESTE PARA QUINTA-FEIRA (hojeDia === 4). Mudar para 5 depois!
-  if (hojeDia === 4) {
+  if (hojeDia === 4) { // TESTE PARA QUINTA-FEIRA
       combosHoje = CARDAPIO.combos_sexta;
   } else if (hojeDia === 6) { // SABADO (PIZZAS)
       combosHoje = CARDAPIO.combos_sabado;
   }
 
-  // OS BOTÕES DE OFERTAS AGORA SÃO SEMPRE VISÍVEIS!
   $('#btn-scroll-combos').style.display = 'inline-block';
   $('#btn-nav-promos').style.display = 'inline-block';
 
-  // LÓGICA DO EMPTY STATE (Sem ofertas)
   if (combosHoje.length > 0) {
       const htmlCombos = combosHoje.map(cardHTML).join('');
       $('#grid-promocoes-modal').innerHTML = htmlCombos;
