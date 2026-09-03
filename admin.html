@@ -138,7 +138,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 /* ========================================= */
 .kanban-board { 
   display: flex; 
-  gap: 12px; /* Margens reduzidas para caber mais coisa na tela */
+  gap: 12px; 
   padding: 15px; 
   flex-grow: 1; 
   overflow-x: auto; 
@@ -149,9 +149,9 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .kanban-col { 
   display: flex; 
   flex-direction: column; 
-  flex: 1 1 0; /* Divide a tela do iPad exatamente em 4 colunas iguais */
-  min-width: 220px; /* Largura mínima para não "esmagar" o card */
-  max-width: 400px; /* Limite para não ficar largo demais no monitor */
+  flex: 1 1 0; 
+  min-width: 220px; 
+  max-width: 400px; 
   max-height: 100%;
   border-radius: 12px;
   transition: background 0.3s;
@@ -169,7 +169,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
   flex-grow: 1; 
   display: flex; 
   flex-direction: column; 
-  gap: 10px; /* Redução de espaço morto entre pedidos */
+  gap: 10px; 
   padding: 2px; 
   padding-bottom: 20px; 
 }
@@ -178,17 +178,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 /* CARDS (ECONOMIA DE ESPAÇO)                */
 /* ========================================= */
 .card-pedido { 
-  background: var(--bg-card); 
-  border-radius: 10px; 
-  padding: 14px; /* Padding menor */
-  display: flex; 
-  flex-direction: column; 
-  gap: 8px; /* Menos espaço interno */
-  border: 1px solid var(--border-light); 
-  flex-shrink: 0; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease; 
-  box-shadow: var(--shadow-sm);
-  cursor: grab;
+  background: var(--bg-card); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-light); flex-shrink: 0; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-sm); cursor: grab;
 }
 .card-pedido:active { cursor: grabbing; transform: scale(0.98); }
 .card-pedido.dragging { opacity: 0.5; transform: scale(0.95); box-shadow: none; border: 2px dashed var(--gold); }
@@ -225,14 +215,13 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .btn-icon-only svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
 /* ========================================= */
-/* OUTROS ESTILOS (RESPONSIVIDADE E MODAIS)  */
+/* SCROLLBAR E ESTADOS VAZIOS                */
 /* ========================================= */
 ::-webkit-scrollbar { width: 4px; height: 4px;}
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
 
-/* Apenas aciona scroll horizontal na kanban se for tela MENOR que o iPad (celular) */
 @media (max-width: 600px) {
   .kanban-col { flex: 0 0 85vw; min-width: 85vw; }
 }
@@ -240,6 +229,9 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .empty-state { text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 8px;}
 .empty-state span { font-size: 28px; filter: grayscale(1); opacity: 0.5;}
 
+/* ========================================= */
+/* MODAIS E TABS                             */
+/* ========================================= */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 550px; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; }
@@ -266,6 +258,33 @@ input:checked + .slider:before { transform: translateX(18px); }
 .btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s ease; cursor: pointer; border-radius: 8px;}
 .btn-gradient:hover { background-position: right center; box-shadow: 0 5px 15px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
 
+/* ========================================= */
+/* CSS RESTAURADO DO CALENDÁRIO MINIMALISTA  */
+/* ========================================= */
+.dia-row { 
+  display: flex; align-items: center; justify-content: space-between; 
+  padding: 12px 15px; margin-bottom: 8px; 
+  background: #F8FAFC; border-radius: 8px; 
+  border: 1px solid var(--border-light); transition: all 0.2s ease; 
+}
+.dia-row:hover { border-color: rgba(221, 167, 58, 0.4); box-shadow: var(--shadow-sm); }
+.dia-label { 
+  display: flex; align-items: center; gap: 10px; 
+  font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer; 
+}
+.dia-label input[type="checkbox"] { 
+  width: 16px; height: 16px; accent-color: var(--success); cursor: pointer; 
+}
+.dia-inputs { display: flex; align-items: center; gap: 8px; }
+.dia-inputs input[type="time"] { 
+  padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 6px; 
+  font-family: inherit; font-size: 11px; font-weight: 700; 
+  color: var(--text-main); background: #FFF; transition: all 0.3s; 
+}
+.dia-inputs input[type="time"]:focus { outline: none; border-color: var(--gold); }
+.dia-inputs span { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+
+/* TELA DE LOGIN E TELAS INICIAIS */
 #login-screen { position: fixed; inset: 0; background: var(--bg-sidebar); z-index: 10000; display: flex; align-items: center; justify-content: center; }
 .login-box { background: #FFF; padding: 35px; border-radius: 16px; width: 100%; max-width: 380px; text-align: center; }
 .login-box h2 { color: var(--text-main); margin-bottom: 25px; letter-spacing: 1px; font-size: 20px; }
