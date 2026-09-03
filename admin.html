@@ -20,8 +20,8 @@
   --gold: #DDA73A;         
   --gold-dark: #C28F2A;    
   --terracotta: #8B3A2B;   
-  --bg-main: #F4F7F6; /* Cinza super suave anti-fadiga */
-  --bg-sidebar: #1A1512; /* Marrom ultra escuro elegante */
+  --bg-main: #F4F7F6; 
+  --bg-sidebar: #1A1512; 
   --bg-card: #FFFFFF;      
   --text-main: #2C2018;    
   --text-muted: #8C7A6B;   
@@ -46,56 +46,93 @@ body {
 h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 
 /* ========================================= */
-/* LAYOUT PRINCIPAL (CORRIGIDO: LADO A LADO) */
+/* LAYOUT PRINCIPAL E TOP BAR                */
 /* ========================================= */
 .app-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100dvh;
   width: 100vw;
   overflow: hidden;
 }
 
+/* NOVA BARRA SUPERIOR */
+.top-bar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.top-bar-left { display: flex; align-items: center; gap: 15px; }
+
+.menu-toggle {
+  background: transparent; border: 1px solid var(--border-light); cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 8px; transition: 0.2s;
+}
+.menu-toggle:hover { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); border-color: var(--gold); }
+
+.top-bar-logo { font-size: 16px; font-weight: 800; color: var(--text-main); letter-spacing: 1.5px; display: flex; align-items: center; gap: 10px;}
+.top-bar-logo span { color: var(--gold-dark); font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 700; background: rgba(221, 167, 58, 0.1); padding: 4px 8px; border-radius: 6px; letter-spacing: 1px;}
+
+.top-bar-status {
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 20px; border: 1px solid transparent;
+}
+.status-aberto { color: var(--success); background: rgba(47, 133, 90, 0.1); border-color: rgba(47, 133, 90, 0.3); }
+.status-pausado { color: var(--danger); background: rgba(230, 57, 70, 0.1); border-color: rgba(230, 57, 70, 0.3); }
+
+/* ÁREA DE CONTEÚDO E MENU SUSPENSO */
+.content-wrapper {
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-main);
+}
+
+/* SIDEBAR SUSPENSA (OFF-CANVAS) */
 .sidebar {
-  width: 260px;
+  position: absolute;
+  top: 0; left: -300px; /* Escondido por padrão */
+  width: 280px; 
+  height: 100%;
   background: var(--bg-sidebar);
   color: #FFF;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  box-shadow: 2px 0 15px rgba(0,0,0,0.1);
-  z-index: 100;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+  z-index: 1000;
+  transition: left 0.3s var(--smooth);
 }
-.sidebar-header {
-  padding: 30px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.sidebar-logo {
-  font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 2px; line-height: 1.3;
-}
-.sidebar-logo span {
-  font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 3px; display: block; color: rgba(255,255,255,0.5); margin-top: 5px;
-}
+.sidebar.open { left: 0; }
 
-.stats-container {
-  padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px;
+.sidebar-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s var(--smooth);
 }
+.sidebar-overlay.show { opacity: 1; }
+
+.sidebar-header { padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
+.sidebar-logo { font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 2px; line-height: 1.3; }
+.btn-close-menu { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 24px; cursor: pointer; transition: 0.3s; }
+.btn-close-menu:hover { color: #FFF; }
+
+.stats-container { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; }
 .stat-item { display: flex; flex-direction: column; }
 .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); font-weight: 700; margin-bottom: 4px; }
 .stat-value { font-size: 24px; font-family: 'Cinzel', serif; color: #FFF; font-weight: 700; }
 
-.sidebar-nav {
-  padding: 20px 10px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;
-}
-.nav-btn {
-  background: transparent; border: none; padding: 14px 15px; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 12px; font-family: inherit;
-}
+.sidebar-nav { padding: 20px 10px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.nav-btn { background: transparent; border: none; padding: 14px 15px; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 12px; font-family: inherit; }
 .nav-btn:hover { background: rgba(255,255,255,0.05); color: #FFF; }
 .nav-btn.active { background: rgba(221, 167, 58, 0.1); color: var(--gold); border-left: 3px solid var(--gold); }
 .nav-btn.danger { color: #E63946; } .nav-btn.danger:hover { background: rgba(230, 57, 70, 0.1); }
 
 .main-content {
-  flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-main);
+  flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-main); width: 100%;
 }
 
 /* ========================================= */
@@ -108,7 +145,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 }
 .kanban-col { 
   display: flex; flex-direction: column; 
-  flex: 0 0 320px; /* Largura fixa, não encolhe */
+  flex: 0 0 320px; 
   max-height: 100%;
   border-radius: 12px;
   transition: background 0.3s;
@@ -137,7 +174,6 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 @keyframes subtlePulse { 0% { box-shadow: 0 0 0 0 rgba(230,57,70,0.1); } 50% { box-shadow: 0 0 0 4px rgba(230,57,70,0); } 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); } }
 
 .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-/* NÚMEROS GIGANTES */
 .p-id { font-size: 22px; font-weight: 900; color: var(--text-main); font-family: 'Cinzel', serif; letter-spacing: 1px; line-height: 1;}
 .p-time { font-size: 16px; color: var(--text-muted); font-weight: 800; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px;}
 .p-time.timer-atencao { color: var(--warning); }
@@ -165,7 +201,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .btn-icon-only svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
 
 /* ========================================= */
-/* OUTROS ESTILOS (MODAIS, LOGIN, SCROLLBAR) */
+/* OUTROS ESTILOS E MODAIS                   */
 /* ========================================= */
 ::-webkit-scrollbar { width: 6px; height: 6px;}
 ::-webkit-scrollbar-track { background: transparent; }
@@ -220,16 +256,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .kpi-value { font-size: 28px; font-family: 'Cinzel', serif; font-weight: 700; color: var(--text-main); }
 
 @media (max-width: 768px) {
-  .app-container { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; flex-direction: row; align-items: center; padding: 10px 15px; }
-  .sidebar-header { padding: 0; border: none; flex-grow: 1;}
-  .sidebar-logo { font-size: 16px; }
-  .sidebar-logo span { display: none; }
-  .stats-container { display: none; }
-  .sidebar-nav { padding: 0; flex-direction: row; overflow-x: auto; gap: 10px; margin-left: 15px;}
-  .nav-btn { padding: 8px 12px; font-size: 11px; white-space: nowrap; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-  .nav-btn svg { display: none; }
-  .nav-btn.active { border-left: none; background: var(--gold); color: var(--bg-sidebar); }
   .kanban-col { flex: 0 0 85vw; min-width: 85vw; }
 }
 </style>
@@ -254,128 +280,148 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div class="app-container">
   
-  <!-- MENU LATERAL FIXO -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo brand-font">DOCE CAPRICHO<span>PAINEL OPERACIONAL</span></div>
+  <!-- =============================== -->
+  <!-- NOVA TOP BAR (BARRA SUPERIOR)   -->
+  <!-- =============================== -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="top-bar-logo brand-font">DOCE CAPRICHO <span>OPERAÇÃO</span></div>
     </div>
+    <div>
+      <span class="top-bar-status status-aberto" id="header-status-badge">🟢 Aberto</span>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <!-- MENU LATERAL SUSPENSO (OFF-CANVAS) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
     
-    <div class="stats-container" id="sidebar-stats">
-      <div class="stat-item">
-        <span class="stat-label">Pedidos Hoje</span>
-        <span class="stat-value" id="dash-qtd">0</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Faturamento Diário</span>
-        <span class="stat-value" style="color: var(--gold);" id="dash-fat">R$ 0,00</span>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <button class="nav-btn active" id="btn-nav-kanban" onclick="alternarTela('kanban')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        Painel de Pedidos
-      </button>
-      <button class="nav-btn" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-        Financeiro / KPI
-      </button>
-      <button class="nav-btn" onclick="abrirModalCatalogo()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        Configurações
-      </button>
-      <button class="nav-btn" id="btn-sound" onclick="toggleSom()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-        <span>Som Ligado</span>
-      </button>
-      <button class="nav-btn" id="btn-toggle-loja" onclick="toggleStatusLoja()" style="margin-top: 20px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
-        Pausar Loja (Emergência)
-      </button>
-      <button class="nav-btn danger" onclick="sair()" style="margin-top: auto;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-        Encerrar Sessão
-      </button>
-    </nav>
-  </aside>
-
-  <main class="main-content">
-    
-    <!-- TELA 1: OPERAÇÃO KANBAN (DRAG & DROP) -->
-    <div class="kanban-board" id="view-kanban">
-      
-      <!-- Coluna Novos -->
-      <div class="kanban-col" data-status="Novo" ondragover="dragOver(event)" ondrop="drop(event, 'Novo')">
-        <div class="col-header">Novos Pedidos <span class="count" id="count-novo">0</span></div>
-        <div class="col-body" id="list-novo"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo brand-font">DOCE CAPRICHO</div>
+        <button class="btn-close-menu" onclick="fecharSidebar()">&times;</button>
       </div>
       
-      <!-- Coluna Cozinha -->
-      <div class="kanban-col" data-status="Preparando" ondragover="dragOver(event)" ondrop="drop(event, 'Preparando')">
-        <div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div>
-        <div class="col-body" id="list-preparando"></div>
+      <div class="stats-container" id="sidebar-stats">
+        <div class="stat-item">
+          <span class="stat-label">Pedidos Hoje</span>
+          <span class="stat-value" id="dash-qtd">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Faturamento Diário</span>
+          <span class="stat-value" style="color: var(--gold);" id="dash-fat">R$ 0,00</span>
+        </div>
       </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" id="btn-nav-kanban" onclick="alternarTela('kanban')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Painel de Pedidos
+        </button>
+        <button class="nav-btn" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Financeiro / KPI
+        </button>
+        <button class="nav-btn" onclick="abrirModalCatalogo(); fecharSidebar();">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Configurações
+        </button>
+        <button class="nav-btn" id="btn-sound" onclick="toggleSom()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>Som Ligado</span>
+        </button>
+        <button class="nav-btn" id="btn-toggle-loja" onclick="toggleStatusLoja()" style="margin-top: 20px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+          Pausar Loja (Emergência)
+        </button>
+        <button class="nav-btn danger" onclick="sair()" style="margin-top: auto;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Encerrar Sessão
+        </button>
+      </nav>
+    </aside>
+
+    <main class="main-content">
       
-      <!-- Coluna Em Rota / Retirada -->
-      <div class="kanban-col" data-status="Saiu para Entrega" ondragover="dragOver(event)" ondrop="drop(event, 'Saiu para Entrega')">
-        <div class="col-header">Pronto / Em Rota <span class="count" id="count-saiu">0</span></div>
-        <div class="col-body" id="list-saiu"></div>
-      </div>
-      
-      <!-- Coluna Concluídos -->
-      <div class="kanban-col" data-status="Concluído" ondragover="dragOver(event)" ondrop="drop(event, 'Concluído')">
-        <div class="col-header" style="color:var(--text-muted);">Finalizados <span class="count" id="count-concluido">0</span></div>
-        <div class="col-body" id="list-concluido"></div>
-      </div>
+      <!-- TELA 1: OPERAÇÃO KANBAN (DRAG & DROP) -->
+      <div class="kanban-board" id="view-kanban">
+        
+        <!-- Coluna Novos -->
+        <div class="kanban-col" data-status="Novo" ondragover="dragOver(event)" ondrop="drop(event, 'Novo')">
+          <div class="col-header">Novos Pedidos <span class="count" id="count-novo">0</span></div>
+          <div class="col-body" id="list-novo"></div>
+        </div>
+        
+        <!-- Coluna Cozinha -->
+        <div class="kanban-col" data-status="Preparando" ondragover="dragOver(event)" ondrop="drop(event, 'Preparando')">
+          <div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div>
+          <div class="col-body" id="list-preparando"></div>
+        </div>
+        
+        <!-- Coluna Em Rota / Retirada -->
+        <div class="kanban-col" data-status="Saiu para Entrega" ondragover="dragOver(event)" ondrop="drop(event, 'Saiu para Entrega')">
+          <div class="col-header">Pronto / Em Rota <span class="count" id="count-saiu">0</span></div>
+          <div class="col-body" id="list-saiu"></div>
+        </div>
+        
+        <!-- Coluna Concluídos -->
+        <div class="kanban-col" data-status="Concluído" ondragover="dragOver(event)" ondrop="drop(event, 'Concluído')">
+          <div class="col-header" style="color:var(--text-muted);">Finalizados <span class="count" id="count-concluido">0</span></div>
+          <div class="col-body" id="list-concluido"></div>
+        </div>
 
-    </div>
-
-    <!-- TELA 2: DASHBOARD FINANCEIRO -->
-    <div id="view-relatorios">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-        <h2 class="brand-font" style="color: var(--text-main); font-size: 24px; border:none; margin:0;">Dashboard Analytics</h2>
-        <div style="display: flex; gap: 10px; align-items: center; background: var(--bg-card); padding: 10px; border-radius: 12px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
-          <input type="date" id="rel-inicio" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 12px;">
-          <span style="color: var(--text-muted); font-size: 11px; font-weight: 700;">ATÉ</span>
-          <input type="date" id="rel-fim" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 12px;">
-          <button class="btn-gradient" onclick="gerarRelatorio()" style="padding: 10px 20px; font-size: 11px; width: auto; margin:0;">Filtrar</button>
-        </div>
-      </div>
-
-      <div class="kpi-grid">
-        <div class="kpi-card" style="border-left: 4px solid var(--success);">
-          <span class="kpi-title">Faturamento Bruto</span>
-          <strong class="kpi-value" id="kpi-fat" style="color: var(--success);">R$ 0,00</strong>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-title">Pedidos Entregues</span>
-          <strong class="kpi-value" id="kpi-qtd">0</strong>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-title">Ticket Médio</span>
-          <strong class="kpi-value" id="kpi-ticket">R$ 0,00</strong>
-        </div>
-        <div class="kpi-card" style="border-left: 4px solid var(--danger);">
-          <span class="kpi-title" style="color: var(--danger);">Perdas / Cancelados</span>
-          <strong class="kpi-value" id="kpi-falhas" style="color: var(--danger);">0</strong>
-        </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; padding-bottom: 50px;">
-        <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); height: 340px;">
-          <h3 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight:800;">Curva de Faturamento Diário</h3>
-          <canvas id="chart-fat"></canvas>
+      <!-- TELA 2: DASHBOARD FINANCEIRO -->
+      <div id="view-relatorios">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+          <h2 class="brand-font" style="color: var(--text-main); font-size: 24px; border:none; margin:0;">Dashboard Analytics</h2>
+          <div style="display: flex; gap: 10px; align-items: center; background: var(--bg-card); padding: 10px; border-radius: 12px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <input type="date" id="rel-inicio" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 12px;">
+            <span style="color: var(--text-muted); font-size: 11px; font-weight: 700;">ATÉ</span>
+            <input type="date" id="rel-fim" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 12px;">
+            <button class="btn-gradient" onclick="gerarRelatorio()" style="padding: 10px 20px; font-size: 11px; width: auto; margin:0;">Filtrar</button>
+          </div>
         </div>
-        <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); height: 340px; overflow-y: auto;">
-          <h3 style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-weight:800;">Top 10 Produtos (Volume)</h3>
-          <div id="lista-top-produtos" style="display: flex; flex-direction: column; gap: 8px;">
-             <div class="empty-state">Use o filtro acima para ver os dados.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card" style="border-left: 4px solid var(--success);">
+            <span class="kpi-title">Faturamento Bruto</span>
+            <strong class="kpi-value" id="kpi-fat" style="color: var(--success);">R$ 0,00</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">Pedidos Entregues</span>
+            <strong class="kpi-value" id="kpi-qtd">0</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">Ticket Médio</span>
+            <strong class="kpi-value" id="kpi-ticket">R$ 0,00</strong>
+          </div>
+          <div class="kpi-card" style="border-left: 4px solid var(--danger);">
+            <span class="kpi-title" style="color: var(--danger);">Perdas / Cancelados</span>
+            <strong class="kpi-value" id="kpi-falhas" style="color: var(--danger);">0</strong>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; padding-bottom: 50px;">
+          <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); height: 340px;">
+            <h3 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight:800;">Curva de Faturamento Diário</h3>
+            <canvas id="chart-fat"></canvas>
+          </div>
+          <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); height: 340px; overflow-y: auto;">
+            <h3 style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-weight:800;">Top 10 Produtos (Volume)</h3>
+            <div id="lista-top-produtos" style="display: flex; flex-direction: column; gap: 8px;">
+               <div class="empty-state">Use o filtro acima para ver os dados.</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-  </main>
+    </main>
+  </div>
 </div>
 
 <!-- MODAL DE CONFIGURAÇÕES -->
@@ -442,6 +488,29 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <script>
+// FUNÇÕES DO MENU SUSPENSO
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  if (sidebar.classList.contains('open')) {
+    fecharSidebar();
+  } else {
+    sidebar.classList.add('open');
+    overlay.style.display = 'block';
+    setTimeout(() => overlay.classList.add('show'), 10);
+  }
+}
+
+function fecharSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+  setTimeout(() => overlay.style.display = 'none', 300);
+}
+
 // ICONS
 const icons = {
   clock: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
@@ -465,7 +534,7 @@ let chartInstance = null;
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 
-// AUTENTICAÇÃO (Com Porta dos Fundos para teste DevOps)
+// AUTENTICAÇÃO
 auth.onAuthStateChanged(user => {
   const urlParams = new URLSearchParams(window.location.search);
   const modoDev = urlParams.get('dev') === 'true';
@@ -489,13 +558,13 @@ function toggleSom() {
 }
 
 function alternarTela(tela) {
+  fecharSidebar();
   const navs = document.querySelectorAll('.sidebar-nav .nav-btn');
   navs.forEach(n => n.classList.remove('active'));
   
   if (tela === 'relatorios') {
     document.getElementById('view-kanban').style.display = 'none';
     document.getElementById('view-relatorios').style.display = 'flex';
-    document.getElementById('sidebar-stats').style.display = 'none';
     document.getElementById('btn-nav-relatorios').classList.add('active');
     
     if(!document.getElementById('rel-inicio').value) {
@@ -507,7 +576,6 @@ function alternarTela(tela) {
   } else {
     document.getElementById('view-kanban').style.display = 'flex';
     document.getElementById('view-relatorios').style.display = 'none';
-    document.getElementById('sidebar-stats').style.display = 'flex';
     document.getElementById('btn-nav-kanban').classList.add('active');
   }
 }
@@ -585,8 +653,6 @@ function drop(e, newStatus) {
   
   const p = pedidosMap.get(id);
   if(p && p.status !== newStatus) {
-     
-     // Tratamento para mensagem de WhatsApp ao soltar na coluna "Em Rota"
      let finalStatus = newStatus;
      if (newStatus === 'Saiu para Entrega') {
          if (p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada';
@@ -610,7 +676,6 @@ function renderizarKanban() {
   
   Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { 
       if(p.status !== 'Cancelado') {
-          // Normalize Retirada/Entrega para a mesma coluna visual
           let mapStatus = p.status;
           if(p.status === 'Pronto para Retirada') mapStatus = 'Saiu para Entrega';
           
@@ -681,19 +746,22 @@ function cancelarPedido(id) {
   }
 }
 
-// CONFIGURAÇÕES FIREBASE
+// CONFIGURAÇÕES FIREBASE E UI
 function atualizarUIConfig() {
-  const btn = document.getElementById('btn-toggle-loja');
+  const btnSidebar = document.getElementById('btn-toggle-loja');
+  const badgeTop = document.getElementById('header-status-badge');
+
   if (configuracoesGlobais.forcarFechamento) {
-    btn.innerHTML = 'Retomar Pedidos 🟢'; btn.style.color = '#F59E0B';
+    btnSidebar.innerHTML = 'Retomar Pedidos 🟢'; btnSidebar.style.color = '#F59E0B';
+    badgeTop.className = 'top-bar-status status-pausado'; badgeTop.innerHTML = '🔴 Pausado';
   } else {
-    btn.innerHTML = 'Pausar Loja 🔴'; btn.style.color = '#E63946';
+    btnSidebar.innerHTML = 'Pausar Loja 🔴'; btnSidebar.style.color = '#E63946';
+    badgeTop.className = 'top-bar-status status-aberto'; badgeTop.innerHTML = '🟢 Aberto';
   }
   renderizarModaisConfig();
 }
 
 function toggleStatusLoja() {
-  const btn = document.getElementById('btn-toggle-loja'); btn.innerHTML = 'Aguarde...';
   db.collection('configuracoes').doc('geral').set({ forcarFechamento: !configuracoesGlobais.forcarFechamento }, { merge: true }).catch(err => { alert("Falha ao pausar."); atualizarUIConfig(); });
 }
 
@@ -765,7 +833,7 @@ function renderizarModaisConfig() {
   document.getElementById('schedule-list').innerHTML = htmlHorarios;
 }
 
-// IMPRESSÃO (MANTIDA INTACTA)
+// IMPRESSÃO
 function imprimirComanda(id) {
   const p = pedidosMap.get(id); if(!p) return;
   const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
@@ -777,7 +845,7 @@ function imprimirComanda(id) {
   setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
 }
 
-// RELATÓRIOS (MANTIDO INTACTO)
+// RELATÓRIOS
 async function gerarRelatorio() {
   const dI = document.getElementById('rel-inicio').value, dF = document.getElementById('rel-fim').value;
   if(!dI || !dF) return alert("Selecione a data de início e fim.");
