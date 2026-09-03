@@ -117,13 +117,28 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); } :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* SKELETON LOADING BLINDADO */
+/* SKELETON LOADING BLINDADO PARA IMAGENS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--border-light); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-.skeleton-bg { background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); background-size: 200% 100%; animation: skeletonShimmer 1.5s infinite linear; }
-:root[data-theme="dark"] .skeleton-bg { background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); background-size: 200% 100%; }
+
+.skeleton-bg { 
+  background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); 
+  background-size: 200% 100%; 
+  animation: skeletonShimmer 1.5s infinite linear; 
+}
+:root[data-theme="dark"] .skeleton-bg { 
+  background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); 
+  background-size: 200% 100%; 
+}
 @keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth), opacity 0.4s ease; opacity: 0; z-index: 2; position: relative; }
+.card-img { 
+  width: 100%; height: 100%; 
+  object-fit: cover; 
+  transition: transform 0.6s var(--smooth), opacity 0.4s ease; 
+  opacity: 0; 
+  z-index: 2; 
+  position: relative; 
+}
 .card-img.loaded { opacity: 1; }
 .card:hover .card-img { transform: scale(1.08); } 
 
@@ -344,7 +359,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
-      <li><button type="button" id="btn-nav-promos" class="ripple" style="display:none; color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
+      <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
       <li><a href="#cardapio">Cardápio</a></li>
       <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
@@ -366,7 +381,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
-    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" style="display:none;" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
+    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
     <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
     <a href="#wrap-extras" class="sticky-btn">Extras</a>
@@ -447,12 +462,11 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
-<!-- NOVA TELA DE PROMOÇÕES ATIVAS -->
+<!-- NOVA TELA DE PROMOÇÕES ATIVAS (SEMPRE DISPONÍVEL) -->
 <div class="modal-overlay" id="modal-promocoes">
   <div class="modal-box">
     <button class="close-modal ripple" data-close="modal-promocoes">&times;</button>
     <h2 class="brand-font" style="color: var(--gold-dark); border-bottom: 1px dashed var(--gold);">🔥 Promoções Ativas</h2>
-    <p style="font-size: 13px; color: var(--text-main); margin-bottom: 20px;">Estes combos são exclusivos para hoje. Aproveite!</p>
     <div class="grid-menu" id="grid-promocoes-modal"></div>
   </div>
 </div>
@@ -672,21 +686,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
-<div class="modal-overlay" id="promo-banner-overlay">
-  <div class="modal-box">
-    <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
-    <div style="background: var(--bg-card); width: 100%; display: flex; align-items: center; justify-content: center; position: relative;">
-      <img id="promo-banner-img" src="img/banner-promo.jpg" style="width: 100%; height: auto; max-height: 60vh; object-fit: cover; display: block; border-radius: 16px 16px 0 0;" onerror="this.style.display='none'">
-    </div>
-    <div class="promo-content">
-      <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
-      <p id="promo-banner-desc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Separamos combos incríveis para o seu dia. Aproveite!</p>
-      <button class="btn-gradient ripple" style="width: 100%; padding: 15px; border-radius: 8px; font-size: 12px;" onclick="irParaCombos()">EU QUERO VER</button>
-    </div>
-  </div>
-</div>
-
 <script>
 let deferredPrompt;
 const btnInstallApp = document.getElementById('btn-install-app');
@@ -898,23 +897,34 @@ function renderCardapio() {
   }).join('');
   
   const hojeDia = new Date().getDay();
-  const btnScrollCombos = $('#btn-scroll-combos');
-  const btnNavPromos = $('#btn-nav-promos');
+  let combosHoje = [];
 
-  if (hojeDia === 4) { // TESTE QUINTA FEIRA
-      btnScrollCombos.style.display = 'inline-block';
-      btnNavPromos.style.display = 'inline-block';
-      $('#grid-promocoes-modal').innerHTML = CARDAPIO.combos_sexta.map(cardHTML).join('');
+  // TESTE PARA QUINTA-FEIRA (hojeDia === 4). Mudar para 5 depois!
+  if (hojeDia === 4) {
+      combosHoje = CARDAPIO.combos_sexta;
   } else if (hojeDia === 6) { // SABADO (PIZZAS)
-      btnScrollCombos.style.display = 'inline-block';
-      btnNavPromos.style.display = 'inline-block';
-      $('#grid-promocoes-modal').innerHTML = CARDAPIO.combos_sabado.map(cardHTML).join('');
-  } else {
-      btnScrollCombos.style.display = 'none';
-      btnNavPromos.style.display = 'none';
+      combosHoje = CARDAPIO.combos_sabado;
   }
 
-  checkBannerPromo();
+  // OS BOTÕES DE OFERTAS AGORA SÃO SEMPRE VISÍVEIS!
+  $('#btn-scroll-combos').style.display = 'inline-block';
+  $('#btn-nav-promos').style.display = 'inline-block';
+
+  // LÓGICA DO EMPTY STATE (Sem ofertas)
+  if (combosHoje.length > 0) {
+      const htmlCombos = combosHoje.map(cardHTML).join('');
+      $('#grid-promocoes-modal').innerHTML = htmlCombos;
+      checkBannerPromo();
+  } else {
+      $('#grid-promocoes-modal').innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(58, 42, 32, 0.02); border-radius: 12px; border: 1px dashed var(--border-light);">
+          <span style="font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.8; filter: grayscale(1);">🤫</span>
+          <strong style="display: block; font-size: 15px; color: var(--text-main); margin-bottom: 5px;">Poxa, sem ofertas hoje!</strong>
+          <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">Nossos combos especiais não estão ativos no momento. Fique de olho no nosso Instagram, sempre soltamos novidades por lá!</p>
+          <button class="btn-gradient ripple" style="padding: 12px 20px; border-radius: 8px; font-size: 11px; margin-top: 20px;" onclick="fecharModal('modal-promocoes')">Voltar ao Cardápio</button>
+        </div>`;
+  }
+
   atualizarBotoes();
 }
 
@@ -943,6 +953,7 @@ function escolherSabor(id) {
   const isEsfihaOuCombo = id.startsWith('esf_') || id.startsWith('combo_');
   if (isEsfihaOuCombo) {
      if (meioSelecionado) { showToast("Não é possível misturar Pizza Meio-a-meio com Esfiha ou Combo.", "warning"); return; }
+     fecharModal('modal-promocoes'); // Fecha o modal de promos se estiver aberto
      return abrirBuilder([id]); 
   }
 
@@ -1042,6 +1053,7 @@ function adicionar() {
   fecharModal('builder-overlay'); abrirModal('success-overlay');
 }
 
+/* LINHA SALVADORA QUE CORRIGE O ERRO DO UPSELL */
 function adicionarUpsell(saborId, preco) {
   const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
   if (!validarItem(item)) return; 
@@ -1242,35 +1254,18 @@ document.addEventListener('mousedown', function (e) {
   target.style.setProperty('--y', (e.clientY - rect.top) + 'px');
 });
 
-if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.firestore();
-
-function processarConfig(doc) {
-  if(doc.exists) {
-    configLoja = doc.data();
-    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
-    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
-    const rodape = document.getElementById('footer-funcionamento');
-    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
-    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
-    verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
+// A CORREÇÃO DE OURO PARA O CLIQUE NAS OFERTAS
+document.addEventListener('click', e => { 
+  const cardOpt = e.target.closest('.extra-opt-card'); 
+  if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } 
+  
+  const b = e.target.closest('[data-escolher]'); 
+  if (b) {
+    fecharModal('modal-promocoes'); // Fecha a tela de ofertas para abrir o construtor
+    escolherSabor(b.dataset.escolher);
   }
-}
-db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
-setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
+});
 
-function processarEstatisticas(doc) {
-  if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }
-}
-db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura estatística desativada."); });
-
-const sections = $$('h3.category-title'); const navLinks = $$('.sticky-btn');
-window.addEventListener('scroll', () => { let current = ''; sections.forEach(sec => { if (pageYOffset >= sec.offsetTop - 150) { current = sec.getAttribute('id'); } }); navLinks.forEach(link => { link.classList.remove('active'); if (link.getAttribute('href').includes(current)) { link.classList.add('active'); } }); });
-
-document.addEventListener('click', e => { const cardOpt = e.target.closest('.extra-opt-card'); if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } });
-$('#cardapio').addEventListener('click', e => { const b = e.target.closest('[data-escolher]'); if (b) escolherSabor(b.dataset.escolher); });
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
@@ -1294,6 +1289,30 @@ $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value)
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
+
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+function processarConfig(doc) {
+  if(doc.exists) {
+    configLoja = doc.data();
+    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
+    const rodape = document.getElementById('footer-funcionamento');
+    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
+    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
+    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
+    verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
+  }
+}
+db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
+setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
+
+function processarEstatisticas(doc) {
+  if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }
+}
+db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura estatística desativada."); });
 
 // Carrega os dados na tela
 verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
