@@ -58,7 +58,7 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 80px; }
 
-/* EFEITO RIPPLE */
+/* EFEITO RIPPLE (ONDAS DE TOQUE) */
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
 .ripple:active::after { transform: scale(0, 0); opacity: .3; transition: 0s; }
@@ -313,7 +313,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .nav-links { display: none; } .nav-container { justify-content: space-between; } .nav-logo-fallback { font-size: 15px; } 
   #home { padding-top: 100px; text-align: center; align-items: center; } .hero-title { max-width: 100%; }
   
-  /* CORREÇÃO DO MENU INFERIOR MOBILE */
   .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2000; justify-content: space-around; align-items: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px)); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid var(--border-light); transition: background-color 0.4s ease; }
   :root[data-theme="light"] .bottom-nav { background: rgba(255,255,255,0.98); box-shadow: 0 -2px 10px rgba(58, 42, 32, 0.02); } :root[data-theme="dark"] .bottom-nav { background: rgba(10,10,10,0.98); }
   .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 4px; padding: 5px; transition: color 0.3s; overflow: visible; } :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
@@ -339,11 +338,14 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 /* BANNER PROMOCIONAL POP-UP E MODAL DE PROMOÇÕES */
 .modal-overlay#promo-banner-overlay { z-index: 5000 !important; align-items: center; justify-content: center; padding: 20px;}
-#promo-banner-overlay .modal-box { padding: 0; overflow: hidden; background: var(--bg-card); border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto; }
+
+/* CSS CORRIGIDO: Agora a caixa se flexibiliza corretamente sem esconder o texto */
+#promo-banner-overlay .modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
 #promo-banner-overlay.open .modal-box { transform: scale(1); }
+
 .btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
 .btn-close-promo:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
-.promo-content { background: var(--bg-card); padding: 25px 20px; text-align: center; }
+.promo-content { background: var(--bg-card); padding: 25px 20px; text-align: center; flex-shrink: 0; }
 
 /* MODAL DE PROMOÇÕES ATIVAS (ABA EXCLUSIVA) */
 .modal-overlay#modal-promocoes { z-index: 3500; }
@@ -359,7 +361,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
-      <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
+      <li><button type="button" id="btn-nav-promos" class="ripple" style="display:none; color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
       <li><a href="#cardapio">Cardápio</a></li>
       <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
@@ -381,7 +383,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
-    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
+    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" style="display:none;" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
     <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
     <a href="#wrap-extras" class="sticky-btn">Extras</a>
@@ -688,12 +690,14 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
 <div class="modal-overlay" id="promo-banner-overlay">
-  <div class="modal-box" style="padding: 0; overflow: hidden; background: var(--bg-card); border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto;">
+  <div class="modal-box" style="padding: 0; overflow-y: auto; overflow-x: hidden; background: var(--bg-card); border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 450px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column;">
     <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
-    <div style="width: 100%; position: relative; background: var(--bg-main);">
-      <img id="promo-banner-img" src="img/banner-promo.jpg" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;" onerror="this.style.display='none'">
+    
+    <div style="background: var(--bg-main); width: 100%; display: flex; align-items: center; justify-content: center;">
+      <img id="promo-banner-img" src="img/banner-promo.jpg" style="width: 100%; max-height: 45vh; object-fit: contain; display: block; border-radius: 16px 16px 0 0;" onerror="this.style.display='none'">
     </div>
-    <div class="promo-content">
+    
+    <div class="promo-content" style="padding: 25px 20px; text-align: center; flex-shrink: 0;">
       <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
       <p id="promo-banner-desc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Separamos combos incríveis para o seu dia. Aproveite!</p>
       <button class="btn-gradient ripple" style="width: 100%; padding: 15px; border-radius: 8px; font-size: 12px;" onclick="irParaCombos()">EU QUERO VER</button>
