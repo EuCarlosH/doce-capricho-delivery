@@ -115,13 +115,28 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); } :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* SKELETON LOADING BLINDADO */
+/* CORREÇÃO DO SKELETON LOADING BLINDADO PARA IMAGENS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--border-light); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-.skeleton-bg { background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); background-size: 200% 100%; animation: skeletonShimmer 1.5s infinite linear; }
-:root[data-theme="dark"] .skeleton-bg { background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); background-size: 200% 100%; }
+
+.skeleton-bg { 
+  background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); 
+  background-size: 200% 100%; 
+  animation: skeletonShimmer 1.5s infinite linear; 
+}
+:root[data-theme="dark"] .skeleton-bg { 
+  background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); 
+  background-size: 200% 100%; 
+}
 @keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth), opacity 0.4s ease; opacity: 0; z-index: 2; position: relative; }
+.card-img { 
+  width: 100%; height: 100%; 
+  object-fit: cover; 
+  transition: transform 0.6s var(--smooth), opacity 0.4s ease; 
+  opacity: 0; 
+  z-index: 2; 
+  position: relative; 
+}
 .card-img.loaded { opacity: 1; }
 .card:hover .card-img { transform: scale(1.08); } 
 
@@ -161,7 +176,8 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 999; }
+/* FLOATING CART COM OVERFLOW VISIBLE PARA NÃO CORTAR O BADGE */
+.cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 999; overflow: visible !important; }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--terracotta); color: #fff; font-size: 11px; font-weight: 800; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 :root[data-theme="dark"] .cart-count { background: var(--danger); font-weight: 700; }
 .cart-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
@@ -295,9 +311,10 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .nav-links { display: none; } .nav-container { justify-content: space-between; } .nav-logo-fallback { font-size: 15px; } 
   #home { padding-top: 100px; text-align: center; align-items: center; } .hero-title { max-width: 100%; }
   
-  .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2000; justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid var(--border-light); transition: background-color 0.4s ease; }
+  /* CORREÇÃO DO MENU INFERIOR MOBILE */
+  .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2000; justify-content: space-around; align-items: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px)); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid var(--border-light); transition: background-color 0.4s ease; }
   :root[data-theme="light"] .bottom-nav { background: rgba(255,255,255,0.98); box-shadow: 0 -2px 10px rgba(58, 42, 32, 0.02); } :root[data-theme="dark"] .bottom-nav { background: rgba(10,10,10,0.98); }
-  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 6px; transition: color 0.3s; } :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
+  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 4px; padding: 5px; transition: color 0.3s; overflow: visible; } :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
   .bottom-nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--smooth); }
   .bottom-nav-item:hover, .bottom-nav-item:active { color: var(--gold-dark); } :root[data-theme="dark"] .bottom-nav-item:hover, :root[data-theme="dark"] .bottom-nav-item:active { color: var(--gold); }
   .bottom-nav-item:active svg { transform: scale(0.9); }
@@ -335,7 +352,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
       <li><a href="#cardapio">Cardápio</a></li>
-      <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
+      <li><button type="button" id="btn-nav-order">Meus Pedidos</button></li>
     </ul>
     <div style="display: flex; gap: 12px; align-items: center;">
       <button class="btn-install ripple" id="btn-install-app" aria-label="Instalar Aplicativo">Instalar App</button>
@@ -424,15 +441,15 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </footer>
 
 <nav class="bottom-nav">
-  <a href="#home" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
-  <a href="#cardapio" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
-  <button type="button" class="bottom-nav-item ripple" id="btn-bottom-order">
+  <a href="#home" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
+  <a href="#cardapio" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
+  <button type="button" class="bottom-nav-item" id="btn-bottom-order">
     <div style="position: relative;"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span class="cart-count bottom-nav-count" id="bottom-cart-count">0</span></div>
     <span>Pedidos</span>
   </button>
 </nav>
 
-<button class="cart-floating-btn btn-gradient ripple" id="btn-cart-float" aria-label="Abrir carrinho">
+<button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho" style="overflow: visible;">
   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -443,7 +460,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="modal-aviso-pausa">
   <div class="modal-box" style="text-align: center; max-width: 400px;">
-    <button class="close-modal ripple" data-close="modal-aviso-pausa">&times;</button>
+    <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
     <h2 class="brand-font" style="color: var(--terracotta); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
     <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.</p>
     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.</p>
@@ -453,7 +470,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="success-overlay">
   <div class="modal-box" style="text-align: center; max-width: 380px;">
-    <button class="close-modal ripple" data-close="success-overlay">&times;</button>
+    <button class="close-modal" data-close="success-overlay">&times;</button>
     <div style="color: var(--gold); margin-bottom: 15px;">
       <svg viewBox="0 0 24 24" width="56" height="56" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkmark 0.6s var(--smooth) forwards;">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -471,7 +488,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
-    <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
+    <button class="close-modal" data-close="builder-overlay">&times;</button>
     <h2 id="builder-title" class="brand-font">Montar</h2>
     <form id="builder-form" novalidate>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
@@ -501,7 +518,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
-    <button class="close-modal ripple" data-close="cart-overlay">&times;</button>
+    <button class="close-modal" data-close="cart-overlay">&times;</button>
     <h2 id="cart-title" class="brand-font">Seu Carrinho</h2>
     
     <ul class="cart-items-list" id="cart-items-list"></ul>
@@ -659,7 +676,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
 <div class="modal-overlay" id="promo-banner-overlay">
   <div class="modal-box" style="padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 380px; border-radius: 16px;">
-    <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
+    <button class="btn-close-promo" data-close="promo-banner-overlay">&times;</button>
     <div style="background: var(--gold-dark); width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; position: relative;">
       <img id="promo-banner-img" src="img/banner-promo.jpg" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" onerror="this.style.display='none'">
       <h1 class="brand-font" style="color: #FFF; font-size: 40px; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);" id="promo-banner-emoj">🎉</h1>
@@ -686,7 +703,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', usarFirebase: true };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -1031,7 +1048,6 @@ function adicionar() {
   fecharModal('builder-overlay'); abrirModal('success-overlay');
 }
 
-/* LINHA SALVADORA QUE CORRIGE O ERRO DO UPSELL */
 function adicionarUpsell(saborId, preco) {
   const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
   if (!validarItem(item)) return; 
@@ -1216,7 +1232,6 @@ async function enviarPedidoFinal(ev) {
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  // Limpa tudo caso o pedido tenha sucesso e tenha passado o NaN (Trava adicionada)
   carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; setTimeout(() => showToast("Pedido enviado com sucesso!", "success"), 500);
 }
 
