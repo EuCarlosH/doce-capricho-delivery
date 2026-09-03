@@ -80,12 +80,21 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
-#home { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
-:root[data-theme="dark"] #home { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
-.hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; z-index: 2; }
-.hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; z-index: 2; }
-:root[data-theme="dark"] .hero-title { color: var(--gold); text-shadow: 0 4px 15px rgba(0,0,0,0.9); } :root[data-theme="dark"] .hero-subtitle { font-weight: 400; text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
+/* CSS DO HERO (CARROSSEL DINÂMICO E CINEMATOGRÁFICO) */
+#home { 
+  min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); 
+}
+.hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 8s ease-out; }
+.carousel-slide.active { opacity: 1; transform: scale(1.08); }
+.hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%); transition: background 0.4s ease; }
+:root[data-theme="dark"] .hero-overlay { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%); }
+.hero-content { position: relative; z-index: 2; }
+.hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; }
+.hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; }
+:root[data-theme="dark"] .hero-title, :root[data-theme="dark"] .hero-subtitle { text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
+:root[data-theme="dark"] .hero-title { color: var(--gold); }
+:root[data-theme="dark"] .hero-subtitle { font-weight: 400; }
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
 .sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; transition: background-color 0.4s ease; }
@@ -339,7 +348,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .promo-content { padding: 25px 20px; }
 }
 
-/* CSS DO POP-UP PROMOCIONAL */
+/* BANNER PROMOCIONAL POP-UP E MODAL DE PROMOÇÕES */
 .modal-overlay#promo-banner-overlay { z-index: 5000 !important; align-items: center; justify-content: center; padding: 20px;}
 #promo-modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 15px 40px rgba(0,0,0,0.4); max-width: 550px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
 #promo-banner-overlay.open #promo-modal-box { transform: scale(1); }
@@ -363,7 +372,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
-      <li><button type="button" id="btn-nav-promos" class="ripple" style="display:none; color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
+      <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
       <li><a href="#cardapio">Cardápio</a></li>
       <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
@@ -379,13 +388,20 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </nav>
 
 <header id="home">
-  <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
-  <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+  <!-- O Carrossel de Imagens Gerado Dinamicamente -->
+  <div class="hero-carousel" id="hero-carousel">
+    <!-- As fotos entram aqui via JavaScript -->
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
+    <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+  </div>
 </header>
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
-    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" style="display:none;" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
+    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
     <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
     <a href="#wrap-extras" class="sticky-btn">Extras</a>
@@ -887,7 +903,7 @@ function checkBannerPromo() {
   const hojeDia = new Date().getDay();
   
   if (!bannerJaMostrado) {
-    if (hojeDia === 4) { // TESTE PARA QUINTA
+    if (hojeDia === 4) { // TESTE PARA QUINTA (Mude para 5 no dia oficial)
       $('#promo-banner-title').textContent = "Sextou com Esfihas!";
       $('#promo-banner-desc').textContent = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
       setTimeout(() => { 
@@ -926,8 +942,7 @@ function renderCardapio() {
   const hojeDia = new Date().getDay();
   let combosHoje = [];
 
-  // TESTE PARA QUINTA-FEIRA (hojeDia === 4). Mudar para 5 depois!
-  if (hojeDia === 4) {
+  if (hojeDia === 4) { // TESTE PARA QUINTA-FEIRA
       combosHoje = CARDAPIO.combos_sexta;
   } else if (hojeDia === 6) { // SABADO (PIZZAS)
       combosHoje = CARDAPIO.combos_sabado;
@@ -1340,6 +1355,54 @@ db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisti
 
 // Carrega os dados na tela
 verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
+
+// --- CARROSSEL INTELIGENTE DE FOTOS ---
+function iniciarCarrosselHero() {
+  const container = document.getElementById('hero-carousel');
+  if (!container) return;
+  let slideIndex = 1;
+  let validSlides = [];
+
+  function carregarProximoSlide() {
+    const img = new Image();
+    img.src = `img/slide${slideIndex}.jpg`;
+    
+    img.onload = function() {
+      const slideEl = document.createElement('img');
+      slideEl.className = 'carousel-slide';
+      if (slideIndex === 1) slideEl.classList.add('active');
+      slideEl.src = img.src;
+      slideEl.alt = `Slide Promocional ${slideIndex}`;
+      container.appendChild(slideEl);
+      
+      validSlides.push(slideEl);
+      slideIndex++;
+      carregarProximoSlide(); // Chama em loop até dar erro (imagem não existir)
+    };
+    
+    img.onerror = function() {
+      // Quando der erro, significa que não tem mais fotos na sequência.
+      if (validSlides.length === 0) {
+        // Fallback caso não encontre nem a slide1.jpg
+        container.innerHTML = `<img class="carousel-slide active" src="img/hero-bg.jpg" onerror="this.style.display='none'">`;
+      } else if (validSlides.length > 1) {
+        iniciarRotacao();
+      }
+    };
+  }
+
+  carregarProximoSlide();
+
+  function iniciarRotacao() {
+    let atual = 0;
+    setInterval(() => {
+      validSlides[atual].classList.remove('active');
+      atual = (atual + 1) % validSlides.length;
+      validSlides[atual].classList.add('active');
+    }, 4500); // Troca a cada 4.5 segundos
+  }
+}
+iniciarCarrosselHero();
 </script>
 </body>
 </html>
