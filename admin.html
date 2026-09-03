@@ -221,7 +221,6 @@ header {
     <div class="stat-box" id="hdr-stat-qtd"><span>Pedidos Hoje</span><strong id="dash-qtd">0</strong></div>
     <div class="stat-box" id="hdr-stat-fat" style="border-right:none; padding-right: 0;"><span>Faturamento</span><strong id="dash-fat">R$ 0,00</strong></div>
     
-    <!-- NOVOS BOTÕES DE NAVEGAÇÃO -->
     <button class="btn-header" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">📊 Relatórios</button>
     <button class="btn-header" id="btn-nav-kanban" onclick="alternarTela('kanban')" style="display:none; color: var(--gold-dark); border-color: var(--gold);">🏠 Operação</button>
 
@@ -300,6 +299,24 @@ header {
 
     <!-- TAB 1: EXPEDIENTE -->
     <div id="tab-expediente" class="tab-content active">
+
+      <!-- ============================================== -->
+      <!-- O NOVO BLOCO DO CONTROLE DE PROMOÇÕES INJETADO -->
+      <!-- ============================================== -->
+      <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">🔥 Controle de Promoções (Combos)</strong>
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height: 1.5;">Ative promoções surpresas ou pause-as a qualquer momento (reflete instantaneamente no site).</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <select id="select-modo-promo" style="padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--text-main); background: var(--bg-main); font-weight: 600;">
+            <option value="auto">🤖 Automático (Liga na Sexta e Sábado)</option>
+            <option value="on">🟢 Forçar Ligado (Mostrar Hoje)</option>
+            <option value="off">🔴 Forçar Desligado (Esconder Combos)</option>
+          </select>
+          <button onclick="salvarModoPromo(event)" class="btn-gradient btn-save" style="margin-top: 0;">Salvar Status das Promoções</button>
+        </div>
+      </div>
+      <!-- ============================================== -->
+
       <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
         <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px;">Horários Automáticos</strong>
         <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px; line-height: 1.5;">Dias e horários em que a loja abre sozinha.</p>
@@ -395,7 +412,7 @@ if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 let db = firebase.firestore();
 let auth = firebase.auth();
 let pedidosMap = new Map(); 
-let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
+let configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
 let somLigado = true; 
 let chartInstance = null;
 
@@ -560,9 +577,14 @@ function iniciarSistema() {
         configuracoesGlobais = doc.data();
         if(!configuracoesGlobais.itensEsgotados) configuracoesGlobais.itensEsgotados = [];
         if(!configuracoesGlobais.horarios) configuracoesGlobais.horarios = {};
+        
+        // RECUPERA O MODO DE PROMOÇÕES (NOVO)
+        if(!configuracoesGlobais.modoPromocoes) configuracoesGlobais.modoPromocoes = 'auto'; 
+        
         document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
+        document.getElementById('select-modo-promo').value = configuracoesGlobais.modoPromocoes;
     } else {
-        configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} };
+        configuracoesGlobais = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
     }
     atualizarUIConfig();
   });
@@ -581,6 +603,22 @@ function iniciarSistema() {
     if (existeNovo && somLigado) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
   });
   setInterval(renderizarKanban, 60000);
+}
+
+// ------------------------------------------
+// NOVA FUNÇÃO DE SALVAR MODO DE PROMOÇÕES
+// ------------------------------------------
+function salvarModoPromo(e) {
+  const btn = e.target; 
+  btn.textContent = 'Salvando...';
+  const modo = document.getElementById('select-modo-promo').value;
+  db.collection('configuracoes').doc('geral').set({ modoPromocoes: modo }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo com sucesso!'; 
+    setTimeout(() => btn.textContent = 'Salvar Status das Promoções', 2000);
+  }).catch(err => { 
+    alert("Erro ao salvar promoções."); 
+    btn.textContent = 'Salvar Status das Promoções'; 
+  });
 }
 
 function atualizarUIConfig() {
@@ -642,8 +680,8 @@ function salvarHorarios(e) {
 function salvarTextoFuncionamento(e) {
   const btn = e.target; const texto = document.getElementById('input-texto-funcionamento').value.trim(); btn.textContent = '...';
   db.collection('configuracoes').doc('geral').set({ textoFuncionamento: texto }, { merge: true }).then(() => {
-    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar', 2000);
-  }).catch(err => { alert("Erro."); btn.textContent = 'Salvar'; });
+    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Rodapé', 2000);
+  }).catch(err => { alert("Erro."); btn.textContent = 'Salvar Rodapé'; });
 }
 
 function toggleStatusLoja() {
