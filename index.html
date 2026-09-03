@@ -58,7 +58,7 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 80px; }
 
-/* EFEITO RIPPLE (ONDAS DE TOQUE) */
+/* EFEITO RIPPLE */
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
 .ripple:active::after { transform: scale(0, 0); opacity: .3; transition: 0s; }
@@ -341,14 +341,12 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .modal-box::before { content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--handle-bg); border-radius: 2px; }
   .close-modal { top: 20px; }
   
-  /* AJUSTE DO POP-UP PROMOCIONAL NO MOBILE */
   .modal-overlay#promo-banner-overlay { padding: 0; align-items: flex-end; }
   #promo-modal-box { max-width: 100%; width: 100%; border-radius: 24px 24px 0 0; margin: 0; max-height: 85vh; overflow-y: auto; }
   .promo-img-wrapper { height: 240px; }
   .promo-content { padding: 25px 20px; }
 }
 
-/* BANNER PROMOCIONAL POP-UP E MODAL DE PROMOÇÕES */
 .modal-overlay#promo-banner-overlay { z-index: 5000 !important; align-items: center; justify-content: center; padding: 20px;}
 #promo-modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 15px 40px rgba(0,0,0,0.4); max-width: 550px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
 #promo-banner-overlay.open #promo-modal-box { transform: scale(1); }
@@ -358,7 +356,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 .btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
 .btn-close-promo:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
 
-/* MODAL DE PROMOÇÕES ATIVAS (ABA EXCLUSIVA) */
 .modal-overlay#modal-promocoes { z-index: 3500; }
 #modal-promocoes .modal-box { max-width: 800px; }
 </style>
@@ -372,7 +369,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
-      <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
+      <li><button type="button" id="btn-nav-promos" class="ripple" style="display:none; color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
       <li><a href="#cardapio">Cardápio</a></li>
       <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
@@ -388,10 +385,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </nav>
 
 <header id="home">
-  <!-- O Carrossel de Imagens Gerado Dinamicamente -->
-  <div class="hero-carousel" id="hero-carousel">
-    <!-- As fotos entram aqui via JavaScript -->
-  </div>
+  <div class="hero-carousel" id="hero-carousel"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
@@ -401,7 +395,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
-    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
+    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" style="display:none;" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
     <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
     <a href="#wrap-extras" class="sticky-btn">Extras</a>
@@ -482,7 +476,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
-<!-- NOVA TELA DE PROMOÇÕES ATIVAS (SEMPRE DISPONÍVEL) -->
+<!-- NOVA TELA DE PROMOÇÕES ATIVAS -->
 <div class="modal-overlay" id="modal-promocoes">
   <div class="modal-box">
     <button class="close-modal ripple" data-close="modal-promocoes">&times;</button>
@@ -812,7 +806,7 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
+let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null; 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 const STORAGE_KEY = 'dca_carrinho_final';
@@ -899,25 +893,16 @@ const cardHTML = s => {
 
 let bannerJaMostrado = false;
 
-function checkBannerPromo() {
-  const hojeDia = new Date().getDay();
-  
-  if (!bannerJaMostrado) {
-    if (hojeDia === 4) { // TESTE PARA QUINTA (Mude para 5 no dia oficial)
-      $('#promo-banner-title').textContent = "Sextou com Esfihas!";
-      $('#promo-banner-desc').textContent = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
-      setTimeout(() => { 
-         abrirModal('promo-banner-overlay'); 
-         bannerJaMostrado = true; 
-      }, 1500);
-    } else if (hojeDia === 6) { // SÁBADO
-      $('#promo-banner-title').textContent = "Sábado é dia de Pizza!";
-      $('#promo-banner-desc').textContent = "Liberamos 3 combos exclusivos para você e sua família/amigos. Aproveite!";
-      setTimeout(() => { 
-         abrirModal('promo-banner-overlay'); 
-         bannerJaMostrado = true; 
-      }, 1500);
-    }
+// NOVA LÓGICA DE DETECÇÃO DO BANNER
+function checkBannerPromo(titulo, desc) {
+  // Lógica de testes (retire o !bannerJaMostrado se quiser usar sessionStorage em produção)
+  if (!bannerJaMostrado) { 
+    $('#promo-banner-title').textContent = titulo;
+    $('#promo-banner-desc').textContent = desc;
+    setTimeout(() => { 
+       abrirModal('promo-banner-overlay'); 
+       bannerJaMostrado = true; 
+    }, 1500);
   }
 }
 
@@ -941,20 +926,44 @@ function renderCardapio() {
   
   const hojeDia = new Date().getDay();
   let combosHoje = [];
+  let tituloBanner = "Ofertas Liberadas!";
+  let descBanner = "Separamos combos incríveis para o seu dia. Aproveite!";
 
-  if (hojeDia === 4) { // TESTE PARA QUINTA-FEIRA
-      combosHoje = CARDAPIO.combos_sexta;
-  } else if (hojeDia === 6) { // SABADO (PIZZAS)
-      combosHoje = CARDAPIO.combos_sabado;
+  // --- O NOVO CÉREBRO DAS PROMOÇÕES (LÊ O FIREBASE) ---
+  const modoPromo = configLoja.modoPromocoes || 'auto'; // 'auto', 'on', ou 'off'
+
+  if (modoPromo === 'off') {
+      combosHoje = [];
+  } else if (modoPromo === 'on') {
+      // Se o Admin forçar ligado, mostramos os combos de Sexta como padrão de ofertas surpresa
+      combosHoje = (hojeDia === 6) ? CARDAPIO.combos_sabado : CARDAPIO.combos_sexta;
+      tituloBanner = "Oferta Especial Ativa! 🎉";
+      descBanner = "Liberamos nossos combos exclusivos para você aproveitar hoje!";
+  } else {
+      // Modo AUTO (Calendário Normal)
+      if (hojeDia === 4) { // TESTE (Quinta)
+          combosHoje = CARDAPIO.combos_sexta;
+          tituloBanner = "Sextou com Esfihas! (Teste)";
+          descBanner = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
+      } else if (hojeDia === 5) { // SEXTA REAL
+          combosHoje = CARDAPIO.combos_sexta;
+          tituloBanner = "Sextou com Esfihas!";
+          descBanner = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
+      } else if (hojeDia === 6) { // SÁBADO
+          combosHoje = CARDAPIO.combos_sabado;
+          tituloBanner = "Sábado é dia de Pizza!";
+          descBanner = "Liberamos 3 combos exclusivos para você e sua família/amigos. Aproveite!";
+      }
   }
 
   $('#btn-scroll-combos').style.display = 'inline-block';
   $('#btn-nav-promos').style.display = 'inline-block';
 
+  // LÓGICA DO EMPTY STATE (Sem ofertas ou Modo OFF)
   if (combosHoje.length > 0) {
       const htmlCombos = combosHoje.map(cardHTML).join('');
       $('#grid-promocoes-modal').innerHTML = htmlCombos;
-      checkBannerPromo();
+      checkBannerPromo(tituloBanner, descBanner);
   } else {
       $('#grid-promocoes-modal').innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(58, 42, 32, 0.02); border-radius: 12px; border: 1px dashed var(--border-light);">
@@ -1329,33 +1338,6 @@ $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value)
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
 
-if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.firestore();
-
-function processarConfig(doc) {
-  if(doc.exists) {
-    configLoja = doc.data();
-    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
-    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
-    const rodape = document.getElementById('footer-funcionamento');
-    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
-    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
-    verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
-  }
-}
-db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
-setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
-
-function processarEstatisticas(doc) {
-  if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }
-}
-db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura estatística desativada."); });
-
-// Carrega os dados na tela
-verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
-
 // --- CARROSSEL INTELIGENTE DE FOTOS ---
 function iniciarCarrosselHero() {
   const container = document.getElementById('hero-carousel');
@@ -1377,13 +1359,11 @@ function iniciarCarrosselHero() {
       
       validSlides.push(slideEl);
       slideIndex++;
-      carregarProximoSlide(); // Chama em loop até dar erro (imagem não existir)
+      carregarProximoSlide(); 
     };
     
     img.onerror = function() {
-      // Quando der erro, significa que não tem mais fotos na sequência.
       if (validSlides.length === 0) {
-        // Fallback caso não encontre nem a slide1.jpg
         container.innerHTML = `<img class="carousel-slide active" src="img/hero-bg.jpg" onerror="this.style.display='none'">`;
       } else if (validSlides.length > 1) {
         iniciarRotacao();
@@ -1399,10 +1379,39 @@ function iniciarCarrosselHero() {
       validSlides[atual].classList.remove('active');
       atual = (atual + 1) % validSlides.length;
       validSlides[atual].classList.add('active');
-    }, 4500); // Troca a cada 4.5 segundos
+    }, 4500); 
   }
 }
 iniciarCarrosselHero();
+
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+function processarConfig(doc) {
+  if(doc.exists) {
+    configLoja = doc.data();
+    if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
+    if(!configLoja.modoPromocoes) configLoja.modoPromocoes = 'auto'; // GARANTE A LEITURA DO NOVO COMANDO
+    
+    const rodape = document.getElementById('footer-funcionamento');
+    if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
+    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
+    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
+    verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
+  }
+}
+db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
+setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
+
+function processarEstatisticas(doc) {
+  if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }
+}
+db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura estatística desativada."); });
+
+// Carrega os dados na tela
+verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
 </html>
