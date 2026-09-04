@@ -20,7 +20,6 @@
   window.toggleTheme = function() { var currentTheme = document.documentElement.getAttribute('data-theme'); var newTheme = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(newTheme); localStorage.setItem('dca_theme_override', newTheme); };
 </script>
 
-<!-- TAGS DO APLICATIVO (PWA) E ÍCONES -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -37,7 +36,7 @@
 
 <style>
 :root {
-  --gold: #DDA73A; --gold-dark: #C28F2A; --terracotta: #8B3A2B; --bg-main: #F8F4EE; --bg-card: #FFFFFF; --text-main: #3A2A20; --text-muted: #8C7A6B; --white: #FFFFFF; --whatsapp: #25D366; --danger: #8B3A2B; --warning: #DDA73A;
+  --gold: #DDA73A; --gold-dark: #C28F2A; --terracotta: #8B3A2B; --bg-main: #F8F4EE; --bg-card: #FFFFFF; --text-main: #3A2A20; --text-muted: #8C7A6B; --white: #FFFFFF; --whatsapp: #25D366; --danger: #8B3A2B; --warning: #DDA73A; --success: #2F855A;
   --border-light: rgba(58, 42, 32, 0.12); --shadow-sm: 0 4px 12px rgba(58, 42, 32, 0.05); --shadow-md: 0 8px 24px rgba(58, 42, 32, 0.08); 
   --img-bg: #EAE3DA; --badge-bg: rgba(255, 255, 255, 0.95); --badge-text: #3A2A20;
   --btn-grad-1: #C28F2A; --btn-grad-2: #E8C87A; --btn-grad-3: #DDA73A; --btn-grad-text: #FFFFFF; --btn-grad-shadow: rgba(221, 167, 58, 0.3);
@@ -70,20 +69,17 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
 .nav-logo-fallback { color: var(--text-main); font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 2px; transition: color 0.3s ease;}
 :root[data-theme="dark"] .nav-logo-fallback { color: var(--gold); }
-.nav-links { display: flex; list-style: none; gap: 30px; align-items: center; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
+.nav-links { display: flex; list-style: none; gap: 20px; align-items: center; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
 
 .status-badge { border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 16px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 :root[data-theme="dark"] .status-badge { color: var(--gold); } .status-badge.fechado { border-color: var(--terracotta); color: var(--terracotta); } .status-badge.pausado { border-color: var(--gold); color: var(--gold-dark); background: rgba(221, 167, 58, 0.1); }
 .btn-install { display: none; background: rgba(221, 167, 58, 0.1); border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
 .theme-toggle { background: transparent; border: 1px solid var(--border-light); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); }
 .theme-toggle svg { width: 16px; height: 16px; fill: currentColor; } .icon-moon { display: none; } :root[data-theme="dark"] .icon-moon { display: block; } :root[data-theme="dark"] .icon-sun { display: none; }
-
 .bottom-nav { display: none; }
 
-/* CSS DO HERO (CARROSSEL DINÂMICO E CINEMATOGRÁFICO) */
-#home { 
-  min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); 
-}
+/* CSS DO HERO */
+#home { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); }
 .hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 .carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 8s ease-out; }
 .carousel-slide.active { opacity: 1; transform: scale(1.08); }
@@ -126,34 +122,16 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); } :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* SKELETON LOADING BLINDADO PARA IMAGENS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--border-light); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-
-.skeleton-bg { 
-  background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); 
-  background-size: 200% 100%; 
-  animation: skeletonShimmer 1.5s infinite linear; 
-}
-:root[data-theme="dark"] .skeleton-bg { 
-  background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); 
-  background-size: 200% 100%; 
-}
+.skeleton-bg { background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); background-size: 200% 100%; animation: skeletonShimmer 1.5s infinite linear; }
+:root[data-theme="dark"] .skeleton-bg { background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); background-size: 200% 100%; }
 @keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-.card-img { 
-  width: 100%; height: 100%; 
-  object-fit: cover; 
-  transition: transform 0.6s var(--smooth), opacity 0.4s ease; 
-  opacity: 0; 
-  z-index: 2; 
-  position: relative; 
-}
+.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth), opacity 0.4s ease; opacity: 0; z-index: 2; position: relative; }
 .card-img.loaded { opacity: 1; }
 .card:hover .card-img { transform: scale(1.08); } 
-
 .card-img-wrap.error-img { background: var(--img-bg); }
 .card-img-wrap.error-img::before { content: '🍽️'; font-size: 40px; position: relative; z-index: 2; color: #333; }
-:root[data-theme="dark"] .card-img-wrap::after { display: block; content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 0%, transparent 50%); pointer-events: none; z-index: 3; }
 
 .badges-container { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 4; align-items: flex-end; pointer-events: none; }
 .badge-destaque { background: var(--badge-bg); color: var(--badge-text); border: 1px solid var(--border-light); padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
@@ -187,7 +165,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-/* FLOATING CART (OVERFLOW VISIBLE MANTIDO PARA A NOTIFICAÇÃO) */
 .cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 999; overflow: visible !important; }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--terracotta); color: #fff; font-size: 11px; font-weight: 800; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 :root[data-theme="dark"] .cart-count { background: var(--danger); font-weight: 700; }
@@ -210,6 +187,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .modal-overlay { position: fixed; inset: 0; background: rgba(58, 42, 32, 0.6); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
 :root[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
 .modal-overlay#modal-aviso-pausa { z-index: 4000 !important; } .modal-overlay#promo-banner-overlay { z-index: 4000 !important; }
+.modal-overlay#tracking-overlay { z-index: 4500 !important; }
 
 .modal-overlay.open { display: flex; opacity: 1; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); transform: translateY(50px); opacity: 0; transition: all 0.4s var(--smooth); }
@@ -217,6 +195,20 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 26px; cursor: pointer; color: var(--text-muted); border: none; background: none; transition: color 0.3s, transform 0.3s; z-index: 10; }
 .close-modal:hover { color: var(--terracotta); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .close-modal:hover { color: var(--danger); }
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; } :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
+
+/* ESTILOS DA TIMELINE DE RASTREIO */
+.tracking-header { text-align: center; margin-bottom: 20px; }
+.tracking-header h3 { font-size: 14px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; } :root[data-theme="dark"] .tracking-header h3 { color: var(--gold); }
+.tracking-header p { font-size: 11px; color: var(--text-muted); }
+.timeline { display: flex; flex-direction: column; gap: 20px; position: relative; margin: 30px 0 10px; padding-left: 10px; }
+.timeline::before { content: ''; position: absolute; left: 25px; top: 10px; bottom: 10px; width: 2px; background: var(--border-light); z-index: 1; }
+.tl-step { display: flex; align-items: center; gap: 15px; position: relative; z-index: 2; opacity: 0.4; transition: 0.4s var(--smooth); }
+.tl-step.active, .tl-step.done { opacity: 1; }
+.tl-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.4s var(--smooth); }
+.tl-step.active .tl-icon { border-color: var(--gold); background: var(--gold); color: #fff; box-shadow: 0 0 0 4px rgba(221, 167, 58, 0.2); }
+.tl-step.done .tl-icon { border-color: var(--success); background: var(--success); color: #fff; }
+.tl-content strong { display: block; font-size: 14px; color: var(--text-main); margin-bottom: 2px; }
+.tl-content span { font-size: 11px; color: var(--text-muted); }
 
 .cart-items-list { list-style: none; margin-bottom: 15px; }
 .cart-item { display: flex; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border-light); animation: fadeIn 0.4s var(--smooth); }
@@ -371,6 +363,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <li><a href="#home">Início</a></li>
       <li><button type="button" id="btn-nav-promos" class="ripple" style="display:none; color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
       <li><a href="#cardapio">Cardápio</a></li>
+      <li><button type="button" id="btn-nav-track" class="ripple" onclick="abrirRastreio()" style="color:var(--terracotta);">📍 Rastrear</button></li>
       <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
     <div style="display: flex; gap: 12px; align-items: center;">
@@ -401,10 +394,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <a href="#wrap-extras" class="sticky-btn">Extras</a>
   </div>
   
-  <div id="banner-pausado">
-    <h4 class="brand-font">Pausa Temporária 🛑</h4>
-    <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
-  </div>
+  <div id="banner-pausado"></div>
 
   <div id="menu-wrapper" style="display: flex; flex-direction: column;">
 
@@ -461,6 +451,9 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 <nav class="bottom-nav">
   <a href="#home" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
   <a href="#cardapio" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
+  <button type="button" class="bottom-nav-item ripple" onclick="abrirRastreio()">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Rastrear</span>
+  </button>
   <button type="button" class="bottom-nav-item ripple" id="btn-bottom-order">
     <div style="position: relative;"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span class="cart-count bottom-nav-count" id="bottom-cart-count">0</span></div>
     <span>Pedidos</span>
@@ -476,6 +469,36 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
+<!-- MODAL DE RASTREIO -->
+<div class="modal-overlay" id="tracking-overlay">
+  <div class="modal-box" style="max-width: 400px;">
+    <button class="close-modal ripple" data-close="tracking-overlay">&times;</button>
+    <div class="tracking-header">
+      <h3 class="brand-font" id="track-id">Pedido #...</h3>
+      <p id="track-desc">Acompanhe o status em tempo real</p>
+    </div>
+    
+    <div class="timeline" id="tracking-timeline">
+      <div class="tl-step" id="step-novo">
+        <div class="tl-icon">1</div>
+        <div class="tl-content"><strong>Recebido</strong><span>Aguardando a loja confirmar.</span></div>
+      </div>
+      <div class="tl-step" id="step-preparando">
+        <div class="tl-icon">2</div>
+        <div class="tl-content"><strong>Na Cozinha 👨‍🍳</strong><span>Seu pedido está sendo preparado.</span></div>
+      </div>
+      <div class="tl-step" id="step-saiu">
+        <div class="tl-icon">3</div>
+        <div class="tl-content"><strong id="track-text-rota">Em Rota 🛵</strong><span>Saiu para entrega.</span></div>
+      </div>
+      <div class="tl-step" id="step-concluido">
+        <div class="tl-icon">4</div>
+        <div class="tl-content"><strong>Entregue ✨</strong><span>Aproveite o seu pedido!</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- NOVA TELA DE PROMOÇÕES ATIVAS -->
 <div class="modal-overlay" id="modal-promocoes">
   <div class="modal-box">
@@ -489,8 +512,8 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <div class="modal-box" style="text-align: center; max-width: 400px;">
     <button class="close-modal ripple" data-close="modal-aviso-pausa">&times;</button>
     <h2 class="brand-font" style="color: var(--terracotta); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
-    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.</p>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.</p>
+    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa loja não pode receber pedidos agora.</p>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Pausamos temporariamente devido à alta demanda ou esgotamento. Volte mais tarde!</p>
     <button type="button" class="btn-add-modal ripple" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--terracotta); border: 1px solid var(--terracotta);">Compreendo</button>
   </div>
 </div>
@@ -736,6 +759,7 @@ const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) 
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
 
+// CARDAPIO COM OS COMBOS DE VOLTA
 const CARDAPIO = {
   tradicionais: [
     { id:'mussarela', img:'img/mussarela.jpg', nome:'Mussarela', desc:'Molho, mussarela e tomate', preco:4500 },
@@ -777,13 +801,13 @@ const CARDAPIO = {
   ],
   combos_sexta: [
     { id:'combo_sextou', img:'img/combo1.jpg', nome:'Combo Sextou (10 Esfihas)', desc:'10 Esfihas Tradicionais à sua escolha.', preco:4490, tipo:'combo' },
-    { id:'combo_casal_esf', img:'img/combo2.jpg', nome:'Combo Casal', desc:'5 Esfihas Premium (Exceto Peito de Peru) + 2 Esfihas Doces.', preco:4590, tipo:'combo' },
-    { id:'combo_mega_sexta', img:'img/combo3.jpg', nome:'Mega Sexta', desc:'10 Tradicionais + 5 Premium (Exceto Peito de Peru) + 3 Doces.', preco:9490, tipo:'combo' }
+    { id:'combo_casal_esf', img:'img/combo2.jpg', nome:'Combo Casal', desc:'5 Esfihas Premium (Exceto Peru) + 2 Esfihas Doces.', preco:4590, tipo:'combo' },
+    { id:'combo_mega_sexta', img:'img/combo3.jpg', nome:'Mega Sexta', desc:'10 Tradicionais + 5 Premium (Exceto Peru) + 3 Doces.', preco:9490, tipo:'combo' }
   ],
   combos_sabado: [
     { id:'combo_sabado_dois', img:'img/combo1.jpg', nome:'Sábado a Dois', desc:'1 Pizza Tradicional + 2 Esfihas Doces.', preco:5490, tipo:'combo' },
     { id:'combo_dupla', img:'img/combo2.jpg', nome:'Dupla Tradicional', desc:'2 Pizzas Tradicionais à sua escolha.', preco:7990, tipo:'combo' },
-    { id:'combo_sabadoprem', img:'img/combo3.jpg', nome:'Sabadão Premium', desc:'1 Pizza Premium (Exceto Peito de Peru) + 1 Pizza Tradicional.', preco:9990, tipo:'combo' }
+    { id:'combo_sabadoprem', img:'img/combo3.jpg', nome:'Sabadão Premium', desc:'1 Pizza Premium (Exceto Peru) + 1 Tradicional.', preco:9990, tipo:'combo' }
   ]
 };
 
@@ -806,9 +830,10 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
+let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null; 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
+let bannerJaMostrado = false;
 const STORAGE_KEY = 'dca_carrinho_final';
 
 function showToast(msg, type='warning') {
@@ -827,6 +852,7 @@ function verificarHorario() {
     const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
     const agora = new Date(); const diaHoje = agora.getDay(); const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
     let dentroDoHorario = false;
+    
     if (configLoja.horarios && configLoja.horarios[diaHoje]) {
        const configHoje = configLoja.horarios[diaHoje];
        if (configHoje.ativo) {
@@ -836,17 +862,47 @@ function verificarHorario() {
           if (tempoFim < tempoInicio) { dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim); } else { dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
        }
     } else { if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
-    if (configLoja.forcarFechamento === true) { lojaAberta = false; } else if (isTesteAdmin) { lojaAberta = true; } else { lojaAberta = dentroDoHorario; }
+    
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    
+    if (statusManual === 'pausado' || statusManual === 'esgotado') { lojaAberta = false; } 
+    else if (isTesteAdmin) { lojaAberta = true; } 
+    else { lojaAberta = dentroDoHorario; }
+    
     atualizarStatusLoja();
   } catch (error) { lojaAberta = false; atualizarStatusLoja(); }
 }
 
 function atualizarStatusLoja() {
-  const badge = document.getElementById('nav-status-badge'); const bannerPausa = document.getElementById('banner-pausado');
+  const badge = document.getElementById('nav-status-badge'); 
+  const bannerPausa = document.getElementById('banner-pausado');
+  const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+
   if (!lojaAberta) {
     document.body.classList.add('loja-fechada');
-    if(badge) { if(configLoja.forcarFechamento) { badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado'; if(bannerPausa) bannerPausa.style.display = 'block'; } else { badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado'; if(bannerPausa) bannerPausa.style.display = 'none'; } }
-  } else { document.body.classList.remove('loja-fechada'); if(bannerPausa) bannerPausa.style.display = 'none'; if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } }
+    if(badge) {
+        if(statusManual === 'pausado') {
+            badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado';
+            if(bannerPausa) {
+                bannerPausa.innerHTML = '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>';
+                bannerPausa.style.display = 'block';
+            }
+        } else if (statusManual === 'esgotado') {
+            badge.textContent = 'ENCERRADO HOJE'; badge.className = 'status-badge fechado';
+            if(bannerPausa) {
+                bannerPausa.innerHTML = '<h4 class="brand-font">Fechamos por Hoje 🌙</h4><p>Uau! Devido ao enorme sucesso de vendas, nossos insumos esgotaram. Agradecemos muito a preferência e retornaremos amanhã com tudo novo e fresquinho!</p>';
+                bannerPausa.style.display = 'block';
+            }
+        } else {
+            badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado';
+            if(bannerPausa) bannerPausa.style.display = 'none';
+        }
+    }
+  } else { 
+      document.body.classList.remove('loja-fechada'); 
+      if(bannerPausa) bannerPausa.style.display = 'none'; 
+      if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } 
+  }
 }
 
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
@@ -891,11 +947,7 @@ const cardHTML = s => {
   </article>`;
 };
 
-let bannerJaMostrado = false;
-
-// NOVA LÓGICA DE DETECÇÃO DO BANNER
 function checkBannerPromo(titulo, desc) {
-  // Lógica de testes (retire o !bannerJaMostrado se quiser usar sessionStorage em produção)
   if (!bannerJaMostrado) { 
     $('#promo-banner-title').textContent = titulo;
     $('#promo-banner-desc').textContent = desc;
@@ -929,27 +981,20 @@ function renderCardapio() {
   let tituloBanner = "Ofertas Liberadas!";
   let descBanner = "Separamos combos incríveis para o seu dia. Aproveite!";
 
-  // --- O NOVO CÉREBRO DAS PROMOÇÕES (LÊ O FIREBASE) ---
-  const modoPromo = configLoja.modoPromocoes || 'auto'; // 'auto', 'on', ou 'off'
+  const modoPromo = configLoja.modoPromocoes || 'auto'; 
 
   if (modoPromo === 'off') {
       combosHoje = [];
   } else if (modoPromo === 'on') {
-      // Se o Admin forçar ligado, mostramos os combos de Sexta como padrão de ofertas surpresa
       combosHoje = (hojeDia === 6) ? CARDAPIO.combos_sabado : CARDAPIO.combos_sexta;
       tituloBanner = "Oferta Especial Ativa! 🎉";
       descBanner = "Liberamos nossos combos exclusivos para você aproveitar hoje!";
   } else {
-      // Modo AUTO (Calendário Normal)
-      if (hojeDia === 4) { // TESTE (Quinta)
-          combosHoje = CARDAPIO.combos_sexta;
-          tituloBanner = "Sextou com Esfihas! (Teste)";
-          descBanner = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
-      } else if (hojeDia === 5) { // SEXTA REAL
+      if (hojeDia === 4 || hojeDia === 5) { 
           combosHoje = CARDAPIO.combos_sexta;
           tituloBanner = "Sextou com Esfihas!";
           descBanner = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
-      } else if (hojeDia === 6) { // SÁBADO
+      } else if (hojeDia === 6) { 
           combosHoje = CARDAPIO.combos_sabado;
           tituloBanner = "Sábado é dia de Pizza!";
           descBanner = "Liberamos 3 combos exclusivos para você e sua família/amigos. Aproveite!";
@@ -959,7 +1004,6 @@ function renderCardapio() {
   $('#btn-scroll-combos').style.display = 'inline-block';
   $('#btn-nav-promos').style.display = 'inline-block';
 
-  // LÓGICA DO EMPTY STATE (Sem ofertas ou Modo OFF)
   if (combosHoje.length > 0) {
       const htmlCombos = combosHoje.map(cardHTML).join('');
       $('#grid-promocoes-modal').innerHTML = htmlCombos;
@@ -969,7 +1013,7 @@ function renderCardapio() {
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(58, 42, 32, 0.02); border-radius: 12px; border: 1px dashed var(--border-light);">
           <span style="font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.8; filter: grayscale(1);">🤫</span>
           <strong style="display: block; font-size: 15px; color: var(--text-main); margin-bottom: 5px;">Poxa, sem ofertas hoje!</strong>
-          <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">Nossos combos especiais não estão ativos no momento. Fique de olho no nosso Instagram, sempre soltamos novidades por lá!</p>
+          <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">Nossos combos especiais não estão ativos no momento. Fique de olho no nosso Instagram!</p>
           <button class="btn-gradient ripple" style="padding: 12px 20px; border-radius: 8px; font-size: 11px; margin-top: 20px;" onclick="fecharModal('modal-promocoes')">Voltar ao Cardápio</button>
         </div>`;
   }
@@ -996,7 +1040,12 @@ function atualizarBanner() {
 }
 
 function escolherSabor(id) {
-  if(!lojaAberta) { if (configLoja.forcarFechamento) { abrirModal('modal-aviso-pausa'); } else { showToast("Nossa loja está fechada no momento.", "error"); } return; }
+  if(!lojaAberta) { 
+      const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+      if (statusManual === 'pausado' || statusManual === 'esgotado') { abrirModal('modal-aviso-pausa'); } 
+      else { showToast("Nossa loja está fechada no momento.", "error"); } 
+      return; 
+  }
   if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
   
   const isEsfihaOuCombo = id.startsWith('esf_') || id.startsWith('combo_');
@@ -1277,22 +1326,99 @@ async function gravarFirestore(pedido) {
 }
 
 async function enviarPedidoFinal(ev) {
-  ev.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } 
+  ev.preventDefault(); if(!lojaAberta) { 
+      const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+      if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
+      else showToast("Nossa loja está fechada no momento.", "error"); 
+      return; 
+  } 
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
   const pedido = montarPedido(); const id = await gravarFirestore(pedido); 
+  
+  // RASTREIO: SALVAR ID DO PEDIDO NA MEMÓRIA DO CELULAR DO CLIENTE
+  if(id) localStorage.setItem('dca_last_order', id);
+
   let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; setTimeout(() => showToast("Pedido enviado com sucesso!", "success"), 500);
+  carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
+  setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
+
+// ----------------------------------------------------
+// NOVO SISTEMA DE RASTREIO DE PEDIDOS EM TEMPO REAL
+// ----------------------------------------------------
+let unsubscribeRastreio = null;
+
+function abrirRastreio() {
+  const lastOrderId = localStorage.getItem('dca_last_order');
+  if(!lastOrderId) {
+      showToast("Você ainda não tem pedidos ativos.", "warning");
+      return;
+  }
+  
+  $('#track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
+  abrirModal('tracking-overlay');
+
+  if(unsubscribeRastreio) unsubscribeRastreio(); // Limpa escutas anteriores
+
+  unsubscribeRastreio = db.collection('pedidos').doc(lastOrderId).onSnapshot(doc => {
+      if(doc.exists) {
+          const dados = doc.data();
+          atualizarTimeline(dados.status, dados.tipo_entrega);
+      }
+  });
+}
+
+function atualizarTimeline(status, tipoEntrega) {
+  // Ajustar o texto da terceira etapa caso seja Retirada
+  if(tipoEntrega === 'Retirada') {
+      $('#track-text-rota').textContent = 'Pronto p/ Retirada 🛍️';
+      $('#step-saiu .tl-content span').textContent = 'Te aguardamos na loja.';
+  } else {
+      $('#track-text-rota').textContent = 'Em Rota 🛵';
+      $('#step-saiu .tl-content span').textContent = 'Saiu para entrega.';
+  }
+
+  // Reseta todos
+  $$('.tl-step').forEach(el => { el.classList.remove('active'); el.classList.remove('done'); });
+
+  // Lógica de Preenchimento da Linha do Tempo
+  if (status === 'Cancelado') {
+      $('#step-novo').classList.add('done');
+      $('#track-desc').innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
+  }
+  else if (status === 'Novo') {
+      $('#step-novo').classList.add('active');
+  } 
+  else if (status === 'Preparando') {
+      $('#step-novo').classList.add('done');
+      $('#step-preparando').classList.add('active');
+  } 
+  else if (status === 'Saiu para Entrega' || status === 'Pronto para Retirada') {
+      $('#step-novo').classList.add('done');
+      $('#step-preparando').classList.add('done');
+      $('#step-saiu').classList.add('active');
+  } 
+  else if (status === 'Concluído') {
+      $('#step-novo').classList.add('done');
+      $('#step-preparando').classList.add('done');
+      $('#step-saiu').classList.add('done');
+      $('#step-concluido').classList.add('done');
+  }
+}
+
+// FECHAR MODAL LIMPA O LISTENER DO RASTREIO
+$$('[data-close="tracking-overlay"]').forEach(b => b.addEventListener('click', () => {
+    if(unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
+}));
 
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); } }
 function fecharModal(id) { const ov = document.getElementById(id); if(ov){ ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; } }
 
-// RIPPLE EFFECT SCRIPT
 document.addEventListener('mousedown', function (e) {
   var target = e.target.closest('.ripple');
   if (!target) return;
@@ -1302,14 +1428,13 @@ document.addEventListener('mousedown', function (e) {
   target.style.setProperty('--y', (e.clientY - rect.top) + 'px');
 });
 
-// A CORREÇÃO DE OURO PARA O CLIQUE NAS OFERTAS
 document.addEventListener('click', e => { 
   const cardOpt = e.target.closest('.extra-opt-card'); 
   if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } 
   
   const b = e.target.closest('[data-escolher]'); 
   if (b) {
-    fecharModal('modal-promocoes'); // Fecha a tela de ofertas para abrir o construtor
+    fecharModal('modal-promocoes'); 
     escolherSabor(b.dataset.escolher);
   }
 });
@@ -1323,14 +1448,41 @@ $('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Ma
 $('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); popQtyVal(); });
 $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
 $('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
-$('#checkout-form').addEventListener('submit', e => { e.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } if (!validarCheckout()) return; montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); });
+$('#checkout-form').addEventListener('submit', e => { 
+    e.preventDefault(); 
+    if(!lojaAberta) { 
+        const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+        if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
+        else showToast("Nossa loja está fechada no momento.", "error"); 
+        return; 
+    } 
+    if (!validarCheckout()) return; 
+    montarRevisao(); 
+    fecharModal('cart-overlay'); 
+    setTimeout(() => { abrirModal('review-overlay'); }, 150); 
+});
 
 $$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
 $$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
 
-$('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
-$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
-$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
+$('#btn-cart-float').addEventListener('click', () => { 
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
+    if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
+    abrirModal('cart-overlay'); 
+});
+$('#btn-nav-order').addEventListener('click', () => { 
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
+    if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
+    abrirModal('cart-overlay'); 
+});
+$('#btn-bottom-order').addEventListener('click', () => { 
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
+    if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
+    abrirModal('cart-overlay'); 
+});
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
@@ -1392,12 +1544,21 @@ function processarConfig(doc) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
     if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
-    if(!configLoja.modoPromocoes) configLoja.modoPromocoes = 'auto'; // GARANTE A LEITURA DO NOVO COMANDO
+    if(!configLoja.statusLoja) {
+         configLoja.statusLoja = configLoja.forcarFechamento ? 'pausado' : 'auto';
+    }
     
     const rodape = document.getElementById('footer-funcionamento');
     if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
-    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
+    
+    const statusManual = configLoja.statusLoja || 'auto';
+    
+    if (!primeiraCargaPausa && (statusManual === 'pausado' || statusManual === 'esgotado') && lojaEstavaPausada === false) { 
+        fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); 
+        abrirModal('modal-aviso-pausa'); 
+    }
+    lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
+    
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
   }
 }
@@ -1410,7 +1571,6 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura estatística desativada."); });
 
-// Carrega os dados na tela
 verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
