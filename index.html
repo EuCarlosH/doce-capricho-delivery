@@ -58,7 +58,7 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 80px; }
 
-/* EFEITO RIPPLE (ONDAS DE TOQUE) */
+/* EFEITO RIPPLE */
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
 .ripple:active::after { transform: scale(0, 0); opacity: .3; transition: 0s; }
@@ -80,12 +80,21 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 .bottom-nav { display: none; }
 
-/* HERO SECTION */
-#home { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
-:root[data-theme="dark"] #home { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%), url('hero-bg.jpg') center/cover no-repeat; }
-.hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; z-index: 2; }
-.hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; z-index: 2; }
-:root[data-theme="dark"] .hero-title { color: var(--gold); text-shadow: 0 4px 15px rgba(0,0,0,0.9); } :root[data-theme="dark"] .hero-subtitle { font-weight: 400; text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
+/* CSS DO HERO (CARROSSEL DINÂMICO E CINEMATOGRÁFICO) */
+#home { 
+  min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); 
+}
+.hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 8s ease-out; }
+.carousel-slide.active { opacity: 1; transform: scale(1.08); }
+.hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(248,244,238,0) 40%, rgba(248,244,238,1) 100%), linear-gradient(to right, rgba(248,244,238,0.95) 0%, rgba(248,244,238,0.7) 60%, rgba(248,244,238,0.1) 100%); transition: background 0.4s ease; }
+:root[data-theme="dark"] .hero-overlay { background: linear-gradient(to bottom, rgba(10,10,10,0) 60%, rgba(10,10,10,1) 100%), linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.1) 100%); }
+.hero-content { position: relative; z-index: 2; }
+.hero-title { font-size: clamp(32px, 6vw, 56px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2; max-width: 600px; }
+.hero-subtitle { font-size: clamp(12px, 2vw, 14px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; }
+:root[data-theme="dark"] .hero-title, :root[data-theme="dark"] .hero-subtitle { text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
+:root[data-theme="dark"] .hero-title { color: var(--gold); }
+:root[data-theme="dark"] .hero-subtitle { font-weight: 400; }
 
 .section-container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; position: relative; }
 .sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; transition: background-color 0.4s ease; }
@@ -115,28 +124,12 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold); } :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.3); }
 .card.selecionada { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); transform: scale(0.98); }
 
-/* CORREÇÃO DO SKELETON LOADING BLINDADO PARA IMAGENS */
 .card-img-wrap { width: 100%; height: 200px; background: var(--border-light); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-
-.skeleton-bg { 
-  background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); 
-  background-size: 200% 100%; 
-  animation: skeletonShimmer 1.5s infinite linear; 
-}
-:root[data-theme="dark"] .skeleton-bg { 
-  background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); 
-  background-size: 200% 100%; 
-}
+.skeleton-bg { background: linear-gradient(90deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-main) 100%); background-size: 200% 100%; animation: skeletonShimmer 1.5s infinite linear; }
+:root[data-theme="dark"] .skeleton-bg { background: linear-gradient(90deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%); background-size: 200% 100%; }
 @keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-.card-img { 
-  width: 100%; height: 100%; 
-  object-fit: cover; 
-  transition: transform 0.6s var(--smooth), opacity 0.4s ease; 
-  opacity: 0; 
-  z-index: 2; 
-  position: relative; 
-}
+.card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--smooth), opacity 0.4s ease; opacity: 0; z-index: 2; position: relative; }
 .card-img.loaded { opacity: 1; }
 .card:hover .card-img { transform: scale(1.08); } 
 
@@ -176,7 +169,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-gradient:active:not(:disabled) { transform: translateY(1px); }
 .btn-gradient:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-/* FLOATING CART COM OVERFLOW VISIBLE PARA NÃO CORTAR O BADGE */
 .cart-floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 999; overflow: visible !important; }
 .cart-count { position: absolute; top: -5px; right: -5px; background: var(--terracotta); color: #fff; font-size: 11px; font-weight: 800; min-width: 22px; height: 22px; border-radius: 11px; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg-main);}
 :root[data-theme="dark"] .cart-count { background: var(--danger); font-weight: 700; }
@@ -198,7 +190,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(58, 42, 32, 0.6); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
 :root[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
-.modal-overlay#modal-aviso-pausa { z-index: 4000 !important; } .modal-overlay#promo-banner-overlay { z-index: 4000 !important; }
+.modal-overlay#modal-aviso-pausa { z-index: 4000 !important; }
 
 .modal-overlay.open { display: flex; opacity: 1; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border-light); transform: translateY(50px); opacity: 0; transition: all 0.4s var(--smooth); }
@@ -311,7 +303,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .nav-links { display: none; } .nav-container { justify-content: space-between; } .nav-logo-fallback { font-size: 15px; } 
   #home { padding-top: 100px; text-align: center; align-items: center; } .hero-title { max-width: 100%; }
   
-  /* CORREÇÃO DO MENU INFERIOR MOBILE */
   .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2000; justify-content: space-around; align-items: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px)); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid var(--border-light); transition: background-color 0.4s ease; }
   :root[data-theme="light"] .bottom-nav { background: rgba(255,255,255,0.98); box-shadow: 0 -2px 10px rgba(58, 42, 32, 0.02); } :root[data-theme="dark"] .bottom-nav { background: rgba(10,10,10,0.98); }
   .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 4px; padding: 5px; transition: color 0.3s; overflow: visible; } :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
@@ -331,15 +322,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .modal-box::before { content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--handle-bg); border-radius: 2px; }
   .close-modal { top: 20px; }
 }
-
-/* BANNER PROMOCIONAL POP-UP */
-.modal-overlay#promo-banner-overlay { z-index: 5000 !important; align-items: center; justify-content: center; padding: 20px;}
-#promo-banner-overlay .modal-box { padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 380px; border-radius: 16px; transform: scale(0.9); }
-#promo-banner-overlay.open .modal-box { transform: scale(1); }
-#promo-banner-img { width: 100%; height: auto; display: block; min-height: 250px; background: var(--gold-dark); object-fit: cover;}
-.btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
-.btn-close-promo:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
-.promo-content { background: var(--bg-card); padding: 25px 20px; text-align: center; }
 </style>
 </head>
 <body>
@@ -352,7 +334,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
       <li><a href="#cardapio">Cardápio</a></li>
-      <li><button type="button" id="btn-nav-order">Meus Pedidos</button></li>
+      <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
     <div style="display: flex; gap: 12px; align-items: center;">
       <button class="btn-install ripple" id="btn-install-app" aria-label="Instalar Aplicativo">Instalar App</button>
@@ -366,30 +348,24 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </nav>
 
 <header id="home">
-  <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
-  <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+  <div class="hero-carousel" id="hero-carousel"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
+    <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+  </div>
 </header>
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
-    <a href="#wrap-combos" class="sticky-btn" id="btn-scroll-combos" style="display:none; border-color: var(--gold); color: var(--gold-dark);">🔥 Combos</a>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
     <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
     <a href="#wrap-extras" class="sticky-btn">Extras</a>
   </div>
   
-  <div id="banner-pausado">
-    <h4 class="brand-font">Pausa Temporária 🛑</h4>
-    <p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>
-  </div>
+  <div id="banner-pausado"></div>
 
   <div id="menu-wrapper" style="display: flex; flex-direction: column;">
-    
-    <div id="wrap-combos" style="display:none; order: 1; padding-top: 10px; margin-bottom: 20px;">
-      <h3 class="category-title brand-font" id="cat-combos" style="margin-top: 0; color: var(--gold-dark);">Combos Exclusivos</h3>
-      <div class="grid-menu" id="grid-combos"></div>
-    </div>
-
     <div id="wrap-pizzas" style="order: 2;">
       <div class="mode-toggle-area">
         <div class="mode-buttons" role="group">
@@ -423,14 +399,13 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         <tbody id="extras-tbody"></tbody>
       </table>
     </div>
-
   </div>
 </section>
 
 <footer>
   <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
   <div class="footer-socials">
-    <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+    <a href="https://www.instagram.com/SUA_CONTA_AQUI/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
     <a href="#" id="footer-wa-link" target="_blank" class="ripple" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
   </div>
   <div class="footer-info">
@@ -441,15 +416,15 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </footer>
 
 <nav class="bottom-nav">
-  <a href="#home" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
-  <a href="#cardapio" class="bottom-nav-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
-  <button type="button" class="bottom-nav-item" id="btn-bottom-order">
+  <a href="#home" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
+  <a href="#cardapio" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
+  <button type="button" class="bottom-nav-item ripple" id="btn-bottom-order">
     <div style="position: relative;"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span class="cart-count bottom-nav-count" id="bottom-cart-count">0</span></div>
     <span>Pedidos</span>
   </button>
 </nav>
 
-<button class="cart-floating-btn btn-gradient" id="btn-cart-float" aria-label="Abrir carrinho" style="overflow: visible;">
+<button class="cart-floating-btn btn-gradient ripple" id="btn-cart-float" aria-label="Abrir carrinho" style="overflow: visible !important;">
   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -460,17 +435,17 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="modal-aviso-pausa">
   <div class="modal-box" style="text-align: center; max-width: 400px;">
-    <button class="close-modal" data-close="modal-aviso-pausa">&times;</button>
+    <button class="close-modal ripple" data-close="modal-aviso-pausa">&times;</button>
     <h2 class="brand-font" style="color: var(--terracotta); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
-    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa cozinha acabou de atingir a <strong>capacidade máxima</strong>.</p>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Para mantermos nosso alto padrão de qualidade e respeitarmos o tempo de entrega, <strong>pausamos o recebimento de novos pedidos temporariamente</strong>.</p>
+    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa loja não pode receber pedidos agora.</p>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Pausamos temporariamente devido à alta demanda ou esgotamento. Volte mais tarde!</p>
     <button type="button" class="btn-add-modal ripple" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--terracotta); border: 1px solid var(--terracotta);">Compreendo</button>
   </div>
 </div>
 
 <div class="modal-overlay" id="success-overlay">
   <div class="modal-box" style="text-align: center; max-width: 380px;">
-    <button class="close-modal" data-close="success-overlay">&times;</button>
+    <button class="close-modal ripple" data-close="success-overlay">&times;</button>
     <div style="color: var(--gold); margin-bottom: 15px;">
       <svg viewBox="0 0 24 24" width="56" height="56" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkmark 0.6s var(--smooth) forwards;">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -488,7 +463,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
-    <button class="close-modal" data-close="builder-overlay">&times;</button>
+    <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
     <h2 id="builder-title" class="brand-font">Montar</h2>
     <form id="builder-form" novalidate>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
@@ -518,7 +493,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 
 <div class="modal-overlay" id="cart-overlay">
   <div class="modal-box">
-    <button class="close-modal" data-close="cart-overlay">&times;</button>
+    <button class="close-modal ripple" data-close="cart-overlay">&times;</button>
     <h2 id="cart-title" class="brand-font">Seu Carrinho</h2>
     
     <ul class="cart-items-list" id="cart-items-list"></ul>
@@ -527,7 +502,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
     </div>
 
-    <!-- UPSELL DINÂMICO NO CARRINHO -->
     <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center; animation: fadeIn 0.5s ease;">
       <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
@@ -673,22 +647,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
-<div class="modal-overlay" id="promo-banner-overlay">
-  <div class="modal-box" style="padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 380px; border-radius: 16px;">
-    <button class="btn-close-promo" data-close="promo-banner-overlay">&times;</button>
-    <div style="background: var(--gold-dark); width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; position: relative;">
-      <img id="promo-banner-img" src="img/banner-promo.jpg" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" onerror="this.style.display='none'">
-      <h1 class="brand-font" style="color: #FFF; font-size: 40px; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);" id="promo-banner-emoj">🎉</h1>
-    </div>
-    <div class="promo-content">
-      <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
-      <p id="promo-banner-desc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Separamos combos incríveis para o seu dia. Aproveite!</p>
-      <button class="btn-gradient ripple" style="width: 100%; padding: 15px; border-radius: 8px; font-size: 12px;" onclick="irParaCombos()">EU QUERO VER</button>
-    </div>
-  </div>
-</div>
-
 <script>
 let deferredPrompt;
 const btnInstallApp = document.getElementById('btn-install-app');
@@ -703,7 +661,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', usarFirebase: true };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -737,26 +695,16 @@ const CARDAPIO = {
     { id:'esf_frango_catupiry', img:'img/esf_frango_cat.jpg', nome:'Esfiha Frango c/ Catupiry', desc:'Frango com verdadeiro Catupiry.', preco:800 },
     { id:'esf_frango_cream', img:'img/esf_frango_cream.jpg', nome:'Esfiha Frango c/ Cream', desc:'Frango com cream cheese.', preco:800 },
     { id:'esf_carnesol_coalho', img:'img/esf_carnesol_coalho.jpg', nome:'Esfiha C. Sol c/ Coalho', desc:'Carne de sol com queijo coalho.', preco:700 },
-    { id:'esf_carnesol_catupiry', img:'img/esf_carnesol_cat.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
+    { id:'esf_carnesol_catupiry', img:'img/esf_carnesol_catupiry.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
     { id:'esf_carnesol_cream', img:'img/esf_carnesol_cream.jpg', nome:'Esfiha C. Sol c/ Cream', desc:'Carne de sol com cream cheese.', preco:800 },
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
-    { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_cat.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
+    { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
     { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 }
   ],
   esfihas_doces: [
     { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
     { id:'esf_choc_mm', img:'img/esf_choc_mm.jpg', nome:'Esfiha Chocolate c/ M&M\'s', desc:'Chocolate ao leite coberto com confetes coloridos.', preco:900 }
-  ],
-  combos_sexta: [
-    { id:'combo_sextou', img:'img/combo1.jpg', nome:'Combo Sextou (10 Esfihas)', desc:'10 Esfihas Tradicionais à sua escolha.', preco:4490, tipo:'combo' },
-    { id:'combo_casal_esf', img:'img/combo2.jpg', nome:'Combo Casal', desc:'5 Esfihas Premium (Exceto Peito de Peru) + 2 Esfihas Doces.', preco:4590, tipo:'combo' },
-    { id:'combo_mega_sexta', img:'img/combo3.jpg', nome:'Mega Sexta', desc:'10 Tradicionais + 5 Premium (Exceto Peito de Peru) + 3 Doces.', preco:9490, tipo:'combo' }
-  ],
-  combos_sabado: [
-    { id:'combo_sabado_dois', img:'img/combo1.jpg', nome:'Sábado a Dois', desc:'1 Pizza Tradicional + 2 Esfihas Doces.', preco:5490, tipo:'combo' },
-    { id:'combo_dupla', img:'img/combo2.jpg', nome:'Dupla Tradicional', desc:'2 Pizzas Tradicionais à sua escolha.', preco:7990, tipo:'combo' },
-    { id:'combo_sabadoprem', img:'img/combo3.jpg', nome:'Sabadão Premium', desc:'1 Pizza Premium (Exceto Peito de Peru) + 1 Pizza Tradicional.', preco:9990, tipo:'combo' }
   ]
 };
 
@@ -767,7 +715,7 @@ const EXTRAS = [
   { id:'alho',     nome:'Alho Poró',    tipo:'metade_toda', precos:{ metade:250,  toda:500  } }
 ];
 
-const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium, ...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium, ...CARDAPIO.esfihas_doces, ...CARDAPIO.combos_sexta, ...CARDAPIO.combos_sabado];
+const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium, ...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium, ...CARDAPIO.esfihas_doces];
 const acharSabor = id => todosSabores().find(s => s.id === id);
 
 const rotuloAplicacao = (ap, sabores) => {
@@ -779,7 +727,7 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
+let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {} }; 
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null; 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 const STORAGE_KEY = 'dca_carrinho_final';
@@ -800,6 +748,7 @@ function verificarHorario() {
     const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
     const agora = new Date(); const diaHoje = agora.getDay(); const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
     let dentroDoHorario = false;
+    
     if (configLoja.horarios && configLoja.horarios[diaHoje]) {
        const configHoje = configLoja.horarios[diaHoje];
        if (configHoje.ativo) {
@@ -809,17 +758,51 @@ function verificarHorario() {
           if (tempoFim < tempoInicio) { dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim); } else { dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
        }
     } else { if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
-    if (configLoja.forcarFechamento === true) { lojaAberta = false; } else if (isTesteAdmin) { lojaAberta = true; } else { lojaAberta = dentroDoHorario; }
+    
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    
+    if (statusManual === 'pausado' || statusManual === 'esgotado') {
+        lojaAberta = false;
+    } else if (isTesteAdmin) {
+        lojaAberta = true;
+    } else {
+        lojaAberta = dentroDoHorario;
+    }
+    
     atualizarStatusLoja();
   } catch (error) { lojaAberta = false; atualizarStatusLoja(); }
 }
 
 function atualizarStatusLoja() {
-  const badge = document.getElementById('nav-status-badge'); const bannerPausa = document.getElementById('banner-pausado');
+  const badge = document.getElementById('nav-status-badge'); 
+  const bannerPausa = document.getElementById('banner-pausado');
+  const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+
   if (!lojaAberta) {
     document.body.classList.add('loja-fechada');
-    if(badge) { if(configLoja.forcarFechamento) { badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado'; if(bannerPausa) bannerPausa.style.display = 'block'; } else { badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado'; if(bannerPausa) bannerPausa.style.display = 'none'; } }
-  } else { document.body.classList.remove('loja-fechada'); if(bannerPausa) bannerPausa.style.display = 'none'; if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } }
+    if(badge) {
+        if(statusManual === 'pausado') {
+            badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado';
+            if(bannerPausa) {
+                bannerPausa.innerHTML = '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>';
+                bannerPausa.style.display = 'block';
+            }
+        } else if (statusManual === 'esgotado') {
+            badge.textContent = 'ENCERRADO HOJE'; badge.className = 'status-badge fechado';
+            if(bannerPausa) {
+                bannerPausa.innerHTML = '<h4 class="brand-font">Fechamos por Hoje 🌙</h4><p>Uau! Devido ao enorme sucesso de vendas, nossos insumos esgotaram. Agradecemos muito a preferência e retornaremos amanhã com tudo novo e fresquinho!</p>';
+                bannerPausa.style.display = 'block';
+            }
+        } else {
+            badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado';
+            if(bannerPausa) bannerPausa.style.display = 'none';
+        }
+    }
+  } else { 
+      document.body.classList.remove('loja-fechada'); 
+      if(bannerPausa) bannerPausa.style.display = 'none'; 
+      if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } 
+  }
 }
 
 const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
@@ -864,32 +847,6 @@ const cardHTML = s => {
   </article>`;
 };
 
-function checkBannerPromo() {
-  const hojeDia = new Date().getDay();
-  const jaViu = sessionStorage.getItem('dca_banner_visto');
-  
-  if (!jaViu) {
-    if (hojeDia === 5) { // SEXTA
-      $('#promo-banner-title').textContent = "Sextou com Esfihas!";
-      $('#promo-banner-desc').textContent = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
-      $('#promo-banner-emoj').textContent = "🥟";
-      setTimeout(() => { abrirModal('promo-banner-overlay'); sessionStorage.setItem('dca_banner_visto', 'true'); }, 1500);
-    } else if (hojeDia === 6) { // SÁBADO
-      $('#promo-banner-title').textContent = "Sábado é dia de Pizza!";
-      $('#promo-banner-desc').textContent = "Liberamos 3 combos exclusivos para você e sua família/amigos. Aproveite!";
-      $('#promo-banner-emoj').textContent = "🍕";
-      setTimeout(() => { abrirModal('promo-banner-overlay'); sessionStorage.setItem('dca_banner_visto', 'true'); }, 1500);
-    }
-  }
-}
-
-function irParaCombos() {
-  fecharModal('promo-banner-overlay');
-  setTimeout(() => {
-    document.getElementById('wrap-combos').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 400);
-}
-
 function renderCardapio() {
   $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
   $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
@@ -903,24 +860,6 @@ function renderCardapio() {
     return `<tr><td>${esc(e.nome)}</td><td>Metade da pizza</td><td>${brl(e.precos.metade)}</td></tr><tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.precos.toda)}</td></tr>`;
   }).join('');
   
-  const hojeDia = new Date().getDay();
-  const wrapCombos = $('#wrap-combos');
-  const btnScrollCombos = $('#btn-scroll-combos');
-
-  if (hojeDia === 5) { // SEXTA (ESFIHAS)
-      wrapCombos.style.display = 'block';
-      btnScrollCombos.style.display = 'inline-block';
-      $('#grid-combos').innerHTML = CARDAPIO.combos_sexta.map(cardHTML).join('');
-  } else if (hojeDia === 6) { // SABADO (PIZZAS)
-      wrapCombos.style.display = 'block';
-      btnScrollCombos.style.display = 'inline-block';
-      $('#grid-combos').innerHTML = CARDAPIO.combos_sabado.map(cardHTML).join('');
-  } else {
-      wrapCombos.style.display = 'none';
-      btnScrollCombos.style.display = 'none';
-  }
-
-  checkBannerPromo();
   atualizarBotoes();
 }
 
@@ -943,12 +882,17 @@ function atualizarBanner() {
 }
 
 function escolherSabor(id) {
-  if(!lojaAberta) { if (configLoja.forcarFechamento) { abrirModal('modal-aviso-pausa'); } else { showToast("Nossa loja está fechada no momento.", "error"); } return; }
+  if(!lojaAberta) { 
+      const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+      if (statusManual === 'pausado' || statusManual === 'esgotado') { abrirModal('modal-aviso-pausa'); } 
+      else { showToast("Nossa loja está fechada no momento.", "error"); } 
+      return; 
+  }
   if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
   
-  const isEsfihaOuCombo = id.startsWith('esf_') || id.startsWith('combo_');
-  if (isEsfihaOuCombo) {
-     if (meioSelecionado) { showToast("Não é possível misturar Pizza Meio-a-meio com Esfiha ou Combo.", "warning"); return; }
+  const isEsfiha = id.startsWith('esf_');
+  if (isEsfiha) {
+     if (meioSelecionado) { showToast("Não é possível misturar Pizza Meio-a-meio com Esfiha.", "warning"); return; }
      return abrirBuilder([id]); 
   }
 
@@ -960,13 +904,12 @@ function escolherSabor(id) {
 
 function abrirBuilder(ids) {
   builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
-  const isCombo = ids[0].startsWith('combo_');
   const isEsfiha = ids[0].startsWith('esf_');
   
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
   $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
-  if (isEsfiha || isCombo) {
+  if (isEsfiha) {
      $('#builder-extras-container').style.display = 'none';
      $('#builder-extras').innerHTML = '';
   } else {
@@ -980,22 +923,17 @@ function abrirBuilder(ids) {
   }
 
   const labelObs = document.getElementById('label-obs');
-  if (isCombo) {
-     labelObs.innerHTML = 'Quais os sabores do Combo? <span style="color:var(--terracotta); font-weight:800;">*Obrigatório</span>';
-     $('#builder-obs').placeholder = 'Digite aqui os sabores das pizzas/esfihas que acompanham...';
-  } else {
-     labelObs.innerHTML = 'Observações';
-     $('#builder-obs').placeholder = 'Ex: sem cebola, massa bem assada...';
-  }
+  labelObs.innerHTML = 'Observações';
+  $('#builder-obs').placeholder = 'Ex: sem cebola, massa bem assada...';
 
   $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; 
-  if(!isEsfiha && !isCombo) atualizarEstoqueNoBuilder(); 
+  if(!isEsfiha) atualizarEstoqueNoBuilder(); 
   atualizarBuilderTotal();
   abrirModal('builder-overlay');
 }
 
 function atualizarEstoqueNoBuilder() {
-  if (!$('#builder-overlay').classList.contains('open') || !builder || builder.sabores[0].startsWith('esf_') || builder.sabores[0].startsWith('combo_')) return;
+  if (!$('#builder-overlay').classList.contains('open') || !builder || builder.sabores[0].startsWith('esf_')) return;
   
   $$('.extra-row').forEach(row => {
     const chk = row.querySelector('.extra-chk'); if (!chk) return;
@@ -1034,12 +972,6 @@ function popQtyVal() { const el = $('#qty-val'); el.classList.remove('pop'); voi
 function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
 
 function adicionar() {
-  if (builder.sabores[0].startsWith('combo_') && $('#builder-obs').value.trim() === '') {
-      showToast("Por favor, digite os sabores do combo nas observações.", "error");
-      $('#builder-obs').focus();
-      return;
-  }
-  
   const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
   if (!validarItem(item)) return; 
   carrinho.push(item); salvar(); atualizarUI(); 
@@ -1223,7 +1155,12 @@ async function gravarFirestore(pedido) {
 }
 
 async function enviarPedidoFinal(ev) {
-  ev.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } 
+  ev.preventDefault(); if(!lojaAberta) { 
+      const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+      if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
+      else showToast("Nossa loja está fechada no momento.", "error"); 
+      return; 
+  } 
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
@@ -1238,7 +1175,6 @@ async function enviarPedidoFinal(ev) {
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); } }
 function fecharModal(id) { const ov = document.getElementById(id); if(ov){ ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; } }
 
-// RIPPLE EFFECT SCRIPT
 document.addEventListener('mousedown', function (e) {
   var target = e.target.closest('.ripple');
   if (!target) return;
@@ -1248,6 +1184,113 @@ document.addEventListener('mousedown', function (e) {
   target.style.setProperty('--y', (e.clientY - rect.top) + 'px');
 });
 
+document.addEventListener('click', e => { 
+  const cardOpt = e.target.closest('.extra-opt-card'); 
+  if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } 
+  
+  const b = e.target.closest('[data-escolher]'); 
+  if (b) {
+    escolherSabor(b.dataset.escolher);
+  }
+});
+
+$$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+$$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
+$$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
+
+$('#builder-extras').addEventListener('change', e => { if(e.target.classList.contains('extra-chk')) { const row = e.target.closest('.extra-row'); if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); } atualizarBuilderTotal(); });
+$('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Math.max(1, parseInt($('#qty-val').textContent, 10) - 1); atualizarBuilderTotal(); popQtyVal(); });
+$('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); popQtyVal(); });
+$('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
+$('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
+$('#checkout-form').addEventListener('submit', e => { 
+    e.preventDefault(); 
+    if(!lojaAberta) { 
+        const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+        if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
+        else showToast("Nossa loja está fechada no momento.", "error"); 
+        return; 
+    } 
+    if (!validarCheckout()) return; 
+    montarRevisao(); 
+    fecharModal('cart-overlay'); 
+    setTimeout(() => { abrirModal('review-overlay'); }, 150); 
+});
+
+$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
+$$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
+
+$('#btn-cart-float').addEventListener('click', () => { 
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
+    if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
+    abrirModal('cart-overlay'); 
+});
+$('#btn-nav-order').addEventListener('click', () => { 
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
+    if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
+    abrirModal('cart-overlay'); 
+});
+$('#btn-bottom-order').addEventListener('click', () => { 
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
+    if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
+    abrirModal('cart-overlay'); 
+});
+
+$('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
+$('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
+
+$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
+$('#ano').textContent = new Date().getFullYear();
+
+// --- CARROSSEL INTELIGENTE DE FOTOS ---
+function iniciarCarrosselHero() {
+  const container = document.getElementById('hero-carousel');
+  if (!container) return;
+  let slideIndex = 1;
+  let validSlides = [];
+
+  function carregarProximoSlide() {
+    const img = new Image();
+    img.src = `img/slide${slideIndex}.jpg`;
+    
+    img.onload = function() {
+      const slideEl = document.createElement('img');
+      slideEl.className = 'carousel-slide';
+      if (slideIndex === 1) slideEl.classList.add('active');
+      slideEl.src = img.src;
+      slideEl.alt = `Slide Promocional ${slideIndex}`;
+      container.appendChild(slideEl);
+      
+      validSlides.push(slideEl);
+      slideIndex++;
+      carregarProximoSlide(); 
+    };
+    
+    img.onerror = function() {
+      if (validSlides.length === 0) {
+        container.innerHTML = `<img class="carousel-slide active" src="img/hero-bg.jpg" onerror="this.style.display='none'">`;
+      } else if (validSlides.length > 1) {
+        iniciarRotacao();
+      }
+    };
+  }
+
+  carregarProximoSlide();
+
+  function iniciarRotacao() {
+    let atual = 0;
+    setInterval(() => {
+      validSlides[atual].classList.remove('active');
+      atual = (atual + 1) % validSlides.length;
+      validSlides[atual].classList.add('active');
+    }, 4500); 
+  }
+}
+iniciarCarrosselHero();
+
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
@@ -1256,10 +1299,21 @@ function processarConfig(doc) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
     if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
+    if(!configLoja.statusLoja) {
+         configLoja.statusLoja = configLoja.forcarFechamento ? 'pausado' : 'auto';
+    }
+    
     const rodape = document.getElementById('footer-funcionamento');
     if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
-    if (!primeiraCargaPausa && configLoja.forcarFechamento === true && lojaEstavaPausada === false) { fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); abrirModal('modal-aviso-pausa'); }
-    lojaEstavaPausada = configLoja.forcarFechamento; primeiraCargaPausa = false;
+    
+    const statusManual = configLoja.statusLoja || 'auto';
+    
+    if (!primeiraCargaPausa && (statusManual === 'pausado' || statusManual === 'esgotado') && lojaEstavaPausada === false) { 
+        fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); 
+        abrirModal('modal-aviso-pausa'); 
+    }
+    lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
+    
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
   }
 }
@@ -1272,36 +1326,6 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.log("Leitura estatística desativada."); });
 
-const sections = $$('h3.category-title'); const navLinks = $$('.sticky-btn');
-window.addEventListener('scroll', () => { let current = ''; sections.forEach(sec => { if (pageYOffset >= sec.offsetTop - 150) { current = sec.getAttribute('id'); } }); navLinks.forEach(link => { link.classList.remove('active'); if (link.getAttribute('href').includes(current)) { link.classList.add('active'); } }); });
-
-document.addEventListener('click', e => { const cardOpt = e.target.closest('.extra-opt-card'); if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } });
-$('#cardapio').addEventListener('click', e => { const b = e.target.closest('[data-escolher]'); if (b) escolherSabor(b.dataset.escolher); });
-$$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
-$$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
-$$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
-
-$('#builder-extras').addEventListener('change', e => { if(e.target.classList.contains('extra-chk')) { const row = e.target.closest('.extra-row'); if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); } atualizarBuilderTotal(); });
-$('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Math.max(1, parseInt($('#qty-val').textContent, 10) - 1); atualizarBuilderTotal(); popQtyVal(); });
-$('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); popQtyVal(); });
-$('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
-$('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
-$('#checkout-form').addEventListener('submit', e => { e.preventDefault(); if(!lojaAberta) { if(configLoja.forcarFechamento) abrirModal('modal-aviso-pausa'); else showToast("Nossa loja está fechada no momento.", "error"); return; } if (!validarCheckout()) return; montarRevisao(); fecharModal('cart-overlay'); setTimeout(() => { abrirModal('review-overlay'); }, 150); });
-
-$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
-$$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
-
-$('#btn-cart-float').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
-$('#btn-nav-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
-$('#btn-bottom-order').addEventListener('click', () => { if(!lojaAberta && configLoja.forcarFechamento) return abrirModal('modal-aviso-pausa'); if(!lojaAberta) return showToast("A loja está fechada.", "error"); abrirModal('cart-overlay'); });
-
-$('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
-$('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
-
-$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
-$('#ano').textContent = new Date().getFullYear();
-
-// Carrega os dados na tela
 verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
