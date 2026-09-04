@@ -14,6 +14,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- BIBLIOTECA GERADORA DE QR CODE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
 /* PALETA DOCE CAPRICHO SAAS */
 :root {
@@ -131,18 +134,15 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .tab-btn.active { color: var(--gold-dark); border-bottom-color: var(--gold); }
 .tab-content { display: none; flex-grow: 1; overflow-y: auto; padding-right: 5px;}
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-
 .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E2E8F0; transition: .4s; border-radius: 34px; }
 .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s var(--smooth); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 input:checked + .slider { background-color: var(--success); }
 input:checked + .slider:before { transform: translateX(18px); }
-
 .catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
 .catalog-info strong { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;}
 .section-subtitle { font-size: 11px; color: var(--text-muted); margin: 15px 0 8px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
-
 .btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s ease; cursor: pointer; border-radius: 8px;}
 .btn-gradient:hover { background-position: right center; box-shadow: 0 5px 15px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
 
@@ -331,6 +331,8 @@ input:checked + .slider:before { transform: translateX(18px); }
       <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">Automação & Expediente</button>
       <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">Pizzas</button>
       <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">Esfihas</button>
+      <!-- NOVA ABA: DIVULGAÇÃO -->
+      <button class="tab-btn" onclick="switchTab('tab-divulgacao', this)">Divulgação</button>
     </div>
 
     <div id="tab-expediente" class="tab-content active">
@@ -389,6 +391,24 @@ input:checked + .slider:before { transform: translateX(18px); }
       <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px;">Desligue para bloquear a venda (Esgotado).</p>
       <h4 class="section-subtitle">🥟 Esfihas</h4>
       <div id="catalog-list-esfihas" style="margin-bottom: 15px;"></div>
+    </div>
+
+    <!-- NOVA ABA CONTEÚDO: DIVULGAÇÃO E QR CODE -->
+    <div id="tab-divulgacao" class="tab-content">
+      <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">📢 Gerador de QR Code (Alta Qualidade)</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:15px; line-height: 1.4;">Baixe a imagem e envie para a gráfica imprimir nas suas caixas. Qualquer celular poderá escanear na mesa de jantar!</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+          <input type="text" id="input-qrcode-url" value="https://docecaprichoatelier.vercel.app/" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px; text-align: center; font-weight: bold; color: var(--gold-dark);">
+          <button onclick="gerarQRCode()" class="btn-gradient" style="padding:12px; width:100%; margin-top:0;">Gerar QR Code</button>
+          
+          <!-- ONDE O QR CODE VAI APARECER -->
+          <div id="qrcode-container" style="margin-top: 15px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); display: none; justify-content: center; align-items: center;"></div>
+          
+          <button id="btn-baixar-qr" onclick="baixarQRCode()" class="btn-gradient" style="padding:12px; width:100%; display:none; background: var(--success); color: white !important; border: none; margin-top:0;">⬇️ Baixar Imagem (Para Gráfica)</button>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -750,5 +770,60 @@ async function gerarRelatorio() {
     chartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Faturamento Bruto (R$)', data: dataVals, backgroundColor: grad, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
   } catch(e) {}
 }
+
+// ------------------------------------------------------------------
+// GERADOR DE QR CODE
+// ------------------------------------------------------------------
+let qrCodeObj = null;
+
+function gerarQRCode() {
+  const container = document.getElementById('qrcode-container');
+  const btnBaixar = document.getElementById('btn-baixar-qr');
+  const url = document.getElementById('input-qrcode-url').value.trim();
+  
+  if(!url) return alert("Por favor, informe a URL da sua loja.");
+  
+  container.style.display = 'flex';
+  container.innerHTML = ''; 
+  
+  qrCodeObj = new QRCode(container, {
+    text: url,
+    width: 512, // Resolução alta para não pixelar na gráfica
+    height: 512,
+    colorDark : "#1A1512", // Cor oficial escura do seu tema
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+  
+  btnBaixar.style.display = 'block';
+  
+  // Ajuste visual para não ficar gigante na tela do Admin
+  setTimeout(() => {
+      const imgOrCanvas = container.querySelector('canvas') || container.querySelector('img');
+      if(imgOrCanvas) {
+          imgOrCanvas.style.width = '200px';
+          imgOrCanvas.style.height = '200px';
+      }
+  }, 100);
+}
+
+function baixarQRCode() {
+   const container = document.getElementById('qrcode-container');
+   const canvas = container.querySelector('canvas');
+   const img = container.querySelector('img');
+   
+   let url = '';
+   if(canvas) { url = canvas.toDataURL("image/png"); } 
+   else if (img) { url = img.src; } 
+   else { return alert("Gere o QR Code primeiro!"); }
+   
+   const a = document.createElement('a');
+   a.href = url;
+   a.download = 'DoceCapricho_QRCode.png';
+   document.body.appendChild(a);
+   a.click();
+   document.body.removeChild(a);
+}
 </script>
+</body>
 </html>
