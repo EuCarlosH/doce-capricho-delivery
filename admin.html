@@ -771,25 +771,113 @@ function renderizarModaisConfig() {
 // IMPRESSÃO COM ENDEREÇO GRANDE
 // ------------------------------------------------------------------
 function imprimirComanda(id) {
-  const p = pedidosMap.get(id); if(!p) return;
-  const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
-  
-  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p>`;
-  
-  // BLOCO DE ENDEREÇO GIGANTE NA IMPRESSÃO
-  if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) {
-      html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">ENTREGA:<br>${esc(p.cliente_endereco)}</div>`;
-  } else if (p.tipo_entrega === 'Retirada') {
-      html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">🛍️ RETIRADA NO BALCÃO</div>`;
+ const p = pedidosMap.get(id); if(!p) return;
+
+  const dt = (p.data_pedido && p.data_pedido.toDate) ? p.data_pedido.toDate() : new Date();
+  const dataStr = dt.toLocaleDateString('pt-BR');
+  const horaStr = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const codigo = String(id).slice(-5).toUpperCase();
+  const itens = Array.isArray(p.itens) ? p.itens : [];
+  const ehEntrega = p.tipo_entrega === 'Entrega';
+
+  const css = `
+    @page { size: 80mm auto; margin: 0; }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body { width:80mm; padding:4mm 5mm 14mm; color:#000; background:#fff;
+           font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11pt; line-height:1.35; }
+
+    .marca { text-align:center; margin-bottom:3mm; }
+    .marca h1 { font-size:15pt; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; }
+    .marca .sub { font-size:7.5pt; letter-spacing:2px; text-transform:uppercase; margin-top:0.5mm; }
+
+    .faixa-cod { border:2px solid #000; text-align:center; padding:1.8mm 0; margin-bottom:3mm; }
+    .faixa-cod .n { font-size:19pt; font-weight:800; letter-spacing:2px; line-height:1; }
+    .faixa-cod .d { font-size:8pt; letter-spacing:1px; margin-top:1mm; }
+
+    .modo { background:#000; color:#fff; text-align:center; font-size:11.5pt; font-weight:800;
+            letter-spacing:3px; padding:1.8mm 0; margin-bottom:3mm; }
+
+    .rot { font-size:7.5pt; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:0.8mm; }
+    .bloco { margin-bottom:3mm; }
+    .nome-cli { font-size:13pt; font-weight:800; line-height:1.2; }
+    .tel { font-size:11.5pt; font-weight:700; letter-spacing:0.5px; }
+
+    .end-box { border:1.5px dashed #000; padding:2mm; margin-bottom:3mm; }
+    .end-txt { font-size:12pt; font-weight:700; line-height:1.4; }
+
+    .hr { border-top:1px solid #000; margin:2.5mm 0; }
+    .hr-fina { border-top:1px dotted #000; margin:1.8mm 0; }
+
+    .tit-sec { font-size:8.5pt; font-weight:800; letter-spacing:2px; text-transform:uppercase;
+               border-bottom:2px solid #000; padding-bottom:1mm; margin-bottom:2mm; }
+
+    .item { display:flex; justify-content:space-between; align-items:flex-start; gap:2mm; }
+    .item-nome { font-size:12pt; font-weight:700; line-height:1.25; flex:1; }
+    .item-qtd { font-weight:800; }
+    .item-val { font-size:11pt; font-weight:700; white-space:nowrap; }
+    .item-wrap { margin-bottom:2.5mm; }
+    .extra { font-size:10pt; padding-left:4mm; line-height:1.3; }
+    .obs { border:1.5px solid #000; padding:1.2mm 2mm; margin:1.2mm 0 0 4mm;
+           font-size:10pt; font-weight:700; line-height:1.3; }
+
+    .lin { display:flex; justify-content:space-between; font-size:11pt; margin-bottom:1mm; }
+    .total { display:flex; justify-content:space-between; border-top:2px solid #000; padding-top:1.8mm; margin-top:1.5mm;
+             font-size:14pt; font-weight:800; letter-spacing:0.5px; }
+
+    .pgto { border:2px solid #000; padding:2mm; text-align:center; margin-top:3mm; }
+    .pgto .v { font-size:12pt; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+
+    .pe { text-align:center; font-size:8pt; letter-spacing:1px; margin-top:4mm; }
+  `;
+
+  let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${css}</style></head><body>`;
+
+  h += `<div class="marca"><h1>Doce Capricho</h1><div class="sub">Atelier &middot; São Miguel / RN</div></div>`;
+  h += `<div class="faixa-cod"><div class="n">#${esc(codigo)}</div><div class="d">${dataStr} &middot; ${horaStr}</div></div>`;
+  h += `<div class="modo">${ehEntrega ? 'ENTREGA' : 'RETIRADA'}</div>`;
+
+  h += `<div class="bloco"><div class="rot">Cliente</div><div class="nome-cli">${esc(p.cliente_nome || '—')}</div>`;
+  h += `<div class="tel">${esc(p.cliente_telefone || '—')}</div></div>`;
+
+  if (ehEntrega && p.cliente_endereco) {
+    h += `<div class="end-box"><div class="rot">Endereço de entrega</div><div class="end-txt">${esc(p.cliente_endereco)}</div></div>`;
+  } else if (!ehEntrega) {
+    h += `<div class="end-box" style="text-align:center;"><div class="end-txt">CLIENTE RETIRA NO BALCÃO</div></div>`;
   }
-  
-  html += `<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
-  p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; });
-  html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
-  
-  let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
-  iframe.contentWindow.document.open(); iframe.contentWindow.document.write(html); iframe.contentWindow.document.close();
-  setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
+
+  h += `<div class="tit-sec">Itens do pedido</div>`;
+
+  if (!itens.length) {
+    h += `<div class="obs" style="margin-left:0;">PEDIDO SEM ITENS REGISTRADOS</div>`;
+  } else {
+    itens.forEach((i, idx) => {
+      h += `<div class="item-wrap">`;
+      h += `<div class="item"><div class="item-nome"><span class="item-qtd">${esc(i.qtd)}x</span> ${esc(i.nome)}</div>`;
+      h += `<div class="item-val">${brl(i.total_centavos)}</div></div>`;
+      if (Array.isArray(i.extras)) {
+        i.extras.forEach(e => { h += `<div class="extra">+ ${esc(e.nome)} <span style="font-size:9pt;">(${esc(e.aplicacao)})</span></div>`; });
+      }
+      if (i.obs) h += `<div class="obs">OBS: ${esc(i.obs)}</div>`;
+      h += `</div>`;
+      if (idx < itens.length - 1) h += `<div class="hr-fina"></div>`;
+    });
+  }
+
+  h += `<div class="hr"></div>`;
+  h += `<div class="lin"><span>Subtotal</span><span>${brl(p.subtotal_centavos)}</span></div>`;
+  if (p.taxa_centavos) h += `<div class="lin"><span>Taxa de entrega</span><span>${brl(p.taxa_centavos)}</span></div>`;
+  h += `<div class="total"><span>TOTAL</span><span>${brl(p.total_centavos)}</span></div>`;
+
+  h += `<div class="pgto"><div class="rot">Forma de pagamento</div><div class="v">${esc(p.forma_pagamento || '—')}</div></div>`;
+  h += `<div class="pe">Obrigado pela preferência!</div>`;
+  h += `</body></html>`;
+
+  let iframe = document.getElementById('iframe-impressao');
+  if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
+  iframe.contentWindow.document.open();
+  iframe.contentWindow.document.write(h);
+  iframe.contentWindow.document.close();
+  setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 400);
 }
 
 async function gerarRelatorio() {
