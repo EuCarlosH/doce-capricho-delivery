@@ -16,7 +16,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-/* PALETA DOCE CAPRICHO SAAS */
 :root {
   --gold: #DDA73A; --gold-dark: #C28F2A; --terracotta: #8B3A2B;   
   --bg-main: #F4F7F6; --bg-sidebar: #1A1512; --bg-card: #FFFFFF;      
@@ -32,7 +31,6 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100dvh; width: 100vw; overflow: hidden; margin: 0; }
 h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 
-/* LAYOUT E TOP BAR */
 .app-container { display: flex; flex-direction: column; height: 100dvh; width: 100vw; overflow: hidden; }
 .top-bar { background: var(--bg-card); border-bottom: 1px solid var(--border-light); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
 .top-bar-left { display: flex; align-items: center; gap: 15px; }
@@ -45,7 +43,6 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .status-pausado { color: var(--warning); background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
 .status-encerrado { color: var(--danger); background: rgba(230, 57, 70, 0.1); border-color: rgba(230, 57, 70, 0.3); }
 
-/* SIDEBAR E CONTEÚDO */
 .content-wrapper { display: flex; flex-grow: 1; position: relative; overflow: hidden; background: var(--bg-main); }
 .sidebar { position: absolute; top: 0; left: -300px; width: 280px; height: 100%; background: var(--bg-sidebar); color: #FFF; display: flex; flex-direction: column; box-shadow: 10px 0 30px rgba(0,0,0,0.3); z-index: 1000; transition: left 0.3s var(--smooth); }
 .sidebar.open { left: 0; }
@@ -66,7 +63,6 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .nav-btn.danger { color: #E63946; } .nav-btn.danger:hover { background: rgba(230, 57, 70, 0.1); }
 .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-main); width: 100%; }
 
-/* KANBAN BOARD (OTIMIZADO IPAD) */
 .kanban-board { display: flex; gap: 12px; padding: 15px; flex-grow: 1; overflow-x: auto; overflow-y: hidden; align-items: stretch; }
 .kanban-col { display: flex; flex-direction: column; flex: 1 1 0; min-width: 220px; max-width: 400px; max-height: 100%; border-radius: 12px; transition: background 0.3s; }
 .kanban-col.drag-over { background: rgba(221, 167, 58, 0.05); border: 2px dashed var(--gold); }
@@ -74,13 +70,11 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .col-header .count { background: #E2E8F0; padding: 4px 10px; border-radius: 20px; font-size: 10px; color: var(--text-main); font-weight: 800;}
 .col-body { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding: 2px; padding-bottom: 20px; }
 
-/* CRM BADGE */
 .crm-badge { font-size: 9px; padding: 3px 8px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px; opacity: 0; animation: fadeIn 0.4s ease forwards;}
 .crm-novo { background: rgba(47, 133, 90, 0.1); color: var(--success); border: 1px solid rgba(47, 133, 90, 0.3); }
 .crm-recorrente { background: rgba(140, 122, 107, 0.1); color: var(--text-muted); border: 1px solid var(--border-light); }
 .crm-fiel { background: rgba(221, 167, 58, 0.15); color: var(--gold-dark); border: 1px solid var(--gold); box-shadow: 0 0 5px rgba(221,167,58,0.3); }
 
-/* CARDS */
 .card-pedido { background: var(--bg-card); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-light); flex-shrink: 0; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-sm); cursor: grab; }
 .card-pedido:active { cursor: grabbing; transform: scale(0.98); }
 .card-pedido.dragging { opacity: 0.5; transform: scale(0.95); box-shadow: none; border: 2px dashed var(--gold); }
@@ -121,7 +115,6 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .empty-state { text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 8px;}
 .empty-state span { font-size: 28px; filter: grayscale(1); opacity: 0.5;}
 
-/* MODAIS E TABS */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 550px; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; }
@@ -138,13 +131,13 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s var(--smooth); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 input:checked + .slider { background-color: var(--success); }
 input:checked + .slider:before { transform: translateX(18px); }
+
 .catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
 .catalog-info strong { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;}
 .section-subtitle { font-size: 11px; color: var(--text-muted); margin: 15px 0 8px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
 .btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s ease; cursor: pointer; border-radius: 8px;}
 .btn-gradient:hover { background-position: right center; box-shadow: 0 5px 15px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
 
-/* ESTILO DO CALENDÁRIO */
 .dia-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; margin-bottom: 8px; background: #F8FAFC; border-radius: 8px; border: 1px solid var(--border-light); transition: all 0.2s ease; }
 .dia-row:hover { border-color: rgba(221, 167, 58, 0.4); box-shadow: var(--shadow-sm); }
 .dia-label { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer; }
@@ -154,7 +147,6 @@ input:checked + .slider:before { transform: translateX(18px); }
 .dia-inputs input[type="time"]:focus { outline: none; border-color: var(--gold); }
 .dia-inputs span { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
 
-/* TELAS EXTRAS */
 #login-screen { position: fixed; inset: 0; background: var(--bg-sidebar); z-index: 10000; display: flex; align-items: center; justify-content: center; }
 .login-box { background: #FFF; padding: 35px; border-radius: 16px; width: 100%; max-width: 380px; text-align: center; }
 .login-box h2 { color: var(--text-main); margin-bottom: 25px; letter-spacing: 1px; font-size: 20px; }
@@ -169,6 +161,20 @@ input:checked + .slider:before { transform: translateX(18px); }
 .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
 .kpi-value { font-size: 24px; font-family: 'Cinzel', serif; font-weight: 700; color: var(--text-main); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* EFEITO BOTÕES DE AÇÃO DOS CARDS */
+.btn-action-card {
+    border: none; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 12px; 
+    cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; 
+    transition: all 0.2s ease; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-action-card:active { transform: scale(0.98); }
+.btn-action-novo { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(47, 133, 90, 0.2); }
+.btn-action-novo:hover { background: #226645; }
+.btn-action-prep { background: var(--gold-dark); color: white; box-shadow: 0 4px 10px rgba(221, 167, 58, 0.2); }
+.btn-action-prep:hover { background: #A87A24; }
+.btn-action-saiu { background: var(--text-main); color: white; box-shadow: 0 4px 10px rgba(44, 32, 24, 0.2); }
+.btn-action-saiu:hover { background: #1C140F; }
 </style>
 </head>
 <body>
@@ -234,7 +240,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         </button>
         <button class="nav-btn" onclick="abrirModalCatalogo(); fecharSidebar();">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Ajustes / Fechar Loja
+          Configurações
         </button>
         <button class="nav-btn" id="btn-sound" onclick="toggleSom()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
@@ -319,7 +325,6 @@ input:checked + .slider:before { transform: translateX(18px); }
   </div>
 </div>
 
-<!-- MODAL DE CONFIGURAÇÕES -->
 <div class="modal-overlay" id="modal-catalogo">
   <div class="modal-box">
     <button class="close-modal" onclick="fecharModalCatalogo()">&times;</button>
@@ -333,8 +338,6 @@ input:checked + .slider:before { transform: translateX(18px); }
     </div>
 
     <div id="tab-expediente" class="tab-content active">
-
-      <!-- SEMÁFORO DE EMERGÊNCIA (3 ESTADOS) -->
       <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light); background: rgba(230, 57, 70, 0.02); padding: 15px; border-radius: 8px;">
         <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">🚦 Status da Loja (Visível para o Cliente)</strong>
         <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px; line-height: 1.4;">Controle a abertura da loja em caso de emergência ou esgotamento total.</p>
@@ -373,7 +376,6 @@ input:checked + .slider:before { transform: translateX(18px); }
           <button onclick="salvarTextoFuncionamento(event)" class="btn-gradient btn-save" style="margin-top: 0; padding:10px;">Salvar Rodapé</button>
         </div>
       </div>
-
     </div>
 
     <div id="tab-pizzas" class="tab-content">
@@ -390,7 +392,6 @@ input:checked + .slider:before { transform: translateX(18px); }
       <div id="catalog-list-esfihas" style="margin-bottom: 15px;"></div>
     </div>
 
-    <!-- NOVA ABA CONTEÚDO: DIVULGAÇÃO E QR CODE -->
     <div id="tab-divulgacao" class="tab-content">
       <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
         <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">📢 Gerador de QR Code (Alta Qualidade)</strong>
@@ -399,9 +400,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
           <input type="text" id="input-qrcode-url" value="https://docecaprichoatelier.vercel.app/" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px; text-align: center; font-weight: bold; color: var(--gold-dark);">
           <button onclick="gerarQRCode()" class="btn-gradient" style="padding:12px; width:100%; margin-top:0;">Gerar QR Code</button>
-          
           <div id="qrcode-container" style="margin-top: 15px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); display: none; justify-content: center; align-items: center;"></div>
-          
           <button id="btn-baixar-qr" onclick="baixarQRCode()" class="btn-gradient" style="padding:12px; width:100%; display:none; background: var(--success); color: white !important; border: none; margin-top:0;">⬇️ Baixar Imagem (Para Gráfica)</button>
         </div>
       </div>
@@ -535,6 +534,25 @@ function iniciarSistema() {
   setInterval(renderizarKanban, 30000);
 }
 
+// ------------------------------------------------------------------
+// NOVA FUNÇÃO: MOVER STATUS PELO BOTÃO
+// ------------------------------------------------------------------
+function moverPedido(id, novoStatus) {
+    const p = pedidosMap.get(id);
+    if(!p) return;
+    
+    // Dispara a mensagem no WhatsApp se o botão for de despachar
+    if (novoStatus === 'Saiu para Entrega' || novoStatus === 'Pronto para Retirada') {
+        let msg = '';
+        if (p.tipo_entrega === 'Retirada') { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho já está PRONTO para retirada! 🛍️`; } 
+        else { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho acabou de sair para entrega! 🛵`; }
+        window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+    }
+    
+    document.getElementById(`card-${id}`).style.opacity = '0.5';
+    db.collection('pedidos').doc(id).update({ status: novoStatus }).catch(err => alert("Erro ao mover pedido. Verifique sua conexão."));
+}
+
 let dragSourceId = null;
 function dragStart(e, id) { dragSourceId = id; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); setTimeout(() => { e.target.classList.add('dragging'); }, 0); }
 function dragEnd(e) { e.target.classList.remove('dragging'); document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over')); }
@@ -545,15 +563,8 @@ function drop(e, newStatus) {
   const p = pedidosMap.get(id);
   if(p && p.status !== newStatus) {
      let finalStatus = newStatus;
-     if (newStatus === 'Saiu para Entrega') { if (p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada'; }
-     if (newStatus === 'Saiu para Entrega' || finalStatus === 'Pronto para Retirada') {
-        let msg = '';
-        if (p.tipo_entrega === 'Retirada') { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho já está PRONTO para retirada! 🛍️`; } 
-        else { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho acabou de sair para entrega! 🛵`; }
-        window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank'); 
-     }
-     document.getElementById(`card-${id}`).style.opacity = '0.5';
-     db.collection('pedidos').doc(id).update({ status: finalStatus }).catch(err => alert("Erro ao arrastar. Verifique internet."));
+     if (newStatus === 'Saiu para Entrega' && p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada';
+     moverPedido(id, finalStatus);
   }
 }
 
@@ -603,6 +614,18 @@ function renderizarKanban() {
 
       let crmId = `crm-${p.id}`; fetchCRM(p.cliente_telefone, crmId);
 
+      // NOVO: GERANDO O BOTÃO DE AÇÃO GIGANTE DEPENDENDO DA COLUNA
+      let btnAcaoStatus = '';
+      if (status === 'Novo') {
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Preparando')" class="btn-action-card btn-action-novo">✅ ACEITAR PEDIDO</button>`;
+      } else if (status === 'Preparando') {
+          let txtDespacho = p.tipo_entrega === 'Retirada' ? '🛍️ PRONTO (RETIRADA)' : '🛵 DESPACHAR (ENTREGA)';
+          let proxStatus = p.tipo_entrega === 'Retirada' ? 'Pronto para Retirada' : 'Saiu para Entrega';
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', '${proxStatus}')" class="btn-action-card btn-action-prep">${txtDespacho}</button>`;
+      } else if (status === 'Saiu para Entrega') {
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Concluído')" class="btn-action-card btn-action-saiu">🎉 FINALIZAR PEDIDO</button>`;
+      }
+
       return `
       <div class="card-pedido ${bCor}" id="card-${p.id}" draggable="true" ondragstart="dragStart(event, '${p.id}')" ondragend="dragEnd(event)">
         <div class="card-header">
@@ -627,6 +650,8 @@ function renderizarKanban() {
           <button class="btn-icon-only" onclick="imprimirComanda('${p.id}')" title="Imprimir Comanda">${icons.printer}</button>
           ${btnCancel}
         </div>
+        <!-- O NOVO BOTÃO DE AÇÃO -->
+        ${btnAcaoStatus}
       </div>`;
     }).join('');
   });
@@ -692,9 +717,6 @@ function toggleItem(id, marcarComoAtivo) {
   db.collection('configuracoes').doc('geral').set({ itensEsgotados: esgotados }, { merge: true });
 }
 
-// ==========================================
-// LISTA DO ADMIN COM AS NOVAS ESFIHAS!
-// ==========================================
 const CARDAPIO = [
   { id:'mussarela', nome:'Mussarela', tipo: 'pizza' }, { id:'mista', nome:'Mista', tipo: 'pizza' }, { id:'frango', nome:'Frango', tipo: 'pizza' },
   { id:'calabresa', nome:'Calabresa', tipo: 'pizza' }, { id:'carnesol', nome:'Carne de Sol', tipo: 'pizza' }, { id:'frangocat', nome:'Frango c/ Catupiry', tipo: 'pizza' },
@@ -725,6 +747,49 @@ function renderizarModaisConfig() {
     htmlHorarios += `<div class="dia-row"><label class="dia-label"><input type="checkbox" id="dia-ativo-${i}" ${h.ativo ? 'checked' : ''}> ${DIAS_SEMANA[i]}</label><div class="dia-inputs"><input type="time" id="dia-abre-${i}" value="${h.abre}"><span style="font-size:11px; color:var(--text-muted);">às</span><input type="time" id="dia-fecha-${i}" value="${h.fecha}"></div></div>`;
   }
   document.getElementById('schedule-list').innerHTML = htmlHorarios;
+}
+
+function imprimirComanda(id) {
+  const p = pedidosMap.get(id); if(!p) return;
+  const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
+  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p><p class="bold">Tipo: ${p.tipo_entrega}</p>${p.cliente_endereco?`<p>End: ${p.cliente_endereco}</p>`:''}<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
+  p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; });
+  html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
+  let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
+  iframe.contentWindow.document.open(); iframe.contentWindow.document.write(html); iframe.contentWindow.document.close();
+  setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
+}
+
+async function gerarRelatorio() {
+  const dI = document.getElementById('rel-inicio').value, dF = document.getElementById('rel-fim').value;
+  if(!dI || !dF) return alert("Selecione a data de início e fim.");
+  const dtInicio = new Date(dI + 'T00:00:00'), dtFim = new Date(dF + 'T23:59:59');
+  try {
+    const snapshot = await db.collection('pedidos').where('data_pedido', '>=', dtInicio).where('data_pedido', '<=', dtFim).get();
+    let fat = 0, qConc = 0, qFalha = 0, fatDia = {}, itensCount = {};
+    snapshot.forEach(doc => {
+      const p = doc.data();
+      if (p.status === 'Cancelado') qFalha++;
+      else if (p.status === 'Concluído') {
+        qConc++; fat += (p.total_centavos || 0);
+        const dataStr = p.data_pedido.toDate().toLocaleDateString('pt-BR');
+        if (!fatDia[dataStr]) fatDia[dataStr] = 0; fatDia[dataStr] += (p.total_centavos || 0);
+        if(p.itens) { p.itens.forEach(item => { if(!itensCount[item.nome]) itensCount[item.nome] = 0; itensCount[item.nome] += item.qtd; }); }
+      }
+    });
+    document.getElementById('kpi-fat').textContent = brl(fat); document.getElementById('kpi-qtd').textContent = qConc;
+    document.getElementById('kpi-ticket').textContent = qConc > 0 ? brl(fat / qConc) : 'R$ 0,00'; document.getElementById('kpi-falhas').textContent = qFalha;
+    
+    const topItens = Object.entries(itensCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    document.getElementById('lista-top-produtos').innerHTML = topItens.length === 0 ? `<div class="empty-state">Nenhum produto concluído.</div>` : topItens.map(([n, q], idx) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom: 1px solid var(--border-light);"><span style="font-size:11px; font-weight:700;"><span style="color:var(--gold-dark); margin-right:8px;">${idx+1}º</span>${n}</span><span style="font-size:10px; font-weight:800; background:#E2E8F0; padding:2px 8px; border-radius:12px;">${q} un</span></div>`).join('');
+    
+    const labels = Object.keys(fatDia).sort((a,b) => { const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/'); return new Date(`${ya}-${ma}-${da}`) - new Date(`${yb}-${mb}-${db}`); });
+    const dataVals = labels.map(l => fatDia[l] / 100);
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('chart-fat').getContext('2d');
+    let grad = ctx.createLinearGradient(0, 0, 0, 400); grad.addColorStop(0, 'rgba(218, 165, 32, 0.8)'); grad.addColorStop(1, 'rgba(218, 165, 32, 0)');
+    chartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Faturamento Bruto (R$)', data: dataVals, backgroundColor: grad, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  } catch(e) {}
 }
 
 let qrCodeObj = null;
