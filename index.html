@@ -1126,7 +1126,7 @@ function popQtyVal() { const el = $('#qty-val'); el.classList.remove('pop'); voi
 function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
 
 // ----------------------------------------------------
-// NOVO: AGRUPAMENTO INTELIGENTE NO CARRINHO
+// AGRUPAMENTO INTELIGENTE NO CARRINHO
 // ----------------------------------------------------
 function saoItensIguais(itemA, itemB) {
     if (itemA.obs !== itemB.obs) return false;
@@ -1156,9 +1156,7 @@ function adicionar() {
   const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
   if (!validarItem(novoItem)) return; 
   
-  // Confere se o item já existe no carrinho para somar a quantidade
   let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
-  
   if (itemExistente) {
       itemExistente.qtd += novoItem.qtd;
       itemExistente.total = itemExistente.unitario * itemExistente.qtd;
