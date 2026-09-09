@@ -780,7 +780,7 @@ const CARDAPIO = {
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
     { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1200 },
+    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 },
     { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
   ],
   esfihas_doces: [
@@ -1125,6 +1125,27 @@ function popQtyVal() { const el = $('#qty-val'); el.classList.remove('pop'); voi
 
 function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
 
+// ----------------------------------------------------
+// NOVO: AGRUPAMENTO INTELIGENTE NO CARRINHO
+// ----------------------------------------------------
+function saoItensIguais(itemA, itemB) {
+    if (itemA.obs !== itemB.obs) return false;
+    if (itemA.sabores.length !== itemB.sabores.length) return false;
+    
+    let sabA = [...itemA.sabores].sort();
+    let sabB = [...itemB.sabores].sort();
+    for(let i=0; i<sabA.length; i++) { if(sabA[i] !== sabB[i]) return false; }
+    
+    if (itemA.extras.length !== itemB.extras.length) return false;
+    
+    let extA = [...itemA.extras].sort((a,b) => a.id.localeCompare(b.id));
+    let extB = [...itemB.extras].sort((a,b) => a.id.localeCompare(b.id));
+    for(let i=0; i<extA.length; i++) {
+        if(extA[i].id !== extB[i].id || extA[i].aplicacao !== extB[i].aplicacao) return false;
+    }
+    return true;
+}
+
 function adicionar() {
   if (builder.sabores[0].startsWith('combo_') && $('#builder-obs').value.trim() === '') {
       showToast("Por favor, digite os sabores do combo nas observações.", "error");
@@ -1132,18 +1153,38 @@ function adicionar() {
       return;
   }
   
-  const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
-  if (!validarItem(item)) return; 
-  carrinho.push(item); salvar(); atualizarUI(); 
+  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
+  if (!validarItem(novoItem)) return; 
+  
+  // Confere se o item já existe no carrinho para somar a quantidade
+  let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
+  
+  if (itemExistente) {
+      itemExistente.qtd += novoItem.qtd;
+      itemExistente.total = itemExistente.unitario * itemExistente.qtd;
+  } else {
+      carrinho.push(novoItem);
+  }
+
+  salvar(); atualizarUI(); 
   if (navigator.vibrate) navigator.vibrate(50);
   const cartBtn = $('#btn-cart-float'); if(cartBtn) { cartBtn.classList.remove('bump-anim'); void cartBtn.offsetWidth; cartBtn.classList.add('bump-anim'); }
   fecharModal('builder-overlay'); abrirModal('success-overlay');
 }
 
 function adicionarUpsell(saborId, preco) {
-  const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
-  if (!validarItem(item)) return; 
-  carrinho.push(item); salvar(); atualizarUI();
+  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
+  if (!validarItem(novoItem)) return; 
+  
+  let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
+  if(itemExistente) {
+      itemExistente.qtd += 1;
+      itemExistente.total = itemExistente.unitario * itemExistente.qtd;
+  } else {
+      carrinho.push(novoItem); 
+  }
+
+  salvar(); atualizarUI();
   showToast("Esfiha adicionada ao pedido!", "success");
   if (navigator.vibrate) navigator.vibrate(50);
 }
@@ -1337,7 +1378,7 @@ async function enviarPedidoFinal(ev) {
 }
 
 // ----------------------------------------------------
-// SISTEMA DE RASTREIO DE PEDIDOS EM TEMPO REAL
+// SISTEMA DE RASTREIO BLINDADO
 // ----------------------------------------------------
 let unsubscribeRastreio = null;
 
@@ -1375,43 +1416,45 @@ function atualizarTimeline(status, tipoEntrega) {
       }
   }
 
-  document.querySelectorAll('.tl-step').forEach(el => { 
-      el.classList.remove('active', 'done'); 
-  });
-
-  const trackDesc = document.getElementById('track-desc');
-  if(trackDesc) trackDesc.innerHTML = 'Acompanhe o status em tempo real';
-
+  // Zera completamente as classes para não agarrar cache em celulares
   const sNovo = document.getElementById('step-novo');
   const sPrep = document.getElementById('step-preparando');
   const sSaiu = document.getElementById('step-saiu');
   const sConc = document.getElementById('step-concluido');
 
+  if(sNovo) sNovo.className = 'tl-step';
+  if(sPrep) sPrep.className = 'tl-step';
+  if(sSaiu) sSaiu.className = 'tl-step';
+  if(sConc) sConc.className = 'tl-step';
+
+  const trackDesc = document.getElementById('track-desc');
+  if(trackDesc) trackDesc.innerHTML = 'Acompanhe o status em tempo real';
+
   if (status === 'Cancelado') {
-      if(sNovo) sNovo.classList.add('done');
+      if(sNovo) sNovo.className = 'tl-step done';
       if(trackDesc) trackDesc.innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
   }
   else if (status === 'Novo') { 
-      if(sNovo) sNovo.classList.add('active'); 
+      if(sNovo) sNovo.className = 'tl-step active'; 
   } 
   else if (status === 'Preparando') {
-      if(sNovo) sNovo.classList.add('done');
-      if(sPrep) sPrep.classList.add('active');
+      if(sNovo) sNovo.className = 'tl-step done';
+      if(sPrep) sPrep.className = 'tl-step active';
   } 
   else if (status === 'Saiu para Entrega' || status === 'Pronto para Retirada') {
-      if(sNovo) sNovo.classList.add('done'); 
-      if(sPrep) sPrep.classList.add('done'); 
-      if(sSaiu) sSaiu.classList.add('active');
+      if(sNovo) sNovo.className = 'tl-step done'; 
+      if(sPrep) sPrep.className = 'tl-step done'; 
+      if(sSaiu) sSaiu.className = 'tl-step active';
   } 
   else if (status === 'Concluído') {
-      if(sNovo) sNovo.classList.add('done'); 
-      if(sPrep) sPrep.classList.add('done'); 
-      if(sSaiu) sSaiu.classList.add('done'); 
-      if(sConc) sConc.classList.add('done');
+      if(sNovo) sNovo.className = 'tl-step done'; 
+      if(sPrep) sPrep.className = 'tl-step done'; 
+      if(sSaiu) sSaiu.className = 'tl-step done'; 
+      if(sConc) sConc.className = 'tl-step done';
   }
 }
 
-// ATUALIZAÇÃO AUTOMÁTICA QUANDO O CLIENTE VOLTA PARA A ABA
+// ATUALIZAÇÃO AUTOMÁTICA QUANDO O CLIENTE VOLTA DO WHATSAPP PARA A ABA
 document.addEventListener('visibilitychange', () => {
     const tracker = document.getElementById('tracking-overlay');
     if (document.visibilityState === 'visible' && tracker && tracker.classList.contains('open')) {
@@ -1571,7 +1614,6 @@ function processarConfig(doc) {
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
 setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
 
-// Esta é a função vital para evitar a suspensão da aba
 document.addEventListener('visibilitychange', () => { 
     if (document.visibilityState === 'visible') { 
         db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); 
