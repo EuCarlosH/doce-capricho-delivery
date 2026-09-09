@@ -7,7 +7,6 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
 
-<!-- SCRIPT DE TEMA DINÂMICO E INTELIGENTE -->
 <script>
   function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
   function applyTheme(theme) {
@@ -57,13 +56,11 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 80px; }
 
-/* EFEITO RIPPLE */
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
 .ripple:active::after { transform: scale(0, 0); opacity: .3; transition: 0s; }
 :root[data-theme="dark"] .ripple::after { background-image: radial-gradient(circle, var(--gold) 10%, transparent 10.01%); }
 
-/* NAVBAR DESKTOP */
 nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 0; border-bottom: 1px solid var(--border-light); transition: top 0.4s var(--smooth), background-color 0.4s ease; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
 :root[data-theme="light"] nav.top-nav { background: rgba(248, 244, 238, 0.95); } :root[data-theme="dark"] nav.top-nav { background: rgba(10, 10, 10, 0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.5);}
 .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
@@ -78,7 +75,6 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .theme-toggle svg { width: 16px; height: 16px; fill: currentColor; } .icon-moon { display: none; } :root[data-theme="dark"] .icon-moon { display: block; } :root[data-theme="dark"] .icon-sun { display: none; }
 .bottom-nav { display: none; }
 
-/* CSS DO HERO */
 #home { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); }
 .hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 .carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 8s ease-out; }
@@ -499,7 +495,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- NOVA TELA DE PROMOÇÕES ATIVAS -->
+<!-- TELA DE PROMOÇÕES ATIVAS -->
 <div class="modal-overlay" id="modal-promocoes">
   <div class="modal-box">
     <button class="close-modal ripple" data-close="modal-promocoes">&times;</button>
@@ -581,12 +577,12 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
     <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center; animation: fadeIn 0.5s ease;">
       <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-        <img src="img/esf_choc.jpg" alt="Esfiha Doce" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
+        <img src="img/esf_choc_morango.jpg" alt="Esfiha Doce" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
         <div style="text-align: left; flex: 1;">
-          <strong style="display: block; font-size: 13px; color: var(--text-main);">Esfiha Choc. ao Leite</strong>
-          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">+ R$ 8,00</span>
+          <strong style="display: block; font-size: 13px; color: var(--text-main);">Esfiha Choc. c/ Morango</strong>
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
         </div>
-        <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_leite', 800)" style="width: 30px; height: 30px; font-size: 16px;">+</button>
+        <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_morango', 1200)" style="width: 30px; height: 30px; font-size: 16px;">+</button>
       </div>
     </div>
     
@@ -759,7 +755,9 @@ const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) 
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
 
-// CARDAPIO COM OS COMBOS DE VOLTA
+// ----------------------------------------------------
+// AQUI ESTÃO AS NOVAS ESFIHAS (BACON E MORANGO)
+// ----------------------------------------------------
 const CARDAPIO = {
   tradicionais: [
     { id:'mussarela', img:'img/mussarela.jpg', nome:'Mussarela', desc:'Molho, mussarela e tomate', preco:4500 },
@@ -793,11 +791,13 @@ const CARDAPIO = {
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
     { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 }
+    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 },
+    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
   ],
   esfihas_doces: [
     { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
-    { id:'esf_choc_mm', img:'img/esf_choc_mm.jpg', nome:'Esfiha Chocolate c/ M&M\'s', desc:'Chocolate ao leite coberto com confetes coloridos.', preco:900 }
+    { id:'esf_choc_mm', img:'img/esf_choc_mm.jpg', nome:'Esfiha Chocolate c/ M&M\'s', desc:'Chocolate ao leite coberto com confetes coloridos.', preco:900 },
+    { id:'esf_choc_morango', img:'img/esf_choc_morango.jpg', nome:'Esfiha Choc. c/ Morango', desc:'Chocolate ao leite com pedaços frescos de morango.', preco:1200 }
   ],
   combos_sexta: [
     { id:'combo_sextou', img:'img/combo1.jpg', nome:'Combo Sextou (10 Esfihas)', desc:'10 Esfihas Tradicionais à sua escolha.', preco:4490, tipo:'combo' },
@@ -1174,7 +1174,7 @@ function totais() {
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
   
-  let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc')));
+  let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc_morango') || s.startsWith('esf_choc')));
   if (carrinho.length > 0 && !temSobremesa) { $('#upsell-container').style.display = 'block'; } else { $('#upsell-container').style.display = 'none'; }
 
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
@@ -1337,7 +1337,6 @@ async function enviarPedidoFinal(ev) {
   const aba = window.open('about:blank', '_blank'); 
   const pedido = montarPedido(); const id = await gravarFirestore(pedido); 
   
-  // RASTREIO: SALVAR ID DO PEDIDO NA MEMÓRIA DO CELULAR DO CLIENTE
   if(id) localStorage.setItem('dca_last_order', id);
 
   let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
@@ -1348,9 +1347,6 @@ async function enviarPedidoFinal(ev) {
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
 
-// ----------------------------------------------------
-// NOVO SISTEMA DE RASTREIO DE PEDIDOS EM TEMPO REAL
-// ----------------------------------------------------
 let unsubscribeRastreio = null;
 
 function abrirRastreio() {
@@ -1363,7 +1359,7 @@ function abrirRastreio() {
   $('#track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
   abrirModal('tracking-overlay');
 
-  if(unsubscribeRastreio) unsubscribeRastreio(); // Limpa escutas anteriores
+  if(unsubscribeRastreio) unsubscribeRastreio();
 
   unsubscribeRastreio = db.collection('pedidos').doc(lastOrderId).onSnapshot(doc => {
       if(doc.exists) {
@@ -1374,7 +1370,6 @@ function abrirRastreio() {
 }
 
 function atualizarTimeline(status, tipoEntrega) {
-  // Ajustar o texto da terceira etapa caso seja Retirada
   if(tipoEntrega === 'Retirada') {
       $('#track-text-rota').textContent = 'Pronto p/ Retirada 🛍️';
       $('#step-saiu .tl-content span').textContent = 'Te aguardamos na loja.';
@@ -1383,31 +1378,22 @@ function atualizarTimeline(status, tipoEntrega) {
       $('#step-saiu .tl-content span').textContent = 'Saiu para entrega.';
   }
 
-  // Reseta todos
   $$('.tl-step').forEach(el => { el.classList.remove('active'); el.classList.remove('done'); });
 
-  // Lógica de Preenchimento da Linha do Tempo
   if (status === 'Cancelado') {
       $('#step-novo').classList.add('done');
       $('#track-desc').innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
   }
-  else if (status === 'Novo') {
-      $('#step-novo').classList.add('active');
-  } 
+  else if (status === 'Novo') { $('#step-novo').classList.add('active'); } 
   else if (status === 'Preparando') {
       $('#step-novo').classList.add('done');
       $('#step-preparando').classList.add('active');
   } 
   else if (status === 'Saiu para Entrega' || status === 'Pronto para Retirada') {
-      $('#step-novo').classList.add('done');
-      $('#step-preparando').classList.add('done');
-      $('#step-saiu').classList.add('active');
+      $('#step-novo').classList.add('done'); $('#step-preparando').classList.add('done'); $('#step-saiu').classList.add('active');
   } 
   else if (status === 'Concluído') {
-      $('#step-novo').classList.add('done');
-      $('#step-preparando').classList.add('done');
-      $('#step-saiu').classList.add('done');
-      $('#step-concluido').classList.add('done');
+      $('#step-novo').classList.add('done'); $('#step-preparando').classList.add('done'); $('#step-saiu').classList.add('done'); $('#step-concluido').classList.add('done');
   }
 }
 
