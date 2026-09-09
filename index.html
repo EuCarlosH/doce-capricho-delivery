@@ -20,6 +20,7 @@
 </script>
 
 <link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Doce Capricho">
@@ -283,9 +284,10 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .checkout-form input, .checkout-form select { width: 100%; padding: 14px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-main); color: var(--text-main); font-family: inherit; font-size: 13px; transition: border-color 0.3s ease, box-shadow 0.3s ease; font-weight: 500;} :root[data-theme="dark"] .checkout-form input, :root[data-theme="dark"] .checkout-form select { font-weight: 400; }
 .checkout-form input:focus, .checkout-form select:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(221, 167, 58, 0.2); background: var(--bg-card);} :root[data-theme="dark"] .checkout-form input:focus, :root[data-theme="dark"] .checkout-form select:focus { box-shadow: 0 0 0 2px rgba(212,175,55,0.2); background: var(--bg-main); }
 .field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; } @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+.campo-hint { font-size: 10px; color: var(--text-muted); margin-top: 5px; line-height: 1.4; font-weight: 500; display: block; }
 
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
-.endereco-row { display: flex; gap: 10px; margin-bottom: 10px; } .endereco-row > div:first-child { flex: 1.2; } .endereco-row > div:last-child { flex: 2; }
+.endereco-row { display: flex; gap: 10px; margin-bottom: 10px; }
 .box-destaque { background: rgba(221, 167, 58, 0.05); border: 1px dashed rgba(221, 167, 58, 0.3); border-radius: 8px; padding: 20px; text-align: center; margin-top: 10px; animation: slideDown 0.4s var(--smooth); } :root[data-theme="dark"] .box-destaque { background: rgba(212,175,55,0.05); border-color: rgba(212,175,55,0.3); }
 
 .btn-copy-pix { background: transparent; border: 1px solid var(--gold); color: var(--gold-dark); padding: 12px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: all 0.3s var(--smooth); } :root[data-theme="dark"] .btn-copy-pix { color: var(--gold); font-weight: 600; }
@@ -333,7 +335,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .promo-content { padding: 25px 20px; }
 }
 
-/* CORRIGIDO: promoção abaixo do rastreio (4500) e do aviso de pausa (4000) */
 .modal-overlay#promo-banner-overlay { z-index: 3800 !important; align-items: center; justify-content: center; padding: 20px;}
 #promo-modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 15px 40px rgba(0,0,0,0.4); max-width: 550px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
 #promo-banner-overlay.open #promo-modal-box { transform: scale(1); }
@@ -633,9 +634,10 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
           <div style="flex: 2;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
           <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
         </div>
-        <div class="endereco-row">
-          <div style="flex: 1.5;"><label for="cli-bairro">Bairro / Ponto de Ref.</label><input type="text" id="cli-bairro" placeholder="Ex: Perto do Posto"></div>
-          <div style="flex: 1;"><label for="cli-cep">CEP</label><input type="tel" id="cli-cep" value="59920-000" readonly style="background: rgba(58,42,32,0.05); cursor: not-allowed; opacity: 0.8;"></div>
+        <div>
+          <label for="cli-bairro">Ponto de referência</label>
+          <input type="text" id="cli-bairro" placeholder="Ex: casa azul, ao lado da igreja">
+          <span class="campo-hint">Ajuda muito o entregador a te encontrar rápido.</span>
         </div>
       </div>
 
@@ -739,10 +741,10 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navi
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -937,7 +939,6 @@ const cardHTML = s => {
   </article>`;
 };
 
-// CORRIGIDO: marca a flag ANTES do timer, evitando banners duplicados
 function checkBannerPromo(titulo, desc) {
   if (bannerJaMostrado) return;
   bannerJaMostrado = true;
@@ -1286,8 +1287,15 @@ function montarRevisao() {
       </div>`;
   }).join('');
 
-  if(tipo === 'Entrega') { const nomeZona = $('#cli-taxa-nome').value; $('#review-delivery').innerHTML = `<strong>Entrega: ${esc(nomeZona)}</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
-  } else { $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`; }
+  if(tipo === 'Entrega') {
+    const nomeZona = $('#cli-taxa-nome').value;
+    const ref = $('#cli-bairro').value.trim();
+    $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong>`
+      + (ref ? `<span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
+      + `<span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`;
+  } else {
+    $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
+  }
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total); } else { $('#rev-box-pix').style.display = 'none'; }
@@ -1316,16 +1324,54 @@ function carregarDadosCliente() {
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value; const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key); let payload = formatField('00', '01') + merchantAccount + formatField('52', '0000') + formatField('53', '986') + formatField('54', strValor) + formatField('58', 'BR') + formatField('59', cleanNome) + formatField('60', cleanCidade) + formatField('62', formatField('05', '***')) + '6304'; let crc = 0xFFFF; for (let c = 0; c < payload.length; c++) { crc ^= payload.charCodeAt(c) << 8; for (let i = 0; i < 8; i++) { if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } } return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'); }
 
+// ALTERADO: grava os campos de endereço separados, além da string completa
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
-  const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value}) | Região: ${$('#cli-taxa-nome').value}` : '';
-  let pgtoStr = $('#cli-pagamento').value; if (pgtoStr === 'Dinheiro' && $('#cli-troco').value.trim() !== '') { pgtoStr += ` (Troco para: ${$('#cli-troco').value.trim()})`; }
-  return { status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: pgtoStr, itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total };
+  const ehEntrega = (tipo === 'Entrega');
+
+  const rua = ehEntrega ? $('#cli-rua').value.trim() : '';
+  const numero = ehEntrega ? $('#cli-numero').value.trim() : '';
+  const referencia = ehEntrega ? $('#cli-bairro').value.trim() : '';
+  const regiao = ehEntrega ? $('#cli-taxa-nome').value : '';
+
+  const endStr = ehEntrega
+    ? `${rua}, ${numero}${referencia ? ` — Ref.: ${referencia}` : ''} | Região: ${regiao}`
+    : '';
+
+  let pgtoStr = $('#cli-pagamento').value;
+  if (pgtoStr === 'Dinheiro' && $('#cli-troco').value.trim() !== '') { pgtoStr += ` (Troco para: ${$('#cli-troco').value.trim()})`; }
+
+  return {
+    status: 'Novo',
+    cliente_nome: $('#cli-nome').value.trim(),
+    cliente_telefone: soDigitos($('#cli-telefone').value),
+    cliente_endereco: endStr,
+    end_rua: rua,
+    end_numero: numero,
+    end_referencia: referencia,
+    end_regiao: regiao,
+    end_cidade: ehEntrega ? CONFIG.cidade : '',
+    end_estado: ehEntrega ? CONFIG.estado : '',
+    tipo_entrega: tipo,
+    forma_pagamento: pgtoStr,
+    itens: carrinho.map(i => ({
+      nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
+      extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
+      obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total
+    })),
+    subtotal_centavos: t.subtotal,
+    taxa_centavos: t.entrega,
+    total_centavos: t.total
+  };
 }
 
 function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
-  if (p.cliente_endereco) L.push(`*Endereço:* ${p.cliente_endereco}`);
+  if (p.tipo_entrega === 'Entrega') {
+    L.push(`*Endereço:* ${p.end_rua}, ${p.end_numero}`);
+    if (p.end_referencia) L.push(`*Referência:* ${p.end_referencia}`);
+    if (p.end_regiao) L.push(`*Região:* ${p.end_regiao}`);
+  }
   L.push(`*Pagamento:* ${p.forma_pagamento}`, '', '*ITENS*');
   p.itens.forEach((i, n) => { L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); if (i.obs) L.push(`    • Obs: ${i.obs}`); });
   L.push('', `Subtotal: ${brl(p.subtotal_centavos)}`); if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
@@ -1333,7 +1379,6 @@ function montarMensagem(p) {
   return L.join('\n');
 }
 
-// CORRIGIDO: erro de gravação agora é visível (antes o ID nunca era salvo em silêncio)
 async function gravarFirestore(pedido) { 
   if (!CONFIG.usarFirebase || !window.firebase) return null; 
   try { 
@@ -1374,7 +1419,7 @@ async function enviarPedidoFinal(ev) {
 }
 
 // ----------------------------------------------------
-// RASTREIO — CORRIGIDO
+// RASTREIO
 // ----------------------------------------------------
 let unsubscribeRastreio = null;
 
@@ -1444,7 +1489,6 @@ function atualizarTimeline(status, tipoEntrega) {
   if (steps[etapa]) steps[etapa].className = (etapa === 3) ? 'tl-step done' : 'tl-step active';
 }
 
-// CORRIGIDO: listener é cancelado por QUALQUER forma de fechar o modal
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); } }
 function fecharModal(id) { 
   if (id === 'tracking-overlay' && unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
@@ -1581,7 +1625,6 @@ function processarConfig(doc) {
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
   }
 }
-// CORRIGIDO: erro visível no console + polling de 15s removido (onSnapshot já é tempo real)
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { 
   console.error('[CONFIG]', error.code, error.message); 
 });
