@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Admin Operacional — Doce Capricho</title>
+<meta name="robots" content="noindex,nofollow">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -173,6 +174,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 .login-box h2 { color: var(--text-main); margin-bottom: 25px; letter-spacing: 1px; font-size: 20px; }
 .login-box input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 13px; }
 .login-box button { width: 100%; padding: 14px; }
+#login-erro { color: var(--danger); font-size: 12px; margin-top: 12px; font-weight: 700; min-height: 16px; }
 #overlay-start { position: fixed; inset: 0; background: rgba(26, 21, 18, 0.9); backdrop-filter: blur(10px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .btn-start { padding: 15px 40px; font-size: 14px; border-radius: 50px; letter-spacing: 2px;}
 
@@ -189,9 +191,10 @@ input:checked + .slider:before { transform: translateX(18px); }
 <div id="login-screen">
   <form class="login-box" id="form-login">
     <h2 class="brand-font">Acesso Administrativo</h2>
-    <input type="email" id="admin-email" placeholder="E-mail Operacional" required>
-    <input type="password" id="admin-senha" placeholder="Senha" required>
+    <input type="email" id="admin-email" placeholder="E-mail Operacional" autocomplete="username" required>
+    <input type="password" id="admin-senha" placeholder="Senha" autocomplete="current-password" required>
     <button type="submit" class="btn-gradient">Autenticar</button>
+    <p id="login-erro"></p>
   </form>
 </div>
 
@@ -282,6 +285,12 @@ input:checked + .slider:before { transform: translateX(18px); }
           <div class="col-header" style="color:var(--text-muted);">Finalizados <span class="count" id="count-concluido">0</span></div>
           <div class="col-body" id="list-concluido"></div>
         </div>
+
+        <!-- AJUSTE 6: coluna de cancelados, permitindo reabrir um pedido cancelado por engano -->
+        <div class="kanban-col" data-status="Cancelado" ondragover="dragOver(event)" ondrop="drop(event, 'Cancelado')">
+          <div class="col-header" style="color:var(--danger);">Cancelados <span class="count" id="count-cancelado">0</span></div>
+          <div class="col-body" id="list-cancelado"></div>
+        </div>
       </div>
 
       <div id="view-relatorios">
@@ -339,7 +348,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     <h2>Ajustes Operacionais</h2>
     
     <div class="tabs-header">
-      <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">Automação & Expediente</button>
+      <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">Automação &amp; Expediente</button>
       <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">Pizzas</button>
       <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">Esfihas</button>
       <button class="tab-btn" onclick="switchTab('tab-divulgacao', this)">Divulgação</button>
@@ -435,7 +444,8 @@ const icons = {
   mapPin: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
   whatsapp: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`,
   printer: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path></svg>`,
-  cancel: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
+  cancel: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+  undo: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`
 };
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
@@ -448,24 +458,43 @@ let crmCache = new Map();
 let configuracoesGlobais = { statusLoja: 'auto', itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
 let somLigado = true; 
 let chartInstance = null;
-const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+let sistemaIniciado = false;
+let unsubConfig = null, unsubPedidos = null;
 
+const brl = c => ((c || 0) / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+/* AJUSTE 2: removido o bypass ?dev=true. Sem autenticação as regras do Firestore
+   negam list/update em "pedidos", então a tela abriria vazia e sem salvar nada. */
 auth.onAuthStateChanged(user => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const modoDev = urlParams.get('dev') === 'true';
-
-  if (user || modoDev) { 
+  if (user) { 
     document.getElementById('login-screen').style.display = 'none'; 
     document.getElementById('overlay-start').style.display = 'flex'; 
   } else { 
     document.getElementById('login-screen').style.display = 'flex'; 
-    document.getElementById('overlay-start').style.display = 'none'; 
+    document.getElementById('overlay-start').style.display = 'none';
+    if (unsubConfig) { unsubConfig(); unsubConfig = null; }
+    if (unsubPedidos) { unsubPedidos(); unsubPedidos = null; }
+    sistemaIniciado = false;
+    pedidosMap.clear();
+    crmCache.clear();
+    document.getElementById('admin-senha').value = '';
   }
 });
 
-document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar. Verifique os dados.")); });
-function sair() { auth.signOut(); location.reload(); }
+document.getElementById('form-login').addEventListener('submit', (e) => { 
+  e.preventDefault(); 
+  const elErro = document.getElementById('login-erro');
+  elErro.textContent = '';
+  auth.signInWithEmailAndPassword(document.getElementById('admin-email').value.trim(), document.getElementById('admin-senha').value)
+    .catch(error => {
+      console.error('[LOGIN]', error.code, error.message);
+      elErro.textContent = (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found')
+        ? 'E-mail ou senha incorretos.'
+        : 'Erro ao autenticar: ' + error.code;
+    }); 
+});
+function sair() { auth.signOut().finally(() => location.reload()); }
 
 function toggleSom() {
   somLigado = !somLigado;
@@ -506,12 +535,15 @@ function abrirModalCatalogo() { document.getElementById('modal-catalogo').classL
 function fecharModalCatalogo() { document.getElementById('modal-catalogo').classList.remove('open'); }
 
 function iniciarSistema() {
+  if (sistemaIniciado) { document.getElementById('overlay-start').style.display = 'none'; return; }
+  sistemaIniciado = true;
   document.getElementById('overlay-start').style.display = 'none';
   if(somLigado) { document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{}); }
   
-  db.collection('configuracoes').doc('geral').onSnapshot(doc => {
+  /* AJUSTE 1a: listener de configurações agora reporta erro em vez de falhar em silêncio */
+  unsubConfig = db.collection('configuracoes').doc('geral').onSnapshot(doc => {
     if(doc.exists) {
-        configuracoesGlobais = doc.data();
+        configuracoesGlobais = doc.data() || {};
         if(!configuracoesGlobais.itensEsgotados) configuracoesGlobais.itensEsgotados = [];
         if(!configuracoesGlobais.horarios) configuracoesGlobais.horarios = {};
         if(!configuracoesGlobais.modoPromocoes) configuracoesGlobais.modoPromocoes = 'auto'; 
@@ -519,27 +551,56 @@ function iniciarSistema() {
              configuracoesGlobais.statusLoja = configuracoesGlobais.forcarFechamento ? 'pausado' : 'auto';
         }
         
-        document.getElementById('select-status-loja').value = configuracoesGlobais.statusLoja;
-        document.getElementById('select-modo-promo').value = configuracoesGlobais.modoPromocoes;
-        document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
+        /* AJUSTE 4: só repinta os selects/inputs se o campo não estiver em edição */
+        if (!estaEditandoConfig()) {
+          document.getElementById('select-status-loja').value = configuracoesGlobais.statusLoja;
+          document.getElementById('select-modo-promo').value = configuracoesGlobais.modoPromocoes;
+          document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
+        }
     }
     atualizarUIConfig();
+  }, err => {
+    console.error('[CONFIG]', err.code, err.message);
+    const badgeTop = document.getElementById('header-status-badge');
+    badgeTop.className = 'top-bar-status status-encerrado';
+    badgeTop.innerHTML = '⚠️ Erro de conexão (' + esc(err.code) + ')';
   });
 
   const hoje = new Date(); hoje.setHours(0,0,0,0);
-  db.collection('pedidos').where('data_pedido', '>=', hoje).orderBy('data_pedido', 'asc').onSnapshot(snapshot => {
-    let temNovo = false;
+
+  /* AJUSTE 1b: listener de pedidos com callback de erro. Sem ele, uma negativa de
+     permissão deixaria o kanban vazio para sempre, sem nenhum aviso na tela. */
+  unsubPedidos = db.collection('pedidos').where('data_pedido', '>=', hoje).orderBy('data_pedido', 'asc').onSnapshot(snapshot => {
     snapshot.docChanges().forEach(change => {
       const dados = change.doc.data(); dados.id = change.doc.id;
-      if (change.type === 'added' || change.type === 'modified') { pedidosMap.set(dados.id, dados); if (dados.status === 'Novo') temNovo = true; }
+      if (change.type === 'added' || change.type === 'modified') { pedidosMap.set(dados.id, dados); }
       if (change.type === 'removed') pedidosMap.delete(dados.id);
     });
     renderizarKanban();
     const existeNovo = Array.from(pedidosMap.values()).some(p => p.status === 'Novo');
     const audio = document.getElementById('audio-alerta');
     if (existeNovo && somLigado) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
+  }, err => {
+    console.error('[PEDIDOS]', err.code, err.message);
+    const aviso = `<div class="empty-state"><span>⚠️</span> Falha ao carregar pedidos (${esc(err.code)}).<br>Verifique o login e as regras do Firestore.</div>`;
+    ['novo','preparando','saiu','concluido','cancelado'].forEach(c => {
+      const el = document.getElementById('list-' + c);
+      if (el) el.innerHTML = (c === 'novo') ? aviso : '';
+    });
   });
-  setInterval(renderizarKanban, 30000);
+
+  /* AJUSTE 5: o refresh de 30s não roda durante um arraste, senão o card
+     sendo segurado é destruído no meio do gesto */
+  setInterval(() => { if (!arrastando) renderizarKanban(); }, 30000);
+}
+
+/* AJUSTE 4 (auxiliar): detecta se o operador está mexendo em algum campo do modal */
+function estaEditandoConfig() {
+  const modalAberto = document.getElementById('modal-catalogo').classList.contains('open');
+  if (!modalAberto) return false;
+  const el = document.activeElement;
+  if (!el) return false;
+  return !!el.closest('#schedule-list, #input-texto-funcionamento, #input-qrcode-url, #select-status-loja, #select-modo-promo');
 }
 
 // ------------------------------------------------------------------
@@ -550,37 +611,52 @@ function moverPedido(id, novoStatus) {
     if(!p) return;
     
     if (novoStatus === 'Saiu para Entrega' || novoStatus === 'Pronto para Retirada') {
+        /* AJUSTE 3: cliente_nome ausente não derruba mais a função */
+        const primeiroNome = String(p.cliente_nome || '').trim().split(' ')[0] || 'tudo bem';
+        const tel = String(p.cliente_telefone || '').replace(/\D/g, '');
         let msg = '';
-        if (p.tipo_entrega === 'Retirada') { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho já está PRONTO para retirada! 🛍️`; } 
-        else { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho acabou de sair para entrega! 🛵`; }
-        window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+        if (p.tipo_entrega === 'Retirada') { msg = `Olá, ${primeiroNome}! 🍕 Seu pedido do Doce Capricho já está PRONTO para retirada! 🛍️`; } 
+        else { msg = `Olá, ${primeiroNome}! 🍕 Seu pedido do Doce Capricho acabou de sair para entrega! 🛵`; }
+        if (tel) window.open(`https://wa.me/${tel.length <= 11 ? '55' + tel : tel}?text=${encodeURIComponent(msg)}`, '_blank'); 
     }
     
-    document.getElementById(`card-${id}`).style.opacity = '0.5';
-    db.collection('pedidos').doc(id).update({ status: novoStatus }).catch(err => alert("Erro ao mover pedido. Verifique sua conexão."));
+    const card = document.getElementById(`card-${id}`);
+    if (card) card.style.opacity = '0.5';
+
+    db.collection('pedidos').doc(id).update({ status: novoStatus, atualizado_em: firebase.firestore.FieldValue.serverTimestamp() })
+      .catch(err => { 
+        console.error('[MOVER]', err.code, err.message);
+        if (card) card.style.opacity = '1';
+        alert("Erro ao mover pedido (" + err.code + "). Verifique sua conexão e se você continua logado.");
+      });
 }
 
 let dragSourceId = null;
-function dragStart(e, id) { dragSourceId = id; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); setTimeout(() => { e.target.classList.add('dragging'); }, 0); }
-function dragEnd(e) { e.target.classList.remove('dragging'); document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over')); }
+let arrastando = false; /* AJUSTE 5 */
+function dragStart(e, id) { arrastando = true; dragSourceId = id; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); setTimeout(() => { e.target.classList.add('dragging'); }, 0); }
+function dragEnd(e) { arrastando = false; e.target.classList.remove('dragging'); document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over')); }
 function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const col = e.currentTarget.closest('.kanban-col'); if(col) col.classList.add('drag-over'); }
 function drop(e, newStatus) {
-  e.preventDefault(); document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-  const id = e.dataTransfer.getData('text/plain'); if(!id) return;
+  e.preventDefault(); arrastando = false;
+  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
+  const id = e.dataTransfer.getData('text/plain') || dragSourceId; if(!id) return;
   const p = pedidosMap.get(id);
   if(p && p.status !== newStatus) {
      let finalStatus = newStatus;
      if (newStatus === 'Saiu para Entrega' && p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada';
+     if (newStatus === 'Cancelado') { if (!confirm("Arrastar para Cancelados vai CANCELAR este pedido. Confirmar?")) return; }
      moverPedido(id, finalStatus);
   }
 }
 
 async function fetchCRM(telefone, elementId) {
-    if(crmCache.has(telefone)) { updateCRMUI(elementId, crmCache.get(telefone)); return; }
+    const tel = String(telefone || '');
+    if (!tel) { updateCRMUI(elementId, 0); return; }
+    if(crmCache.has(tel)) { updateCRMUI(elementId, crmCache.get(tel)); return; }
     try {
-        let snap = await db.collection('pedidos').where('cliente_telefone', '==', telefone).where('status', '==', 'Concluído').get();
-        let count = snap.size; crmCache.set(telefone, count); updateCRMUI(elementId, count);
-    } catch(e) {}
+        let snap = await db.collection('pedidos').where('cliente_telefone', '==', tel).where('status', '==', 'Concluído').get();
+        let count = snap.size; crmCache.set(tel, count); updateCRMUI(elementId, count);
+    } catch(e) { console.warn('[CRM]', e.code); }
 }
 
 function updateCRMUI(elementId, count) {
@@ -591,34 +667,39 @@ function updateCRMUI(elementId, count) {
 }
 
 function renderizarKanban() {
-  const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
+  const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [], 'Cancelado': [] };
   let fat = 0, qtd = 0;
   
-  Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { 
-      if(p.status !== 'Cancelado') {
-          let mapStatus = p.status;
-          if(p.status === 'Pronto para Retirada') mapStatus = 'Saiu para Entrega';
-          if(cols[mapStatus||'Novo']) cols[mapStatus||'Novo'].push(p); 
-          qtd++; if(p.status === 'Concluído') { fat += p.total_centavos; }
-      }
+  Array.from(pedidosMap.values()).sort((a,b) => ((a.data_pedido && a.data_pedido.toMillis && a.data_pedido.toMillis()) || 0) - ((b.data_pedido && b.data_pedido.toMillis && b.data_pedido.toMillis()) || 0)).forEach(p => { 
+      /* AJUSTE 6: cancelados agora vão para a própria coluna em vez de desaparecer */
+      if(p.status === 'Cancelado') { cols['Cancelado'].push(p); return; }
+      let mapStatus = p.status;
+      if(p.status === 'Pronto para Retirada') mapStatus = 'Saiu para Entrega';
+      if(cols[mapStatus || 'Novo']) cols[mapStatus || 'Novo'].push(p); 
+      qtd++; 
+      if(p.status === 'Concluído') { fat += (p.total_centavos || 0); }
   });
   
   document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
 
   Object.keys(cols).forEach(status => {
-    const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : 'concluido';
-    document.getElementById(`count-${cid}`).textContent = cols[status].length;
-    if (cols[status].length === 0) { document.getElementById(`list-${cid}`).innerHTML = `<div class="empty-state"><span>🍃</span> Sem pedidos.</div>`; return; }
+    const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : status === 'Concluído' ? 'concluido' : 'cancelado';
+    const elCount = document.getElementById(`count-${cid}`);
+    const elList  = document.getElementById(`list-${cid}`);
+    if (!elCount || !elList) return;
 
-    document.getElementById(`list-${cid}`).innerHTML = cols[status].map(p => {
-      let dif = Math.floor((Date.now() - (p.data_pedido?.toMillis()||Date.now())) / 60000);
+    elCount.textContent = cols[status].length;
+    if (cols[status].length === 0) { elList.innerHTML = `<div class="empty-state"><span>🍃</span> Sem pedidos.</div>`; return; }
+
+    elList.innerHTML = cols[status].map(p => {
+      const ms = (p.data_pedido && p.data_pedido.toMillis) ? p.data_pedido.toMillis() : Date.now();
+      let dif = Math.floor((Date.now() - ms) / 60000);
       let tText = dif<1?'Agora':dif<60?`${dif}m`:`${Math.floor(dif/60)}h ${dif%60}m`;
-      let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
-      let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
+      const emAndamento = (status !== 'Concluído' && status !== 'Cancelado');
+      let tCor = emAndamento?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
+      let bCor = emAndamento?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
       
-      // ------------------------------------------------------------------
-      // NOVO: ENDEREÇO DESTACADO NO KANBAN E MENSAGEM DE RETIRADA
-      // ------------------------------------------------------------------
+      // ENDEREÇO DESTACADO NO KANBAN E MENSAGEM DE RETIRADA
       let enderecoHTML = ''; 
       if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) { 
           enderecoHTML = `<div class="p-endereco" style="background: rgba(221, 167, 58, 0.1); border: 1px dashed var(--gold); padding: 8px; border-radius: 6px; margin-top: 6px; flex-direction: column; gap: 4px;">
@@ -629,8 +710,17 @@ function renderizarKanban() {
           <span style="font-size: 11px; color: var(--text-main); font-weight: 800;">🛍️ CLIENTE FARÁ A RETIRADA</span></div>`;
       }
       
-      let itensHTML = p.itens.map(i => { let extrasHtml = (i.extras && i.extras.length > 0) ? `<div style="margin-top: 2px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight: 600;">+ ${e.nome}</span>`).join('') + `</div>` : ''; let obsHtml = i.obs ? `<div class="p-obs">${i.obs}</div>` : ''; return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${i.nome}</strong>${extrasHtml}${obsHtml}</div>`; }).join('');
-      let btnCancel = status !== 'Concluído' ? `<button class="btn-icon-only" onclick="cancelarPedido('${p.id}')" title="Cancelar Pedido">${icons.cancel}</button>` : '';
+      /* AJUSTE 3: itens ausentes não derrubam mais a coluna inteira */
+      const itens = Array.isArray(p.itens) ? p.itens : [];
+      let itensHTML = itens.length
+        ? itens.map(i => { 
+            let extrasHtml = (i.extras && i.extras.length > 0) ? `<div style="margin-top: 2px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight: 600;">+ ${esc(e.nome)}</span>`).join('') + `</div>` : ''; 
+            let obsHtml = i.obs ? `<div class="p-obs">${esc(i.obs)}</div>` : ''; 
+            return `<div style="margin-bottom:8px;"><strong>${esc(i.qtd)}x ${esc(i.nome)}</strong>${extrasHtml}${obsHtml}</div>`; 
+          }).join('')
+        : `<div style="color:var(--danger); font-weight:700; font-size:11px;">⚠️ Pedido sem itens registrados</div>`;
+
+      let btnCancel = emAndamento ? `<button class="btn-icon-only" onclick="cancelarPedido('${p.id}')" title="Cancelar Pedido">${icons.cancel}</button>` : '';
 
       let crmId = `crm-${p.id}`; fetchCRM(p.cliente_telefone, crmId);
 
@@ -643,29 +733,38 @@ function renderizarKanban() {
           btnAcaoStatus = `<button onclick="moverPedido('${p.id}', '${proxStatus}')" class="btn-action-card btn-action-prep">${txtDespacho}</button>`;
       } else if (status === 'Saiu para Entrega') {
           btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Concluído')" class="btn-action-card btn-action-saiu">🎉 FINALIZAR PEDIDO</button>`;
+      } else if (status === 'Cancelado') {
+          /* AJUSTE 6: reabrir um cancelamento feito por engano */
+          btnAcaoStatus = `<button onclick="reabrirPedido('${p.id}')" class="btn-action-card" style="background: var(--text-muted); color:#fff;">${icons.undo} REABRIR PEDIDO</button>`;
       }
 
+      const telLimpo = String(p.cliente_telefone || '').replace(/\D/g, '');
+      const linkWp = telLimpo ? `https://wa.me/${telLimpo.length <= 11 ? '55' + telLimpo : telLimpo}` : null;
+      const btnWp = linkWp
+        ? `<a href="${linkWp}" target="_blank" rel="noopener" class="btn-icon-only btn-wp" title="WhatsApp Cliente">${icons.whatsapp}</a>`
+        : '';
+
       return `
-      <div class="card-pedido ${bCor}" id="card-${p.id}" draggable="true" ondragstart="dragStart(event, '${p.id}')" ondragend="dragEnd(event)">
+      <div class="card-pedido ${bCor}" id="card-${p.id}" draggable="true" ondragstart="dragStart(event, '${p.id}')" ondragend="dragEnd(event)" ${status==='Cancelado'?'style="opacity:0.6;"':''}>
         <div class="card-header">
-          <span class="p-id">#${p.id.slice(-5).toUpperCase()}</span>
+          <span class="p-id">#${esc(String(p.id).slice(-5).toUpperCase())}</span>
           <span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span>
         </div>
         <div class="p-cliente-area">
           <div>
-            <span class="p-nome">${esc(p.cliente_nome)}</span>
+            <span class="p-nome">${esc(p.cliente_nome || 'Cliente sem nome')}</span>
             <span id="${crmId}" class="crm-badge">⏳ Buscando...</span>
           </div>
-          <span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span>
+          <span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${esc(p.tipo_entrega || '—')}</span>
         </div>
         <div class="p-itens">${itensHTML}</div>
         <div class="p-footer">
           <span class="p-total">${brl(p.total_centavos)}</span>
-          <span class="badge-pgto">${p.forma_pagamento}</span>
+          <span class="badge-pgto">${esc(p.forma_pagamento || '—')}</span>
         </div>
         ${enderecoHTML}
         <div class="action-buttons">
-          <a href="https://wa.me/55${p.cliente_telefone}" target="_blank" class="btn-icon-only btn-wp" title="WhatsApp Cliente">${icons.whatsapp}</a>
+          ${btnWp}
           <button class="btn-icon-only" onclick="imprimirComanda('${p.id}')" title="Imprimir Comanda">${icons.printer}</button>
           ${btnCancel}
         </div>
@@ -675,7 +774,18 @@ function renderizarKanban() {
   });
 }
 
-function cancelarPedido(id) { if(confirm("🛑 ATENÇÃO!\nTem certeza que deseja MARCAR ESTE PEDIDO COMO CANCELADO?")) { db.collection('pedidos').doc(id).update({ status: 'Cancelado' }); } }
+/* AJUSTE 6: cancelamento e reabertura agora reportam falha */
+function cancelarPedido(id) { 
+  if(!confirm("🛑 ATENÇÃO!\nTem certeza que deseja MARCAR ESTE PEDIDO COMO CANCELADO?")) return;
+  db.collection('pedidos').doc(id).update({ status: 'Cancelado', atualizado_em: firebase.firestore.FieldValue.serverTimestamp() })
+    .catch(err => { console.error('[CANCELAR]', err.code); alert("Falha ao cancelar: " + err.code); });
+}
+
+function reabrirPedido(id) {
+  if(!confirm("Reabrir este pedido? Ele voltará para a coluna 'Novos Pedidos'.")) return;
+  db.collection('pedidos').doc(id).update({ status: 'Novo', atualizado_em: firebase.firestore.FieldValue.serverTimestamp() })
+    .catch(err => { console.error('[REABRIR]', err.code); alert("Falha ao reabrir: " + err.code); });
+}
 
 function atualizarUIConfig() {
   const badgeTop = document.getElementById('header-status-badge');
@@ -688,15 +798,17 @@ function atualizarUIConfig() {
   } else {
     badgeTop.className = 'top-bar-status status-aberto'; badgeTop.innerHTML = '🟢 Aberto (Automático)';
   }
-  renderizarModaisConfig();
+
+  /* AJUSTE 4: não reescreve o modal enquanto o operador digita horários ou textos */
+  if (!estaEditandoConfig()) renderizarModaisConfig();
 }
 
 function salvarStatusLoja(e) {
   const btn = e.target; btn.textContent = '...';
   const novoStatus = document.getElementById('select-status-loja').value;
-  db.collection('configuracoes').doc('geral').set({ statusLoja: novoStatus }, { merge: true }).then(() => {
+  db.collection('configuracoes').doc('geral').set({ statusLoja: novoStatus, forcarFechamento: novoStatus === 'pausado' }, { merge: true }).then(() => {
     btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Aplicar Status Imediatamente', 2000);
-  }).catch(err => { alert("Erro."); btn.textContent = 'Aplicar Status Imediatamente'; });
+  }).catch(err => { console.error('[STATUS]', err.code); alert("Erro ao salvar: " + err.code); btn.textContent = 'Aplicar Status Imediatamente'; });
 }
 
 function salvarModoPromo(e) {
@@ -704,35 +816,36 @@ function salvarModoPromo(e) {
   const modo = document.getElementById('select-modo-promo').value;
   db.collection('configuracoes').doc('geral').set({ modoPromocoes: modo }, { merge: true }).then(() => {
     btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Status', 2000);
-  }).catch(err => { alert("Erro."); btn.textContent = 'Salvar Status'; });
+  }).catch(err => { console.error('[PROMO]', err.code); alert("Erro ao salvar: " + err.code); btn.textContent = 'Salvar Status'; });
 }
 
 function salvarTextoFuncionamento(e) {
   const btn = e.target; btn.textContent = '...';
   db.collection('configuracoes').doc('geral').set({ textoFuncionamento: document.getElementById('input-texto-funcionamento').value.trim() }, { merge: true }).then(() => {
     btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Rodapé', 2000);
-  }).catch(err => alert("Erro."));
+  }).catch(err => { console.error('[RODAPE]', err.code); alert("Erro ao salvar: " + err.code); btn.textContent = 'Salvar Rodapé'; });
 }
 
 function salvarHorarios(e) {
   const btn = e.target; btn.textContent = '...';
   let novosHorarios = {};
   for(let i=0; i<7; i++) {
-     novosHorarios[i] = {
-       ativo: document.getElementById(`dia-ativo-${i}`).checked,
-       abre: document.getElementById(`dia-abre-${i}`).value || '18:30',
-       fecha: document.getElementById(`dia-fecha-${i}`).value || '23:00'
-     };
+     const ck = document.getElementById(`dia-ativo-${i}`);
+     const ab = document.getElementById(`dia-abre-${i}`);
+     const fe = document.getElementById(`dia-fecha-${i}`);
+     if (!ck || !ab || !fe) continue;
+     novosHorarios[i] = { ativo: ck.checked, abre: ab.value || '18:30', fecha: fe.value || '23:00' };
   }
   db.collection('configuracoes').doc('geral').set({ horarios: novosHorarios }, { merge: true }).then(() => {
     btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Calendário', 2000);
-  }).catch(err => alert("Erro."));
+  }).catch(err => { console.error('[HORARIOS]', err.code); alert("Erro ao salvar: " + err.code); btn.textContent = 'Salvar Calendário'; });
 }
 
 function toggleItem(id, marcarComoAtivo) {
   let esgotados = [...(configuracoesGlobais.itensEsgotados || [])];
   if (marcarComoAtivo) { esgotados = esgotados.filter(item => item !== id); } else { if (!esgotados.includes(id)) esgotados.push(id); }
-  db.collection('configuracoes').doc('geral').set({ itensEsgotados: esgotados }, { merge: true });
+  db.collection('configuracoes').doc('geral').set({ itensEsgotados: esgotados }, { merge: true })
+    .catch(err => { console.error('[ESGOTADO]', err.code); alert("Erro ao salvar disponibilidade: " + err.code); });
 }
 
 const CARDAPIO = [
@@ -753,16 +866,17 @@ function renderizarModaisConfig() {
   const esgotados = configuracoesGlobais.itensEsgotados || [];
   const renderItem = (item) => {
     const isAtivo = !esgotados.includes(item.id);
-    return `<div class="catalog-item"><div class="catalog-info"><strong>${item.nome}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}">${isAtivo ? 'Disponível' : 'Esgotado'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
+    return `<div class="catalog-item"><div class="catalog-info"><strong>${esc(item.nome)}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}; font-size:10px; font-weight:700;">${isAtivo ? 'Disponível' : 'Esgotado'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
   };
   document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
   document.getElementById('catalog-list-esfihas').innerHTML = CARDAPIO.filter(i => i.tipo === 'esfiha').map(renderItem).join('');
   document.getElementById('catalog-list-extras').innerHTML = CARDAPIO.filter(i => i.tipo === 'extra').map(renderItem).join('');
 
+  const horarios = configuracoesGlobais.horarios || {};
   let htmlHorarios = '';
   for(let i=0; i<7; i++) {
-    let h = configuracoesGlobais.horarios[i] || { ativo: (i===0 || (i>=4 && i<=6)), abre: '18:30', fecha: '23:00' }; 
-    htmlHorarios += `<div class="dia-row"><label class="dia-label"><input type="checkbox" id="dia-ativo-${i}" ${h.ativo ? 'checked' : ''}> ${DIAS_SEMANA[i]}</label><div class="dia-inputs"><input type="time" id="dia-abre-${i}" value="${h.abre}"><span style="font-size:11px; color:var(--text-muted);">às</span><input type="time" id="dia-fecha-${i}" value="${h.fecha}"></div></div>`;
+    let h = horarios[i] || { ativo: (i===0 || (i>=4 && i<=6)), abre: '18:30', fecha: '23:00' }; 
+    htmlHorarios += `<div class="dia-row"><label class="dia-label"><input type="checkbox" id="dia-ativo-${i}" ${h.ativo ? 'checked' : ''}> ${DIAS_SEMANA[i]}</label><div class="dia-inputs"><input type="time" id="dia-abre-${i}" value="${esc(h.abre || '18:30')}"><span style="font-size:11px; color:var(--text-muted);">às</span><input type="time" id="dia-fecha-${i}" value="${esc(h.fecha || '23:00')}"></div></div>`;
   }
   document.getElementById('schedule-list').innerHTML = htmlHorarios;
 }
@@ -772,11 +886,10 @@ function renderizarModaisConfig() {
 // ------------------------------------------------------------------
 function imprimirComanda(id) {
   const p = pedidosMap.get(id); if(!p) return;
-  const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
+  const dataHora = (p.data_pedido && p.data_pedido.toDate) ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
   
-  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p>`;
+  let html = `<html><head><meta charset="UTF-8"><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${esc(String(id).slice(-5).toUpperCase())}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${esc(p.cliente_nome || '—')}</p><p>Tel: ${esc(p.cliente_telefone || '—')}</p>`;
   
-  // BLOCO DE ENDEREÇO GIGANTE NA IMPRESSÃO
   if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) {
       html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">ENTREGA:<br>${esc(p.cliente_endereco)}</div>`;
   } else if (p.tipo_entrega === 'Retirada') {
@@ -784,8 +897,21 @@ function imprimirComanda(id) {
   }
   
   html += `<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
-  p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; });
-  html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
+
+  /* AJUSTE 3: itens ausentes não quebram mais a impressão */
+  const itens = Array.isArray(p.itens) ? p.itens : [];
+  if (!itens.length) {
+    html += `<div class="item-row bold">** PEDIDO SEM ITENS REGISTRADOS **</div>`;
+  } else {
+    itens.forEach(i => { 
+      html += `<div class="item-row"><span class="bold">${esc(i.qtd)}x ${esc(i.nome)}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; 
+      if(Array.isArray(i.extras)) { i.extras.forEach(e => { html += `<div class="extras">+ ${esc(e.nome)} (${esc(e.aplicacao)})</div>`; }); } 
+      if(i.obs) { html += `<div class="obs">OBS: ${esc(i.obs)}</div>`; } 
+      html += `<br>`; 
+    });
+  }
+
+  html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${esc(p.forma_pagamento || '—')}</span></p><br><br><br>.</body></html>`;
   
   let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
   iframe.contentWindow.document.open(); iframe.contentWindow.document.write(html); iframe.contentWindow.document.close();
@@ -804,24 +930,27 @@ async function gerarRelatorio() {
       if (p.status === 'Cancelado') qFalha++;
       else if (p.status === 'Concluído') {
         qConc++; fat += (p.total_centavos || 0);
-        const dataStr = p.data_pedido.toDate().toLocaleDateString('pt-BR');
+        const dataStr = (p.data_pedido && p.data_pedido.toDate) ? p.data_pedido.toDate().toLocaleDateString('pt-BR') : '—';
         if (!fatDia[dataStr]) fatDia[dataStr] = 0; fatDia[dataStr] += (p.total_centavos || 0);
-        if(p.itens) { p.itens.forEach(item => { if(!itensCount[item.nome]) itensCount[item.nome] = 0; itensCount[item.nome] += item.qtd; }); }
+        if(Array.isArray(p.itens)) { p.itens.forEach(item => { const n = item.nome || 'Sem nome'; if(!itensCount[n]) itensCount[n] = 0; itensCount[n] += (item.qtd || 0); }); }
       }
     });
     document.getElementById('kpi-fat').textContent = brl(fat); document.getElementById('kpi-qtd').textContent = qConc;
     document.getElementById('kpi-ticket').textContent = qConc > 0 ? brl(fat / qConc) : 'R$ 0,00'; document.getElementById('kpi-falhas').textContent = qFalha;
     
     const topItens = Object.entries(itensCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
-    document.getElementById('lista-top-produtos').innerHTML = topItens.length === 0 ? `<div class="empty-state">Nenhum produto concluído.</div>` : topItens.map(([n, q], idx) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom: 1px solid var(--border-light);"><span style="font-size:11px; font-weight:700;"><span style="color:var(--gold-dark); margin-right:8px;">${idx+1}º</span>${n}</span><span style="font-size:10px; font-weight:800; background:#E2E8F0; padding:2px 8px; border-radius:12px;">${q} un</span></div>`).join('');
+    document.getElementById('lista-top-produtos').innerHTML = topItens.length === 0 ? `<div class="empty-state">Nenhum produto concluído.</div>` : topItens.map(([n, q], idx) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom: 1px solid var(--border-light);"><span style="font-size:11px; font-weight:700;"><span style="color:var(--gold-dark); margin-right:8px;">${idx+1}º</span>${esc(n)}</span><span style="font-size:10px; font-weight:800; background:#E2E8F0; padding:2px 8px; border-radius:12px;">${q} un</span></div>`).join('');
     
-    const labels = Object.keys(fatDia).sort((a,b) => { const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/'); return new Date(`${ya}-${ma}-${da}`) - new Date(`${yb}-${mb}-${db}`); });
+    const labels = Object.keys(fatDia).filter(l => l !== '—').sort((a,b) => { const [da,ma,ya]=a.split('/'); const [dbb,mb,yb]=b.split('/'); return new Date(`${ya}-${ma}-${da}`) - new Date(`${yb}-${mb}-${dbb}`); });
     const dataVals = labels.map(l => fatDia[l] / 100);
     if (chartInstance) chartInstance.destroy();
     const ctx = document.getElementById('chart-fat').getContext('2d');
     let grad = ctx.createLinearGradient(0, 0, 0, 400); grad.addColorStop(0, 'rgba(218, 165, 32, 0.8)'); grad.addColorStop(1, 'rgba(218, 165, 32, 0)');
     chartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Faturamento Bruto (R$)', data: dataVals, backgroundColor: grad, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-  } catch(e) {}
+  } catch(e) { 
+    console.error('[RELATORIO]', e.code, e.message);
+    alert("Não foi possível gerar o relatório (" + (e.code || 'erro') + ").\nSe o console indicar índice ausente, clique no link que o Firebase mostra para criá-lo.");
+  }
 }
 
 let qrCodeObj = null;
