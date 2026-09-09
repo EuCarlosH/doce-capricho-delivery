@@ -192,7 +192,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal:hover { color: var(--terracotta); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .close-modal:hover { color: var(--danger); }
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; } :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
 
-/* ESTILOS DA TIMELINE DE RASTREIO */
 .tracking-header { text-align: center; margin-bottom: 20px; }
 .tracking-header h3 { font-size: 14px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; } :root[data-theme="dark"] .tracking-header h3 { color: var(--gold); }
 .tracking-header p { font-size: 11px; color: var(--text-muted); }
@@ -296,7 +295,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s ease; margin-top: -5px; } :root[data-theme="dark"] .btn-continue { font-weight: 600; }
 .btn-continue:hover { color: var(--text-main); } :root[data-theme="dark"] .btn-continue:hover { color: var(--white); }
 
-/* FOOTER */
 footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid var(--border-light); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; transition: background-color 0.4s ease; }
 .footer-logo { font-size: 20px; color: var(--text-main); letter-spacing: 2px; } :root[data-theme="dark"] .footer-logo { color: var(--gold); }
 .footer-socials { display: flex; gap: 15px; justify-content: center; }
@@ -393,7 +391,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <div id="banner-pausado"></div>
 
   <div id="menu-wrapper" style="display: flex; flex-direction: column;">
-
     <div id="wrap-pizzas" style="order: 2;">
       <div class="mode-toggle-area">
         <div class="mode-buttons" role="group">
@@ -427,7 +424,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         <tbody id="extras-tbody"></tbody>
       </table>
     </div>
-
   </div>
 </section>
 
@@ -465,7 +461,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
-<!-- MODAL DE RASTREIO -->
 <div class="modal-overlay" id="tracking-overlay">
   <div class="modal-box" style="max-width: 400px;">
     <button class="close-modal ripple" data-close="tracking-overlay">&times;</button>
@@ -495,7 +490,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- TELA DE PROMOÇÕES ATIVAS -->
 <div class="modal-overlay" id="modal-promocoes">
   <div class="modal-box">
     <button class="close-modal ripple" data-close="modal-promocoes">&times;</button>
@@ -573,7 +567,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
     </div>
 
-    <!-- UPSELL DINÂMICO NO CARRINHO -->
     <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center; animation: fadeIn 0.5s ease;">
       <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
@@ -719,7 +712,6 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
-<!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
 <div class="modal-overlay" id="promo-banner-overlay">
   <div class="modal-box" id="promo-modal-box">
     <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
@@ -755,9 +747,6 @@ const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) 
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
 
-// ----------------------------------------------------
-// AQUI ESTÃO AS NOVAS ESFIHAS (BACON E MORANGO)
-// ----------------------------------------------------
 const CARDAPIO = {
   tradicionais: [
     { id:'mussarela', img:'img/mussarela.jpg', nome:'Mussarela', desc:'Molho, mussarela e tomate', preco:4500 },
@@ -791,8 +780,8 @@ const CARDAPIO = {
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
     { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1200},
-    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em fatias com queijo mussarela derretido.', preco:1000 }
+    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1200 },
+    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
   ],
   esfihas_doces: [
     { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
@@ -1347,6 +1336,9 @@ async function enviarPedidoFinal(ev) {
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
 
+// ----------------------------------------------------
+// SISTEMA DE RASTREIO DE PEDIDOS EM TEMPO REAL
+// ----------------------------------------------------
 let unsubscribeRastreio = null;
 
 function abrirRastreio() {
@@ -1356,7 +1348,7 @@ function abrirRastreio() {
       return;
   }
   
-  $('#track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
+  document.getElementById('track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
   abrirModal('tracking-overlay');
 
   if(unsubscribeRastreio) unsubscribeRastreio();
@@ -1370,34 +1362,63 @@ function abrirRastreio() {
 }
 
 function atualizarTimeline(status, tipoEntrega) {
-  if(tipoEntrega === 'Retirada') {
-      $('#track-text-rota').textContent = 'Pronto p/ Retirada 🛍️';
-      $('#step-saiu .tl-content span').textContent = 'Te aguardamos na loja.';
-  } else {
-      $('#track-text-rota').textContent = 'Em Rota 🛵';
-      $('#step-saiu .tl-content span').textContent = 'Saiu para entrega.';
+  const txtRota = document.getElementById('track-text-rota');
+  const txtRotaSpan = document.querySelector('#step-saiu .tl-content span');
+  
+  if(txtRota && txtRotaSpan) {
+      if(tipoEntrega === 'Retirada') {
+          txtRota.textContent = 'Pronto p/ Retirada 🛍️';
+          txtRotaSpan.textContent = 'Te aguardamos na loja.';
+      } else {
+          txtRota.textContent = 'Em Rota 🛵';
+          txtRotaSpan.textContent = 'Saiu para entrega.';
+      }
   }
 
-  $$('.tl-step').forEach(el => { el.classList.remove('active'); el.classList.remove('done'); });
+  document.querySelectorAll('.tl-step').forEach(el => { 
+      el.classList.remove('active', 'done'); 
+  });
+
+  const trackDesc = document.getElementById('track-desc');
+  if(trackDesc) trackDesc.innerHTML = 'Acompanhe o status em tempo real';
+
+  const sNovo = document.getElementById('step-novo');
+  const sPrep = document.getElementById('step-preparando');
+  const sSaiu = document.getElementById('step-saiu');
+  const sConc = document.getElementById('step-concluido');
 
   if (status === 'Cancelado') {
-      $('#step-novo').classList.add('done');
-      $('#track-desc').innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
+      if(sNovo) sNovo.classList.add('done');
+      if(trackDesc) trackDesc.innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
   }
-  else if (status === 'Novo') { $('#step-novo').classList.add('active'); } 
+  else if (status === 'Novo') { 
+      if(sNovo) sNovo.classList.add('active'); 
+  } 
   else if (status === 'Preparando') {
-      $('#step-novo').classList.add('done');
-      $('#step-preparando').classList.add('active');
+      if(sNovo) sNovo.classList.add('done');
+      if(sPrep) sPrep.classList.add('active');
   } 
   else if (status === 'Saiu para Entrega' || status === 'Pronto para Retirada') {
-      $('#step-novo').classList.add('done'); $('#step-preparando').classList.add('done'); $('#step-saiu').classList.add('active');
+      if(sNovo) sNovo.classList.add('done'); 
+      if(sPrep) sPrep.classList.add('done'); 
+      if(sSaiu) sSaiu.classList.add('active');
   } 
   else if (status === 'Concluído') {
-      $('#step-novo').classList.add('done'); $('#step-preparando').classList.add('done'); $('#step-saiu').classList.add('done'); $('#step-concluido').classList.add('done');
+      if(sNovo) sNovo.classList.add('done'); 
+      if(sPrep) sPrep.classList.add('done'); 
+      if(sSaiu) sSaiu.classList.add('done'); 
+      if(sConc) sConc.classList.add('done');
   }
 }
 
-// FECHAR MODAL LIMPA O LISTENER DO RASTREIO
+// ATUALIZAÇÃO AUTOMÁTICA QUANDO O CLIENTE VOLTA PARA A ABA
+document.addEventListener('visibilitychange', () => {
+    const tracker = document.getElementById('tracking-overlay');
+    if (document.visibilityState === 'visible' && tracker && tracker.classList.contains('open')) {
+        abrirRastreio();
+    }
+});
+
 $$('[data-close="tracking-overlay"]').forEach(b => b.addEventListener('click', () => {
     if(unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
 }));
@@ -1476,7 +1497,6 @@ $('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value)
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
 
-// --- CARROSSEL INTELIGENTE DE FOTOS ---
 function iniciarCarrosselHero() {
   const container = document.getElementById('hero-carousel');
   if (!container) return;
@@ -1550,7 +1570,13 @@ function processarConfig(doc) {
 }
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
 setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
+
+// Esta é a função vital para evitar a suspensão da aba
+document.addEventListener('visibilitychange', () => { 
+    if (document.visibilityState === 'visible') { 
+        db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); 
+    } 
+});
 
 function processarEstatisticas(doc) {
   if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }
