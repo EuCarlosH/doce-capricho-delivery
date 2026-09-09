@@ -16,6 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
+/* PALETA DOCE CAPRICHO SAAS */
 :root {
   --gold: #DDA73A; --gold-dark: #C28F2A; --terracotta: #8B3A2B;   
   --bg-main: #F4F7F6; --bg-sidebar: #1A1512; --bg-card: #FFFFFF;      
@@ -31,6 +32,7 @@
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100dvh; width: 100vw; overflow: hidden; margin: 0; }
 h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 
+/* LAYOUT E TOP BAR */
 .app-container { display: flex; flex-direction: column; height: 100dvh; width: 100vw; overflow: hidden; }
 .top-bar { background: var(--bg-card); border-bottom: 1px solid var(--border-light); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
 .top-bar-left { display: flex; align-items: center; gap: 15px; }
@@ -43,6 +45,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .status-pausado { color: var(--warning); background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
 .status-encerrado { color: var(--danger); background: rgba(230, 57, 70, 0.1); border-color: rgba(230, 57, 70, 0.3); }
 
+/* SIDEBAR E CONTEÚDO */
 .content-wrapper { display: flex; flex-grow: 1; position: relative; overflow: hidden; background: var(--bg-main); }
 .sidebar { position: absolute; top: 0; left: -300px; width: 280px; height: 100%; background: var(--bg-sidebar); color: #FFF; display: flex; flex-direction: column; box-shadow: 10px 0 30px rgba(0,0,0,0.3); z-index: 1000; transition: left 0.3s var(--smooth); }
 .sidebar.open { left: 0; }
@@ -63,18 +66,21 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .nav-btn.danger { color: #E63946; } .nav-btn.danger:hover { background: rgba(230, 57, 70, 0.1); }
 .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-main); width: 100%; }
 
+/* KANBAN BOARD */
 .kanban-board { display: flex; gap: 12px; padding: 15px; flex-grow: 1; overflow-x: auto; overflow-y: hidden; align-items: stretch; }
-.kanban-col { display: flex; flex-direction: column; flex: 1 1 0; min-width: 220px; max-width: 400px; max-height: 100%; border-radius: 12px; transition: background 0.3s; }
+.kanban-col { display: flex; flex-direction: column; flex: 1 1 0; min-width: 280px; max-width: 400px; max-height: 100%; border-radius: 12px; transition: background 0.3s; }
 .kanban-col.drag-over { background: rgba(221, 167, 58, 0.05); border: 2px dashed var(--gold); }
 .col-header { padding: 0 0 10px 0; font-weight: 800; font-size: 11px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; letter-spacing: 1px; color: var(--text-main); }
 .col-header .count { background: #E2E8F0; padding: 4px 10px; border-radius: 20px; font-size: 10px; color: var(--text-main); font-weight: 800;}
 .col-body { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding: 2px; padding-bottom: 20px; }
 
+/* CRM BADGE */
 .crm-badge { font-size: 9px; padding: 3px 8px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px; opacity: 0; animation: fadeIn 0.4s ease forwards;}
 .crm-novo { background: rgba(47, 133, 90, 0.1); color: var(--success); border: 1px solid rgba(47, 133, 90, 0.3); }
 .crm-recorrente { background: rgba(140, 122, 107, 0.1); color: var(--text-muted); border: 1px solid var(--border-light); }
 .crm-fiel { background: rgba(221, 167, 58, 0.15); color: var(--gold-dark); border: 1px solid var(--gold); box-shadow: 0 0 5px rgba(221,167,58,0.3); }
 
+/* CARDS E FORMATAÇÃO */
 .card-pedido { background: var(--bg-card); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-light); flex-shrink: 0; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-sm); cursor: grab; }
 .card-pedido:active { cursor: grabbing; transform: scale(0.98); }
 .card-pedido.dragging { opacity: 0.5; transform: scale(0.95); box-shadow: none; border: 2px dashed var(--gold); }
@@ -88,11 +94,11 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .p-time.timer-atencao { color: var(--warning); }
 .p-time.timer-atrasado { color: var(--danger); }
 .p-cliente-area { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 2px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-light);}
-.p-nome { font-size: 13px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 4px;}
+.p-nome { font-size: 14px; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 4px;}
 .p-badge { font-size: 9px; padding: 4px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
 .badge-entrega { background: rgba(230, 57, 70, 0.1); color: var(--danger); }
 .badge-retirada { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); }
-.p-itens { font-size: 12px; color: var(--text-main); line-height: 1.5; padding: 2px 0; font-weight: 500; }
+.p-itens { font-size: 13px; color: var(--text-main); line-height: 1.5; padding: 2px 0; font-weight: 500; }
 .p-obs { font-size: 10px; color: var(--danger); background: rgba(230, 57, 70, 0.05); padding: 8px; border-radius: 6px; margin-top: 6px; font-weight: 700; border: 1px dashed var(--danger);}
 .p-footer { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; padding: 10px; border-radius: 8px; margin-top: 2px;}
 .p-total { font-size: 14px; font-weight: 800; color: var(--text-main); }
@@ -106,6 +112,20 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .btn-icon-only.btn-wp:hover { background: var(--wp); color: #FFF; }
 .btn-icon-only svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
+/* EFEITO BOTÕES DE AÇÃO DOS CARDS */
+.btn-action-card {
+    border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 12px; 
+    cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; 
+    transition: all 0.2s ease; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-action-card:active { transform: scale(0.98); }
+.btn-action-novo { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(47, 133, 90, 0.2); }
+.btn-action-novo:hover { background: #226645; }
+.btn-action-prep { background: var(--gold-dark); color: white; box-shadow: 0 4px 10px rgba(221, 167, 58, 0.2); }
+.btn-action-prep:hover { background: #A87A24; }
+.btn-action-saiu { background: var(--text-main); color: white; box-shadow: 0 4px 10px rgba(44, 32, 24, 0.2); }
+.btn-action-saiu:hover { background: #1C140F; }
+
 ::-webkit-scrollbar { width: 4px; height: 4px;}
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
@@ -115,6 +135,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .empty-state { text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 8px;}
 .empty-state span { font-size: 28px; filter: grayscale(1); opacity: 0.5;}
 
+/* MODAIS E TABS */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
 .modal-box { background: var(--bg-card); width: 100%; max-width: 550px; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; }
@@ -161,20 +182,6 @@ input:checked + .slider:before { transform: translateX(18px); }
 .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
 .kpi-value { font-size: 24px; font-family: 'Cinzel', serif; font-weight: 700; color: var(--text-main); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* EFEITO BOTÕES DE AÇÃO DOS CARDS */
-.btn-action-card {
-    border: none; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 12px; 
-    cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; 
-    transition: all 0.2s ease; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn-action-card:active { transform: scale(0.98); }
-.btn-action-novo { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(47, 133, 90, 0.2); }
-.btn-action-novo:hover { background: #226645; }
-.btn-action-prep { background: var(--gold-dark); color: white; box-shadow: 0 4px 10px rgba(221, 167, 58, 0.2); }
-.btn-action-prep:hover { background: #A87A24; }
-.btn-action-saiu { background: var(--text-main); color: white; box-shadow: 0 4px 10px rgba(44, 32, 24, 0.2); }
-.btn-action-saiu:hover { background: #1C140F; }
 </style>
 </head>
 <body>
@@ -240,7 +247,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         </button>
         <button class="nav-btn" onclick="abrirModalCatalogo(); fecharSidebar();">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Configurações
+          Ajustes / Fechar Loja
         </button>
         <button class="nav-btn" id="btn-sound" onclick="toggleSom()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
@@ -325,6 +332,7 @@ input:checked + .slider:before { transform: translateX(18px); }
   </div>
 </div>
 
+<!-- MODAL DE CONFIGURAÇÕES -->
 <div class="modal-overlay" id="modal-catalogo">
   <div class="modal-box">
     <button class="close-modal" onclick="fecharModalCatalogo()">&times;</button>
@@ -535,13 +543,12 @@ function iniciarSistema() {
 }
 
 // ------------------------------------------------------------------
-// NOVA FUNÇÃO: MOVER STATUS PELO BOTÃO
+// BOTÕES DE AÇÃO: MOVER STATUS
 // ------------------------------------------------------------------
 function moverPedido(id, novoStatus) {
     const p = pedidosMap.get(id);
     if(!p) return;
     
-    // Dispara a mensagem no WhatsApp se o botão for de despachar
     if (novoStatus === 'Saiu para Entrega' || novoStatus === 'Pronto para Retirada') {
         let msg = '';
         if (p.tipo_entrega === 'Retirada') { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho já está PRONTO para retirada! 🛍️`; } 
@@ -608,13 +615,25 @@ function renderizarKanban() {
       let tText = dif<1?'Agora':dif<60?`${dif}m`:`${Math.floor(dif/60)}h ${dif%60}m`;
       let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
       let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
-      let enderecoHTML = ''; if (p.cliente_endereco) { enderecoHTML = `<div class="p-endereco">${icons.mapPin} <span>${p.cliente_endereco}</span></div>`; }
+      
+      // ------------------------------------------------------------------
+      // NOVO: ENDEREÇO DESTACADO NO KANBAN E MENSAGEM DE RETIRADA
+      // ------------------------------------------------------------------
+      let enderecoHTML = ''; 
+      if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) { 
+          enderecoHTML = `<div class="p-endereco" style="background: rgba(221, 167, 58, 0.1); border: 1px dashed var(--gold); padding: 8px; border-radius: 6px; margin-top: 6px; flex-direction: column; gap: 4px;">
+          <div style="display:flex; gap:6px; margin-bottom:2px;">${icons.mapPin} <span style="font-weight: 800; color: var(--gold-dark); text-transform: uppercase;">Endereço de Entrega:</span></div>
+          <span style="font-size: 11px; color: var(--text-main); font-weight: 600;">${esc(p.cliente_endereco)}</span></div>`; 
+      } else if (p.tipo_entrega === 'Retirada') {
+          enderecoHTML = `<div class="p-endereco" style="background: rgba(44, 32, 24, 0.05); border: 1px dashed var(--border-light); padding: 8px; border-radius: 6px; margin-top: 6px; justify-content: center;">
+          <span style="font-size: 11px; color: var(--text-main); font-weight: 800;">🛍️ CLIENTE FARÁ A RETIRADA</span></div>`;
+      }
+      
       let itensHTML = p.itens.map(i => { let extrasHtml = (i.extras && i.extras.length > 0) ? `<div style="margin-top: 2px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight: 600;">+ ${e.nome}</span>`).join('') + `</div>` : ''; let obsHtml = i.obs ? `<div class="p-obs">${i.obs}</div>` : ''; return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${i.nome}</strong>${extrasHtml}${obsHtml}</div>`; }).join('');
       let btnCancel = status !== 'Concluído' ? `<button class="btn-icon-only" onclick="cancelarPedido('${p.id}')" title="Cancelar Pedido">${icons.cancel}</button>` : '';
 
       let crmId = `crm-${p.id}`; fetchCRM(p.cliente_telefone, crmId);
 
-      // NOVO: GERANDO O BOTÃO DE AÇÃO GIGANTE DEPENDENDO DA COLUNA
       let btnAcaoStatus = '';
       if (status === 'Novo') {
           btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Preparando')" class="btn-action-card btn-action-novo">✅ ACEITAR PEDIDO</button>`;
@@ -650,7 +669,6 @@ function renderizarKanban() {
           <button class="btn-icon-only" onclick="imprimirComanda('${p.id}')" title="Imprimir Comanda">${icons.printer}</button>
           ${btnCancel}
         </div>
-        <!-- O NOVO BOTÃO DE AÇÃO -->
         ${btnAcaoStatus}
       </div>`;
     }).join('');
@@ -749,12 +767,26 @@ function renderizarModaisConfig() {
   document.getElementById('schedule-list').innerHTML = htmlHorarios;
 }
 
+// ------------------------------------------------------------------
+// IMPRESSÃO COM ENDEREÇO GRANDE
+// ------------------------------------------------------------------
 function imprimirComanda(id) {
   const p = pedidosMap.get(id); if(!p) return;
   const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
-  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p><p class="bold">Tipo: ${p.tipo_entrega}</p>${p.cliente_endereco?`<p>End: ${p.cliente_endereco}</p>`:''}<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
+  
+  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p>`;
+  
+  // BLOCO DE ENDEREÇO GIGANTE NA IMPRESSÃO
+  if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) {
+      html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">ENTREGA:<br>${esc(p.cliente_endereco)}</div>`;
+  } else if (p.tipo_entrega === 'Retirada') {
+      html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">🛍️ RETIRADA NO BALCÃO</div>`;
+  }
+  
+  html += `<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
   p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; });
   html += `<div class="linha"></div><div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
+  
   let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
   iframe.contentWindow.document.open(); iframe.contentWindow.document.write(html); iframe.contentWindow.document.close();
   setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
