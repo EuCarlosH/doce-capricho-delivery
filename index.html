@@ -192,6 +192,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .close-modal:hover { color: var(--terracotta); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .close-modal:hover { color: var(--danger); }
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; font-size: 18px; letter-spacing: 1px; font-weight: 800; padding-right: 30px; } :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
 
+/* ESTILOS DA TIMELINE DE RASTREIO */
 .tracking-header { text-align: center; margin-bottom: 20px; }
 .tracking-header h3 { font-size: 14px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; } :root[data-theme="dark"] .tracking-header h3 { color: var(--gold); }
 .tracking-header p { font-size: 11px; color: var(--text-muted); }
@@ -295,6 +296,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 15px; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; transition: color 0.3s ease; margin-top: -5px; } :root[data-theme="dark"] .btn-continue { font-weight: 600; }
 .btn-continue:hover { color: var(--text-main); } :root[data-theme="dark"] .btn-continue:hover { color: var(--white); }
 
+/* FOOTER */
 footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid var(--border-light); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; transition: background-color 0.4s ease; }
 .footer-logo { font-size: 20px; color: var(--text-main); letter-spacing: 2px; } :root[data-theme="dark"] .footer-logo { color: var(--gold); }
 .footer-socials { display: flex; gap: 15px; justify-content: center; }
@@ -332,6 +334,18 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .promo-img-wrapper { height: 240px; }
   .promo-content { padding: 25px 20px; }
 }
+
+.modal-overlay#promo-banner-overlay { z-index: 5000 !important; align-items: center; justify-content: center; padding: 20px;}
+#promo-modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 15px 40px rgba(0,0,0,0.4); max-width: 550px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
+#promo-banner-overlay.open #promo-modal-box { transform: scale(1); }
+.promo-img-wrapper { width: 100%; height: 350px; background: var(--img-bg); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.promo-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+.promo-content { background: var(--bg-card); padding: 30px; text-align: center; flex-shrink: 0; }
+.btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
+.btn-close-promo:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+
+.modal-overlay#modal-promocoes { z-index: 3500; }
+#modal-promocoes .modal-box { max-width: 800px; }
 </style>
 </head>
 <body>
@@ -379,6 +393,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <div id="banner-pausado"></div>
 
   <div id="menu-wrapper" style="display: flex; flex-direction: column;">
+
     <div id="wrap-pizzas" style="order: 2;">
       <div class="mode-toggle-area">
         <div class="mode-buttons" role="group">
@@ -412,6 +427,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         <tbody id="extras-tbody"></tbody>
       </table>
     </div>
+
   </div>
 </section>
 
@@ -449,8 +465,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
-<!-- OS MODAIS ESTÃO AQUI UMA ÚNICA VEZ -->
-
+<!-- MODAL DE RASTREIO -->
 <div class="modal-overlay" id="tracking-overlay">
   <div class="modal-box" style="max-width: 400px;">
     <button class="close-modal ripple" data-close="tracking-overlay">&times;</button>
@@ -480,6 +495,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- TELA DE PROMOÇÕES ATIVAS -->
 <div class="modal-overlay" id="modal-promocoes">
   <div class="modal-box">
     <button class="close-modal ripple" data-close="modal-promocoes">&times;</button>
@@ -557,6 +573,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
       <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
     </div>
 
+    <!-- UPSELL DINÂMICO NO CARRINHO -->
     <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center; animation: fadeIn 0.5s ease;">
       <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
@@ -702,6 +719,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   </div>
 </div>
 
+<!-- POP-UP BANNER PROMOCIONAL DA SEXTA/SABADO -->
 <div class="modal-overlay" id="promo-banner-overlay">
   <div class="modal-box" id="promo-modal-box">
     <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
@@ -737,6 +755,9 @@ const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) 
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
 
+// ----------------------------------------------------
+// AQUI ESTÃO AS NOVAS ESFIHAS (BACON E MORANGO)
+// ----------------------------------------------------
 const CARDAPIO = {
   tradicionais: [
     { id:'mussarela', img:'img/mussarela.jpg', nome:'Mussarela', desc:'Molho, mussarela e tomate', preco:4500 },
@@ -770,8 +791,8 @@ const CARDAPIO = {
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
     { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 },
-    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
+    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1200},
+    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em fatias com queijo mussarela derretido.', preco:1000 }
   ],
   esfihas_doces: [
     { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
@@ -928,8 +949,8 @@ const cardHTML = s => {
 
 function checkBannerPromo(titulo, desc) {
   if (!bannerJaMostrado) { 
-    document.getElementById('promo-banner-title').textContent = titulo;
-    document.getElementById('promo-banner-desc').textContent = desc;
+    $('#promo-banner-title').textContent = titulo;
+    $('#promo-banner-desc').textContent = desc;
     setTimeout(() => { 
        abrirModal('promo-banner-overlay'); 
        bannerJaMostrado = true; 
@@ -943,13 +964,13 @@ function irParaCombos() {
 }
 
 function renderCardapio() {
-  document.getElementById('grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
-  document.getElementById('grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
-  document.getElementById('grid-esfihas-trad').innerHTML = CARDAPIO.esfihas_tradicionais.map(cardHTML).join('');
-  document.getElementById('grid-esfihas-prem').innerHTML = CARDAPIO.esfihas_premium.map(cardHTML).join('');
-  document.getElementById('grid-esfihas-doces').innerHTML = CARDAPIO.esfihas_doces.map(cardHTML).join('');
+  $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
+  $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
+  $('#grid-esfihas-trad').innerHTML = CARDAPIO.esfihas_tradicionais.map(cardHTML).join('');
+  $('#grid-esfihas-prem').innerHTML = CARDAPIO.esfihas_premium.map(cardHTML).join('');
+  $('#grid-esfihas-doces').innerHTML = CARDAPIO.esfihas_doces.map(cardHTML).join('');
 
-  document.getElementById('extras-tbody').innerHTML = EXTRAS.map(e => {
+  $('#extras-tbody').innerHTML = EXTRAS.map(e => {
     const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(e.id);
     if(isEsgotado) return `<tr style="opacity: 0.5;"><td><del>${esc(e.nome)}</del> <span style="color:var(--terracotta); font-size:10px; font-weight:bold;">(Esgotado)</span></td><td>-</td><td>-</td></tr>`;
     return `<tr><td>${esc(e.nome)}</td><td>Metade da pizza</td><td>${brl(e.precos.metade)}</td></tr><tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.precos.toda)}</td></tr>`;
@@ -980,15 +1001,15 @@ function renderCardapio() {
       }
   }
 
-  document.getElementById('btn-scroll-combos').style.display = 'inline-block';
-  document.getElementById('btn-nav-promos').style.display = 'inline-block';
+  $('#btn-scroll-combos').style.display = 'inline-block';
+  $('#btn-nav-promos').style.display = 'inline-block';
 
   if (combosHoje.length > 0) {
       const htmlCombos = combosHoje.map(cardHTML).join('');
-      document.getElementById('grid-promocoes-modal').innerHTML = htmlCombos;
+      $('#grid-promocoes-modal').innerHTML = htmlCombos;
       checkBannerPromo(tituloBanner, descBanner);
   } else {
-      document.getElementById('grid-promocoes-modal').innerHTML = `
+      $('#grid-promocoes-modal').innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(58, 42, 32, 0.02); border-radius: 12px; border: 1px dashed var(--border-light);">
           <span style="font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.8; filter: grayscale(1);">🤫</span>
           <strong style="display: block; font-size: 15px; color: var(--text-main); margin-bottom: 5px;">Poxa, sem ofertas hoje!</strong>
@@ -1001,7 +1022,7 @@ function renderCardapio() {
 }
 
 function atualizarBotoes() {
-  document.querySelectorAll('[data-escolher]').forEach(btn => {
+  $$('[data-escolher]').forEach(btn => {
     const id = btn.dataset.escolher; const card = btn.closest('.card');
     if(card.classList.contains('esgotado')) return; 
     card.classList.toggle('selecionada', meioSelecionado === id);
@@ -1009,21 +1030,13 @@ function atualizarBotoes() {
   });
 }
 
-function trocarModo(novo) { 
-  modo = novo; meioSelecionado = null; 
-  document.getElementById('btn-mode-inteira').setAttribute('aria-pressed', String(novo === 'inteira')); 
-  document.getElementById('btn-mode-meio').setAttribute('aria-pressed', String(novo === 'meio')); 
-  atualizarBanner(); 
-  atualizarBotoes(); 
-}
+function trocarModo(novo) { modo = novo; meioSelecionado = null; $('#btn-mode-inteira').setAttribute('aria-pressed', String(novo === 'inteira')); $('#btn-mode-meio').setAttribute('aria-pressed', String(novo === 'meio')); atualizarBanner(); atualizarBotoes(); }
 
 function atualizarBanner() {
-  const b = document.getElementById('meio-banner');
+  const b = $('#meio-banner');
   if (modo !== 'meio') { b.classList.remove('show'); b.innerHTML = ''; return; }
   b.innerHTML = meioSelecionado ? `1ª metade: <strong>${esc(acharSabor(meioSelecionado).nome)}</strong>. Agora escolha a 2ª metade. <button type="button" class="btn-link-cancel ripple" id="btn-cancel-meio">trocar</button>` : 'Escolha o <strong>primeiro</strong> sabor. O valor final é a soma de cada metade.';
-  b.classList.add('show'); 
-  const c = document.getElementById('btn-cancel-meio'); 
-  if (c) c.addEventListener('click', () => { meioSelecionado = null; atualizarBanner(); atualizarBotoes(); });
+  b.classList.add('show'); const c = $('#btn-cancel-meio'); if (c) c.addEventListener('click', () => { meioSelecionado = null; atualizarBanner(); atualizarBotoes(); });
 }
 
 function escolherSabor(id) {
@@ -1053,15 +1066,15 @@ function abrirBuilder(ids) {
   const isCombo = ids[0].startsWith('combo_');
   const isEsfiha = ids[0].startsWith('esf_');
   
-  document.getElementById('builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
-  document.getElementById('builder-base-valor').textContent = brl(precoBaseVal(ids));
+  $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
+  $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
   if (isEsfiha || isCombo) {
-     document.getElementById('builder-extras-container').style.display = 'none';
-     document.getElementById('builder-extras').innerHTML = '';
+     $('#builder-extras-container').style.display = 'none';
+     $('#builder-extras').innerHTML = '';
   } else {
-     document.getElementById('builder-extras-container').style.display = 'block';
-     document.getElementById('builder-extras').innerHTML = EXTRAS.map(e => {
+     $('#builder-extras-container').style.display = 'block';
+     $('#builder-extras').innerHTML = EXTRAS.map(e => {
         let cards = '';
         if (ids.length === 2) { cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
         } else { cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`; }
@@ -1072,23 +1085,22 @@ function abrirBuilder(ids) {
   const labelObs = document.getElementById('label-obs');
   if (isCombo) {
      labelObs.innerHTML = 'Quais os sabores do Combo? <span style="color:var(--terracotta); font-weight:800;">*Obrigatório</span>';
-     document.getElementById('builder-obs').placeholder = 'Digite aqui os sabores das pizzas/esfihas que acompanham...';
+     $('#builder-obs').placeholder = 'Digite aqui os sabores das pizzas/esfihas que acompanham...';
   } else {
      labelObs.innerHTML = 'Observações';
-     document.getElementById('builder-obs').placeholder = 'Ex: sem cebola, massa bem assada...';
+     $('#builder-obs').placeholder = 'Ex: sem cebola, massa bem assada...';
   }
 
-  document.getElementById('builder-obs').value = ''; 
-  document.getElementById('qty-val').textContent = '1'; 
+  $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; 
   if(!isEsfiha && !isCombo) atualizarEstoqueNoBuilder(); 
   atualizarBuilderTotal();
   abrirModal('builder-overlay');
 }
 
 function atualizarEstoqueNoBuilder() {
-  if (!document.getElementById('builder-overlay').classList.contains('open') || !builder || builder.sabores[0].startsWith('esf_') || builder.sabores[0].startsWith('combo_')) return;
+  if (!$('#builder-overlay').classList.contains('open') || !builder || builder.sabores[0].startsWith('esf_') || builder.sabores[0].startsWith('combo_')) return;
   
-  document.querySelectorAll('.extra-row').forEach(row => {
+  $$('.extra-row').forEach(row => {
     const chk = row.querySelector('.extra-chk'); if (!chk) return;
     const id = chk.value; const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id);
     const nameText = row.querySelector('.extra-name-text');
@@ -1105,7 +1117,7 @@ function atualizarEstoqueNoBuilder() {
 
 function lerExtras() {
   const selecionados = [];
-  document.querySelectorAll('.extra-chk:checked').forEach(chk => {
+  $$('.extra-chk:checked').forEach(chk => {
     const id = chk.value; const def = EXTRAS.find(x => x.id === id); const row = chk.closest('.extra-row');
     const activeCard = row.querySelector('.extra-opt-card.active'); const ap = activeCard ? activeCard.dataset.val : 'metade'; 
     const priceKey = ap.startsWith('metade') ? 'metade' : 'toda';
@@ -1115,82 +1127,34 @@ function lerExtras() {
 }
 
 function atualizarBuilderTotal() { 
-  if (!builder) return; 
-  builder.qtd = parseInt(document.getElementById('qty-val').textContent, 10) || 1; 
+  if (!builder) return; builder.qtd = parseInt($('#qty-val').textContent, 10) || 1; 
   const extras = lerExtras().reduce((s, e) => s + e.preco, 0); 
-  document.getElementById('builder-subtotal').textContent = brl((precoBaseVal(builder.sabores) + extras) * builder.qtd); 
+  $('#builder-subtotal').textContent = brl((precoBaseVal(builder.sabores) + extras) * builder.qtd); 
 }
 
-function popQtyVal() { 
-  const el = document.getElementById('qty-val'); 
-  el.classList.remove('pop'); 
-  void el.offsetWidth; 
-  el.classList.add('pop'); 
-}
+function popQtyVal() { const el = $('#qty-val'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
 
-function nomeItem(item) { 
-  const nomes = item.sabores.map(id => acharSabor(id).nome); 
-  return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; 
-}
-
-// ----------------------------------------------------
-// AGRUPAMENTO DE CARRINHO (Junta esfihas iguais)
-// ----------------------------------------------------
-function saoItensIguais(itemA, itemB) {
-    if (itemA.obs !== itemB.obs) return false;
-    if (itemA.sabores.length !== itemB.sabores.length) return false;
-    
-    let sabA = [...itemA.sabores].sort();
-    let sabB = [...itemB.sabores].sort();
-    for(let i=0; i<sabA.length; i++) { if(sabA[i] !== sabB[i]) return false; }
-    
-    if (itemA.extras.length !== itemB.extras.length) return false;
-    
-    let extA = [...itemA.extras].sort((a,b) => a.id.localeCompare(b.id));
-    let extB = [...itemB.extras].sort((a,b) => a.id.localeCompare(b.id));
-    for(let i=0; i<extA.length; i++) {
-        if(extA[i].id !== extB[i].id || extA[i].aplicacao !== extB[i].aplicacao) return false;
-    }
-    return true;
-}
+function nomeItem(item) { const nomes = item.sabores.map(id => acharSabor(id).nome); return item.sabores.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0]; }
 
 function adicionar() {
-  if (builder.sabores[0].startsWith('combo_') && document.getElementById('builder-obs').value.trim() === '') {
+  if (builder.sabores[0].startsWith('combo_') && $('#builder-obs').value.trim() === '') {
       showToast("Por favor, digite os sabores do combo nas observações.", "error");
-      document.getElementById('builder-obs').focus();
+      $('#builder-obs').focus();
       return;
   }
   
-  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: document.getElementById('builder-obs').value.trim() };
-  if (!validarItem(novoItem)) return; 
-  
-  let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
-  if (itemExistente) {
-      itemExistente.qtd += novoItem.qtd;
-      itemExistente.total = itemExistente.unitario * itemExistente.qtd;
-  } else {
-      carrinho.push(novoItem);
-  }
-
-  salvar(); atualizarUI(); 
+  const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
+  if (!validarItem(item)) return; 
+  carrinho.push(item); salvar(); atualizarUI(); 
   if (navigator.vibrate) navigator.vibrate(50);
-  const cartBtn = document.getElementById('btn-cart-float'); if(cartBtn) { cartBtn.classList.remove('bump-anim'); void cartBtn.offsetWidth; cartBtn.classList.add('bump-anim'); }
+  const cartBtn = $('#btn-cart-float'); if(cartBtn) { cartBtn.classList.remove('bump-anim'); void cartBtn.offsetWidth; cartBtn.classList.add('bump-anim'); }
   fecharModal('builder-overlay'); abrirModal('success-overlay');
 }
 
 function adicionarUpsell(saborId, preco) {
-  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
-  if (!validarItem(novoItem)) return; 
-  
-  let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
-  if(itemExistente) {
-      itemExistente.qtd += 1;
-      itemExistente.total = itemExistente.unitario * itemExistente.qtd;
-  } else {
-      carrinho.push(novoItem); 
-  }
-
-  salvar(); atualizarUI();
+  const item = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
+  if (!validarItem(item)) return; 
+  carrinho.push(item); salvar(); atualizarUI();
   showToast("Esfiha adicionada ao pedido!", "success");
   if (navigator.vibrate) navigator.vibrate(50);
 }
@@ -1200,19 +1164,18 @@ function irParaCarrinho() { fecharModal('success-overlay'); setTimeout(() => { a
 function totais() { 
   const subtotal = carrinho.reduce((s, i) => s + i.total, 0); 
   let entrega = 0;
-  if (document.getElementById('cli-tipo-pedido').value === 'Entrega' && carrinho.length) {
-     const val = parseInt(document.getElementById('cli-taxa-id').value, 10);
+  if ($('#cli-tipo-pedido').value === 'Entrega' && carrinho.length) {
+     const val = parseInt($('#cli-taxa-id').value, 10);
      if(!isNaN(val)) entrega = val;
   }
   return { subtotal, entrega, total: subtotal + entrega }; 
 }
 
 function atualizarUI() {
-  const lista = document.getElementById('cart-items-list'); 
-  const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
+  const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
   
   let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc_morango') || s.startsWith('esf_choc')));
-  if (carrinho.length > 0 && !temSobremesa) { document.getElementById('upsell-container').style.display = 'block'; } else { document.getElementById('upsell-container').style.display = 'none'; }
+  if (carrinho.length > 0 && !temSobremesa) { $('#upsell-container').style.display = 'block'; } else { $('#upsell-container').style.display = 'none'; }
 
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
     const det = []; 
@@ -1237,72 +1200,54 @@ function atualizarUI() {
       </li>`;
   }).join('') : '<li class="cart-empty">Seu carrinho está vazio.</li>';
   
-  const t = totais(); 
-  document.getElementById('cart-subtotal-value').textContent = brl(t.subtotal); 
+  const t = totais(); $('#cart-subtotal-value').textContent = brl(t.subtotal); 
+  const badge = $('#cart-count'); badge.textContent = qtdTotal; badge.classList.toggle('show', qtdTotal > 0);
+  const badgeBottom = $('#bottom-cart-count'); if(badgeBottom) { badgeBottom.textContent = qtdTotal; badgeBottom.classList.toggle('show', qtdTotal > 0); }
   
-  const badge = document.getElementById('cart-count'); 
-  badge.textContent = qtdTotal; 
-  badge.classList.toggle('show', qtdTotal > 0);
-  
-  const badgeBottom = document.getElementById('bottom-cart-count'); 
-  if(badgeBottom) { 
-      badgeBottom.textContent = qtdTotal; 
-      badgeBottom.classList.toggle('show', qtdTotal > 0); 
-  }
-  
-  const entrega = document.getElementById('cli-tipo-pedido').value === 'Entrega'; 
-  const boxEnd = document.getElementById('box-endereco'); 
-  const boxRet = document.getElementById('box-retirada');
+  const entrega = $('#cli-tipo-pedido').value === 'Entrega'; 
+  const boxEnd = $('#box-endereco'); const boxRet = $('#box-retirada');
 
   if(entrega) { 
     if(boxRet) { boxRet.style.opacity = '0'; setTimeout(() => boxRet.style.display = 'none', 300); }
     boxEnd.style.display = 'block'; setTimeout(() => boxEnd.style.opacity = '1', 10);
-    const taxaValor = parseInt(document.getElementById('cli-taxa-id').value, 10);
-    document.getElementById('text-taxa-card').textContent = isNaN(taxaValor) ? "Selecione a região" : `+ ${brl(taxaValor)}`;
+    const taxaValor = parseInt($('#cli-taxa-id').value, 10);
+    $('#text-taxa-card').textContent = isNaN(taxaValor) ? "Selecione a região" : `+ ${brl(taxaValor)}`;
   } else { 
     boxEnd.style.opacity = '0'; setTimeout(() => boxEnd.style.display = 'none', 300); 
     if(boxRet) { boxRet.style.display = 'block'; setTimeout(() => boxRet.style.opacity = '1', 10); }
-    document.getElementById('text-taxa-card').textContent = "Calculando...";
+    $('#text-taxa-card').textContent = "Calculando...";
   }
 
-  const rua = document.getElementById('cli-rua'); if(rua) rua.required = entrega; 
-  const num = document.getElementById('cli-numero'); if(num) num.required = entrega;
-  const btnAvancar = document.getElementById('btn-avancar'); if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
+  const rua = $('#cli-rua'); if(rua) rua.required = entrega; const num = $('#cli-numero'); if(num) num.required = entrega;
+  const btnAvancar = $('#btn-avancar'); if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
 }
 
-document.getElementById('cli-pagamento').addEventListener('change', e => {
-  const boxTroco = document.getElementById('box-troco');
-  if(e.target.value === 'Dinheiro') { boxTroco.style.display = 'block'; } else { boxTroco.style.display = 'none'; document.getElementById('cli-troco').value = ''; }
+$('#cli-pagamento').addEventListener('change', e => {
+  const boxTroco = $('#box-troco');
+  if(e.target.value === 'Dinheiro') { boxTroco.style.display = 'block'; } else { boxTroco.style.display = 'none'; $('#cli-troco').value = ''; }
 });
 
 function validarCheckout() {
-  const erros = []; 
-  const nome = document.getElementById('cli-nome');
-  const tel = document.getElementById('cli-telefone');
-  const rua = document.getElementById('cli-rua');
-  const num = document.getElementById('cli-numero'); 
-  
+  const erros = []; const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'); 
   [nome, tel, rua, num].forEach(c => { if(c) c.classList.remove('field-error') });
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
-  if (document.getElementById('cli-tipo-pedido').value === 'Entrega') {
-    if (document.getElementById('cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); document.querySelectorAll('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
+  if ($('#cli-tipo-pedido').value === 'Entrega') {
+    if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
   }
   if (!carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return false; }
-  if (erros.length > 0) { showToast(erros[0], 'error'); setTimeout(() => {document.querySelectorAll('.zona-card').forEach(c => c.style.animation = '')}, 500); }
+  if (erros.length > 0) { showToast(erros[0], 'error'); setTimeout(() => {$$('.zona-card').forEach(c => c.style.animation = '')}, 500); }
   return erros.length === 0;
 }
 
 function montarRevisao() {
-  const t = totais(); 
-  const tipo = document.getElementById('cli-tipo-pedido').value; 
-  let pgto = document.getElementById('cli-pagamento').value;
-  if(pgto === 'Dinheiro' && document.getElementById('cli-troco').value.trim() !== '') { pgto += ` (Troco para: ${document.getElementById('cli-troco').value.trim()})`; }
+  const t = totais(); const tipo = $('#cli-tipo-pedido').value; let pgto = $('#cli-pagamento').value;
+  if(pgto === 'Dinheiro' && $('#cli-troco').value.trim() !== '') { pgto += ` (Troco para: ${$('#cli-troco').value.trim()})`; }
 
-  document.getElementById('review-items').innerHTML = carrinho.map(i => {
+  $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
     if (i.obs) det.push(`Obs: ${esc(i.obs)}`);
@@ -1324,42 +1269,20 @@ function montarRevisao() {
       </div>`;
   }).join('');
 
-  if(tipo === 'Entrega') { 
-      const nomeZona = document.getElementById('cli-taxa-nome').value; 
-      document.getElementById('review-delivery').innerHTML = `<strong>Entrega: ${esc(nomeZona)}</strong><span class="review-item-detalhe">${esc(document.getElementById('cli-rua').value)}, ${esc(document.getElementById('cli-numero').value)} - ${esc(document.getElementById('cli-bairro').value)}<br>CEP: ${esc(document.getElementById('cli-cep').value)}</span>`;
-  } else { 
-      document.getElementById('review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`; 
-  }
+  if(tipo === 'Entrega') { const nomeZona = $('#cli-taxa-nome').value; $('#review-delivery').innerHTML = `<strong>Entrega: ${esc(nomeZona)}</strong><span class="review-item-detalhe">${esc($('#cli-rua').value)}, ${esc($('#cli-numero').value)} - ${esc($('#cli-bairro').value)}<br>CEP: ${esc($('#cli-cep').value)}</span>`;
+  } else { $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`; }
 
-  document.getElementById('review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
-  if (document.getElementById('cli-pagamento').value === 'PIX') { 
-      document.getElementById('rev-box-pix').style.display = 'block'; 
-      document.getElementById('rev-pix-valor').textContent = brl(t.total); 
-  } else { 
-      document.getElementById('rev-box-pix').style.display = 'none'; 
-  }
-  document.getElementById('rev-subtotal-value').textContent = brl(t.subtotal);
-  if(tipo === 'Entrega' && t.entrega > 0) { 
-      document.getElementById('rev-linha-taxa').style.display = 'flex'; 
-      document.getElementById('rev-taxa-value').textContent = brl(t.entrega); 
-  } else { 
-      document.getElementById('rev-linha-taxa').style.display = 'none'; 
-  }
-  document.getElementById('rev-total-value').textContent = brl(t.total);
+  $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
+  if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total); } else { $('#rev-box-pix').style.display = 'none'; }
+  $('#rev-subtotal-value').textContent = brl(t.subtotal);
+  if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega); } else { $('#rev-linha-taxa').style.display = 'none'; }
+  $('#rev-total-value').textContent = brl(t.total);
 }
 
 function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
 function salvarDadosCliente() {
-  const userData = { 
-      nome: document.getElementById('cli-nome').value, 
-      telefone: document.getElementById('cli-telefone').value, 
-      rua: document.getElementById('cli-rua').value, 
-      numero: document.getElementById('cli-numero').value, 
-      bairro: document.getElementById('cli-bairro').value, 
-      taxaId: document.getElementById('cli-taxa-id').value, 
-      taxaNome: document.getElementById('cli-taxa-nome').value 
-  };
+  const userData = { nome: $('#cli-nome').value, telefone: $('#cli-telefone').value, rua: $('#cli-rua').value, numero: $('#cli-numero').value, bairro: $('#cli-bairro').value, taxaId: $('#cli-taxa-id').value, taxaNome: $('#cli-taxa-nome').value };
   localStorage.setItem('dca_user_data', JSON.stringify(userData));
 }
 
@@ -1367,19 +1290,9 @@ function carregarDadosCliente() {
   try {
     const data = JSON.parse(localStorage.getItem('dca_user_data'));
     if (data) {
-      if(data.nome) document.getElementById('cli-nome').value = data.nome; 
-      if(data.telefone) document.getElementById('cli-telefone').value = data.telefone;
-      if(data.rua) document.getElementById('cli-rua').value = data.rua; 
-      if(data.numero) document.getElementById('cli-numero').value = data.numero; 
-      if(data.bairro) document.getElementById('cli-bairro').value = data.bairro;
-      if(data.taxaId) { 
-          document.getElementById('cli-taxa-id').value = data.taxaId; 
-          document.getElementById('cli-taxa-nome').value = data.taxaNome; 
-          document.querySelectorAll('.zona-card').forEach(c => { 
-              c.classList.remove('active'); 
-              if(c.dataset.taxa === data.taxaId) c.classList.add('active'); 
-          }); 
-      }
+      if(data.nome) $('#cli-nome').value = data.nome; if(data.telefone) $('#cli-telefone').value = data.telefone;
+      if(data.rua) $('#cli-rua').value = data.rua; if(data.numero) $('#cli-numero').value = data.numero; if(data.bairro) $('#cli-bairro').value = data.bairro;
+      if(data.taxaId) { $('#cli-taxa-id').value = data.taxaId; $('#cli-taxa-nome').value = data.taxaNome; $$('.zona-card').forEach(c => { c.classList.remove('active'); if(c.dataset.taxa === data.taxaId) c.classList.add('active'); }); }
     }
   } catch(e) {}
 }
@@ -1387,32 +1300,10 @@ function carregarDadosCliente() {
 function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value; const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key); let payload = formatField('00', '01') + merchantAccount + formatField('52', '0000') + formatField('53', '986') + formatField('54', strValor) + formatField('58', 'BR') + formatField('59', cleanNome) + formatField('60', cleanCidade) + formatField('62', formatField('05', '***')) + '6304'; let crc = 0xFFFF; for (let c = 0; c < payload.length; c++) { crc ^= payload.charCodeAt(c) << 8; for (let i = 0; i < 8; i++) { if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } } return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'); }
 
 function montarPedido() {
-  const t = totais(); 
-  const tipo = document.getElementById('cli-tipo-pedido').value;
-  const endStr = tipo === 'Entrega' ? `${document.getElementById('cli-rua').value.trim()}, ${document.getElementById('cli-numero').value.trim()} - ${document.getElementById('cli-bairro').value.trim()} (CEP: ${document.getElementById('cli-cep').value}) | Região: ${document.getElementById('cli-taxa-nome').value}` : '';
-  let pgtoStr = document.getElementById('cli-pagamento').value; 
-  if (pgtoStr === 'Dinheiro' && document.getElementById('cli-troco').value.trim() !== '') { pgtoStr += ` (Troco para: ${document.getElementById('cli-troco').value.trim()})`; }
-  
-  return { 
-      status: 'Novo', 
-      cliente_nome: document.getElementById('cli-nome').value.trim(), 
-      cliente_telefone: soDigitos(document.getElementById('cli-telefone').value), 
-      cliente_endereco: endStr, 
-      tipo_entrega: tipo, 
-      forma_pagamento: pgtoStr, 
-      itens: carrinho.map(i => ({ 
-          nome: nomeItem(i), 
-          qtd: i.qtd, 
-          sabores: i.sabores, 
-          extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), 
-          obs: i.obs, 
-          unitario_centavos: i.unitario, 
-          total_centavos: i.total 
-      })), 
-      subtotal_centavos: t.subtotal, 
-      taxa_centavos: t.entrega, 
-      total_centavos: t.total 
-  };
+  const t = totais(); const tipo = $('#cli-tipo-pedido').value;
+  const endStr = tipo === 'Entrega' ? `${$('#cli-rua').value.trim()}, ${$('#cli-numero').value.trim()} - ${$('#cli-bairro').value.trim()} (CEP: ${$('#cli-cep').value}) | Região: ${$('#cli-taxa-nome').value}` : '';
+  let pgtoStr = $('#cli-pagamento').value; if (pgtoStr === 'Dinheiro' && $('#cli-troco').value.trim() !== '') { pgtoStr += ` (Troco para: ${$('#cli-troco').value.trim()})`; }
+  return { status: 'Novo', cliente_nome: $('#cli-nome').value.trim(), cliente_telefone: soDigitos($('#cli-telefone').value), cliente_endereco: endStr, tipo_entrega: tipo, forma_pagamento: pgtoStr, itens: carrinho.map(i => ({ nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores, extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })), obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total })), subtotal_centavos: t.subtotal, taxa_centavos: t.entrega, total_centavos: t.total };
 }
 
 function montarMensagem(p) {
@@ -1429,55 +1320,33 @@ async function gravarFirestore(pedido) {
   if (!CONFIG.usarFirebase || !window.firebase) return null; 
   try { 
     const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); 
-    try { 
-        const increment = firebase.firestore.FieldValue.increment(1); 
-        let updates = {}; 
-        pedido.itens.forEach(item => { if(item.sabores) { item.sabores.forEach(saborId => { updates[`sabores.${saborId}`] = increment; }); } }); 
-        if (Object.keys(updates).length > 0) { await db.collection('configuracoes').doc('estatisticas').set(updates, { merge: true }); } 
-    } catch(errStats) {}
+    try { const increment = firebase.firestore.FieldValue.increment(1); let updates = {}; pedido.itens.forEach(item => { if(item.sabores) { item.sabores.forEach(saborId => { updates[`sabores.${saborId}`] = increment; }); } }); if (Object.keys(updates).length > 0) { await db.collection('configuracoes').doc('estatisticas').set(updates, { merge: true }); } } catch(errStats) {}
     return ref.id; 
   } catch (e) { return null; } 
 }
 
 async function enviarPedidoFinal(ev) {
-  ev.preventDefault(); 
-  if(!lojaAberta) { 
+  ev.preventDefault(); if(!lojaAberta) { 
       const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
       if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
       else showToast("Nossa loja está fechada no momento.", "error"); 
       return; 
   } 
-  
-  const btn = document.getElementById('btn-confirm-order'); 
-  btn.disabled = true; 
-  btn.textContent = 'Enviando...';
-  
+  const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
-  const pedido = montarPedido(); 
-  const id = await gravarFirestore(pedido); 
+  const pedido = montarPedido(); const id = await gravarFirestore(pedido); 
   
   if(id) localStorage.setItem('dca_last_order', id);
 
-  let texto = montarMensagem(pedido); 
-  if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
-  
+  let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  carrinho = []; 
-  salvar(); 
-  atualizarUI(); 
-  fecharModal('review-overlay'); 
-  btn.textContent = 'Confirmar e Enviar Pedido'; 
-  btn.disabled = false; 
-  
+  carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
 
-// ----------------------------------------------------
-// SISTEMA DE RASTREIO 100% CORRIGIDO E BLINDADO
-// ----------------------------------------------------
 let unsubscribeRastreio = null;
 
 function abrirRastreio() {
@@ -1487,7 +1356,7 @@ function abrirRastreio() {
       return;
   }
   
-  document.getElementById('track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
+  $('#track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
   abrirModal('tracking-overlay');
 
   if(unsubscribeRastreio) unsubscribeRastreio();
@@ -1501,106 +1370,53 @@ function abrirRastreio() {
 }
 
 function atualizarTimeline(status, tipoEntrega) {
-  const txtRota = document.getElementById('track-text-rota');
-  const txtRotaSpan = document.querySelector('#step-saiu .tl-content span');
-  
-  if(txtRota && txtRotaSpan) {
-      if(tipoEntrega === 'Retirada') {
-          txtRota.textContent = 'Pronto p/ Retirada 🛍️';
-          txtRotaSpan.textContent = 'Te aguardamos na loja.';
-      } else {
-          txtRota.textContent = 'Em Rota 🛵';
-          txtRotaSpan.textContent = 'Saiu para entrega.';
-      }
+  if(tipoEntrega === 'Retirada') {
+      $('#track-text-rota').textContent = 'Pronto p/ Retirada 🛍️';
+      $('#step-saiu .tl-content span').textContent = 'Te aguardamos na loja.';
+  } else {
+      $('#track-text-rota').textContent = 'Em Rota 🛵';
+      $('#step-saiu .tl-content span').textContent = 'Saiu para entrega.';
   }
 
-  // Zera as classes visualmente apagando tudo e setando pro original
-  const sNovo = document.getElementById('step-novo');
-  const sPrep = document.getElementById('step-preparando');
-  const sSaiu = document.getElementById('step-saiu');
-  const sConc = document.getElementById('step-concluido');
-
-  if(sNovo) sNovo.className = 'tl-step';
-  if(sPrep) sPrep.className = 'tl-step';
-  if(sSaiu) sSaiu.className = 'tl-step';
-  if(sConc) sConc.className = 'tl-step';
-
-  const trackDesc = document.getElementById('track-desc');
-  if(trackDesc) trackDesc.innerHTML = 'Acompanhe o status em tempo real';
+  $$('.tl-step').forEach(el => { el.classList.remove('active'); el.classList.remove('done'); });
 
   if (status === 'Cancelado') {
-      if(sNovo) sNovo.className = 'tl-step done';
-      if(trackDesc) trackDesc.innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
+      $('#step-novo').classList.add('done');
+      $('#track-desc').innerHTML = '<span style="color:var(--danger); font-weight:bold;">Pedido Cancelado ❌</span>';
   }
-  else if (status === 'Novo') { 
-      if(sNovo) sNovo.className = 'tl-step active'; 
-  } 
+  else if (status === 'Novo') { $('#step-novo').classList.add('active'); } 
   else if (status === 'Preparando') {
-      if(sNovo) sNovo.className = 'tl-step done';
-      if(sPrep) sPrep.className = 'tl-step active';
+      $('#step-novo').classList.add('done');
+      $('#step-preparando').classList.add('active');
   } 
   else if (status === 'Saiu para Entrega' || status === 'Pronto para Retirada') {
-      if(sNovo) sNovo.className = 'tl-step done'; 
-      if(sPrep) sPrep.className = 'tl-step done'; 
-      if(sSaiu) sSaiu.className = 'tl-step active';
+      $('#step-novo').classList.add('done'); $('#step-preparando').classList.add('done'); $('#step-saiu').classList.add('active');
   } 
   else if (status === 'Concluído') {
-      if(sNovo) sNovo.className = 'tl-step done'; 
-      if(sPrep) sPrep.className = 'tl-step done'; 
-      if(sSaiu) sSaiu.className = 'tl-step done'; 
-      if(sConc) sConc.className = 'tl-step done';
+      $('#step-novo').classList.add('done'); $('#step-preparando').classList.add('done'); $('#step-saiu').classList.add('done'); $('#step-concluido').classList.add('done');
   }
 }
 
-// ATUALIZAÇÃO AUTOMÁTICA QUANDO O CLIENTE VOLTA DO WHATSAPP
-document.addEventListener('visibilitychange', () => {
-    const tracker = document.getElementById('tracking-overlay');
-    if (document.visibilityState === 'visible' && tracker && tracker.classList.contains('open')) {
-        abrirRastreio();
-    }
-});
-
-document.querySelectorAll('[data-close="tracking-overlay"]').forEach(b => b.addEventListener('click', () => {
+// FECHAR MODAL LIMPA O LISTENER DO RASTREIO
+$$('[data-close="tracking-overlay"]').forEach(b => b.addEventListener('click', () => {
     if(unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
 }));
 
-function abrirModal(id) { 
-    const ov = document.getElementById(id); 
-    if(ov) { 
-        ov.style.display = 'flex'; 
-        setTimeout(() => ov.classList.add('open'), 10); 
-        document.body.style.overflow = 'hidden'; 
-        if (id === 'cart-overlay') atualizarUI(); 
-    } 
-}
-
-function fecharModal(id) { 
-    const ov = document.getElementById(id); 
-    if(ov){ 
-        ov.classList.remove('open'); 
-        setTimeout(() => { ov.style.display = 'none'; }, 300); 
-        if (!document.querySelectorAll('.modal-overlay.open').length) document.body.style.overflow = ''; 
-    } 
-}
+function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); } }
+function fecharModal(id) { const ov = document.getElementById(id); if(ov){ ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; } }
 
 document.addEventListener('mousedown', function (e) {
   var target = e.target.closest('.ripple');
   if (!target) return;
   var rect = target.getBoundingClientRect();
+  var ripple = target.querySelector('::after');
   target.style.setProperty('--x', (e.clientX - rect.left) + 'px');
   target.style.setProperty('--y', (e.clientY - rect.top) + 'px');
 });
 
 document.addEventListener('click', e => { 
   const cardOpt = e.target.closest('.extra-opt-card'); 
-  if (cardOpt) { 
-      const grid = cardOpt.closest('.extra-options-grid'); 
-      if (grid) { 
-          grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); 
-          cardOpt.classList.add('active'); 
-          atualizarBuilderTotal(); 
-      } 
-  } 
+  if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } 
   
   const b = e.target.closest('[data-escolher]'); 
   if (b) {
@@ -1609,22 +1425,16 @@ document.addEventListener('click', e => {
   }
 });
 
-document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
-document.querySelectorAll('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
-document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
+$$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+$$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
+$$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
 
-document.getElementById('builder-extras').addEventListener('change', e => { 
-    if(e.target.classList.contains('extra-chk')) { 
-        const row = e.target.closest('.extra-row'); 
-        if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); 
-    } 
-    atualizarBuilderTotal(); 
-});
-document.getElementById('qty-minus').addEventListener('click', () => { document.getElementById('qty-val').textContent = Math.max(1, parseInt(document.getElementById('qty-val').textContent, 10) - 1); atualizarBuilderTotal(); popQtyVal(); });
-document.getElementById('qty-plus').addEventListener('click', () => { document.getElementById('qty-val').textContent = Math.min(20, parseInt(document.getElementById('qty-val').textContent, 10) + 1); atualizarBuilderTotal(); popQtyVal(); });
-document.getElementById('builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
-document.getElementById('cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
-document.getElementById('checkout-form').addEventListener('submit', e => { 
+$('#builder-extras').addEventListener('change', e => { if(e.target.classList.contains('extra-chk')) { const row = e.target.closest('.extra-row'); if(e.target.checked) row.classList.add('checked'); else row.classList.remove('checked'); } atualizarBuilderTotal(); });
+$('#qty-minus').addEventListener('click', () => { $('#qty-val').textContent = Math.max(1, parseInt($('#qty-val').textContent, 10) - 1); atualizarBuilderTotal(); popQtyVal(); });
+$('#qty-plus').addEventListener('click', () => { $('#qty-val').textContent = Math.min(20, parseInt($('#qty-val').textContent, 10) + 1); atualizarBuilderTotal(); popQtyVal(); });
+$('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicionar(); });
+$('#cart-items-list').addEventListener('click', e => { const b = e.target.closest('[data-remover]'); if (b) { carrinho = carrinho.filter(i => i.uid !== b.dataset.remover); salvar(); atualizarUI(); } });
+$('#checkout-form').addEventListener('submit', e => { 
     e.preventDefault(); 
     if(!lojaAberta) { 
         const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
@@ -1638,46 +1448,35 @@ document.getElementById('checkout-form').addEventListener('submit', e => {
     setTimeout(() => { abrirModal('review-overlay'); }, 150); 
 });
 
-document.querySelectorAll('.delivery-card').forEach(card => { card.addEventListener('click', () => { document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); document.getElementById('cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
-document.querySelectorAll('.zona-card').forEach(card => { card.addEventListener('click', () => { document.querySelectorAll('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); document.getElementById('cli-taxa-id').value = card.dataset.taxa; document.getElementById('cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
+$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
+$$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
 
-document.getElementById('btn-cart-float').addEventListener('click', () => { 
+$('#btn-cart-float').addEventListener('click', () => { 
     const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
     if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
     if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
     abrirModal('cart-overlay'); 
 });
-document.getElementById('btn-nav-order').addEventListener('click', () => { 
+$('#btn-nav-order').addEventListener('click', () => { 
     const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
     if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
     if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
     abrirModal('cart-overlay'); 
 });
-document.getElementById('btn-bottom-order').addEventListener('click', () => { 
+$('#btn-bottom-order').addEventListener('click', () => { 
     const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
     if(!lojaAberta && (statusManual === 'pausado' || statusManual === 'esgotado')) return abrirModal('modal-aviso-pausa'); 
     if(!lojaAberta) return showToast("A loja está fechada.", "error"); 
     abrirModal('cart-overlay'); 
 });
 
-document.getElementById('cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
-document.getElementById('cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
+$('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
+$('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
 
-document.getElementById('rev-btn-copy-pix').addEventListener('click', async e => { 
-    const btn = e.currentTarget; 
-    const t = totais(); 
-    const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); 
-    try { 
-        await navigator.clipboard.writeText(payload); 
-    } catch (err) { 
-        const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); 
-    } 
-    btn.textContent = 'Copiado ✓'; 
-    setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); 
-});
+$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
+$('#ano').textContent = new Date().getFullYear();
 
-document.getElementById('ano').textContent = new Date().getFullYear();
-
+// --- CARROSSEL INTELIGENTE DE FOTOS ---
 function iniciarCarrosselHero() {
   const container = document.getElementById('hero-carousel');
   if (!container) return;
@@ -1687,30 +1486,39 @@ function iniciarCarrosselHero() {
   function carregarProximoSlide() {
     const img = new Image();
     img.src = `img/slide${slideIndex}.jpg`;
+    
     img.onload = function() {
       const slideEl = document.createElement('img');
       slideEl.className = 'carousel-slide';
       if (slideIndex === 1) slideEl.classList.add('active');
       slideEl.src = img.src;
+      slideEl.alt = `Slide Promocional ${slideIndex}`;
       container.appendChild(slideEl);
+      
       validSlides.push(slideEl);
       slideIndex++;
       carregarProximoSlide(); 
     };
+    
     img.onerror = function() {
       if (validSlides.length === 0) {
         container.innerHTML = `<img class="carousel-slide active" src="img/hero-bg.jpg" onerror="this.style.display='none'">`;
       } else if (validSlides.length > 1) {
-        let atual = 0;
-        setInterval(() => {
-          validSlides[atual].classList.remove('active');
-          atual = (atual + 1) % validSlides.length;
-          validSlides[atual].classList.add('active');
-        }, 4500); 
+        iniciarRotacao();
       }
     };
   }
+
   carregarProximoSlide();
+
+  function iniciarRotacao() {
+    let atual = 0;
+    setInterval(() => {
+      validSlides[atual].classList.remove('active');
+      atual = (atual + 1) % validSlides.length;
+      validSlides[atual].classList.add('active');
+    }, 4500); 
+  }
 }
 iniciarCarrosselHero();
 
@@ -1742,12 +1550,7 @@ function processarConfig(doc) {
 }
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { console.log("Modo leitura local."); });
 setInterval(() => { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); }, 15000);
-
-document.addEventListener('visibilitychange', () => { 
-    if (document.visibilityState === 'visible') { 
-        db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); 
-    } 
-});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { db.collection('configuracoes').doc('geral').get().then(processarConfig).catch(()=>{}); } });
 
 function processarEstatisticas(doc) {
   if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }
