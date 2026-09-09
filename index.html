@@ -183,7 +183,7 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(58, 42, 32, 0.6); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
 :root[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
-.modal-overlay#modal-aviso-pausa { z-index: 4000 !important; }
+.modal-overlay#modal-aviso-pausa { z-index: 4000 !important; } .modal-overlay#promo-banner-overlay { z-index: 4000 !important; }
 .modal-overlay#tracking-overlay { z-index: 4500 !important; }
 
 .modal-overlay.open { display: flex; opacity: 1; }
@@ -631,16 +631,16 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         </div>
 
         <div class="endereco-row">
-          <div style="flex: 2;"><label for="cli-rua">Rua</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
+          <div style="flex: 2.5;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
           <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
         </div>
-         <div>
+        <div style="margin-bottom: 10px;">
           <label for="cli-bairro">Bairro</label>
           <input type="text" id="cli-bairro" placeholder="Ex: Centro">
-          
+        </div>
         <div>
-          <label for="cli-bairro">Ponto de referência</label>
-          <input type="text" id="cli-bairro" placeholder="Ex: casa azul, ao lado da igreja">
+          <label for="cli-referencia">Ponto de referência</label>
+          <input type="text" id="cli-referencia" placeholder="Ex: casa azul, ao lado da igreja">
           <span class="campo-hint">Ajuda muito o entregador a te encontrar rápido.</span>
         </div>
       </div>
@@ -1196,7 +1196,7 @@ function totais() {
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
   
-  let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc')));
+  let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc_morango') || s.startsWith('esf_choc')));
   if (carrinho.length > 0 && !temSobremesa) { $('#upsell-container').style.display = 'block'; } else { $('#upsell-container').style.display = 'none'; }
 
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
@@ -1240,7 +1240,10 @@ function atualizarUI() {
     $('#text-taxa-card').textContent = "Calculando...";
   }
 
-  const rua = $('#cli-rua'); if(rua) rua.required = entrega; const num = $('#cli-numero'); if(num) num.required = entrega;
+  const rua = $('#cli-rua'); if(rua) rua.required = entrega; 
+  const num = $('#cli-numero'); if(num) num.required = entrega;
+  const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
+
   const btnAvancar = $('#btn-avancar'); if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
 }
 
@@ -1250,8 +1253,9 @@ $('#cli-pagamento').addEventListener('change', e => {
 });
 
 function validarCheckout() {
-  const erros = []; const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'); 
-  [nome, tel, rua, num].forEach(c => { if(c) c.classList.remove('field-error') });
+  const erros = []; 
+  const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
+  [nome, tel, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
@@ -1259,6 +1263,7 @@ function validarCheckout() {
     if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
+    if (bairro.value.trim().length < 2) { erros.push('Informe o seu bairro.'); bairro.classList.add('field-error'); }
   }
   if (!carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return false; }
   if (erros.length > 0) { showToast(erros[0], 'error'); setTimeout(() => {$$('.zona-card').forEach(c => c.style.animation = '')}, 500); }
@@ -1293,10 +1298,11 @@ function montarRevisao() {
 
   if(tipo === 'Entrega') {
     const nomeZona = $('#cli-taxa-nome').value;
-    const ref = $('#cli-bairro').value.trim();
-    $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong>`
-      + (ref ? `<span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
-      + `<span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`;
+    const bairroStr = $('#cli-bairro').value.trim();
+    const ref = $('#cli-referencia').value.trim();
+    $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong><br><span style="font-size:12px; color:var(--text-main); font-weight:600;">Bairro: ${esc(bairroStr)}</span>`
+      + (ref ? `<br><span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
+      + `<br><span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`;
   } else {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
   }
@@ -1311,7 +1317,16 @@ function montarRevisao() {
 function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
 function salvarDadosCliente() {
-  const userData = { nome: $('#cli-nome').value, telefone: $('#cli-telefone').value, rua: $('#cli-rua').value, numero: $('#cli-numero').value, bairro: $('#cli-bairro').value, taxaId: $('#cli-taxa-id').value, taxaNome: $('#cli-taxa-nome').value };
+  const userData = { 
+      nome: $('#cli-nome').value, 
+      telefone: $('#cli-telefone').value, 
+      rua: $('#cli-rua').value, 
+      numero: $('#cli-numero').value, 
+      bairro: $('#cli-bairro').value, 
+      referencia: $('#cli-referencia').value,
+      taxaId: $('#cli-taxa-id').value, 
+      taxaNome: $('#cli-taxa-nome').value 
+  };
   localStorage.setItem('dca_user_data', JSON.stringify(userData));
 }
 
@@ -1320,7 +1335,9 @@ function carregarDadosCliente() {
     const data = JSON.parse(localStorage.getItem('dca_user_data'));
     if (data) {
       if(data.nome) $('#cli-nome').value = data.nome; if(data.telefone) $('#cli-telefone').value = data.telefone;
-      if(data.rua) $('#cli-rua').value = data.rua; if(data.numero) $('#cli-numero').value = data.numero; if(data.bairro) $('#cli-bairro').value = data.bairro;
+      if(data.rua) $('#cli-rua').value = data.rua; if(data.numero) $('#cli-numero').value = data.numero; 
+      if(data.bairro) $('#cli-bairro').value = data.bairro;
+      if(data.referencia) $('#cli-referencia').value = data.referencia;
       if(data.taxaId) { $('#cli-taxa-id').value = data.taxaId; $('#cli-taxa-nome').value = data.taxaNome; $$('.zona-card').forEach(c => { c.classList.remove('active'); if(c.dataset.taxa === data.taxaId) c.classList.add('active'); }); }
     }
   } catch(e) {}
@@ -1328,18 +1345,18 @@ function carregarDadosCliente() {
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value; const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key); let payload = formatField('00', '01') + merchantAccount + formatField('52', '0000') + formatField('53', '986') + formatField('54', strValor) + formatField('58', 'BR') + formatField('59', cleanNome) + formatField('60', cleanCidade) + formatField('62', formatField('05', '***')) + '6304'; let crc = 0xFFFF; for (let c = 0; c < payload.length; c++) { crc ^= payload.charCodeAt(c) << 8; for (let i = 0; i < 8; i++) { if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } } return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'); }
 
-// ALTERADO: grava os campos de endereço separados, além da string completa
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
   const ehEntrega = (tipo === 'Entrega');
 
   const rua = ehEntrega ? $('#cli-rua').value.trim() : '';
   const numero = ehEntrega ? $('#cli-numero').value.trim() : '';
-  const referencia = ehEntrega ? $('#cli-bairro').value.trim() : '';
+  const bairro = ehEntrega ? $('#cli-bairro').value.trim() : '';
+  const referencia = ehEntrega ? $('#cli-referencia').value.trim() : '';
   const regiao = ehEntrega ? $('#cli-taxa-nome').value : '';
 
   const endStr = ehEntrega
-    ? `${rua}, ${numero}${referencia ? ` — Ref.: ${referencia}` : ''} | Região: ${regiao}`
+    ? `${rua}, ${numero} - Bairro: ${bairro}${referencia ? ` (Ref.: ${referencia})` : ''} | Região: ${regiao}`
     : '';
 
   let pgtoStr = $('#cli-pagamento').value;
@@ -1352,6 +1369,7 @@ function montarPedido() {
     cliente_endereco: endStr,
     end_rua: rua,
     end_numero: numero,
+    end_bairro: bairro,
     end_referencia: referencia,
     end_regiao: regiao,
     end_cidade: ehEntrega ? CONFIG.cidade : '',
@@ -1372,7 +1390,7 @@ function montarPedido() {
 function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
   if (p.tipo_entrega === 'Entrega') {
-    L.push(`*Endereço:* ${p.end_rua}, ${p.end_numero}`);
+    L.push(`*Endereço:* ${p.end_rua}, ${p.end_numero} - ${p.end_bairro}`);
     if (p.end_referencia) L.push(`*Referência:* ${p.end_referencia}`);
     if (p.end_regiao) L.push(`*Região:* ${p.end_regiao}`);
   }
@@ -1423,7 +1441,7 @@ async function enviarPedidoFinal(ev) {
 }
 
 // ----------------------------------------------------
-// RASTREIO
+// RASTREIO BLINDADO
 // ----------------------------------------------------
 let unsubscribeRastreio = null;
 
@@ -1555,6 +1573,7 @@ $('#btn-nav-order').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-bottom-order').addEventListener('click', abrirCarrinhoSeguro);
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
+$('#cli-cep').addEventListener('input', e => { let v = soDigitos(e.target.value).slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2'); e.target.value = v; });
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
