@@ -337,6 +337,11 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
   .promo-content { padding: 25px 20px; }
 }
 
+@media (max-width: 450px) {
+  .sticky-menu-wrapper { justify-content: space-between; gap: 4px; padding: 12px 10px; }
+  .sticky-btn { padding: 8px 10px; font-size: 9px; letter-spacing: 0px; flex: 1; text-align: center; }
+}
+
 .modal-overlay#promo-banner-overlay { z-index: 3800 !important; align-items: center; justify-content: center; padding: 20px;}
 #promo-modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 15px 40px rgba(0,0,0,0.4); max-width: 550px; border-radius: 16px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
 #promo-banner-overlay.open #promo-modal-box { transform: scale(1); }
@@ -633,7 +638,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         </div>
 
         <div class="endereco-row">
-          <div style="flex: 3;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
+          <div style="flex: 2.5;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
           <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
         </div>
         <div style="margin-bottom: 10px;">
