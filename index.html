@@ -93,7 +93,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .sticky-menu-wrapper { position: sticky; top: 58px; z-index: 900; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 0 -20px 30px; padding: 15px 20px; border-bottom: 1px solid var(--border-light); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; transition: background-color 0.4s ease; }
 :root[data-theme="light"] .sticky-menu-wrapper { background: rgba(248, 244, 238, 0.95); } :root[data-theme="dark"] .sticky-menu-wrapper { background: rgba(10, 10, 10, 0.95); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 .sticky-menu-wrapper::-webkit-scrollbar { display: none; }
-.sticky-btn { white-space: nowrap; background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border-light); padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; }
+.sticky-btn { white-space: nowrap; background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border-light); padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: all 0.3s ease; flex-shrink: 0; }
 .sticky-btn:hover, .sticky-btn.active { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); border-color: var(--gold); } :root[data-theme="dark"] .sticky-btn:hover, :root[data-theme="dark"] .sticky-btn.active { background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 .sticky-btn-promo { background: rgba(221, 167, 58, 0.05); color: var(--gold-dark); border: 1px solid var(--gold); cursor: pointer;}
 :root[data-theme="dark"] .sticky-btn-promo { background: rgba(212, 175, 55, 0.1); color: var(--gold); }
@@ -637,7 +637,7 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
         </div>
 
         <div class="endereco-row">
-          <div style="flex: 2.5;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
+          <div style="flex: 3;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
           <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
         </div>
         <div style="margin-bottom: 10px;">
@@ -741,12 +741,22 @@ footer { background: var(--bg-card); padding: 60px 20px; border-top: 1px solid v
 </div>
 
 <script>
+// ANIQUILADOR DE CACHE DE CELULAR PARA EMERGÊNCIAS
+if ('serviceWorker' in navigator) { 
+    navigator.serviceWorker.getRegistrations().then(function(registrations) { 
+        for(let registration of registrations) { registration.unregister(); } 
+    }); 
+}
+if (window.caches) {
+    caches.keys().then(function(names) {
+        for (let name of names) caches.delete(name);
+    });
+}
+
 let deferredPrompt;
 const btnInstallApp = document.getElementById('btn-install-app');
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if (btnInstallApp) { btnInstallApp.style.display = 'block'; } });
 if (btnInstallApp) { btnInstallApp.addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; btnInstallApp.style.display = 'none'; } }); }
-
-if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Erro:', err)); }); }
 
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -837,6 +847,7 @@ let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedid
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
+let promoTimer = null; // Trava de segurança do Banner
 const STORAGE_KEY = 'dca_carrinho_final';
 
 function showToast(msg, type='warning') {
@@ -955,7 +966,16 @@ function checkBannerPromo(titulo, desc) {
   bannerJaMostrado = true;
   $('#promo-banner-title').textContent = titulo;
   $('#promo-banner-desc').textContent = desc;
-  setTimeout(() => { abrirModal('promo-banner-overlay'); }, 1500);
+  
+  if (promoTimer) clearTimeout(promoTimer);
+  
+  // TRAVA DE SEGURANÇA: Só abre se o cardápio tiver rendenizado as fotos dos combos.
+  promoTimer = setTimeout(() => { 
+      const temComboRenderizado = document.getElementById('grid-promocoes-modal').innerHTML.includes('card-img-wrap');
+      if(temComboRenderizado) {
+         abrirModal('promo-banner-overlay'); 
+      }
+  }, 1500);
 }
 
 function irParaCombos() {
@@ -1008,11 +1028,13 @@ function renderCardapio() {
 
   if (combosHoje.length > 0) {
       $('#grid-promocoes-modal').innerHTML = combosHoje.map(cardHTML).join('');
-      // SÓ ABRE O BANNER DEPOIS QUE O FIREBASE DER O OK
       if (configsCarregadasDB) {
           checkBannerPromo(tituloBanner, descBanner);
       }
   } else {
+      // MATA O CRONÔMETRO SE NÃO TIVER OFERTAS
+      if (promoTimer) clearTimeout(promoTimer);
+      
       $('#grid-promocoes-modal').innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(58, 42, 32, 0.02); border-radius: 12px; border: 1px dashed var(--border-light);">
           <span style="font-size: 40px; display: block; margin-bottom: 15px; opacity: 0.8; filter: grayscale(1);">🤫</span>
@@ -1689,7 +1711,7 @@ function processarConfig(doc) {
     }
     lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
     
-    configsCarregadasDB = true; // SÓ ABRE O BANNER DEPOIS DAQUI
+    configsCarregadasDB = true; 
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
   }
 }
