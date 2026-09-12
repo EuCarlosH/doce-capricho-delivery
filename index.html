@@ -206,7 +206,6 @@ body.loja-fechada #cardapio { opacity: 0.6; pointer-events: none; transition: op
 .tl-content strong { display: block; font-size: 14px; color: var(--text-main); margin-bottom: 2px; }
 .tl-content span { font-size: 11px; color: var(--text-muted); }
 
-/* CARRINHO NOVO LAYOUT */
 .cart-items-list { list-style: none; margin-bottom: 15px; }
 .cart-item { display: flex; flex-direction: column; padding: 15px 0; border-bottom: 1px solid var(--border-light); animation: fadeIn 0.4s var(--smooth); }
 .cart-item-top { display: flex; align-items: flex-start; gap: 12px; width: 100%; }
@@ -837,6 +836,7 @@ let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: 
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null; 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 let bannerJaMostrado = false;
+let configsCarregadasDB = false;
 const STORAGE_KEY = 'dca_carrinho_final';
 
 function showToast(msg, type='warning') {
@@ -990,7 +990,7 @@ function renderCardapio() {
       tituloBanner = "Oferta Especial Ativa! 🎉";
       descBanner = "Liberamos nossos combos exclusivos para você aproveitar hoje!";
   } else {
-      if (hojeDia === 4 || hojeDia === 5) { 
+      if (hojeDia === 5) { 
           combosHoje = CARDAPIO.combos_sexta;
           tituloBanner = "Sextou com Esfihas!";
           descBanner = "Liberamos 3 combos exclusivos de Esfihas para a sua sexta-feira. Aproveite!";
@@ -1003,13 +1003,15 @@ function renderCardapio() {
       }
   }
 
-  // OS BOTÕES FICAM SEMPRE VISÍVEIS (GARANTIDO)
   $('#btn-scroll-combos').style.display = 'inline-block';
   $('#btn-nav-promos').style.display = 'inline-block';
 
   if (combosHoje.length > 0) {
       $('#grid-promocoes-modal').innerHTML = combosHoje.map(cardHTML).join('');
-      checkBannerPromo(tituloBanner, descBanner);
+      // SÓ ABRE O BANNER DEPOIS QUE O FIREBASE DER O OK
+      if (configsCarregadasDB) {
+          checkBannerPromo(tituloBanner, descBanner);
+      }
   } else {
       $('#grid-promocoes-modal').innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(58, 42, 32, 0.02); border-radius: 12px; border: 1px dashed var(--border-light);">
@@ -1687,6 +1689,7 @@ function processarConfig(doc) {
     }
     lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
     
+    configsCarregadasDB = true; // SÓ ABRE O BANNER DEPOIS DAQUI
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
   }
 }
