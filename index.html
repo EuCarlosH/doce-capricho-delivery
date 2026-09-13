@@ -313,6 +313,27 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1) !important;} @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 .campo-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; font-weight: 500; display: block; }
 
+/* === INTEGRAÇÃO MAPBOX (autocomplete + GPS) === */
+.btn-gps { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px; border-radius: 12px; border: 1px dashed var(--gold); background: rgba(221, 167, 58, 0.06); color: var(--gold-dark); font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s var(--smooth); margin-bottom: 18px; }
+:root[data-theme="dark"] .btn-gps { color: var(--gold); background: rgba(212,175,55,0.08); }
+.btn-gps:hover:not(:disabled) { background: var(--gold); color: #FFF; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(221,167,58,0.25); }
+:root[data-theme="dark"] .btn-gps:hover:not(:disabled) { color: var(--bg-main); }
+.btn-gps:disabled { opacity: 0.6; cursor: wait; }
+.btn-gps .gps-spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin 0.7s linear infinite; display: none; }
+.btn-gps.loading .gps-spinner { display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.mb-autocomplete-wrap { position: relative; }
+.mb-suggestions { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 14px; box-shadow: var(--shadow-md); z-index: 50; overflow: hidden; display: none; max-height: 260px; overflow-y: auto; }
+.mb-suggestions.show { display: block; animation: fadeIn 0.2s ease; }
+.mb-suggestion-item { padding: 14px 16px; font-size: 13px; color: var(--text-main); cursor: pointer; border-bottom: 1px solid var(--border-light); transition: background 0.2s ease; display: flex; flex-direction: column; gap: 2px; }
+.mb-suggestion-item:last-child { border-bottom: none; }
+.mb-suggestion-item:hover, .mb-suggestion-item.active { background: rgba(221, 167, 58, 0.08); }
+:root[data-theme="dark"] .mb-suggestion-item:hover, :root[data-theme="dark"] .mb-suggestion-item.active { background: rgba(212,175,55,0.1); }
+.mb-suggestion-item strong { font-weight: 700; font-size: 13px; }
+.mb-suggestion-item small { color: var(--text-muted); font-size: 11px; }
+.mb-suggestion-empty { padding: 14px 16px; font-size: 12px; color: var(--text-muted); text-align: center; }
+
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
 .endereco-row { display: flex; gap: 12px; margin-bottom: 12px; }
 .box-destaque { background: rgba(221, 167, 58, 0.05); border: 1px dashed rgba(221, 167, 58, 0.3); border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px; animation: slideDown 0.4s var(--smooth); } :root[data-theme="dark"] .box-destaque { background: rgba(212,175,55,0.05); border-color: rgba(212,175,55,0.3); }
@@ -666,14 +687,25 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
           </div>
         </div>
 
+        <button type="button" id="btn-gps-localizacao" class="btn-gps ripple">
+          <span class="gps-spinner"></span>
+          <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
+        </button>
+
         <div class="endereco-row">
-          <div style="flex: 2.5;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
+          <div style="flex: 2.5;" class="mb-autocomplete-wrap">
+            <label for="cli-rua">Rua / Sítio</label>
+            <input type="text" id="cli-rua" placeholder="Comece a digitar seu endereço..." autocomplete="off">
+            <div class="mb-suggestions" id="mb-suggestions"></div>
+          </div>
           <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
         </div>
         <div style="margin-bottom: 12px;">
           <label for="cli-bairro">Bairro</label>
           <input type="text" id="cli-bairro" placeholder="Ex: Centro">
         </div>
+        <input type="hidden" id="cli-lat" value="">
+        <input type="hidden" id="cli-lng" value="">
         <div>
           <label for="cli-referencia">Ponto de referência</label>
           <input type="text" id="cli-referencia" placeholder="Ex: casa azul, ao lado da igreja">
@@ -1395,7 +1427,8 @@ function montarRevisao() {
     const ref = $('#cli-referencia').value.trim();
     $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong><br><span style="font-size:13px; color:var(--text-main); font-weight:600;">Bairro: ${esc(bairroStr)}</span>`
       + (ref ? `<br><span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
-      + `<br><span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`;
+      + `<br><span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`
+      + ($('#cli-lat').value ? `<br><span class="review-item-detalhe">📍 Localização GPS confirmada</span>` : '');
   } else {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
   }
@@ -1447,6 +1480,8 @@ function montarPedido() {
   const bairro = ehEntrega ? $('#cli-bairro').value.trim() : '';
   const referencia = ehEntrega ? $('#cli-referencia').value.trim() : '';
   const regiao = ehEntrega ? $('#cli-taxa-nome').value : '';
+  const lat = ehEntrega ? $('#cli-lat').value : '';
+  const lng = ehEntrega ? $('#cli-lng').value : '';
 
   const endStr = ehEntrega
     ? `${rua}, ${numero} - Bairro: ${bairro}${referencia ? ` (Ref.: ${referencia})` : ''} | Região: ${regiao}`
@@ -1467,6 +1502,8 @@ function montarPedido() {
     end_regiao: regiao,
     end_cidade: ehEntrega ? CONFIG.cidade : '',
     end_estado: ehEntrega ? CONFIG.estado : '',
+    end_lat: lat,
+    end_lng: lng,
     tipo_entrega: tipo,
     forma_pagamento: pgtoStr,
     itens: carrinho.map(i => ({
@@ -1486,6 +1523,7 @@ function montarMensagem(p) {
     L.push(`*Endereço:* ${p.end_rua}, ${p.end_numero} - ${p.end_bairro}`);
     if (p.end_referencia) L.push(`*Referência:* ${p.end_referencia}`);
     if (p.end_regiao) L.push(`*Região:* ${p.end_regiao}`);
+    if (p.end_lat && p.end_lng) L.push(`*📍 Localização (GPS):* https://www.google.com/maps?q=${p.end_lat},${p.end_lng}`);
   }
   L.push(`*Pagamento:* ${p.forma_pagamento}`, '', '*ITENS*');
   p.itens.forEach((i, n) => { L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); if (i.obs) L.push(`    • Obs: ${i.obs}`); });
@@ -1666,6 +1704,185 @@ $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
+
+// ==========================================================
+// INTEGRAÇÃO MAPBOX — Autocompletar de endereço + GPS
+// ==========================================================
+// Troque pelo seu token público do Mapbox (painel > Access tokens > Default public token).
+// Ele começa com "pk.eyJ...". Este token é seguro para expor no front-end.
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiY29udGF0b2Nhcmxvc2hlbnJpcXVlIiwiYSI6ImNtdHp1MDZ0dTB2M20yeHBtOGJwM204dmcifQ.A94mTT7uZaPS80wJAGbTjA';
+
+// Centro aproximado de São Miguel/RN, usado para priorizar e limitar as buscas de endereço à região.
+const MAPBOX_PROXIMIDADE = { lat: -6.2028, lng: -38.4947 };
+// Caixa (bbox) que cobre a área da cidade e arredores, para não trazer resultados de outros estados.
+const MAPBOX_BBOX = [-38.72, -6.42, -38.28, -5.99]; // [oeste, sul, leste, norte]
+
+let mbDebounceTimer = null;
+let mbUltimaBuscaId = 0;
+
+function mbTokenConfigurado() {
+  return MAPBOX_TOKEN && MAPBOX_TOKEN.indexOf('pk.') === 0;
+}
+
+async function mbBuscarEndereco(query) {
+  const idBusca = ++mbUltimaBuscaId;
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`
+    + `?access_token=${MAPBOX_TOKEN}`
+    + `&autocomplete=true&limit=6&language=pt&country=br`
+    + `&proximity=${MAPBOX_PROXIMIDADE.lng},${MAPBOX_PROXIMIDADE.lat}`
+    + `&bbox=${MAPBOX_BBOX.join(',')}`
+    + `&types=address,poi,place,neighborhood`;
+
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (idBusca !== mbUltimaBuscaId) return; // resposta antiga, ignora
+    mbRenderizarSugestoes(data.features || []);
+  } catch (err) {
+    console.error('[MAPBOX] Falha na busca de endereço:', err);
+  }
+}
+
+function mbExtrairComponentes(feature) {
+  // O Mapbox devolve o endereço todo formatado + um "context" com bairro/cidade/estado separados.
+  const contexto = feature.context || [];
+  let bairro = '';
+  contexto.forEach(item => {
+    if (item.id && item.id.indexOf('neighborhood') === 0) bairro = item.text;
+    if (!bairro && item.id && item.id.indexOf('locality') === 0) bairro = item.text;
+  });
+  // "address" traz normalmente algo como "Rua X" em text e o número em address (quando existe).
+  const rua = feature.text || '';
+  const numero = feature.address || '';
+  return { rua, numero, bairro, lat: feature.center ? feature.center[1] : '', lng: feature.center ? feature.center[0] : '' };
+}
+
+function mbRenderizarSugestoes(features) {
+  const box = document.getElementById('mb-suggestions');
+  if (!box) return;
+
+  if (!features.length) {
+    box.innerHTML = '<div class="mb-suggestion-empty">Nenhum endereço encontrado. Digite manualmente.</div>';
+    box.classList.add('show');
+    return;
+  }
+
+  box.innerHTML = features.map((f, idx) => {
+    const partes = (f.place_name || '').split(',');
+    const linha1 = partes[0] || f.text;
+    const linha2 = partes.slice(1).join(',').trim();
+    return `<div class="mb-suggestion-item" data-idx="${idx}"><strong>${esc(linha1)}</strong>${linha2 ? `<small>${esc(linha2)}</small>` : ''}</div>`;
+  }).join('');
+
+  box.classList.add('show');
+  box.dataset.features = JSON.stringify(features);
+}
+
+function mbFecharSugestoes() {
+  const box = document.getElementById('mb-suggestions');
+  if (box) { box.classList.remove('show'); box.innerHTML = ''; }
+}
+
+function mbPreencherEndereco(comp) {
+  $('#cli-rua').value = comp.rua || '';
+  if (comp.numero) $('#cli-numero').value = comp.numero;
+  if (comp.bairro) $('#cli-bairro').value = comp.bairro;
+  if (comp.lat && comp.lng) { $('#cli-lat').value = comp.lat; $('#cli-lng').value = comp.lng; }
+}
+
+// Autocompletar: escuta o campo de rua e busca sugestões com debounce.
+const inputRuaEl = document.getElementById('cli-rua');
+if (inputRuaEl) {
+  inputRuaEl.addEventListener('input', () => {
+    // Qualquer digitação manual invalida a coordenada GPS anteriormente capturada.
+    $('#cli-lat').value = ''; $('#cli-lng').value = '';
+
+    const valor = inputRuaEl.value.trim();
+    clearTimeout(mbDebounceTimer);
+    if (valor.length < 3) { mbFecharSugestoes(); return; }
+    if (!mbTokenConfigurado()) { return; } // sem token, autocompletar fica desativado silenciosamente
+
+    mbDebounceTimer = setTimeout(() => mbBuscarEndereco(valor), 400);
+  });
+
+  inputRuaEl.addEventListener('blur', () => {
+    // Pequeno atraso para permitir o clique na sugestão antes de fechar a lista.
+    setTimeout(mbFecharSugestoes, 200);
+  });
+}
+
+// Clique numa sugestão preenche os campos.
+document.addEventListener('click', e => {
+  const item = e.target.closest('.mb-suggestion-item');
+  if (!item) return;
+  const box = document.getElementById('mb-suggestions');
+  const features = JSON.parse(box.dataset.features || '[]');
+  const feature = features[parseInt(item.dataset.idx, 10)];
+  if (!feature) return;
+
+  mbPreencherEndereco(mbExtrairComponentes(feature));
+  mbFecharSugestoes();
+  showToast('Endereço preenchido automaticamente!', 'success');
+});
+
+// Botão "Usar Localização Atual": GPS do navegador + geocodificação reversa do Mapbox.
+const btnGps = document.getElementById('btn-gps-localizacao');
+if (btnGps) {
+  btnGps.addEventListener('click', () => {
+    if (!mbTokenConfigurado()) {
+      showToast('Configuração de mapas pendente. Preencha o endereço manualmente.', 'warning');
+      return;
+    }
+    if (!navigator.geolocation) {
+      showToast('Seu navegador não suporta geolocalização.', 'error');
+      return;
+    }
+
+    btnGps.disabled = true; btnGps.classList.add('loading');
+    document.getElementById('btn-gps-label').textContent = 'Localizando...';
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      try {
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`
+          + `?access_token=${MAPBOX_TOKEN}&language=pt&country=br&types=address`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        // Mesmo sem endereço legível, guardamos sempre a coordenada exata do GPS —
+        // é ela que garante a localização precisa para o entregador.
+        $('#cli-lat').value = lat;
+        $('#cli-lng').value = lng;
+
+        if (data.features && data.features.length) {
+          const comp = mbExtrairComponentes(data.features[0]);
+          $('#cli-rua').value = comp.rua || '';
+          if (comp.numero) $('#cli-numero').value = comp.numero;
+          if (comp.bairro) $('#cli-bairro').value = comp.bairro;
+          // Reafirma a coordenada exata do GPS (mais precisa que o centro do endereço encontrado).
+          $('#cli-lat').value = lat; $('#cli-lng').value = lng;
+          showToast('Localização identificada! Confira os campos.', 'success');
+        } else {
+          showToast('Localização capturada, mas complete o endereço manualmente.', 'warning');
+        }
+      } catch (err) {
+        console.error('[MAPBOX] Falha na geocodificação reversa:', err);
+        $('#cli-lat').value = lat; $('#cli-lng').value = lng;
+        showToast('Coordenadas capturadas, mas houve falha ao traduzir o endereço.', 'warning');
+      } finally {
+        btnGps.disabled = false; btnGps.classList.remove('loading');
+        document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
+      }
+    }, (error) => {
+      btnGps.disabled = false; btnGps.classList.remove('loading');
+      document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
+      if (error.code === error.PERMISSION_DENIED) { showToast('Permissão de localização negada.', 'error'); }
+      else { showToast('Não foi possível obter sua localização.', 'error'); }
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  });
+}
 
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
