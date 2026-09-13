@@ -94,7 +94,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .theme-toggle svg { width: 16px; height: 16px; fill: currentColor; } .icon-moon { display: none; } :root[data-theme="dark"] .icon-moon { display: block; } :root[data-theme="dark"] .icon-sun { display: none; }
 .bottom-nav { display: none; }
 
-#home { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); border-radius: 0 0 40px 40px; margin-bottom: 20px;}
+#home { min-height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 30px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); border-radius: 0 0 40px 40px; margin-bottom: 20px;}
 .hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 .carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 10s ease-out; }
 .carousel-slide.active { opacity: 1; transform: scale(1.1); }
@@ -102,9 +102,37 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .hero-overlay { background: linear-gradient(to bottom, rgba(13,10,8,0) 60%, rgba(13,10,8,1) 100%), linear-gradient(to right, rgba(13,10,8,0.95) 0%, rgba(13,10,8,0.7) 60%, rgba(13,10,8,0.1) 100%); }
 .hero-content { position: relative; z-index: 2; }
 .hero-eyebrow { display: block; color: var(--terracotta); font-size: 13px; font-weight: 600; letter-spacing: 0.4px; margin-bottom: 14px; }
-.hero-title { font-size: clamp(36px, 7vw, 64px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.1; max-width: 600px; }
+.hero-title { font-size: clamp(28px, 4.5vw, 42px); color: var(--text-main); margin-bottom: 12px; letter-spacing: 1px; line-height: 1.15; max-width: 560px; }
 .hero-subtitle { font-size: clamp(13px, 2vw, 15px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; }
 .hero-cta { display: inline-block; margin-top: 30px; padding: 18px 34px; border-radius: 14px; font-size: 13px; text-decoration: none; }
+
+/* BALÃO DE DESTAQUES ROTATIVO (topo do cardápio) */
+.promo-banner-inline { border-radius: 20px; padding: 28px 26px; margin: 0 0 40px; background: linear-gradient(135deg, var(--terracotta) 0%, var(--gold-dark) 100%); color: #FFF; position: relative; overflow: hidden; min-height: 130px; display: flex; flex-direction: column; justify-content: center; }
+.promo-banner-eyebrow { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; opacity: 0.85; margin-bottom: 8px; }
+.promo-banner-title { font-size: clamp(19px, 3vw, 26px); font-weight: 600; line-height: 1.3; max-width: 480px; }
+.promo-banner-dots { display: flex; gap: 6px; margin-top: 18px; }
+.promo-banner-dots button { width: 6px; height: 6px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); padding: 0; cursor: pointer; transition: all 0.3s var(--smooth); }
+.promo-banner-dots button.active { width: 18px; border-radius: 4px; background: #FFF; }
+
+/* TIRA "DESTAQUES" COM ADICIONAR RÁPIDO */
+.destaques-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+.destaques-header span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.destaques-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 4px 16px; scroll-snap-type: x mandatory; scrollbar-width: none; margin-bottom: 20px; }
+.destaques-strip::-webkit-scrollbar { display: none; }
+.destaque-card { flex: 0 0 190px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 14px; overflow: hidden; scroll-snap-align: start; box-shadow: var(--shadow-sm); transition: transform 0.3s var(--smooth); }
+.destaque-card:hover { transform: translateY(-4px); }
+.destaque-card .card-img-wrap { height: 110px; }
+.destaque-card .card-content { padding: 14px; }
+.destaque-card .card-title { font-size: 14px; margin-bottom: 4px; }
+.destaque-card .card-desc { display: none; }
+.destaque-card .card-bottom { margin-top: 8px; }
+.destaque-card .btn-add { width: 32px; height: 32px; font-size: 15px; border-radius: 9px; }
+
+/* CHAMADA PARA AVALIAÇÃO NO GOOGLE */
+.review-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: var(--bg-card); border: 1px dashed var(--border-light); border-radius: 16px; padding: 20px 24px; margin-bottom: 40px; }
+.review-cta strong { display: block; font-family: 'Fraunces', serif; font-size: 16px; color: var(--text-main); margin-bottom: 4px; }
+.review-cta p { color: var(--text-muted); font-size: 13px; margin: 0; }
+.review-cta a.btn-gradient { padding: 12px 22px; border-radius: 10px; font-size: 12px; text-decoration: none; white-space: nowrap; }
 :root[data-theme="dark"] .hero-title, :root[data-theme="dark"] .hero-subtitle, :root[data-theme="dark"] .hero-eyebrow { text-shadow: 0 4px 20px rgba(0,0,0,0.9); }
 :root[data-theme="dark"] .hero-title { color: var(--gold); }
 :root[data-theme="dark"] .hero-subtitle { font-weight: 400; }
@@ -452,6 +480,28 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
   </div>
 </header>
+
+<section class="section-container" style="padding-top: 20px; padding-bottom: 0;">
+  <div class="promo-banner-inline" id="promo-banner-inline">
+    <span class="promo-banner-eyebrow" id="promo-banner-inline-eyebrow">Feito com carinho</span>
+    <h3 class="promo-banner-title brand-font" id="promo-banner-inline-title">Doces artesanais para o seu momento</h3>
+    <div class="promo-banner-dots" id="promo-banner-inline-dots"></div>
+  </div>
+
+  <div class="destaques-header">
+    <h3 class="category-title brand-font" style="margin: 0 0 4px;">Destaques</h3>
+    <span>Escolhas do cardápio</span>
+  </div>
+  <div class="destaques-strip" id="destaques-strip"></div>
+
+  <div class="review-cta">
+    <div>
+      <strong>Gostou do pedido?</strong>
+      <p>Deixe sua avaliação no Google e ajude outras pessoas a conhecer o ateliê.</p>
+    </div>
+    <a href="#" id="link-avaliar-google" class="btn-gradient ripple" target="_blank" rel="noopener noreferrer">Avaliar no Google</a>
+  </div>
+</section>
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
@@ -923,7 +973,61 @@ const rotuloAplicacao = (ap, sabores) => {
 
 let lojaAberta = false;
 let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
-let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null; 
+let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
+
+// BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
+const DESTAQUES_SLIDES = [
+  { eyebrow: 'Feito com carinho', titulo: 'Doces artesanais para o seu momento' },
+  { eyebrow: 'Sugestão da casa', titulo: 'Experimente a pizza mais pedida da semana' },
+  { eyebrow: 'Avalie-nos', titulo: 'Sua opinião ajuda o ateliê a crescer' }
+];
+let destaqueTimer = null;
+
+function renderPromoBannerInline() {
+  const dotsWrap = document.getElementById('promo-banner-inline-dots');
+  if (!dotsWrap) return;
+  dotsWrap.innerHTML = DESTAQUES_SLIDES.map((_, i) => `<button type="button" data-slide="${i}" aria-label="Ver destaque ${i + 1}"></button>`).join('');
+  dotsWrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => mostrarSlideDestaque(parseInt(btn.dataset.slide, 10))));
+  mostrarSlideDestaque(0);
+}
+
+function mostrarSlideDestaque(i) {
+  const slide = DESTAQUES_SLIDES[i]; if (!slide) return;
+  const eyebrowEl = document.getElementById('promo-banner-inline-eyebrow');
+  const tituloEl = document.getElementById('promo-banner-inline-title');
+  if (eyebrowEl) eyebrowEl.textContent = slide.eyebrow;
+  if (tituloEl) tituloEl.textContent = slide.titulo;
+  document.querySelectorAll('#promo-banner-inline-dots button').forEach((b, idx) => b.classList.toggle('active', idx === i));
+  if (destaqueTimer) clearTimeout(destaqueTimer);
+  destaqueTimer = setTimeout(() => mostrarSlideDestaque((i + 1) % DESTAQUES_SLIDES.length), 5000);
+}
+
+// TIRA "DESTAQUES": mostra o item mais pedido (calculado nas estatísticas) + assinaturas da casa
+function renderDestaques() {
+  const strip = document.getElementById('destaques-strip');
+  if (!strip) return;
+  const todos = todosSabores();
+  const idsDestaque = [];
+  if (saborMaisPedido) idsDestaque.push(saborMaisPedido);
+  ['peru', 'nordestina', 'esf_peru'].forEach(id => { if (!idsDestaque.includes(id)) idsDestaque.push(id); });
+  const itens = idsDestaque.map(id => todos.find(s => s.id === id)).filter(Boolean).slice(0, 6);
+  strip.innerHTML = itens.map(s => {
+    const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
+    return `
+    <article class="destaque-card">
+      <div class="card-img-wrap skeleton-bg">
+        <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
+      </div>
+      <div class="card-content">
+        <h4 class="card-title">${esc(s.nome)}</h4>
+        <div class="card-bottom">
+          <span class="card-price-text">${brl(s.preco)}</span>
+          <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? '—' : '+'}</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+} 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
@@ -1063,6 +1167,7 @@ function irParaCombos() {
 }
 
 function renderCardapio() {
+  renderDestaques();
   $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
   $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
   $('#grid-esfihas-trad').innerHTML = CARDAPIO.esfihas_tradicionais.map(cardHTML).join('');
@@ -2047,7 +2152,7 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.warn('[STATS]', err.code); });
 
-verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
+verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
 </html>
