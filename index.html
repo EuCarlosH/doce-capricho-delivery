@@ -271,6 +271,9 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .zona-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s var(--smooth); display: flex; justify-content: space-between; align-items: center; } :root[data-theme="dark"] .zona-card { background: rgba(255,255,255,0.02); border-color: transparent;}
 .zona-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-sm);}
 .zona-card.active { border-color: var(--gold); background: var(--bg-card); box-shadow: 0 0 0 2px var(--gold); } :root[data-theme="dark"] .zona-card.active { background: rgba(212, 175, 55, 0.1); }
+.zona-card.sugerida:not(.active) { border-color: var(--success); box-shadow: 0 0 0 1px var(--success); }
+#zona-distancia-hint { display: none; font-size: 12px; font-weight: 600; color: var(--text-muted); background: rgba(47, 133, 90, 0.08); border: 1px dashed var(--success); border-radius: 10px; padding: 10px 14px; margin-top: 12px; line-height: 1.5; }
+#zona-distancia-hint strong { color: var(--success); }
 .zona-info { display: flex; flex-direction: column; gap: 4px; }
 .zona-nome { font-size: 14px; font-weight: 700; color: var(--text-main); } :root[data-theme="dark"] .zona-nome { font-weight: 600; color: var(--white); }
 .zona-desc { font-size: 11px; color: var(--text-muted); }
@@ -685,6 +688,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
               <span class="zona-preco">+ R$ 10,00</span>
             </div>
           </div>
+          <div id="zona-distancia-hint"></div>
         </div>
 
         <button type="button" id="btn-gps-localizacao" class="btn-gps ripple">
@@ -828,7 +832,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -1388,6 +1392,11 @@ function validarCheckout() {
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
   if ($('#cli-tipo-pedido').value === 'Entrega') {
     if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
+    else if (zonaSugeridaAtual && $('#cli-taxa-id').value !== zonaSugeridaAtual.taxa) {
+      erros.push(`A distância calculada até seu endereço corresponde à zona "${zonaSugeridaAtual.nome}". Selecione essa opção para continuar.`);
+      const cardCorreto = $$('.zona-card').find(c => c.dataset.taxa === zonaSugeridaAtual.taxa);
+      if (cardCorreto) cardCorreto.style.animation = 'shake 0.4s ease';
+    }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     const numVal = num.value.trim();
     if (numVal.length < 1) { erros.push('Informe o número da casa (ou escreva S/N).'); num.classList.add('field-error'); }
@@ -1748,6 +1757,63 @@ const MAPBOX_BBOX = [-38.72, -6.42, -38.28, -5.99]; // [oeste, sul, leste, norte
 let mbDebounceTimer = null;
 let mbUltimaBuscaId = 0;
 
+// ==========================================================
+// CÁLCULO DE DISTÂNCIA — zona sugerida a partir da loja
+// ==========================================================
+// Faixas de distância (em km) correspondentes a cada cartão de zona (data-taxa em .zona-card).
+// AJUSTE os valores de kmMax das duas últimas faixas conforme a realidade das entregas —
+// só o limite de 2km do Centro foi confirmado; os outros são um ponto de partida razoável.
+const ZONAS_DISTANCIA = [
+  { taxa: '300', nome: 'Centro/Proximidades (2km)', kmMax: 2 },
+  { taxa: '600', nome: 'Localidades Afastadas', kmMax: 6 },
+  { taxa: '1000', nome: 'Zonas Extremas', kmMax: Infinity },
+];
+
+// Distância em linha reta (Haversine), em km, entre duas coordenadas.
+function calcularDistanciaKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function zonaPelaDistancia(km) {
+  return ZONAS_DISTANCIA.find(z => km <= z.kmMax) || ZONAS_DISTANCIA[ZONAS_DISTANCIA.length - 1];
+}
+
+// Guarda a última zona sugerida pelo cálculo, para comparar na validação do checkout.
+let zonaSugeridaAtual = null;
+
+// Roda sempre que cli-lat/cli-lng mudam: calcula a distância até a loja, mostra a sugestão
+// e destaca visualmente o cartão correspondente (sem forçar a seleção do cliente).
+function atualizarZonaSugerida() {
+  const hint = document.getElementById('zona-distancia-hint');
+  const lat = parseFloat($('#cli-lat').value);
+  const lng = parseFloat($('#cli-lng').value);
+
+  $$('.zona-card').forEach(c => c.classList.remove('sugerida'));
+
+  if (isNaN(lat) || isNaN(lng)) {
+    zonaSugeridaAtual = null;
+    if (hint) hint.style.display = 'none';
+    return;
+  }
+
+  const km = calcularDistanciaKm(lat, lng, CONFIG.lojaLat, CONFIG.lojaLng);
+  const zona = zonaPelaDistancia(km);
+  zonaSugeridaAtual = zona;
+
+  const cardSugerido = $$('.zona-card').find(c => c.dataset.taxa === zona.taxa);
+  if (cardSugerido) cardSugerido.classList.add('sugerida');
+
+  if (hint) {
+    hint.style.display = 'block';
+    hint.innerHTML = `📍 Distância calculada até a loja: <strong>${km.toFixed(1)} km</strong> — zona sugerida: <strong>${esc(zona.nome)}</strong>`;
+  }
+}
+
 function mbTokenConfigurado() {
   return MAPBOX_TOKEN && MAPBOX_TOKEN.indexOf('pk.') === 0;
 }
@@ -1821,6 +1887,7 @@ function mbPreencherEndereco(comp) {
   if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
   if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
   if (comp.lat && comp.lng) { $('#cli-lat').value = comp.lat; $('#cli-lng').value = comp.lng; $('#cli-gps-precisao').value = ''; $('#cli-geo-origem').value = 'sugestao'; }
+  atualizarZonaSugerida();
 }
 
 // Autocompletar: escuta o campo de rua e busca sugestões com debounce.
@@ -1829,7 +1896,7 @@ if (inputRuaEl) {
   inputRuaEl.addEventListener('input', () => {
     // Digitar invalida apenas a coordenada vinda de sugestao de endereco.
     // A coordenada real do GPS permanece como referencia extra para o entregador.
-    if ($('#cli-geo-origem').value !== 'gps') { $('#cli-lat').value = ''; $('#cli-lng').value = ''; $('#cli-geo-origem').value = ''; }
+    if ($('#cli-geo-origem').value !== 'gps') { $('#cli-lat').value = ''; $('#cli-lng').value = ''; $('#cli-geo-origem').value = ''; atualizarZonaSugerida(); }
 
     const valor = inputRuaEl.value.trim();
     clearTimeout(mbDebounceTimer);
@@ -1905,17 +1972,20 @@ if (btnGps) {
           if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
           if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
           $('#cli-lat').value = lat; $('#cli-lng').value = lng;
+          atualizarZonaSugerida();
           if (precisaoGps && precisaoGps > 60) {
             showToast('Local aproximado (±' + Math.round(precisaoGps) + 'm). Confirme numero e bairro.', 'warning');
           } else {
             showToast('Localizacao capturada. Confirme numero e bairro — e o que vale na entrega.', 'success');
           }
         } else {
+          atualizarZonaSugerida();
           showToast('Localizacao capturada. Preencha rua, numero e bairro.', 'warning');
         }
       } catch (err) {
         console.error('[MAPBOX] Falha na geocodificação reversa:', err);
         $('#cli-lat').value = lat; $('#cli-lng').value = lng;
+        atualizarZonaSugerida();
         showToast('Coordenadas capturadas, mas houve falha ao traduzir o endereço.', 'warning');
       } finally {
         btnGps.disabled = false; btnGps.classList.remove('loading');
