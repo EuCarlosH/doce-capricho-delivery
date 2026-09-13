@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Doce Capricho Atelier — Menu</title>
-<meta name="description" content="O sabor que você já conhece, agora em pizzas e esfihas irresistíveis.">
+<title>Doce Capricho Atelier — Pizzas Artesanais</title>
+<meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#FDFBF7">
 
 <script>
@@ -262,8 +262,7 @@ footer { background: var(--bg-main); padding: 40px 20px 120px; text-align: cente
   .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--gold); font-weight: 700;}
   
   .cart-floating-btn { display: none !important; } 
-  footer { padding-bottom: 120px; } 
-
+  
   .modal-overlay { align-items: flex-end; padding: 0; background: var(--bottom-sheet-bg); }
   .modal-box { border-radius: 30px 30px 0 0; margin-top: auto; border: none; border-top: 1px solid rgba(255,255,255,0.1); transform: translateY(100%); padding-top: 45px; max-height: 88vh; }
   .modal-overlay.open .modal-box { transform: translateY(0); }
@@ -353,11 +352,17 @@ footer { background: var(--bg-main); padding: 40px 20px 120px; text-align: cente
 </section>
 
 <footer>
-  <h2 class="footer-logo">DOCE CAPRICHO ATELIER</h2>
+  <h2 class="footer-logo">Doce Capricho</h2>
+  <div class="footer-socials" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+    <a href="#" id="footer-wa-link" target="_blank" class="ripple" aria-label="Fale Conosco no WhatsApp" style="color: var(--primary); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-light); background: var(--bg-card);">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    </a>
+  </div>
   <div class="footer-info">
     <p>São Miguel / RN</p>
     <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
   </div>
+  <p class="footer-copy" style="font-size: 10px; color: var(--text-muted); margin-top: 15px;">© <span id="ano"></span> DOCE CAPRICHO. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
 <!-- DARK PILL INFERIOR (Mobile) -->
@@ -427,7 +432,7 @@ footer { background: var(--bg-main); padding: 40px 20px 120px; text-align: cente
     <h2 style="color: var(--danger); border-bottom: none; padding-bottom: 0;">Atenção 🛑</h2>
     <p style="font-size: 14px; color: var(--text-main); font-weight: 600;">Pedimos sinceras desculpas, mas nossa loja não pode receber pedidos agora.</p>
     <p style="font-size: 13px; color: var(--text-muted); margin-top: 15px;">Pausamos temporariamente devido à alta demanda ou esgotamento. Volte mais tarde!</p>
-    <button type="button" class="btn-gradient ripple" style="width: 100%; padding: 18px; margin-top: 30px; background: var(--border-light); color: var(--text-main) !important; box-shadow: none;" onclick="fecharModal('modal-aviso-pausa')">Compreendo</button>
+    <button type="button" class="btn-gradient ripple" style="width: 100%; padding: 18px; margin-top: 30px; background: var(--border-light); color: var(--text-main) !important; box-shadow: none;" onclick="fecharModais()">Compreendo</button>
   </div>
 </div>
 
@@ -443,7 +448,7 @@ footer { background: var(--bg-main); padding: 40px 20px 120px; text-align: cente
     <p style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 30px;">O item foi para a sua conta.</p>
     <div style="display: flex; flex-direction: column; gap: 12px;">
       <button type="button" class="btn-gradient ripple" style="padding: 18px;" onclick="irParaCarrinho()">Ver Conta</button>
-      <button type="button" class="ripple" style="padding: 18px; border:none; background:transparent; color: var(--text-muted); font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 1px;" onclick="fecharModal('success-overlay')">Continuar Comprando</button>
+      <button type="button" class="ripple" style="padding: 18px; border:none; background:transparent; color: var(--text-muted); font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 1px;" onclick="fecharModais()">Continuar Comprando</button>
     </div>
   </div>
 </div>
@@ -490,7 +495,7 @@ footer { background: var(--bg-main); padding: 40px 20px 120px; text-align: cente
         <span>Subtotal</span>
         <span id="cart-subtotal-value" style="color: var(--text-main); font-weight: 800;">R$ 0,00</span>
     </div>
-
+    
     <form class="checkout-form" id="checkout-form" novalidate>
       <div><label for="cli-nome">Seu Nome</label><input type="text" id="cli-nome" required></div>
       <div><label for="cli-telefone">WhatsApp</label><input type="tel" id="cli-telefone" required></div>
@@ -600,9 +605,20 @@ footer { background: var(--bg-main); padding: 40px 20px 120px; text-align: cente
   </div>
 </div>
 
-<script>
-// O SEU JAVASCRIPT ORIGINAL INTOCADO (APENAS COM A INJEÇÃO LIMPA DO GPS E CORREÇÃO DOS BOTÕES)
+<div class="modal-overlay" id="promo-banner-overlay">
+  <div class="modal-box" id="promo-modal-box">
+    <button class="close-modal ripple" data-close="promo-banner-overlay" style="display: flex;">&times;</button>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h1 style="font-size: 40px; margin-bottom: 10px;">🎉</h1>
+      <h2 id="promo-banner-title" style="margin-bottom: 5px; border:none; padding:0;">Ofertas Liberadas!</h2>
+      <p id="promo-banner-desc" style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">Separamos combos incríveis para o seu dia. Aproveite!</p>
+    </div>
+    <button class="btn-gradient ripple" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 13px;" onclick="irParaCombos()">Ver Combos</button>
+  </div>
+</div>
 
+<script>
+// DESTRUIDOR DE CACHE
 if ('serviceWorker' in navigator) { 
     navigator.serviceWorker.getRegistrations().then(function(registrations) { 
         for(let registration of registrations) { registration.unregister(); } 
@@ -621,8 +637,13 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&am
 const soDigitos = s => String(s).replace(/\D/g, '');
 
 const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Sua Rua, 123 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true };
-document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
-const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
+
+const elWaLink = document.getElementById('footer-wa-link');
+if (elWaLink) elWaLink.href = `https://wa.me/${CONFIG.whatsapp}`;
+const elEndLoja = document.getElementById('text-endereco-loja'); 
+if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
+const elAno = document.getElementById('ano');
+if (elAno) elAno.textContent = new Date().getFullYear();
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
 
@@ -705,7 +726,7 @@ let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
 let clienteLatLng = null; // Variável global para o GPS
-let unsubscribeRastreio = null; // Apenas declarado AQUI, uma única vez!
+let unsubscribeRastreio = null;
 const STORAGE_KEY = 'dca_carrinho_final';
 
 function showToast(msg, type='warning') {
@@ -828,8 +849,8 @@ function checkBannerPromo(titulo, desc) {
   if (promoTimer) clearTimeout(promoTimer);
   
   promoTimer = setTimeout(() => { 
-      const temComboRenderizado = document.getElementById('grid-promocoes-modal').innerHTML.includes('card-img-wrap');
-      if(temComboRenderizado) {
+      const elPromos = document.getElementById('grid-promocoes-modal');
+      if(elPromos && elPromos.innerHTML.includes('card-img-wrap')) {
          abrirModal('promo-banner-overlay'); 
       }
   }, 1500);
@@ -907,13 +928,7 @@ function atualizarBotoes() {
     const id = btn.dataset.escolher; const card = btn.closest('.card');
     if(card.classList.contains('esgotado')) return; 
     card.classList.toggle('selecionada', meioSelecionado === id);
-    if (meioSelecionado === id) { 
-        btn.innerHTML = '<span style="font-weight:900;font-size:16px;">✓</span>'; 
-    } else if (modo === 'meio' && meioSelecionado) { 
-        btn.innerHTML = '<span style="font-weight:900;font-size:12px;">2ª</span>'; 
-    } else { 
-        btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 5v14M5 12h14"/></svg>'; 
-    }
+    if (meioSelecionado === id) { btn.innerHTML = '✓'; } else if (modo === 'meio' && meioSelecionado) { btn.innerHTML = '2ª'; } else { btn.innerHTML = '+'; }
   });
 }
 
@@ -1178,6 +1193,54 @@ $('#cli-pagamento').addEventListener('change', e => {
   if(e.target.value === 'Dinheiro') { boxTroco.style.display = 'block'; } else { boxTroco.style.display = 'none'; $('#cli-troco').value = ''; }
 });
 
+// ==========================================
+// FUNÇÃO DE GPS (OPENSTREETMAP - 100% GRÁTIS)
+// ==========================================
+const btnGps = document.getElementById('btn-gps');
+if(btnGps) {
+    btnGps.addEventListener('click', () => {
+        const btn = document.getElementById('btn-gps'); 
+        btn.innerHTML = 'Buscando localização... ⏳';
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude; 
+                    const lng = position.coords.longitude; 
+                    clienteLatLng = `${lat},${lng}`; // Salva o GPS na variável Global
+                    
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data && data.address) { 
+                                if(data.address.road) document.getElementById('cli-rua').value = data.address.road; 
+                                if(data.address.suburb || data.address.neighbourhood || data.address.city_district) {
+                                    document.getElementById('cli-bairro').value = data.address.suburb || data.address.neighbourhood || data.address.city_district; 
+                                }
+                                if(data.address.house_number) document.getElementById('cli-numero').value = data.address.house_number; 
+                            }
+                            btn.innerHTML = '<span style="color:var(--success);">✓ GPS Capturado!</span>'; 
+                            setTimeout(() => { 
+                                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg> Usar minha localização atual'; 
+                            }, 3000);
+                        })
+                        .catch(() => { 
+                            btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg> Usar minha localização atual';
+                            showToast("GPS capturado! Preencha o nome da rua.", "warning");
+                        });
+                },
+                () => { 
+                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg> Usar minha localização atual'; 
+                    showToast("Permissão de GPS negada pelo celular.", "error"); 
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else { 
+            showToast("GPS não suportado no seu navegador.", "error"); 
+        }
+    });
+}
+
 function validarCheckout() {
   const erros = []; 
   const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
@@ -1242,54 +1305,6 @@ function montarRevisao() {
 
 function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
-// ==========================================
-// FUNÇÃO DE GPS (OPENSTREETMAP - 100% GRÁTIS)
-// ==========================================
-const btnGps = document.getElementById('btn-gps');
-if(btnGps) {
-    btnGps.addEventListener('click', () => {
-        const btn = document.getElementById('btn-gps'); 
-        btn.innerHTML = 'Buscando localização... ⏳';
-        
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude; 
-                    const lng = position.coords.longitude; 
-                    clienteLatLng = `${lat},${lng}`; // Salva o GPS na variável Global
-                    
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if(data && data.address) { 
-                                if(data.address.road) document.getElementById('cli-rua').value = data.address.road; 
-                                if(data.address.suburb || data.address.neighbourhood || data.address.city_district) {
-                                    document.getElementById('cli-bairro').value = data.address.suburb || data.address.neighbourhood || data.address.city_district; 
-                                }
-                                if(data.address.house_number) document.getElementById('cli-numero').value = data.address.house_number; 
-                            }
-                            btn.innerHTML = '<span style="color:var(--success);">✓ GPS Capturado!</span>'; 
-                            setTimeout(() => { 
-                                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg> Usar minha localização atual'; 
-                            }, 3000);
-                        })
-                        .catch(() => { 
-                            btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg> Usar minha localização atual';
-                            showToast("GPS capturado! Preencha o nome da rua.", "warning");
-                        });
-                },
-                () => { 
-                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg> Usar minha localização atual'; 
-                    showToast("Permissão de GPS negada pelo celular.", "error"); 
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
-        } else { 
-            showToast("GPS não suportado no seu navegador.", "error"); 
-        }
-    });
-}
-
 function salvarDadosCliente() {
   const userData = { 
       nome: $('#cli-nome').value, 
@@ -1348,7 +1363,7 @@ function montarPedido() {
     end_regiao: regiao,
     end_cidade: ehEntrega ? CONFIG.cidade : '',
     end_estado: ehEntrega ? CONFIG.estado : '',
-    lat_lng: clienteLatLng,
+    lat_lng: clienteLatLng, // Coordenada capturada pelo GPS
     tipo_entrega: tipo,
     forma_pagamento: pgtoStr,
     itens: carrinho.map(i => ({
@@ -1419,10 +1434,6 @@ async function enviarPedidoFinal(ev) {
 // ----------------------------------------------------
 // RASTREIO BLINDADO
 // ----------------------------------------------------
-
-const normStatus = s => String(s || '')
-  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  .trim().toLowerCase();
 
 function abrirRastreio() {
   const lastOrderId = localStorage.getItem('dca_last_order');
@@ -1550,7 +1561,9 @@ $('#btn-bottom-order').addEventListener('click', abrirCarrinhoSeguro);
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
-$('#ano').textContent = new Date().getFullYear();
+
+const elAnoFinal = document.getElementById('ano');
+if (elAnoFinal) elAnoFinal.textContent = new Date().getFullYear();
 
 function iniciarCarrosselHero() {
   const container = document.getElementById('hero-carousel');
