@@ -19,46 +19,6 @@
 <meta name="twitter:description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="twitter:image" content="https://docecaprichoatelier.vercel.app/img/social-preview.jpg">
 
-<!-- SEO: DADOS ESTRUTURADOS PARA O GOOGLE (endereço, telefone, horário) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Restaurant",
-  "name": "Doce Capricho Atelier",
-  "image": "https://docecaprichoatelier.vercel.app/img/social-preview.jpg",
-  "url": "https://docecaprichoatelier.vercel.app/",
-  "telephone": "+5585921440055",
-  "servesCuisine": ["Pizza", "Esfiha"],
-  "priceRange": "R$5 - R$100",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Rua Monsenhor José Aires, 188 - Centro",
-    "addressLocality": "São Miguel",
-    "addressRegion": "RN",
-    "addressCountry": "BR"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": -6.2129153815587745,
-    "longitude": -38.495351177382226
-  },
-  "openingHoursSpecification": [
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Tuesday", "Wednesday", "Thursday"],
-      "opens": "19:00",
-      "closes": "23:00"
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Friday", "Saturday", "Sunday"],
-      "opens": "18:30",
-      "closes": "23:00"
-    }
-  ]
-}
-</script>
-
 <script>
   function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
   function applyTheme(theme) {
@@ -401,6 +361,28 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1) !important;} @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 .campo-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; font-weight: 500; display: block; }
 
+/* === WIZARD DE PEDIDO (STEPPER: Itens / Recebimento / Pagamento / Revisão) === */
+.stepper { display: flex; align-items: flex-start; justify-content: space-between; margin: 4px 0 28px; }
+.stepper-step { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 2; flex-shrink: 0; }
+.stepper-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-main); border: 2px solid var(--border-light); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.3s var(--smooth); flex-shrink: 0; }
+.stepper-icon svg { width: 15px; height: 15px; }
+.stepper-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); text-align: center; white-space: nowrap; transition: color 0.3s ease; }
+.stepper-line { flex: 1 1 auto; height: 2px; background: var(--border-light); margin: 17px -2px 0; transition: background 0.4s ease; }
+.stepper-step.active .stepper-icon { background: var(--gold); border-color: var(--gold); color: #FFF; box-shadow: 0 0 0 4px rgba(221, 167, 58, 0.15); }
+.stepper-step.active .stepper-label { color: var(--gold-dark); }
+.stepper-step.done .stepper-icon { background: var(--gold); border-color: var(--gold); color: #FFF; }
+.stepper-step.done .stepper-label { color: var(--text-main); }
+.stepper-line.done { background: var(--gold); }
+:root[data-theme="dark"] .stepper-step.active .stepper-icon, :root[data-theme="dark"] .stepper-step.done .stepper-icon { color: var(--bg-main); }
+:root[data-theme="dark"] .stepper-step.active .stepper-label { color: var(--gold); }
+.pedido-step-panel { display: flex; flex-direction: column; gap: 15px; animation: fadeIn 0.3s ease; }
+@media (max-width: 380px) {
+  .stepper-icon { width: 30px; height: 30px; }
+  .stepper-icon svg { width: 13px; height: 13px; }
+  .stepper-label { font-size: 8px; }
+  .stepper-line { margin-top: 14px; }
+}
+
 /* === INTEGRAÇÃO MAPBOX (autocomplete + GPS) === */
 .btn-gps { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px; border-radius: 12px; border: 1px dashed var(--gold); background: rgba(221, 167, 58, 0.06); color: var(--gold-dark); font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s var(--smooth); margin-bottom: 18px; }
 :root[data-theme="dark"] .btn-gps { color: var(--gold); background: rgba(212,175,55,0.08); }
@@ -517,7 +499,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
-      <div id="google-rating-badge" class="status-badge" style="display:none; background:transparent; border:1px solid var(--gold); color:var(--gold-dark);"></div>
       <div id="nav-status-badge" class="status-badge">FECHADO</div>
     </div>
   </div>
@@ -612,7 +593,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </div>
   <div class="footer-info">
     <p>São Miguel / RN</p>
-    <p id="footer-funcionamento">Atendimento: Terça a Domingo, 19h às 23h (Sex, Sáb e Dom a partir das 18h30)</p>
+    <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
   </div>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
@@ -734,186 +715,213 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 </div>
 
 <div class="modal-overlay" id="cart-overlay">
-  <div class="modal-box">
+  <div class="modal-box" style="max-width: 560px;">
     <button class="close-modal ripple" data-close="cart-overlay">&times;</button>
-    <h2 id="cart-title" class="brand-font">Seu Carrinho</h2>
-    
-    <ul class="cart-items-list" id="cart-items-list"></ul>
-    
-    <div class="cart-totals-area">
-      <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
-    </div>
+    <h2 id="cart-title" class="brand-font">Seu Pedido</h2>
 
-    <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 12px; padding: 15px; margin-top: 15px; text-align: center; animation: fadeIn 0.5s ease;">
-      <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-        <img src="img/esf_choc_morango.jpg" alt="Esfiha Doce" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
-        <div style="text-align: left; flex: 1;">
-          <strong style="display: block; font-size: 14px; color: var(--text-main);">Esfiha Choc. c/ Morango</strong>
-          <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
-        </div>
-        <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_morango')" style="width: 36px; height: 36px; font-size: 20px;">+</button>
+    <div class="stepper" id="pedido-stepper">
+      <div class="stepper-step" data-step="1">
+        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></div>
+        <span class="stepper-label">Itens</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="2">
+        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+        <span class="stepper-label">Recebimento</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="3">
+        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+        <span class="stepper-label">Pagamento</span>
+      </div>
+      <div class="stepper-line"></div>
+      <div class="stepper-step" data-step="4">
+        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+        <span class="stepper-label">Revisão</span>
       </div>
     </div>
-    
-    <form class="checkout-form" id="checkout-form" novalidate>
-      <div style="margin-top: 20px; border-top: 1px dashed var(--border-light); padding-top: 20px;">
-        <h4 class="brand-font" style="color:var(--text-main); margin-bottom: 15px; font-size: 16px;">Dados do Pedido</h4>
+
+    <!-- STEP 1: ITENS -->
+    <div class="pedido-step-panel" id="step-panel-1" data-step="1">
+      <ul class="cart-items-list" id="cart-items-list"></ul>
+
+      <div class="cart-totals-area">
+        <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
       </div>
 
-      <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
-      <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
-      <div><label for="cli-telefone-confirma">Confirme seu WhatsApp</label><input type="tel" id="cli-telefone-confirma" required><span class="campo-hint">Digite de novo pra evitar erro de digitação — é por esse número que avisamos sobre o pedido.</span></div>
-      
-      <div>
-        <label>Como deseja receber?</label>
-        <input type="hidden" id="cli-tipo-pedido" value="Entrega">
-        <div class="delivery-options">
-          <div class="delivery-card active ripple" data-tipo="Entrega" tabindex="0" role="button">
-            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            <strong>Entrega</strong>
-            <small id="text-taxa-card">Calculando...</small>
+      <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 12px; padding: 15px; text-align: center; animation: fadeIn 0.5s ease;">
+        <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+          <img src="img/esf_choc_morango.jpg" alt="Esfiha Doce" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
+          <div style="text-align: left; flex: 1;">
+            <strong style="display: block; font-size: 14px; color: var(--text-main);">Esfiha Choc. c/ Morango</strong>
+            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
           </div>
-          <div class="delivery-card ripple" data-tipo="Retirada" tabindex="0" role="button">
-            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            <strong>Retirada</strong>
-            <small>Grátis</small>
-          </div>
+          <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_morango')" style="width: 36px; height: 36px; font-size: 20px;">+</button>
         </div>
       </div>
-      
-      <div id="box-endereco">
-        <div id="box-taxas-entrega" style="margin-bottom: 25px;">
-          <label style="margin-bottom: 8px;">Qual a região da entrega?</label>
-          <input type="hidden" id="cli-taxa-id" value="">
-          <input type="hidden" id="cli-taxa-nome" value="">
-          <div class="zonas-grid">
-            <div class="zona-card ripple" data-taxa="300" data-nome="Centro/Proximidades (2km)">
-              <div class="zona-info"><span class="zona-nome">Centro/Proximidades (2km)</span></div>
-              <span class="zona-preco">+ R$ 3,00</span>
-            </div>
-            <div class="zona-card ripple" data-taxa="600" data-nome="Localidades Afastadas">
-              <div class="zona-info"><span class="zona-nome">Localidades Afastadas</span><span class="zona-desc">ex.: Sítio Lagoa Nova</span></div>
-              <span class="zona-preco">+ R$ 6,00</span>
-            </div>
-            <div class="zona-card ripple" data-taxa="1000" data-nome="Zonas Extremas">
-              <div class="zona-info"><span class="zona-nome">Zonas Extremas</span><span class="zona-desc">ex.: Sede Brisanet, Bairro Oiteiro</span></div>
-              <span class="zona-preco">+ R$ 10,00</span>
-            </div>
-          </div>
-          <div id="zona-distancia-hint"></div>
-        </div>
 
-        <button type="button" id="btn-gps-localizacao" class="btn-gps ripple">
-          <span class="gps-spinner"></span>
-          <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
-        </button>
+      <button type="button" class="btn-finish btn-gradient ripple" id="btn-step1-avancar" style="margin-top:0;" onclick="irParaStep(2)">Avançar</button>
+      <button type="button" class="btn-continue ripple" style="margin-top:0;" data-close="cart-overlay">Continuar Comprando</button>
+    </div>
 
-        <div class="endereco-row">
-          <div style="flex: 2.5;" class="mb-autocomplete-wrap">
-            <label for="cli-rua">Rua / Sítio</label>
-            <input type="text" id="cli-rua" placeholder="Comece a digitar seu endereço..." autocomplete="off">
-            <div class="mb-suggestions" id="mb-suggestions"></div>
-          </div>
-          <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
-        </div>
-        <div style="margin-bottom: 12px;">
-          <label for="cli-bairro">Bairro</label>
-          <input type="text" id="cli-bairro" placeholder="Ex: Centro">
-        </div>
-        <input type="hidden" id="cli-lat" value="">
-        <input type="hidden" id="cli-lng" value="">
-        <input type="hidden" id="cli-gps-precisao" value="">
-        <input type="hidden" id="cli-geo-origem" value="">
+    <form class="checkout-form" id="checkout-form" novalidate style="margin-top: 0;">
+      <!-- STEP 2: RECEBIMENTO -->
+      <div class="pedido-step-panel" id="step-panel-2" data-step="2" style="display:none;">
+        <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
+        <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
+
         <div>
-          <label for="cli-referencia">Ponto de referência</label>
-          <input type="text" id="cli-referencia" placeholder="Ex: casa azul, ao lado da igreja">
-          <span class="campo-hint">Ajuda muito o entregador a te encontrar rápido.</span>
+          <label>Como deseja receber?</label>
+          <input type="hidden" id="cli-tipo-pedido" value="Entrega">
+          <div class="delivery-options">
+            <div class="delivery-card active ripple" data-tipo="Entrega" tabindex="0" role="button">
+              <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <strong>Entrega</strong>
+              <small id="text-taxa-card">Calculando...</small>
+            </div>
+            <div class="delivery-card ripple" data-tipo="Retirada" tabindex="0" role="button">
+              <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              <strong>Retirada</strong>
+              <small>Grátis</small>
+            </div>
+          </div>
+        </div>
+
+        <div id="box-endereco">
+          <div id="box-taxas-entrega" style="margin-bottom: 25px;">
+            <label style="margin-bottom: 8px;">Qual a região da entrega?</label>
+            <input type="hidden" id="cli-taxa-id" value="">
+            <input type="hidden" id="cli-taxa-nome" value="">
+            <div class="zonas-grid">
+              <div class="zona-card ripple" data-taxa="300" data-nome="Centro/Proximidades (2km)">
+                <div class="zona-info"><span class="zona-nome">Centro/Proximidades (2km)</span></div>
+                <span class="zona-preco">+ R$ 3,00</span>
+              </div>
+              <div class="zona-card ripple" data-taxa="600" data-nome="Localidades Afastadas">
+                <div class="zona-info"><span class="zona-nome">Localidades Afastadas</span><span class="zona-desc">ex.: Sítio Lagoa Nova</span></div>
+                <span class="zona-preco">+ R$ 6,00</span>
+              </div>
+              <div class="zona-card ripple" data-taxa="1000" data-nome="Zonas Extremas">
+                <div class="zona-info"><span class="zona-nome">Zonas Extremas</span><span class="zona-desc">ex.: Sede Brisanet, Bairro Oiteiro</span></div>
+                <span class="zona-preco">+ R$ 10,00</span>
+              </div>
+            </div>
+            <div id="zona-distancia-hint"></div>
+          </div>
+
+          <button type="button" id="btn-gps-localizacao" class="btn-gps ripple">
+            <span class="gps-spinner"></span>
+            <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
+          </button>
+
+          <div class="endereco-row">
+            <div style="flex: 2.5;" class="mb-autocomplete-wrap">
+              <label for="cli-rua">Rua / Sítio</label>
+              <input type="text" id="cli-rua" placeholder="Comece a digitar seu endereço..." autocomplete="off">
+              <div class="mb-suggestions" id="mb-suggestions"></div>
+            </div>
+            <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label for="cli-bairro">Bairro</label>
+            <input type="text" id="cli-bairro" placeholder="Ex: Centro">
+          </div>
+          <input type="hidden" id="cli-lat" value="">
+          <input type="hidden" id="cli-lng" value="">
+          <input type="hidden" id="cli-gps-precisao" value="">
+          <input type="hidden" id="cli-geo-origem" value="">
+          <div>
+            <label for="cli-referencia">Ponto de referência</label>
+            <input type="text" id="cli-referencia" placeholder="Ex: casa azul, ao lado da igreja">
+            <span class="campo-hint">Ajuda muito o entregador a te encontrar rápido.</span>
+          </div>
+        </div>
+
+        <div id="box-retirada" style="display: none; opacity: 0; transition: all 0.4s var(--smooth);">
+          <div class="box-destaque" style="margin-top: 0; text-align: left; padding: 20px;">
+            <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 6px; letter-spacing: 1px;">📍 Endereço para Retirada</p>
+            <strong style="color: var(--text-main); font-size: 14px;" id="text-endereco-loja">Carregando...</strong>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Aguarde nossa confirmação no WhatsApp antes de sair.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(1)">Voltar</button>
+          <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" onclick="tentarAvancarStep2()">Avançar</button>
         </div>
       </div>
 
-      <div id="box-retirada" style="display: none; opacity: 0; transition: all 0.4s var(--smooth);">
-        <div class="box-destaque" style="margin-top: 0; text-align: left; padding: 20px;">
-          <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 6px; letter-spacing: 1px;">📍 Endereço para Retirada</p>
-          <strong style="color: var(--text-main); font-size: 14px;" id="text-endereco-loja">Carregando...</strong>
-          <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Aguarde nossa confirmação no WhatsApp antes de sair.</p>
+      <!-- STEP 3: PAGAMENTO -->
+      <div class="pedido-step-panel" id="step-panel-3" data-step="3" style="display:none;">
+        <div>
+          <label for="cli-pagamento">Pagamento</label>
+          <select id="cli-pagamento">
+            <option value="PIX">PIX (Rápido)</option>
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Cartão">Cartão na entrega/retirada</option>
+          </select>
+        </div>
+
+        <div id="box-troco" style="display: none; animation: slideDown 0.3s ease;">
+          <label for="cli-troco" style="color: var(--gold-dark);">Precisa de troco para quanto? (Opcional)</label>
+          <input type="text" id="cli-troco" placeholder="Ex: 50 reais ou deixe em branco">
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(2)">Voltar</button>
+          <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-avancar" onclick="irParaStep(4)">Avançar para Revisão</button>
         </div>
       </div>
-
-      <div>
-        <label for="cli-pagamento">Pagamento</label>
-        <select id="cli-pagamento">
-          <option value="PIX">PIX (Rápido)</option>
-          <option value="Dinheiro">Dinheiro</option>
-          <option value="Cartão">Cartão na entrega/retirada</option>
-        </select>
-      </div>
-
-      <div id="box-troco" style="display: none; margin-top: 15px; animation: slideDown 0.3s ease;">
-        <label for="cli-troco" style="color: var(--gold-dark);">Precisa de troco para quanto? (Opcional)</label>
-        <input type="text" id="cli-troco" placeholder="Ex: 50 reais ou deixe em branco">
-      </div>
-      
-      <button type="submit" class="btn-finish btn-gradient ripple" id="btn-avancar">Avançar para Revisão</button>
-      <button type="button" class="btn-continue ripple" data-close="cart-overlay">Continuar Comprando</button>
     </form>
-  </div>
-</div>
 
-<div class="modal-overlay" id="review-overlay">
-  <div class="modal-box">
-    <button class="close-modal ripple" onclick="voltarParaCarrinho()">&times;</button>
-    <h2 class="brand-font">Revisão do Pedido</h2>
-    
-    <div class="review-card">
-      <div class="review-header">
-        <h4>🛍️ Itens do Pedido</h4>
-        <button type="button" class="btn-edit-review ripple" onclick="voltarParaCarrinho()">Editar</button>
+    <!-- STEP 4: REVISÃO -->
+    <div class="pedido-step-panel" id="step-panel-4" data-step="4" style="display:none;">
+      <div class="review-card">
+        <div class="review-header">
+          <h4>🛍️ Itens do Pedido</h4>
+          <button type="button" class="btn-edit-review ripple" onclick="irParaStep(1)">Editar</button>
+        </div>
+        <div class="review-content" id="review-items"></div>
       </div>
-      <div class="review-content" id="review-items"></div>
-    </div>
 
-    <div class="review-card" style="border: 1px dashed var(--gold); background: rgba(221, 167, 58, 0.06);">
-      <div class="review-header" style="border-bottom-color: rgba(221,167,58,0.3);">
-        <h4 style="color: var(--gold-dark);">📱 Contato</h4>
-        <button type="button" class="btn-edit-review ripple" onclick="voltarParaCarrinho()">Editar</button>
+      <div class="review-card">
+        <div class="review-header">
+          <h4>🛵 Recebimento</h4>
+          <button type="button" class="btn-edit-review ripple" onclick="irParaStep(2)">Editar</button>
+        </div>
+        <div class="review-content" id="review-delivery"></div>
       </div>
-      <div class="review-content" id="review-contato"></div>
-    </div>
 
-    <div class="review-card">
-      <div class="review-header">
-        <h4>🛵 Recebimento</h4>
-        <button type="button" class="btn-edit-review ripple" onclick="voltarParaCarrinho()">Editar</button>
+      <div class="review-card">
+        <div class="review-header">
+          <h4>💳 Pagamento</h4>
+          <button type="button" class="btn-edit-review ripple" onclick="irParaStep(3)">Editar</button>
+        </div>
+        <div class="review-content" id="review-payment"></div>
       </div>
-      <div class="review-content" id="review-delivery"></div>
-    </div>
 
-    <div class="review-card">
-      <div class="review-header">
-        <h4>💳 Pagamento</h4>
-        <button type="button" class="btn-edit-review ripple" onclick="voltarParaCarrinho()">Editar</button>
+      <div class="review-total-box">
+        <div class="cart-sub-line"><span>Subtotal</span><span id="rev-subtotal-value">R$ 0,00</span></div>
+        <div class="cart-sub-line" id="rev-linha-taxa"><span>Taxa de entrega</span><span id="rev-taxa-value">R$ 0,00</span></div>
+        <div class="cart-total-line" style="border-top-color: rgba(58,42,32,0.05);"><span>Total a Pagar</span><span id="rev-total-value">R$ 0,00</span></div>
       </div>
-      <div class="review-content" id="review-payment"></div>
-    </div>
 
-    <div class="review-total-box">
-      <div class="cart-sub-line"><span>Subtotal</span><span id="rev-subtotal-value">R$ 0,00</span></div>
-      <div class="cart-sub-line" id="rev-linha-taxa"><span>Taxa de entrega</span><span id="rev-taxa-value">R$ 0,00</span></div>
-      <div class="cart-total-line" style="border-top-color: rgba(58,42,32,0.05);"><span>Total a Pagar</span><span id="rev-total-value">R$ 0,00</span></div>
-    </div>
+      <div class="box-destaque" id="rev-box-pix" style="display:none; margin-bottom: 0;">
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; font-weight: 700;">Transferência PIX:</p>
+        <strong style="color:var(--text-main); font-size:20px; display:block; margin-bottom: 12px;" id="rev-pix-valor">R$ 0,00</strong>
+        <button type="button" class="btn-copy-pix ripple" id="rev-btn-copy-pix">Copiar Código PIX</button>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
+      </div>
 
-    <div class="box-destaque" id="rev-box-pix" style="display:none; margin-bottom: 25px;">
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; font-weight: 700;">Transferência PIX:</p>
-      <strong style="color:var(--text-main); font-size:20px; display:block; margin-bottom: 12px;" id="rev-pix-valor">R$ 0,00</strong>
-      <button type="button" class="btn-copy-pix ripple" id="rev-btn-copy-pix">Copiar Código PIX</button>
-      <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(3)">Voltar</button>
+        <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
+      </div>
     </div>
-
-    <button type="button" class="btn-finish btn-gradient ripple" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
   </div>
 </div>
 
@@ -1034,7 +1042,7 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Terça a Domingo, 19h às 23h (Sex, Sáb e Dom a partir das 18h30)", horarios: {}, modoPromocoes: 'auto' }; 
+let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
@@ -1091,6 +1099,7 @@ function renderDestaques() {
   }).join('');
 } 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
+let pedidoStepAtual = 1;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
@@ -1121,7 +1130,7 @@ function verificarHorario() {
           const tempoInicio = (abreH || 18) * 60 + (abreM || 30); const tempoFim = (fechaH || 23) * 60 + (fechaM || 0);
           if (tempoFim < tempoInicio) { dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim); } else { dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
        }
-    } else { if (diaHoje >= 2 && diaHoje <= 4) { dentroDoHorario = (tempoAtual >= (19*60) && tempoAtual <= (23*60)); } else if (diaHoje === 0 || diaHoje === 5 || diaHoje === 6) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
+    } else { if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
     
     const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
     
@@ -1295,7 +1304,7 @@ function renderCardapio() {
 function atualizarBotoes() {
   $$('[data-escolher]').forEach(btn => {
     const id = btn.dataset.escolher; const card = btn.closest('.card');
-    if(!card || card.classList.contains('esgotado')) return;
+    if(!card || card.classList.contains('esgotado')) return; 
     card.classList.toggle('selecionada', meioSelecionado === id);
     if (meioSelecionado === id) { btn.innerHTML = '✓'; } else if (modo === 'meio' && meioSelecionado) { btn.innerHTML = '2ª'; } else { btn.innerHTML = '+'; }
   });
@@ -1482,6 +1491,40 @@ window.removerDoCarrinho = function(uid) {
     atualizarUI();
 };
 
+// ------------------------------------------------------------------
+// WIZARD DE PEDIDO: navegação entre os 4 passos (Itens / Recebimento / Pagamento / Revisão)
+// ------------------------------------------------------------------
+function irParaStep(n) {
+  if (n === 2 && !carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return; }
+  pedidoStepAtual = n;
+  $$('.pedido-step-panel').forEach(p => { p.style.display = (parseInt(p.dataset.step, 10) === n) ? 'flex' : 'none'; });
+  atualizarStepperUI();
+  if (n === 4) montarRevisao();
+  const box = document.querySelector('#cart-overlay .modal-box');
+  if (box) box.scrollTop = 0;
+}
+
+function atualizarStepperUI() {
+  $$('#pedido-stepper .stepper-step').forEach(el => {
+    const s = parseInt(el.dataset.step, 10);
+    el.classList.remove('active', 'done');
+    if (s < pedidoStepAtual) el.classList.add('done');
+    else if (s === pedidoStepAtual) el.classList.add('active');
+  });
+  $$('#pedido-stepper .stepper-line').forEach((el, idx) => { el.classList.toggle('done', (idx + 1) < pedidoStepAtual); });
+}
+
+function tentarAvancarStep2() {
+  if (!lojaAberta) {
+    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+    if (statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa');
+    else showToast("Nossa loja está fechada no momento.", "error");
+    return;
+  }
+  if (!validarCheckout()) return;
+  irParaStep(3);
+}
+
 function irParaCarrinho() { fecharModal('success-overlay'); setTimeout(() => { abrirModal('cart-overlay'); }, 150); }
 
 function totais() { 
@@ -1554,7 +1597,7 @@ function atualizarUI() {
   const num = $('#cli-numero'); if(num) num.required = entrega;
   const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
 
-  const btnAvancar = $('#btn-avancar'); if(btnAvancar) btnAvancar.disabled = carrinho.length === 0;
+  const btnStep1Avancar = $('#btn-step1-avancar'); if(btnStep1Avancar) btnStep1Avancar.disabled = carrinho.length === 0;
 }
 
 $('#cli-pagamento').addEventListener('change', e => {
@@ -1564,14 +1607,11 @@ $('#cli-pagamento').addEventListener('change', e => {
 
 function validarCheckout() {
   const erros = []; 
-  const nome = $('#cli-nome'), tel = $('#cli-telefone'), telConfirma = $('#cli-telefone-confirma'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
-  [nome, tel, telConfirma, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
+  const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
+  [nome, tel, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
-  const dConfirma = soDigitos(telConfirma.value);
-  if (dConfirma.length < 10 || dConfirma.length > 11) { erros.push('Confirme seu WhatsApp no segundo campo.'); telConfirma.classList.add('field-error'); }
-  else if (d !== dConfirma) { erros.push('Os dois números de WhatsApp digitados são diferentes. Confira e digite de novo.'); tel.classList.add('field-error'); telConfirma.classList.add('field-error'); }
   if ($('#cli-tipo-pedido').value === 'Entrega') {
     if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
     else if (zonaSugeridaAtual && $('#cli-taxa-id').value !== zonaSugeridaAtual.taxa) {
@@ -1593,8 +1633,6 @@ function validarCheckout() {
 function montarRevisao() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value; let pgto = $('#cli-pagamento').value;
   if(pgto === 'Dinheiro' && $('#cli-troco').value.trim() !== '') { pgto += ` (Troco para: ${$('#cli-troco').value.trim()})`; }
-
-  $('#review-contato').innerHTML = `<strong style="font-size:16px; color:var(--gold-dark);">${esc($('#cli-nome').value.trim())}</strong><br><span style="font-size:15px; font-weight:800; color:var(--text-main); display:inline-block; margin-top:4px;">${esc($('#cli-telefone').value.trim())}</span><br><span class="review-item-detalhe" style="margin-top:6px; display:block;">⚠️ Vamos avisar sobre o andamento do seu pedido por esse número. Confira se está certo.</span>`;
 
   $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
@@ -1637,8 +1675,6 @@ function montarRevisao() {
   if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega); } else { $('#rev-linha-taxa').style.display = 'none'; }
   $('#rev-total-value').textContent = brl(t.total);
 }
-
-function voltarParaCarrinho() { fecharModal('review-overlay'); abrirModal('cart-overlay'); }
 
 function salvarDadosCliente() {
   const userData = { 
@@ -1788,7 +1824,7 @@ async function enviarPedidoFinal(ev) {
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  carrinho = []; salvar(); atualizarUI(); fecharModal('review-overlay'); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
+  carrinho = []; salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
 
@@ -1860,7 +1896,7 @@ function atualizarTimeline(status, tipoEntrega) {
   if (steps[etapa]) steps[etapa].className = (etapa === 3) ? 'tl-step done' : 'tl-step active';
 }
 
-function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') atualizarUI(); } }
+function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') { irParaStep(1); atualizarUI(); } } }
 function fecharModal(id) { 
   if (id === 'tracking-overlay' && unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
   const ov = document.getElementById(id); 
@@ -1896,16 +1932,7 @@ $('#builder-form').addEventListener('submit', e => { e.preventDefault(); adicion
 
 $('#checkout-form').addEventListener('submit', e => { 
     e.preventDefault(); 
-    if(!lojaAberta) { 
-        const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
-        if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
-        else showToast("Nossa loja está fechada no momento.", "error"); 
-        return; 
-    } 
-    if (!validarCheckout()) return; 
-    montarRevisao(); 
-    fecharModal('cart-overlay'); 
-    setTimeout(() => { abrirModal('review-overlay'); }, 150); 
+    if (pedidoStepAtual === 2) tentarAvancarStep2();
 });
 
 $$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
@@ -1922,42 +1949,9 @@ $('#btn-nav-order').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-bottom-order').addEventListener('click', abrirCarrinhoSeguro);
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
-$('#cli-telefone-confirma').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
-
-// ==========================================================
-// NOTA DO GOOGLE — mostra ⭐ nota (nº avaliações) ao lado do "Aberto agora"
-// ==========================================================
-// 1) Crie uma chave em console.cloud.google.com > APIs e Serviços > Credenciais.
-// 2) Ative "Maps JavaScript API" e "Places API" no projeto.
-// 3) Restrinja a chave por "Referenciadores HTTP" ao seu domínio (docecaprichoatelier.vercel.app/*).
-// 4) Cole a chave abaixo. Enquanto estiver com o texto padrão, esse recurso fica desativado.
-const GOOGLE_MAPS_API_KEY = 'COLE_SUA_CHAVE_AQUI';
-const GOOGLE_PLACE_ID = 'ChIJ0Ymvr7WvpAcR1lnLiJ5BATc'; // Place ID do Doce Capricho Atelier
-
-function iniciarNotaGoogle() {
-  if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'COLE_SUA_CHAVE_AQUI') return; // sem chave, não ativa
-  window.dca_callbackGoogleMaps = function () {
-    try {
-      const divOculta = document.createElement('div');
-      const service = new google.maps.places.PlacesService(divOculta);
-      service.getDetails({ placeId: GOOGLE_PLACE_ID, fields: ['rating', 'user_ratings_total'] }, (place, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.rating || !place.user_ratings_total) return; // sem avaliações ainda, mantém escondido
-        const badge = document.getElementById('google-rating-badge');
-        if (!badge) return;
-        badge.textContent = `⭐ ${place.rating.toFixed(1)} (${place.user_ratings_total})`;
-        badge.style.display = 'inline-block';
-      });
-    } catch (e) { console.warn('[GOOGLE RATING]', e); }
-  };
-  const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=dca_callbackGoogleMaps`;
-  script.async = true;
-  document.head.appendChild(script);
-}
-iniciarNotaGoogle();
 
 // ==========================================================
 // INTEGRAÇÃO MAPBOX — Autocompletar de endereço + GPS
@@ -2225,7 +2219,7 @@ function processarConfig(doc) {
   if(doc.exists) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
-    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Terça a Domingo, 19h às 23h (Sex, Sáb e Dom a partir das 18h30)";
+    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
     if(!configLoja.statusLoja) { configLoja.statusLoja = configLoja.forcarFechamento ? 'pausado' : 'auto'; }
     
     const rodape = document.getElementById('footer-funcionamento');
@@ -2234,7 +2228,7 @@ function processarConfig(doc) {
     const statusManual = configLoja.statusLoja || 'auto';
     
     if (!primeiraCargaPausa && (statusManual === 'pausado' || statusManual === 'esgotado') && lojaEstavaPausada === false) { 
-        fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('review-overlay'); fecharModal('success-overlay'); 
+        fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('success-overlay'); 
         abrirModal('modal-aviso-pausa'); 
     }
     lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
