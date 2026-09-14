@@ -12,12 +12,52 @@
 <meta property="og:site_name" content="Doce Capricho Atelier">
 <meta property="og:title" content="Doce Capricho Atelier — Pizzas Artesanais">
 <meta property="og:description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
-<meta property="og:image" content="https://doce-capricho-atelier.vercel.app/img/social-preview.jpg">
-<meta property="og:url" content="https://doce-capricho-atelier.vercel.app/">
+<meta property="og:image" content="https://docecaprichoatelier.vercel.app/img/social-preview.jpg">
+<meta property="og:url" content="https://docecaprichoatelier.vercel.app/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Doce Capricho Atelier — Pizzas Artesanais">
 <meta name="twitter:description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
-<meta name="twitter:image" content="https://doce-capricho-atelier.vercel.app/img/social-preview.jpg">
+<meta name="twitter:image" content="https://docecaprichoatelier.vercel.app/img/social-preview.jpg">
+
+<!-- SEO: DADOS ESTRUTURADOS PARA O GOOGLE (endereço, telefone, horário) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Doce Capricho Atelier",
+  "image": "https://docecaprichoatelier.vercel.app/img/social-preview.jpg",
+  "url": "https://docecaprichoatelier.vercel.app/",
+  "telephone": "+5585921440055",
+  "servesCuisine": ["Pizza", "Esfiha"],
+  "priceRange": "R$5 - R$100",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Rua Monsenhor José Aires, 188 - Centro",
+    "addressLocality": "São Miguel",
+    "addressRegion": "RN",
+    "addressCountry": "BR"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -6.2129153815587745,
+    "longitude": -38.495351177382226
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Tuesday", "Wednesday", "Thursday"],
+      "opens": "19:00",
+      "closes": "23:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Friday", "Saturday", "Sunday"],
+      "opens": "18:30",
+      "closes": "23:00"
+    }
+  ]
+}
+</script>
 
 <script>
   function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
@@ -477,6 +517,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
+      <div id="google-rating-badge" class="status-badge" style="display:none; background:transparent; border:1px solid var(--gold); color:var(--gold-dark);"></div>
       <div id="nav-status-badge" class="status-badge">FECHADO</div>
     </div>
   </div>
@@ -571,7 +612,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </div>
   <div class="footer-info">
     <p>São Miguel / RN</p>
-    <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
+    <p id="footer-funcionamento">Atendimento: Terça a Domingo, 19h às 23h (Sex, Sáb e Dom a partir das 18h30)</p>
   </div>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
@@ -722,6 +763,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
       <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
       <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
+      <div><label for="cli-telefone-confirma">Confirme seu WhatsApp</label><input type="tel" id="cli-telefone-confirma" required><span class="campo-hint">Digite de novo pra evitar erro de digitação — é por esse número que avisamos sobre o pedido.</span></div>
       
       <div>
         <label>Como deseja receber?</label>
@@ -832,6 +874,14 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <button type="button" class="btn-edit-review ripple" onclick="voltarParaCarrinho()">Editar</button>
       </div>
       <div class="review-content" id="review-items"></div>
+    </div>
+
+    <div class="review-card" style="border: 1px dashed var(--gold); background: rgba(221, 167, 58, 0.06);">
+      <div class="review-header" style="border-bottom-color: rgba(221,167,58,0.3);">
+        <h4 style="color: var(--gold-dark);">📱 Contato</h4>
+        <button type="button" class="btn-edit-review ripple" onclick="voltarParaCarrinho()">Editar</button>
+      </div>
+      <div class="review-content" id="review-contato"></div>
     </div>
 
     <div class="review-card">
@@ -984,7 +1034,7 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
+let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Terça a Domingo, 19h às 23h (Sex, Sáb e Dom a partir das 18h30)", horarios: {}, modoPromocoes: 'auto' }; 
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
@@ -1071,7 +1121,7 @@ function verificarHorario() {
           const tempoInicio = (abreH || 18) * 60 + (abreM || 30); const tempoFim = (fechaH || 23) * 60 + (fechaM || 0);
           if (tempoFim < tempoInicio) { dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim); } else { dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
        }
-    } else { if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
+    } else { if (diaHoje >= 2 && diaHoje <= 4) { dentroDoHorario = (tempoAtual >= (19*60) && tempoAtual <= (23*60)); } else if (diaHoje === 0 || diaHoje === 5 || diaHoje === 6) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
     
     const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
     
@@ -1514,11 +1564,14 @@ $('#cli-pagamento').addEventListener('change', e => {
 
 function validarCheckout() {
   const erros = []; 
-  const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
-  [nome, tel, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
+  const nome = $('#cli-nome'), tel = $('#cli-telefone'), telConfirma = $('#cli-telefone-confirma'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
+  [nome, tel, telConfirma, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
+  const dConfirma = soDigitos(telConfirma.value);
+  if (dConfirma.length < 10 || dConfirma.length > 11) { erros.push('Confirme seu WhatsApp no segundo campo.'); telConfirma.classList.add('field-error'); }
+  else if (d !== dConfirma) { erros.push('Os dois números de WhatsApp digitados são diferentes. Confira e digite de novo.'); tel.classList.add('field-error'); telConfirma.classList.add('field-error'); }
   if ($('#cli-tipo-pedido').value === 'Entrega') {
     if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
     else if (zonaSugeridaAtual && $('#cli-taxa-id').value !== zonaSugeridaAtual.taxa) {
@@ -1540,6 +1593,8 @@ function validarCheckout() {
 function montarRevisao() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value; let pgto = $('#cli-pagamento').value;
   if(pgto === 'Dinheiro' && $('#cli-troco').value.trim() !== '') { pgto += ` (Troco para: ${$('#cli-troco').value.trim()})`; }
+
+  $('#review-contato').innerHTML = `<strong style="font-size:16px; color:var(--gold-dark);">${esc($('#cli-nome').value.trim())}</strong><br><span style="font-size:15px; font-weight:800; color:var(--text-main); display:inline-block; margin-top:4px;">${esc($('#cli-telefone').value.trim())}</span><br><span class="review-item-detalhe" style="margin-top:6px; display:block;">⚠️ Vamos avisar sobre o andamento do seu pedido por esse número. Confira se está certo.</span>`;
 
   $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
@@ -1867,9 +1922,42 @@ $('#btn-nav-order').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-bottom-order').addEventListener('click', abrirCarrinhoSeguro);
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
+$('#cli-telefone-confirma').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
+
+// ==========================================================
+// NOTA DO GOOGLE — mostra ⭐ nota (nº avaliações) ao lado do "Aberto agora"
+// ==========================================================
+// 1) Crie uma chave em console.cloud.google.com > APIs e Serviços > Credenciais.
+// 2) Ative "Maps JavaScript API" e "Places API" no projeto.
+// 3) Restrinja a chave por "Referenciadores HTTP" ao seu domínio (docecaprichoatelier.vercel.app/*).
+// 4) Cole a chave abaixo. Enquanto estiver com o texto padrão, esse recurso fica desativado.
+const GOOGLE_MAPS_API_KEY = 'COLE_SUA_CHAVE_AQUI';
+const GOOGLE_PLACE_ID = 'ChIJ0Ymvr7WvpAcR1lnLiJ5BATc'; // Place ID do Doce Capricho Atelier
+
+function iniciarNotaGoogle() {
+  if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'COLE_SUA_CHAVE_AQUI') return; // sem chave, não ativa
+  window.dca_callbackGoogleMaps = function () {
+    try {
+      const divOculta = document.createElement('div');
+      const service = new google.maps.places.PlacesService(divOculta);
+      service.getDetails({ placeId: GOOGLE_PLACE_ID, fields: ['rating', 'user_ratings_total'] }, (place, status) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.rating || !place.user_ratings_total) return; // sem avaliações ainda, mantém escondido
+        const badge = document.getElementById('google-rating-badge');
+        if (!badge) return;
+        badge.textContent = `⭐ ${place.rating.toFixed(1)} (${place.user_ratings_total})`;
+        badge.style.display = 'inline-block';
+      });
+    } catch (e) { console.warn('[GOOGLE RATING]', e); }
+  };
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=dca_callbackGoogleMaps`;
+  script.async = true;
+  document.head.appendChild(script);
+}
+iniciarNotaGoogle();
 
 // ==========================================================
 // INTEGRAÇÃO MAPBOX — Autocompletar de endereço + GPS
@@ -2137,7 +2225,7 @@ function processarConfig(doc) {
   if(doc.exists) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
-    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
+    if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Terça a Domingo, 19h às 23h (Sex, Sáb e Dom a partir das 18h30)";
     if(!configLoja.statusLoja) { configLoja.statusLoja = configLoja.forcarFechamento ? 'pausado' : 'auto'; }
     
     const rodape = document.getElementById('footer-funcionamento');
