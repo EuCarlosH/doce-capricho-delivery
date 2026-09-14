@@ -543,17 +543,40 @@ function iniciarSistema() {
 }
 
 // ------------------------------------------------------------------
+// MENSAGENS DE WHATSAPP POR STATUS
+// ------------------------------------------------------------------
+// Link de avaliação do Doce Capricho Atelier no Google (mesmo usado no site).
+const GOOGLE_REVIEW_LINK = 'https://g.page/r/CdZZy4ieQQE3ECE/review';
+
+function montarMensagemStatus(p, novoStatus) {
+  const primeiroNome = (p.cliente_nome || '').split(' ')[0];
+
+  if (novoStatus === 'Pronto para Retirada') {
+    return `Olá, ${primeiroNome}! 🛍️\n\nSeu pedido do *Doce Capricho Atelier* já está pronto e te esperando no balcão, quentinho! 🍕✨\n\n📍 Rua Monsenhor José Aires, 188 - Centro, São Miguel/RN\n\nAté já!`;
+  }
+
+  if (novoStatus === 'Saiu para Entrega') {
+    return `Olá, ${primeiroNome}! 🛵\n\nSeu pedido do *Doce Capricho Atelier* acabou de sair do forno e já está a caminho, quentinho e fresquinho! 🍕✨\n\nQualquer coisa, é só chamar por aqui.`;
+  }
+
+  if (novoStatus === 'Concluído') {
+    return `✅ *Pedido entregue!*\n\n${primeiroNome}, esperamos que tenha aproveitado muito! 😋\n\nSe puder, deixar uma avaliação no Google leva menos de 1 minuto e ajuda demais o nosso ateliê a crescer e chegar em mais gente da nossa cidade:\n👉 ${GOOGLE_REVIEW_LINK}\n\nMuito obrigado pela confiança e até a próxima! 🙏🍕`;
+  }
+
+  return '';
+}
+
+// ------------------------------------------------------------------
 // BOTÕES DE AÇÃO: MOVER STATUS
 // ------------------------------------------------------------------
 function moverPedido(id, novoStatus) {
     const p = pedidosMap.get(id);
     if(!p) return;
-    
-    if (novoStatus === 'Saiu para Entrega' || novoStatus === 'Pronto para Retirada') {
-        let msg = '';
-        if (p.tipo_entrega === 'Retirada') { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho já está PRONTO para retirada! 🛍️`; } 
-        else { msg = `Olá, ${p.cliente_nome.split(' ')[0]}! 🍕 Seu pedido do Doce Capricho acabou de sair para entrega! 🛵`; }
-        window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+
+    const statusComMensagem = ['Saiu para Entrega', 'Pronto para Retirada', 'Concluído'];
+    if (statusComMensagem.includes(novoStatus)) {
+        const msg = montarMensagemStatus(p, novoStatus);
+        if (msg) window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
     
     document.getElementById(`card-${id}`).style.opacity = '0.5';
