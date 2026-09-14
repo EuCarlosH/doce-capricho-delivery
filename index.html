@@ -1245,7 +1245,7 @@ function renderCardapio() {
 function atualizarBotoes() {
   $$('[data-escolher]').forEach(btn => {
     const id = btn.dataset.escolher; const card = btn.closest('.card');
-    if(card.classList.contains('esgotado')) return; 
+    if(!card || card.classList.contains('esgotado')) return;
     card.classList.toggle('selecionada', meioSelecionado === id);
     if (meioSelecionado === id) { btn.innerHTML = '✓'; } else if (modo === 'meio' && meioSelecionado) { btn.innerHTML = '2ª'; } else { btn.innerHTML = '+'; }
   });
