@@ -7,6 +7,18 @@
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
 
+<!-- PREVIEW DO LINK NO WHATSAPP / REDES SOCIAIS -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Doce Capricho Atelier">
+<meta property="og:title" content="Doce Capricho Atelier — Pizzas Artesanais">
+<meta property="og:description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
+<meta property="og:image" content="https://doce-capricho-atelier.vercel.app/img/social-preview.jpg">
+<meta property="og:url" content="https://doce-capricho-atelier.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Doce Capricho Atelier — Pizzas Artesanais">
+<meta name="twitter:description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
+<meta name="twitter:image" content="https://doce-capricho-atelier.vercel.app/img/social-preview.jpg">
+
 <script>
   function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
   function applyTheme(theme) {
@@ -27,9 +39,10 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap">
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -37,38 +50,38 @@
 <style>
 /* PALETA E VARIÁVEIS PREMIUM */
 :root {
-  --gold: #DDA73A; --gold-dark: #C28F2A; --terracotta: #8B3A2B; 
-  --bg-main: #FDFBF7; --bg-card: #FFFFFF; 
-  --text-main: #2C2018; --text-muted: #8C7A6B; --white: #FFFFFF; 
-  --whatsapp: #25D366; --danger: #E63946; --warning: #F59E0B; --success: #2F855A;
-  --border-light: rgba(44, 32, 24, 0.08); 
-  --shadow-sm: 0 8px 24px rgba(44, 32, 24, 0.04); 
-  --shadow-md: 0 16px 40px rgba(44, 32, 24, 0.08); 
-  --img-bg: #F4EFE9; --badge-bg: rgba(255, 255, 255, 0.95); --badge-text: #2C2018;
-  --btn-grad-1: #C28F2A; --btn-grad-2: #E8C87A; --btn-grad-3: #DDA73A; 
-  --btn-grad-text: #FFFFFF; --btn-grad-shadow: rgba(221, 167, 58, 0.25);
-  --cat-ornament: "•"; --cat-ornament-size: 20px; --cat-ornament-op: 0.5; --cat-ornament-color: var(--gold);
-  --bottom-sheet-bg: rgba(44, 32, 24, 0.4); --handle-bg: #E2E8F0; --smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --gold: #C08A2E; --gold-dark: #9C6F24; --terracotta: #B9502F; --olive: #6B7255;
+  --bg-main: #FBF6EC; --bg-card: #FFFFFF; 
+  --text-main: #2B2118; --text-muted: #8C7A6B; --white: #FFFFFF; 
+  --whatsapp: #25D366; --danger: #C1443A; --warning: #F59E0B; --success: #2F855A;
+  --border-light: rgba(43, 33, 24, 0.1); 
+  --shadow-sm: 0 8px 24px rgba(43, 33, 24, 0.04); 
+  --shadow-md: 0 16px 40px rgba(43, 33, 24, 0.08); 
+  --img-bg: rgba(107, 114, 85, 0.1); --badge-bg: rgba(255, 255, 255, 0.95); --badge-text: #2B2118;
+  --btn-grad-1: #C08A2E; --btn-grad-2: #C08A2E; --btn-grad-3: #C08A2E; 
+  --btn-grad-text: #3A2408; --btn-grad-shadow: rgba(192, 138, 46, 0.25);
+  --cat-ornament: "—"; --cat-ornament-size: 13px; --cat-ornament-op: 0.7; --cat-ornament-color: var(--terracotta);
+  --bottom-sheet-bg: rgba(43, 33, 24, 0.4); --handle-bg: #E2E8F0; --smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme="dark"] {
-  --gold: #E8C87A; --gold-dark: #DDA73A; --terracotta: #E63946; 
+  --gold: #E3B563; --gold-dark: #C08A2E; --terracotta: #E2704A; --olive: #9CA687;
   --bg-main: #0D0A08; --bg-card: #16120F; 
   --text-main: #F4EFE9; --text-muted: #A3968A; 
-  --danger: #FF4D4D; --warning: #FBBF24;
+  --danger: #FF6B5B; --warning: #FBBF24;
   --border-light: rgba(255,255,255,0.06); 
   --shadow-sm: 0 8px 24px rgba(0,0,0,0.4); 
   --shadow-md: 0 16px 40px rgba(0,0,0,0.6); 
-  --img-bg: #1A1512; --badge-bg: rgba(22, 18, 15, 0.85); --badge-text: #F4EFE9;
-  --btn-grad-1: #DDA73A; --btn-grad-2: #F3E5AB; --btn-grad-3: #E8C87A; 
-  --btn-grad-text: #0D0A08; --btn-grad-shadow: rgba(232, 200, 122, 0.2);
-  --cat-ornament: "♦"; --cat-ornament-size: 12px; --cat-ornament-op: 0.5; --cat-ornament-color: var(--gold-dark);
+  --img-bg: rgba(156, 166, 135, 0.12); --badge-bg: rgba(22, 18, 15, 0.85); --badge-text: #F4EFE9;
+  --btn-grad-1: #E3B563; --btn-grad-2: #E3B563; --btn-grad-3: #E3B563; 
+  --btn-grad-text: #241704; --btn-grad-shadow: rgba(227, 181, 99, 0.2);
+  --cat-ornament: "—"; --cat-ornament-size: 13px; --cat-ornament-op: 0.6; --cat-ornament-color: var(--terracotta);
   --bottom-sheet-bg: rgba(0,0,0,0.8); --handle-bg: #3A2A20;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
-body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
-h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { scroll-margin-top: 100px; }
+body { background: var(--bg-main); color: var(--text-main); font-family: 'Work Sans', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
+h1, h2, h3, h4, .brand-font { font-family: 'Fraunces', serif; font-weight: 600; } section, header { scroll-margin-top: 100px; }
 
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
@@ -79,28 +92,60 @@ h1, h2, h3, h4, .brand-font { font-family: 'Cinzel', serif; } section, header { 
 nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 0; border-bottom: 1px solid var(--border-light); transition: top 0.4s var(--smooth), background-color 0.4s ease; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 :root[data-theme="light"] nav.top-nav { background: rgba(253, 251, 247, 0.85); } :root[data-theme="dark"] nav.top-nav { background: rgba(13, 10, 8, 0.85); border-bottom-color: transparent; box-shadow: 0 4px 30px rgba(0,0,0,0.3);}
 .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-.nav-logo-fallback { color: var(--text-main); font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 2px; transition: color 0.3s ease;}
+.nav-logo-link { display: flex; align-items: center; text-decoration: none; }
+.nav-logo-img { height: 34px; width: auto; display: block; }
+.nav-logo-fallback { color: var(--text-main); font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 1px; transition: color 0.3s ease;}
 :root[data-theme="dark"] .nav-logo-fallback { color: var(--gold); }
-.nav-links { display: flex; list-style: none; gap: 20px; align-items: center; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
+.nav-links { display: flex; list-style: none; gap: 22px; align-items: center; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.2px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
 
-.status-badge { border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 16px; border-radius: 30px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-:root[data-theme="dark"] .status-badge { color: var(--gold); } .status-badge.fechado { border-color: var(--terracotta); color: var(--terracotta); } .status-badge.pausado { border-color: var(--gold); color: var(--gold-dark); background: rgba(221, 167, 58, 0.1); }
+.status-badge { border: 1px solid transparent; background: var(--olive); color: #FFF; padding: 6px 16px; border-radius: 30px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+:root[data-theme="dark"] .status-badge { color: var(--bg-main); } .status-badge.fechado { background: transparent; border-color: var(--terracotta); color: var(--terracotta); } .status-badge.pausado { background: transparent; border-color: var(--gold); color: var(--gold-dark); }
 .btn-install { display: none; background: rgba(221, 167, 58, 0.1); border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 12px; border-radius: 30px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
 .theme-toggle { background: transparent; border: 1px solid var(--border-light); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); transition: all 0.3s ease;}
 .theme-toggle:hover { background: var(--bg-card); box-shadow: var(--shadow-sm); }
 .theme-toggle svg { width: 16px; height: 16px; fill: currentColor; } .icon-moon { display: none; } :root[data-theme="dark"] .icon-moon { display: block; } :root[data-theme="dark"] .icon-sun { display: none; }
 .bottom-nav { display: none; }
 
-#home { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 40px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); border-radius: 0 0 40px 40px; margin-bottom: 20px;}
+#home { min-height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 30px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); border-radius: 0 0 40px 40px; margin-bottom: 20px;}
 .hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 .carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 10s ease-out; }
 .carousel-slide.active { opacity: 1; transform: scale(1.1); }
 .hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(253,251,247,0) 40%, rgba(253,251,247,1) 100%), linear-gradient(to right, rgba(253,251,247,0.95) 0%, rgba(253,251,247,0.6) 60%, rgba(253,251,247,0.1) 100%); transition: background 0.4s ease; }
 :root[data-theme="dark"] .hero-overlay { background: linear-gradient(to bottom, rgba(13,10,8,0) 60%, rgba(13,10,8,1) 100%), linear-gradient(to right, rgba(13,10,8,0.95) 0%, rgba(13,10,8,0.7) 60%, rgba(13,10,8,0.1) 100%); }
 .hero-content { position: relative; z-index: 2; }
-.hero-title { font-size: clamp(36px, 7vw, 64px); color: var(--text-main); margin-bottom: 15px; letter-spacing: 2px; line-height: 1.1; max-width: 600px; }
+.hero-eyebrow { display: block; color: var(--terracotta); font-size: 13px; font-weight: 600; letter-spacing: 0.4px; margin-bottom: 14px; }
+.hero-title { font-size: clamp(28px, 4.5vw, 42px); color: var(--text-main); margin-bottom: 12px; letter-spacing: 1px; line-height: 1.15; max-width: 560px; }
 .hero-subtitle { font-size: clamp(13px, 2vw, 15px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; }
-:root[data-theme="dark"] .hero-title, :root[data-theme="dark"] .hero-subtitle { text-shadow: 0 4px 20px rgba(0,0,0,0.9); }
+.hero-cta { display: inline-block; margin-top: 30px; padding: 18px 34px; border-radius: 14px; font-size: 13px; text-decoration: none; }
+
+/* BALÃO DE DESTAQUES ROTATIVO (topo do cardápio) */
+.promo-banner-inline { border-radius: 20px; padding: 28px 26px; margin: 0 0 40px; background: linear-gradient(135deg, var(--terracotta) 0%, var(--gold-dark) 100%); color: #FFF; position: relative; overflow: hidden; min-height: 130px; display: flex; flex-direction: column; justify-content: center; }
+.promo-banner-eyebrow { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; opacity: 0.85; margin-bottom: 8px; }
+.promo-banner-title { font-size: clamp(19px, 3vw, 26px); font-weight: 600; line-height: 1.3; max-width: 480px; }
+.promo-banner-dots { display: flex; gap: 6px; margin-top: 18px; }
+.promo-banner-dots button { width: 6px; height: 6px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); padding: 0; cursor: pointer; transition: all 0.3s var(--smooth); }
+.promo-banner-dots button.active { width: 18px; border-radius: 4px; background: #FFF; }
+
+/* TIRA "DESTAQUES" COM ADICIONAR RÁPIDO */
+.destaques-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+.destaques-header span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.destaques-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 4px 16px; scroll-snap-type: x mandatory; scrollbar-width: none; margin-bottom: 20px; }
+.destaques-strip::-webkit-scrollbar { display: none; }
+.destaque-card { flex: 0 0 190px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 14px; overflow: hidden; scroll-snap-align: start; box-shadow: var(--shadow-sm); transition: transform 0.3s var(--smooth); }
+.destaque-card:hover { transform: translateY(-4px); }
+.destaque-card .card-img-wrap { height: 110px; }
+.destaque-card .card-content { padding: 14px; }
+.destaque-card .card-title { font-size: 14px; margin-bottom: 4px; }
+.destaque-card .card-desc { display: none; }
+.destaque-card .card-bottom { margin-top: 8px; }
+.destaque-card .btn-add { width: 32px; height: 32px; font-size: 15px; border-radius: 9px; }
+
+/* CHAMADA PARA AVALIAÇÃO NO GOOGLE */
+.review-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: var(--bg-card); border: 1px dashed var(--border-light); border-radius: 16px; padding: 20px 24px; margin-bottom: 40px; }
+.review-cta strong { display: block; font-family: 'Fraunces', serif; font-size: 16px; color: var(--text-main); margin-bottom: 4px; }
+.review-cta p { color: var(--text-muted); font-size: 13px; margin: 0; }
+.review-cta a.btn-gradient { padding: 12px 22px; border-radius: 10px; font-size: 12px; text-decoration: none; white-space: nowrap; }
+:root[data-theme="dark"] .hero-title, :root[data-theme="dark"] .hero-subtitle, :root[data-theme="dark"] .hero-eyebrow { text-shadow: 0 4px 20px rgba(0,0,0,0.9); }
 :root[data-theme="dark"] .hero-title { color: var(--gold); }
 :root[data-theme="dark"] .hero-subtitle { font-weight: 400; }
 
@@ -115,8 +160,8 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .sticky-btn.active { background: var(--bg-card); color: var(--gold-dark); box-shadow: 0 4px 15px rgba(0,0,0,0.05); } 
 :root[data-theme="dark"] .sticky-btn:hover { color: var(--white); }
 :root[data-theme="dark"] .sticky-btn.active { background: var(--bg-card); color: var(--gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-.sticky-btn-promo { color: var(--gold-dark); }
-:root[data-theme="dark"] .sticky-btn-promo { color: var(--gold); }
+.sticky-btn-promo { color: var(--terracotta); }
+:root[data-theme="dark"] .sticky-btn-promo { color: var(--terracotta); }
 
 .mode-toggle-area { display: flex; justify-content: center; margin-bottom: 40px; margin-top: 10px; }
 .mode-buttons { display: inline-flex; border: 1px solid var(--border-light); border-radius: 40px; overflow: hidden; background: var(--bg-card); transition: all 0.3s ease; box-shadow: var(--shadow-sm); padding: 4px;} 
@@ -134,11 +179,11 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 #banner-pausado h4 { color: var(--terracotta); margin-bottom: 10px; font-size: 18px; letter-spacing: 1px; } :root[data-theme="dark"] #banner-pausado h4 { color: var(--warning); }
 #banner-pausado p { color: var(--text-main); font-size: 14px; line-height: 1.6; }
 
-.category-title { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 18px; color: var(--text-main); margin: 60px 0 40px; text-transform: uppercase; letter-spacing: 4px; font-weight: 800; scroll-margin-top: 160px; } :root[data-theme="dark"] .category-title { color: var(--gold); }
-.category-title::before, .category-title::after { content: var(--cat-ornament); color: var(--cat-ornament-color); font-size: var(--cat-ornament-size); margin: 0 20px; opacity: var(--cat-ornament-op); line-height: 0; }
+.category-title { display: flex; align-items: center; justify-content: flex-start; text-align: left; font-size: 21px; color: var(--text-main); margin: 60px 0 30px; letter-spacing: 0.3px; font-weight: 600; scroll-margin-top: 160px; } :root[data-theme="dark"] .category-title { color: var(--gold); }
+.category-title::before { content: var(--cat-ornament); color: var(--cat-ornament-color); font-size: var(--cat-ornament-size); margin-right: 16px; opacity: var(--cat-ornament-op); line-height: 0; font-family: 'Work Sans', sans-serif; }
 
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; }
-.card { background: var(--bg-card); border-radius: 20px; overflow: hidden; border: 1px solid var(--border-light); display: flex; flex-direction: column; transition: transform 0.4s var(--smooth), box-shadow 0.4s ease, border-color 0.4s ease; box-shadow: var(--shadow-sm); } 
+.card { background: var(--bg-card); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-light); display: flex; flex-direction: column; transition: transform 0.4s var(--smooth), box-shadow 0.4s ease, border-color 0.4s ease; box-shadow: var(--shadow-sm); } 
 :root[data-theme="dark"] .card { background: var(--bg-card); border-color: transparent; }
 .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--gold); } 
 :root[data-theme="dark"] .card:hover { border-color: rgba(212,175,55,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -164,7 +209,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: opacity 0.5s ease; }
 
 .card-content { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; position: relative;}
-.card-title { font-size: 16px; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; } :root[data-theme="dark"] .card-title { font-weight: 700; color: var(--white); }
+.card-title { font-size: 16px; color: var(--text-main); font-weight: 500; letter-spacing: 0.1px; margin-bottom: 10px; font-family: 'Fraunces', serif; } :root[data-theme="dark"] .card-title { font-weight: 500; color: var(--white); }
 .card-desc { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; } :root[data-theme="dark"] .card-desc { font-weight: 400; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 800; color: var(--text-main); font-size: 16px; } :root[data-theme="dark"] .card-price-text { color: var(--gold); font-weight: 700; }
@@ -271,6 +316,9 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .zona-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s var(--smooth); display: flex; justify-content: space-between; align-items: center; } :root[data-theme="dark"] .zona-card { background: rgba(255,255,255,0.02); border-color: transparent;}
 .zona-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-sm);}
 .zona-card.active { border-color: var(--gold); background: var(--bg-card); box-shadow: 0 0 0 2px var(--gold); } :root[data-theme="dark"] .zona-card.active { background: rgba(212, 175, 55, 0.1); }
+.zona-card.sugerida:not(.active) { border-color: var(--success); box-shadow: 0 0 0 1px var(--success); }
+#zona-distancia-hint { display: none; font-size: 12px; font-weight: 600; color: var(--text-muted); background: rgba(47, 133, 90, 0.08); border: 1px dashed var(--success); border-radius: 10px; padding: 10px 14px; margin-top: 12px; line-height: 1.5; }
+#zona-distancia-hint strong { color: var(--success); }
 .zona-info { display: flex; flex-direction: column; gap: 4px; }
 .zona-nome { font-size: 14px; font-weight: 700; color: var(--text-main); } :root[data-theme="dark"] .zona-nome { font-weight: 600; color: var(--white); }
 .zona-desc { font-size: 11px; color: var(--text-muted); }
@@ -280,7 +328,7 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .builder-label { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700; } :root[data-theme="dark"] .builder-label { font-weight: 600; }
 .builder-base { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-main); margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light); font-weight: 600; } :root[data-theme="dark"] .builder-base { font-weight: 500; }
 .builder-base strong { color: var(--text-main); font-size: 16px; font-weight: 800; transition: color 0.3s; } :root[data-theme="dark"] .builder-base strong { color: var(--gold); font-weight: 700; }
-.builder-group textarea { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.builder-group textarea { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); color: var(--text-main); font-family: 'Work Sans', sans-serif; font-size: 14px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .builder-group textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 3px rgba(221, 167, 58, 0.15); background: var(--bg-card);} :root[data-theme="dark"] .builder-group textarea:focus { box-shadow: 0 0 0 3px rgba(212,175,55,0.15); background: var(--bg-card); }
 
 .extra-row { display: flex; flex-direction: column; padding: 16px; background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 12px; transition: all 0.3s var(--smooth); } :root[data-theme="dark"] .extra-row { background: rgba(255,255,255,0.02); border-color: transparent;}
@@ -313,6 +361,27 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .field-error { border-color: var(--danger) !important; animation: shake 0.4s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1) !important;} @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 .campo-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; font-weight: 500; display: block; }
 
+/* === INTEGRAÇÃO MAPBOX (autocomplete + GPS) === */
+.btn-gps { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px; border-radius: 12px; border: 1px dashed var(--gold); background: rgba(221, 167, 58, 0.06); color: var(--gold-dark); font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s var(--smooth); margin-bottom: 18px; }
+:root[data-theme="dark"] .btn-gps { color: var(--gold); background: rgba(212,175,55,0.08); }
+.btn-gps:hover:not(:disabled) { background: var(--gold); color: #FFF; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(221,167,58,0.25); }
+:root[data-theme="dark"] .btn-gps:hover:not(:disabled) { color: var(--bg-main); }
+.btn-gps:disabled { opacity: 0.6; cursor: wait; }
+.btn-gps .gps-spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin 0.7s linear infinite; display: none; }
+.btn-gps.loading .gps-spinner { display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.mb-autocomplete-wrap { position: relative; }
+.mb-suggestions { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 14px; box-shadow: var(--shadow-md); z-index: 50; overflow: hidden; display: none; max-height: 260px; overflow-y: auto; }
+.mb-suggestions.show { display: block; animation: fadeIn 0.2s ease; }
+.mb-suggestion-item { padding: 14px 16px; font-size: 13px; color: var(--text-main); cursor: pointer; border-bottom: 1px solid var(--border-light); transition: background 0.2s ease; display: flex; flex-direction: column; gap: 2px; }
+.mb-suggestion-item:last-child { border-bottom: none; }
+.mb-suggestion-item:hover, .mb-suggestion-item.active { background: rgba(221, 167, 58, 0.08); }
+:root[data-theme="dark"] .mb-suggestion-item:hover, :root[data-theme="dark"] .mb-suggestion-item.active { background: rgba(212,175,55,0.1); }
+.mb-suggestion-item strong { font-weight: 700; font-size: 13px; }
+.mb-suggestion-item small { color: var(--text-muted); font-size: 11px; }
+.mb-suggestion-empty { padding: 14px 16px; font-size: 12px; color: var(--text-muted); text-align: center; }
+
 #box-endereco { overflow: hidden; transition: all 0.4s var(--smooth); }
 .endereco-row { display: flex; gap: 12px; margin-bottom: 12px; }
 .box-destaque { background: rgba(221, 167, 58, 0.05); border: 1px dashed rgba(221, 167, 58, 0.3); border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px; animation: slideDown 0.4s var(--smooth); } :root[data-theme="dark"] .box-destaque { background: rgba(212,175,55,0.05); border-color: rgba(212,175,55,0.3); }
@@ -325,7 +394,8 @@ body.loja-fechada #cardapio { opacity: 0.5; pointer-events: none; transition: op
 .btn-continue:hover { color: var(--text-main); } :root[data-theme="dark"] .btn-continue:hover { color: var(--white); }
 
 footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px solid var(--border-light); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; transition: background-color 0.4s ease; }
-.footer-logo { font-size: 20px; color: var(--text-main); letter-spacing: 2px; } :root[data-theme="dark"] .footer-logo { color: var(--gold); }
+.footer-logo-img { height: 40px; width: auto; display: block; margin: 0 auto; }
+.footer-logo { font-size: 20px; color: var(--text-main); letter-spacing: 1px; } :root[data-theme="dark"] .footer-logo { color: var(--gold); }
 .footer-socials { display: flex; gap: 15px; justify-content: center; }
 .footer-socials a { color: var(--text-muted); transition: color 0.3s, transform 0.3s, border-color 0.3s, background-color 0.3s; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--border-light); background: var(--bg-main);} :root[data-theme="dark"] .footer-socials a { background: rgba(255,255,255,0.02); border-color: transparent;}
 .footer-socials a:hover { color: var(--gold-dark); border-color: var(--gold); transform: translateY(-4px); background: var(--bg-card); box-shadow: var(--shadow-sm);} :root[data-theme="dark"] .footer-socials a:hover { color: var(--gold); background: rgba(212,175,55,0.1); }
@@ -334,14 +404,14 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .footer-copy { font-size: 11px; color: #A0AEC0; margin-top: 10px; font-weight: 500;} :root[data-theme="dark"] .footer-copy { color: #666; font-weight: 400; }
 
 @media (max-width: 768px) {
-  .nav-links { display: none; } .nav-container { justify-content: space-between; } .nav-logo-fallback { font-size: 16px; } 
+  .nav-links { display: none; } .nav-container { justify-content: space-between; } .nav-logo-fallback { font-size: 16px; } .nav-logo-img { height: 28px; } 
   #home { padding-top: 100px; text-align: center; align-items: center; border-radius: 0 0 30px 30px;} .hero-title { max-width: 100%; }
   
   /* NAVEGAÇÃO PILL INFERIOR (GLASSMORPHISM) */
   .bottom-nav { display: flex; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 2000; justify-content: space-between; align-items: center; padding: 8px 15px; border-radius: 40px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 40px rgba(44, 32, 24, 0.1); transition: background-color 0.4s ease; }
   :root[data-theme="dark"] .bottom-nav { background: rgba(30, 25, 22, 0.75); border-color: rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); }
   
-  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: transparent; border: none; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 5px; padding: 10px 15px; border-radius: 30px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: visible; position: relative;} :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
+  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: transparent; border: none; font-family: 'Work Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 5px; padding: 10px 15px; border-radius: 30px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: visible; position: relative;} :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
   .bottom-nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--smooth); }
   .bottom-nav-item:hover, .bottom-nav-item:active { color: var(--gold-dark); background: rgba(221, 167, 58, 0.08);} :root[data-theme="dark"] .bottom-nav-item:hover, :root[data-theme="dark"] .bottom-nav-item:active { color: var(--gold); background: rgba(212, 175, 55, 0.15);}
   .bottom-nav-item:active svg { transform: scale(0.9); }
@@ -390,7 +460,10 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
 <nav class="top-nav">
   <div class="nav-container">
-    <a href="#home" class="nav-logo-fallback brand-font">DOCE CAPRICHO ATELIER</a>
+    <a href="#home" class="nav-logo-link" aria-label="Doce Capricho Atelier — Início">
+      <img src="img/logo.png" alt="Doce Capricho Atelier" class="nav-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+      <span class="nav-logo-fallback brand-font" style="display:none;">Doce Capricho Atelier</span>
+    </a>
     <ul class="nav-links">
       <li><a href="#home">Início</a></li>
       <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
@@ -413,10 +486,34 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="hero-carousel" id="hero-carousel"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
+    <span class="hero-eyebrow">Ateliê artesanal em São Miguel, RN</span>
     <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
     <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+    <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
   </div>
 </header>
+
+<section class="section-container" style="padding-top: 20px; padding-bottom: 0;">
+  <div class="promo-banner-inline" id="promo-banner-inline">
+    <span class="promo-banner-eyebrow" id="promo-banner-inline-eyebrow">Feito com carinho</span>
+    <h3 class="promo-banner-title brand-font" id="promo-banner-inline-title">Pizzas e esfihas artesanais para o seu momento</h3>
+    <div class="promo-banner-dots" id="promo-banner-inline-dots"></div>
+  </div>
+
+  <div class="destaques-header">
+    <h3 class="category-title brand-font" style="margin: 0 0 4px;">Destaques</h3>
+    <span>Escolhas do cardápio</span>
+  </div>
+  <div class="destaques-strip" id="destaques-strip"></div>
+
+  <div class="review-cta">
+    <div>
+      <strong>Gostou do pedido?</strong>
+      <p>Deixe sua avaliação no Google e ajude outras pessoas a conhecer o ateliê.</p>
+    </div>
+    <a href="https://g.page/r/CdZZy4ieQQE3ECE/review" id="link-avaliar-google" class="btn-gradient ripple" target="_blank" rel="noopener noreferrer">Avaliar no Google</a>
+  </div>
+</section>
 
 <section id="cardapio" class="section-container">
   <div class="sticky-menu-wrapper" id="sticky-menu">
@@ -466,7 +563,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 </section>
 
 <footer>
-  <h2 class="footer-logo brand-font">DOCE CAPRICHO ATELIER</h2>
+  <img src="img/logo.png" alt="Doce Capricho Atelier" class="footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+  <h2 class="footer-logo brand-font" style="display:none;">Doce Capricho Atelier</h2>
   <div class="footer-socials">
     <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
     <a href="#" id="footer-wa-link" target="_blank" class="ripple" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
@@ -664,16 +762,30 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
               <span class="zona-preco">+ R$ 10,00</span>
             </div>
           </div>
+          <div id="zona-distancia-hint"></div>
         </div>
 
+        <button type="button" id="btn-gps-localizacao" class="btn-gps ripple">
+          <span class="gps-spinner"></span>
+          <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
+        </button>
+
         <div class="endereco-row">
-          <div style="flex: 2.5;"><label for="cli-rua">Rua / Sítio</label><input type="text" id="cli-rua" placeholder="Ex: Rua Direita"></div>
+          <div style="flex: 2.5;" class="mb-autocomplete-wrap">
+            <label for="cli-rua">Rua / Sítio</label>
+            <input type="text" id="cli-rua" placeholder="Comece a digitar seu endereço..." autocomplete="off">
+            <div class="mb-suggestions" id="mb-suggestions"></div>
+          </div>
           <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
         </div>
         <div style="margin-bottom: 12px;">
           <label for="cli-bairro">Bairro</label>
           <input type="text" id="cli-bairro" placeholder="Ex: Centro">
         </div>
+        <input type="hidden" id="cli-lat" value="">
+        <input type="hidden" id="cli-lng" value="">
+        <input type="hidden" id="cli-gps-precisao" value="">
+        <input type="hidden" id="cli-geo-origem" value="">
         <div>
           <label for="cli-referencia">Ponto de referência</label>
           <input type="text" id="cli-referencia" placeholder="Ex: casa azul, ao lado da igreja">
@@ -794,7 +906,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -873,7 +985,61 @@ const rotuloAplicacao = (ap, sabores) => {
 
 let lojaAberta = false;
 let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
-let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null; 
+let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
+
+// BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
+const DESTAQUES_SLIDES = [
+  { eyebrow: 'Feito com carinho', titulo: 'Pizzas e esfihas artesanais para o seu momento' },
+  { eyebrow: 'Sugestão da casa', titulo: 'Experimente a pizza mais pedida da semana' },
+  { eyebrow: 'Avalie-nos', titulo: 'Sua opinião ajuda o ateliê a crescer' }
+];
+let destaqueTimer = null;
+
+function renderPromoBannerInline() {
+  const dotsWrap = document.getElementById('promo-banner-inline-dots');
+  if (!dotsWrap) return;
+  dotsWrap.innerHTML = DESTAQUES_SLIDES.map((_, i) => `<button type="button" data-slide="${i}" aria-label="Ver destaque ${i + 1}"></button>`).join('');
+  dotsWrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => mostrarSlideDestaque(parseInt(btn.dataset.slide, 10))));
+  mostrarSlideDestaque(0);
+}
+
+function mostrarSlideDestaque(i) {
+  const slide = DESTAQUES_SLIDES[i]; if (!slide) return;
+  const eyebrowEl = document.getElementById('promo-banner-inline-eyebrow');
+  const tituloEl = document.getElementById('promo-banner-inline-title');
+  if (eyebrowEl) eyebrowEl.textContent = slide.eyebrow;
+  if (tituloEl) tituloEl.textContent = slide.titulo;
+  document.querySelectorAll('#promo-banner-inline-dots button').forEach((b, idx) => b.classList.toggle('active', idx === i));
+  if (destaqueTimer) clearTimeout(destaqueTimer);
+  destaqueTimer = setTimeout(() => mostrarSlideDestaque((i + 1) % DESTAQUES_SLIDES.length), 5000);
+}
+
+// TIRA "DESTAQUES": mostra o item mais pedido (calculado nas estatísticas) + assinaturas da casa
+function renderDestaques() {
+  const strip = document.getElementById('destaques-strip');
+  if (!strip) return;
+  const todos = todosSabores();
+  const idsDestaque = [];
+  if (saborMaisPedido) idsDestaque.push(saborMaisPedido);
+  ['peru', 'nordestina', 'esf_peru'].forEach(id => { if (!idsDestaque.includes(id)) idsDestaque.push(id); });
+  const itens = idsDestaque.map(id => todos.find(s => s.id === id)).filter(Boolean).slice(0, 6);
+  strip.innerHTML = itens.map(s => {
+    const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
+    return `
+    <article class="destaque-card">
+      <div class="card-img-wrap skeleton-bg">
+        <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
+      </div>
+      <div class="card-content">
+        <h4 class="card-title">${esc(s.nome)}</h4>
+        <div class="card-bottom">
+          <span class="card-price-text">${brl(s.preco)}</span>
+          <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? '—' : '+'}</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+} 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
@@ -1013,6 +1179,7 @@ function irParaCombos() {
 }
 
 function renderCardapio() {
+  renderDestaques();
   $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
   $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
   $('#grid-esfihas-trad').innerHTML = CARDAPIO.esfihas_tradicionais.map(cardHTML).join('');
@@ -1078,7 +1245,7 @@ function renderCardapio() {
 function atualizarBotoes() {
   $$('[data-escolher]').forEach(btn => {
     const id = btn.dataset.escolher; const card = btn.closest('.card');
-    if(card.classList.contains('esgotado')) return; 
+    if(!card || card.classList.contains('esgotado')) return;
     card.classList.toggle('selecionada', meioSelecionado === id);
     if (meioSelecionado === id) { btn.innerHTML = '✓'; } else if (modo === 'meio' && meioSelecionado) { btn.innerHTML = '2ª'; } else { btn.innerHTML = '+'; }
   });
@@ -1354,8 +1521,15 @@ function validarCheckout() {
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
   if ($('#cli-tipo-pedido').value === 'Entrega') {
     if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
+    else if (zonaSugeridaAtual && $('#cli-taxa-id').value !== zonaSugeridaAtual.taxa) {
+      erros.push(`A distância calculada até seu endereço corresponde à zona "${zonaSugeridaAtual.nome}". Selecione essa opção para continuar.`);
+      const cardCorreto = $$('.zona-card').find(c => c.dataset.taxa === zonaSugeridaAtual.taxa);
+      if (cardCorreto) cardCorreto.style.animation = 'shake 0.4s ease';
+    }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
-    if (num.value.trim().length < 1) { erros.push('Informe o número da entrega.'); num.classList.add('field-error'); }
+    const numVal = num.value.trim();
+    if (numVal.length < 1) { erros.push('Informe o número da casa (ou escreva S/N).'); num.classList.add('field-error'); }
+    else if (!/\d/.test(numVal) && !/^(s\/?n|sem\s*n[uúUÚ]mero)$/i.test(numVal)) { erros.push('Número inválido: informe o número da casa ou escreva "S/N".'); num.classList.add('field-error'); }
     if (bairro.value.trim().length < 2) { erros.push('Informe o seu bairro.'); bairro.classList.add('field-error'); }
   }
   if (!carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return false; }
@@ -1395,7 +1569,9 @@ function montarRevisao() {
     const ref = $('#cli-referencia').value.trim();
     $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong><br><span style="font-size:13px; color:var(--text-main); font-weight:600;">Bairro: ${esc(bairroStr)}</span>`
       + (ref ? `<br><span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
-      + `<br><span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`;
+      + `<br><span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`
+      + ($('#cli-lat').value ? `<br><span class="review-item-detalhe">📍 Mapa anexado apenas como referência &mdash; vale o endereço digitado acima</span>` : '')
+      + `<label id="rev-confirma-wrap" style="display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding:12px; border-radius:10px; background:rgba(221,167,58,0.08); font-size:12px; font-weight:700; line-height:1.45; color:var(--text-main); cursor:pointer;"><input type="checkbox" id="rev-confirma-endereco" style="margin-top:2px; width:17px; height:17px; flex:0 0 auto; accent-color:var(--gold);"><span>Confirmo que o <strong>número</strong> e o <strong>bairro</strong> acima estão corretos para a entrega.</span></label>`;
   } else {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
   }
@@ -1447,6 +1623,10 @@ function montarPedido() {
   const bairro = ehEntrega ? $('#cli-bairro').value.trim() : '';
   const referencia = ehEntrega ? $('#cli-referencia').value.trim() : '';
   const regiao = ehEntrega ? $('#cli-taxa-nome').value : '';
+  const lat = ehEntrega ? $('#cli-lat').value : '';
+  const lng = ehEntrega ? $('#cli-lng').value : '';
+  const gpsPrecisao = ehEntrega ? $('#cli-gps-precisao').value : '';
+  const geoOrigem = ehEntrega ? $('#cli-geo-origem').value : '';
 
   const endStr = ehEntrega
     ? `${rua}, ${numero} - Bairro: ${bairro}${referencia ? ` (Ref.: ${referencia})` : ''} | Região: ${regiao}`
@@ -1467,6 +1647,11 @@ function montarPedido() {
     end_regiao: regiao,
     end_cidade: ehEntrega ? CONFIG.cidade : '',
     end_estado: ehEntrega ? CONFIG.estado : '',
+    end_lat: lat,
+    end_lng: lng,
+    end_gps_precisao: gpsPrecisao,
+    end_geo_origem: geoOrigem,
+    end_confirmado_pelo_cliente: ehEntrega,
     tipo_entrega: tipo,
     forma_pagamento: pgtoStr,
     itens: carrinho.map(i => ({
@@ -1483,9 +1668,18 @@ function montarPedido() {
 function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
   if (p.tipo_entrega === 'Entrega') {
-    L.push(`*Endereço:* ${p.end_rua}, ${p.end_numero} - ${p.end_bairro}`);
+    L.push('', '*ENDEREÇO CONFIRMADO PELO CLIENTE (este é o oficial)*');
+    L.push(`*Rua/Sítio:* ${p.end_rua}`);
+    L.push(`*Número:* ${p.end_numero || 'S/N'}`);
+    L.push(`*Bairro:* ${p.end_bairro}`);
     if (p.end_referencia) L.push(`*Referência:* ${p.end_referencia}`);
-    if (p.end_regiao) L.push(`*Região:* ${p.end_regiao}`);
+    if (p.end_regiao) L.push(`*Região/Taxa:* ${p.end_regiao}`);
+    if (p.end_cidade) L.push(`*Cidade:* ${p.end_cidade}${p.end_estado ? ' / ' + p.end_estado : ''}`);
+    if (p.end_lat && p.end_lng) {
+      const prec = p.end_gps_precisao ? ` ±${p.end_gps_precisao}m` : '';
+      L.push(`_Mapa só como referência${prec} (pode estar impreciso — vale o endereço acima):_ https://www.google.com/maps?q=${p.end_lat},${p.end_lng}`);
+    }
+    L.push('');
   }
   L.push(`*Pagamento:* ${p.forma_pagamento}`, '', '*ITENS*');
   p.itens.forEach((i, n) => { L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); if (i.obs) L.push(`    • Obs: ${i.obs}`); });
@@ -1518,6 +1712,16 @@ async function enviarPedidoFinal(ev) {
       else showToast("Nossa loja está fechada no momento.", "error"); 
       return; 
   } 
+  if ($('#cli-tipo-pedido').value === 'Entrega') {
+    const chk = document.getElementById('rev-confirma-endereco');
+    if (chk && !chk.checked) {
+      const wrap = document.getElementById('rev-confirma-wrap');
+      if (wrap) { wrap.style.animation = 'shake 0.4s ease'; setTimeout(() => { wrap.style.animation = ''; }, 500); }
+      showToast('Confirme que o número e o bairro estão corretos.', 'warning');
+      return;
+    }
+  }
+  if (!navigator.onLine) { showToast('Você está sem internet. Reconecte e envie novamente.', 'error'); return; }
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
@@ -1667,6 +1871,265 @@ $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
 $('#ano').textContent = new Date().getFullYear();
 
+// ==========================================================
+// INTEGRAÇÃO MAPBOX — Autocompletar de endereço + GPS
+// ==========================================================
+// Troque pelo seu token público do Mapbox (painel > Access tokens > Default public token).
+// Ele começa com "pk.eyJ...". Este token é seguro para expor no front-end.
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiY29udGF0b2Nhcmxvc2hlbnJpcXVlIiwiYSI6ImNtdHp1MDZ0dTB2M20yeHBtOGJwM204dmcifQ.A94mTT7uZaPS80wJAGbTjA';
+
+// Centro aproximado de São Miguel/RN, usado para priorizar e limitar as buscas de endereço à região.
+const MAPBOX_PROXIMIDADE = { lat: -6.2028, lng: -38.4947 };
+// Caixa (bbox) que cobre a área da cidade e arredores, para não trazer resultados de outros estados.
+const MAPBOX_BBOX = [-38.72, -6.42, -38.28, -5.99]; // [oeste, sul, leste, norte]
+
+let mbDebounceTimer = null;
+let mbUltimaBuscaId = 0;
+
+// ==========================================================
+// CÁLCULO DE DISTÂNCIA — zona sugerida a partir da loja
+// ==========================================================
+// Faixas de distância (em km) correspondentes a cada cartão de zona (data-taxa em .zona-card).
+// AJUSTE os valores de kmMax das duas últimas faixas conforme a realidade das entregas —
+// só o limite de 2km do Centro foi confirmado; os outros são um ponto de partida razoável.
+const ZONAS_DISTANCIA = [
+  { taxa: '300', nome: 'Centro/Proximidades (2km)', kmMax: 2 },
+  { taxa: '600', nome: 'Localidades Afastadas', kmMax: 6 },
+  { taxa: '1000', nome: 'Zonas Extremas', kmMax: Infinity },
+];
+
+// Distância em linha reta (Haversine), em km, entre duas coordenadas.
+function calcularDistanciaKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function zonaPelaDistancia(km) {
+  return ZONAS_DISTANCIA.find(z => km <= z.kmMax) || ZONAS_DISTANCIA[ZONAS_DISTANCIA.length - 1];
+}
+
+// Guarda a última zona sugerida pelo cálculo, para comparar na validação do checkout.
+let zonaSugeridaAtual = null;
+
+// Roda sempre que cli-lat/cli-lng mudam: calcula a distância até a loja, mostra a sugestão
+// e destaca visualmente o cartão correspondente (sem forçar a seleção do cliente).
+function atualizarZonaSugerida() {
+  const hint = document.getElementById('zona-distancia-hint');
+  const lat = parseFloat($('#cli-lat').value);
+  const lng = parseFloat($('#cli-lng').value);
+
+  $$('.zona-card').forEach(c => c.classList.remove('sugerida'));
+
+  if (isNaN(lat) || isNaN(lng)) {
+    zonaSugeridaAtual = null;
+    if (hint) hint.style.display = 'none';
+    return;
+  }
+
+  const km = calcularDistanciaKm(lat, lng, CONFIG.lojaLat, CONFIG.lojaLng);
+  const zona = zonaPelaDistancia(km);
+  zonaSugeridaAtual = zona;
+
+  const cardSugerido = $$('.zona-card').find(c => c.dataset.taxa === zona.taxa);
+  if (cardSugerido) cardSugerido.classList.add('sugerida');
+
+  if (hint) {
+    hint.style.display = 'block';
+    hint.innerHTML = `📍 Distância calculada até a loja: <strong>${km.toFixed(1)} km</strong> — zona sugerida: <strong>${esc(zona.nome)}</strong>`;
+  }
+}
+
+function mbTokenConfigurado() {
+  return MAPBOX_TOKEN && MAPBOX_TOKEN.indexOf('pk.') === 0;
+}
+
+async function mbBuscarEndereco(query) {
+  const idBusca = ++mbUltimaBuscaId;
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`
+    + `?access_token=${MAPBOX_TOKEN}`
+    + `&autocomplete=true&limit=6&language=pt&country=br`
+    + `&proximity=${MAPBOX_PROXIMIDADE.lng},${MAPBOX_PROXIMIDADE.lat}`
+    + `&bbox=${MAPBOX_BBOX.join(',')}`
+    + `&types=address,poi,place,neighborhood`;
+
+  try {
+    const ctrl = new AbortController();
+    const tmr = setTimeout(() => ctrl.abort(), 8000);
+    const resp = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(tmr);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (idBusca !== mbUltimaBuscaId) return; // resposta antiga, ignora
+    mbRenderizarSugestoes(data.features || []);
+  } catch (err) {
+    console.error('[MAPBOX] Falha na busca de endereço:', err);
+  }
+}
+
+function mbExtrairComponentes(feature) {
+  // O Mapbox devolve o endereço todo formatado + um "context" com bairro/cidade/estado separados.
+  const contexto = feature.context || [];
+  let bairro = '';
+  contexto.forEach(item => {
+    if (item.id && item.id.indexOf('neighborhood') === 0) bairro = item.text;
+    if (!bairro && item.id && item.id.indexOf('locality') === 0) bairro = item.text;
+  });
+  // "address" traz normalmente algo como "Rua X" em text e o número em address (quando existe).
+  const rua = feature.text || '';
+  const numero = feature.address || '';
+  return { rua, numero, bairro, lat: feature.center ? feature.center[1] : '', lng: feature.center ? feature.center[0] : '' };
+}
+
+function mbRenderizarSugestoes(features) {
+  const box = document.getElementById('mb-suggestions');
+  if (!box) return;
+
+  if (!features.length) {
+    box.innerHTML = '<div class="mb-suggestion-empty">Nenhum endereço encontrado. Digite manualmente.</div>';
+    box.classList.add('show');
+    return;
+  }
+
+  box.innerHTML = features.map((f, idx) => {
+    const partes = (f.place_name || '').split(',');
+    const linha1 = partes[0] || f.text;
+    const linha2 = partes.slice(1).join(',').trim();
+    return `<div class="mb-suggestion-item" data-idx="${idx}"><strong>${esc(linha1)}</strong>${linha2 ? `<small>${esc(linha2)}</small>` : ''}</div>`;
+  }).join('');
+
+  box.classList.add('show');
+  box.dataset.features = JSON.stringify(features);
+}
+
+function mbFecharSugestoes() {
+  const box = document.getElementById('mb-suggestions');
+  if (box) { box.classList.remove('show'); box.innerHTML = ''; }
+}
+
+function mbPreencherEndereco(comp) {
+  $('#cli-rua').value = comp.rua || '';
+  // Numero e bairro sao sugeridos apenas quando o cliente ainda nao digitou nada.
+  if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
+  if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
+  if (comp.lat && comp.lng) { $('#cli-lat').value = comp.lat; $('#cli-lng').value = comp.lng; $('#cli-gps-precisao').value = ''; $('#cli-geo-origem').value = 'sugestao'; }
+  atualizarZonaSugerida();
+}
+
+// Autocompletar: escuta o campo de rua e busca sugestões com debounce.
+const inputRuaEl = document.getElementById('cli-rua');
+if (inputRuaEl) {
+  inputRuaEl.addEventListener('input', () => {
+    // Digitar invalida apenas a coordenada vinda de sugestao de endereco.
+    // A coordenada real do GPS permanece como referencia extra para o entregador.
+    if ($('#cli-geo-origem').value !== 'gps') { $('#cli-lat').value = ''; $('#cli-lng').value = ''; $('#cli-geo-origem').value = ''; atualizarZonaSugerida(); }
+
+    const valor = inputRuaEl.value.trim();
+    clearTimeout(mbDebounceTimer);
+    if (valor.length < 3) { mbFecharSugestoes(); return; }
+    if (!mbTokenConfigurado()) { return; } // sem token, autocompletar fica desativado silenciosamente
+
+    mbDebounceTimer = setTimeout(() => mbBuscarEndereco(valor), 400);
+  });
+
+  inputRuaEl.addEventListener('blur', () => {
+    // Pequeno atraso para permitir o clique na sugestão antes de fechar a lista.
+    setTimeout(mbFecharSugestoes, 200);
+  });
+}
+
+// Clique numa sugestão preenche os campos.
+document.addEventListener('click', e => {
+  const item = e.target.closest('.mb-suggestion-item');
+  if (!item) return;
+  const box = document.getElementById('mb-suggestions');
+  const features = JSON.parse(box.dataset.features || '[]');
+  const feature = features[parseInt(item.dataset.idx, 10)];
+  if (!feature) return;
+
+  mbPreencherEndereco(mbExtrairComponentes(feature));
+  mbFecharSugestoes();
+  showToast('Endereço preenchido automaticamente!', 'success');
+});
+
+// Botão "Usar Localização Atual": GPS do navegador + geocodificação reversa do Mapbox.
+const btnGps = document.getElementById('btn-gps-localizacao');
+if (btnGps) {
+  btnGps.addEventListener('click', () => {
+    if (!mbTokenConfigurado()) {
+      showToast('Configuração de mapas pendente. Preencha o endereço manualmente.', 'warning');
+      return;
+    }
+    if (!navigator.geolocation) {
+      showToast('Seu navegador não suporta geolocalização.', 'error');
+      return;
+    }
+
+    btnGps.disabled = true; btnGps.classList.add('loading');
+    document.getElementById('btn-gps-label').textContent = 'Localizando...';
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const precisaoGps = position.coords.accuracy || '';
+      $('#cli-gps-precisao').value = precisaoGps ? Math.round(precisaoGps) : '';
+      $('#cli-geo-origem').value = 'gps';
+
+      try {
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`
+          + `?access_token=${MAPBOX_TOKEN}&language=pt&country=br&types=address`;
+        const ctrl = new AbortController();
+        const tmr = setTimeout(() => ctrl.abort(), 8000);
+        const resp = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(tmr);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+
+        // Mesmo sem endereço legível, guardamos sempre a coordenada exata do GPS —
+        // é ela que garante a localização precisa para o entregador.
+        $('#cli-lat').value = lat;
+        $('#cli-lng').value = lng;
+
+        if (data.features && data.features.length) {
+          const comp = mbExtrairComponentes(data.features[0]);
+          // O mapa e APENAS sugestao: nunca sobrescreve dado digitado pelo cliente.
+          // Rua, numero e bairro digitados sao a informacao oficial do pedido.
+          if (comp.rua && !$('#cli-rua').value.trim()) $('#cli-rua').value = comp.rua;
+          if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
+          if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
+          $('#cli-lat').value = lat; $('#cli-lng').value = lng;
+          atualizarZonaSugerida();
+          if (precisaoGps && precisaoGps > 60) {
+            showToast('Local aproximado (±' + Math.round(precisaoGps) + 'm). Confirme numero e bairro.', 'warning');
+          } else {
+            showToast('Localizacao capturada. Confirme numero e bairro — e o que vale na entrega.', 'success');
+          }
+        } else {
+          atualizarZonaSugerida();
+          showToast('Localizacao capturada. Preencha rua, numero e bairro.', 'warning');
+        }
+      } catch (err) {
+        console.error('[MAPBOX] Falha na geocodificação reversa:', err);
+        $('#cli-lat').value = lat; $('#cli-lng').value = lng;
+        atualizarZonaSugerida();
+        showToast('Coordenadas capturadas, mas houve falha ao traduzir o endereço.', 'warning');
+      } finally {
+        btnGps.disabled = false; btnGps.classList.remove('loading');
+        document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
+      }
+    }, (error) => {
+      btnGps.disabled = false; btnGps.classList.remove('loading');
+      document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
+      if (error.code === error.PERMISSION_DENIED) { showToast('Permissão de localização negada. Preencha rua, número e bairro.', 'error'); }
+      else if (error.code === error.TIMEOUT) { showToast('O GPS demorou demais. Preencha o endereço manualmente.', 'warning'); }
+      else { showToast('Não foi possível obter sua localização. Preencha o endereço manualmente.', 'error'); }
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  });
+}
+
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
 
@@ -1701,7 +2164,7 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.warn('[STATS]', err.code); });
 
-verificarHorario(); setInterval(verificarHorario, 60000); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
+verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
 </html>
