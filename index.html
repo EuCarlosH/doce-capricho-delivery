@@ -265,8 +265,12 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #map-confirm-overlay .mapa-header { padding: 18px 20px 4px; }
 #map-confirm-overlay .mapa-header strong { font-family: var(--font-title); font-size: 17px; display: block; margin-bottom: 4px; }
 #map-confirm-overlay .mapa-header span { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
-#map-confirm-overlay .mapa-img-wrap { position: relative; width: 100%; aspect-ratio: 5/3; background: var(--bg-main); margin-top: 12px; }
-#map-confirm-overlay .mapa-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#map-confirm-overlay .mapa-img-wrap { position: relative; width: 100%; aspect-ratio: 5/3; background: var(--bg-main); margin-top: 12px; overflow: hidden; }
+#map-confirm-overlay .mapa-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.15s ease; }
+#map-confirm-overlay .mapa-zoom-ctrl { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 1px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); }
+#map-confirm-overlay .mapa-zoom-ctrl button { width: 34px; height: 34px; border: none; background: rgba(255,255,255,0.95); color: var(--text-main); font-size: 17px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+#map-confirm-overlay .mapa-zoom-ctrl button:disabled { opacity: 0.35; cursor: default; }
+#map-confirm-overlay .mapa-zoom-ctrl button:active { background: rgba(240,240,240,0.95); }
 #map-confirm-overlay .mapa-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-muted); font-weight: 700; background: var(--bg-main); }
 #map-confirm-overlay .mapa-precisao-tag { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
 #map-confirm-overlay .mapa-acoes { display: flex; gap: 10px; padding: 16px 20px 20px; }
@@ -287,6 +291,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 
 .modal-overlay { position: fixed; inset: 0; background: var(--bottom-sheet-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.4s var(--smooth); }
 .modal-overlay#modal-aviso-pausa { z-index: 4000 !important; } .modal-overlay#promo-banner-overlay { z-index: 4000 !important; }
+.modal-overlay#map-confirm-overlay { z-index: 4200 !important; }
 .modal-overlay#tracking-overlay { z-index: 4500 !important; }
 
 .modal-overlay.open { display: flex; opacity: 1; }
@@ -542,6 +547,10 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <div class="mapa-loading" id="mapa-confirm-loading">Carregando mapa...</div>
       <img id="mapa-confirm-img" src="" alt="Mapa com sua localização" style="display:none;" onload="document.getElementById('mapa-confirm-loading').style.display='none'; this.style.display='block';" onerror="document.getElementById('mapa-confirm-loading').textContent='Não foi possível carregar o mapa, mas a coordenada foi capturada.';">
       <span class="mapa-precisao-tag" id="mapa-confirm-precisao" style="display:none;"></span>
+      <div class="mapa-zoom-ctrl">
+        <button type="button" id="btn-mapa-zoom-mais" aria-label="Aproximar">+</button>
+        <button type="button" id="btn-mapa-zoom-menos" aria-label="Afastar">−</button>
+      </div>
     </div>
     <div class="mapa-acoes">
       <button type="button" class="btn-mapa-tentar ripple" id="btn-mapa-tentar-novo">Tentar de novo</button>
@@ -2545,8 +2554,51 @@ const btnGps = document.getElementById('btn-gps-localizacao');
 // Estado da captura pendente de confirmação no mapa.
 let mapaConfirmPendente = null;
 
+// Zoom do mapa estático: 13 (mais afastado) a 19 (mais perto). Começa em 16.
+const MAPA_ZOOM_MIN = 13;
+const MAPA_ZOOM_MAX = 19;
+let mapaZoomAtual = 16;
+
+function montarUrlMapaEstatico(lat, lng, zoom) {
+  return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-l+e63946(${lng},${lat})/${lng},${lat},${zoom},0/600x360@2x`
+    + `?access_token=${MAPBOX_TOKEN}`;
+}
+
+function atualizarBotoesZoomMapa() {
+  const btnMais = document.getElementById('btn-mapa-zoom-mais');
+  const btnMenos = document.getElementById('btn-mapa-zoom-menos');
+  if (btnMais) btnMais.disabled = mapaZoomAtual >= MAPA_ZOOM_MAX;
+  if (btnMenos) btnMenos.disabled = mapaZoomAtual <= MAPA_ZOOM_MIN;
+}
+
+function redesenharMapaConfirmacao() {
+  if (!mapaConfirmPendente) return;
+  const img = document.getElementById('mapa-confirm-img');
+  img.src = montarUrlMapaEstatico(mapaConfirmPendente.lat, mapaConfirmPendente.lng, mapaZoomAtual);
+  atualizarBotoesZoomMapa();
+}
+
+const btnMapaZoomMais = document.getElementById('btn-mapa-zoom-mais');
+if (btnMapaZoomMais) {
+  btnMapaZoomMais.addEventListener('click', () => {
+    if (mapaZoomAtual >= MAPA_ZOOM_MAX) return;
+    mapaZoomAtual++;
+    redesenharMapaConfirmacao();
+  });
+}
+
+const btnMapaZoomMenos = document.getElementById('btn-mapa-zoom-menos');
+if (btnMapaZoomMenos) {
+  btnMapaZoomMenos.addEventListener('click', () => {
+    if (mapaZoomAtual <= MAPA_ZOOM_MIN) return;
+    mapaZoomAtual--;
+    redesenharMapaConfirmacao();
+  });
+}
+
 function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
   mapaConfirmPendente = { lat, lng, precisaoGps, comp };
+  mapaZoomAtual = 16;
 
   const img = document.getElementById('mapa-confirm-img');
   const loading = document.getElementById('mapa-confirm-loading');
@@ -2563,9 +2615,8 @@ function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
     tagPrecisao.style.display = 'none';
   }
 
-  const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-l+e63946(${lng},${lat})/${lng},${lat},16,0/600x360@2x`
-    + `?access_token=${MAPBOX_TOKEN}`;
-  img.src = url;
+  img.src = montarUrlMapaEstatico(lat, lng, mapaZoomAtual);
+  atualizarBotoesZoomMapa();
 
   abrirModal('map-confirm-overlay');
 }
