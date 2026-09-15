@@ -244,6 +244,13 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .cart-count.show { display: flex; animation: popIn 0.4s var(--smooth); }
 @keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(-10deg); } 100% { transform: scale(1); } } .bump-anim { animation: bump 0.4s var(--smooth); }
 
+#update-banner { position: fixed; left: 50%; transform: translateX(-50%) translateY(140%); bottom: 20px; z-index: 10000; width: calc(100% - 32px); max-width: 420px; background: var(--bg-card); border: 1px solid var(--gold); border-radius: 16px; box-shadow: var(--shadow-md); padding: 16px 18px; display: none; align-items: center; gap: 14px; transition: transform 0.45s var(--smooth); }
+#update-banner.show { transform: translateX(-50%) translateY(0); }
+#update-banner .upd-txt { flex: 1; font-size: 13px; line-height: 1.45; color: var(--text-main); font-weight: 600; }
+#update-banner .upd-txt small { display: block; font-weight: 500; color: var(--text-muted); font-size: 11.5px; margin-top: 3px; }
+#update-banner button { border: none; cursor: pointer; font-family: inherit; }
+#update-banner .upd-btn { background: var(--gold); color: #fff; padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; }
+#update-banner .upd-close { background: transparent; color: var(--text-muted); font-size: 22px; line-height: 1; padding: 0 4px; }
 #toast-container { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 400px; }
 .toast { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: var(--text-main); padding: 16px 24px; border-radius: 16px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 15px; animation: toastIn 0.5s var(--smooth) forwards; border: 1px solid rgba(255,255,255,0.5); width: 100%; }
 :root[data-theme="dark"] .toast { background: rgba(30,25,22,0.95); border-color: rgba(255,255,255,0.05); font-weight: 600; color: var(--white);}
@@ -486,6 +493,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <body>
 
 <div id="toast-container"></div>
+
+<div id="update-banner" role="status" aria-live="polite">
+  <div class="upd-txt">Nova versão do cardápio disponível<small>Atualize para ver os preços e sabores atuais.</small></div>
+  <button type="button" class="upd-btn ripple" id="btn-aplicar-update">ATUALIZAR</button>
+  <button type="button" class="upd-close" id="btn-fechar-update" aria-label="Fechar aviso">&times;</button>
+</div>
 
 <nav class="top-nav">
   <div class="nav-container">
@@ -973,10 +986,72 @@ function exibirBotaoInstalacao() {
   }
 }
 
+// ------------------------------------------------------------------
+// PWA: registro + detecção de nova versão. Sem isso, quem instalou o app
+// pode ficar semanas com o cardápio e os preços antigos em cache.
+// ------------------------------------------------------------------
+let swAguardando = null;
+let recarregandoPorUpdate = false;
+
+function mostrarAvisoAtualizacao(worker) {
+  swAguardando = worker;
+  const banner = document.getElementById('update-banner');
+  if (!banner) return;
+  banner.style.display = 'flex';
+  setTimeout(() => banner.classList.add('show'), 50);
+}
+
+function esconderAvisoAtualizacao() {
+  const banner = document.getElementById('update-banner');
+  if (!banner) return;
+  banner.classList.remove('show');
+  setTimeout(() => { banner.style.display = 'none'; }, 450);
+}
+
+const btnAplicarUpdate = document.getElementById('btn-aplicar-update');
+if (btnAplicarUpdate) {
+  btnAplicarUpdate.addEventListener('click', function () {
+    btnAplicarUpdate.textContent = 'ATUALIZANDO...';
+    btnAplicarUpdate.disabled = true;
+    try { if (swAguardando) swAguardando.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
+    // Se o service worker não responder ao SKIP_WAITING, recarrega mesmo assim.
+    setTimeout(function () {
+      if (!recarregandoPorUpdate) { recarregandoPorUpdate = true; window.location.reload(); }
+    }, 2000);
+  });
+}
+
+const btnFecharUpdate = document.getElementById('btn-fechar-update');
+if (btnFecharUpdate) btnFecharUpdate.addEventListener('click', esconderAvisoAtualizacao);
+
 if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (recarregandoPorUpdate) return;
+    recarregandoPorUpdate = true;
+    window.location.reload();
+  });
+
   window.addEventListener('load', async function () {
     try {
-      await navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
+      const reg = await navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
+
+      const checarAtualizacao = () => { reg.update().catch(function () {}); };
+
+      // Já existe versão nova instalada e parada, esperando ativação.
+      if (reg.waiting && navigator.serviceWorker.controller) mostrarAvisoAtualizacao(reg.waiting);
+
+      reg.addEventListener('updatefound', function () {
+        const novo = reg.installing;
+        if (!novo) return;
+        novo.addEventListener('statechange', function () {
+          // 'installed' com controller já ativo = atualização, não primeira instalação.
+          if (novo.state === 'installed' && navigator.serviceWorker.controller) mostrarAvisoAtualizacao(novo);
+        });
+      });
+
+      checarAtualizacao();
+      setInterval(checarAtualizacao, 30 * 60 * 1000);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) checarAtualizacao(); });
     } catch (error) {
       console.error('Falha ao registrar o service worker:', error);
     }
@@ -1239,8 +1314,44 @@ function atualizarStatusLoja() {
   }
 }
 
-const salvar = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho)); } catch (e) {} };
-function carregar() { try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(d)) carrinho = d.filter(validarItem); } catch (e) { carrinho = []; } }
+// Carrinho salvo com carimbo de data. Depois de CARRINHO_VALIDADE_MS sem
+// nenhuma alteração, ele é descartado para não enviar pedido antigo.
+const CARRINHO_VALIDADE_MS = 12 * 60 * 60 * 1000;
+
+const salvar = () => {
+  try {
+    if (!carrinho.length) { localStorage.removeItem(STORAGE_KEY); return; }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 2, ts: Date.now(), itens: carrinho }));
+  } catch (e) {}
+};
+
+function carregar() {
+  try {
+    const bruto = localStorage.getItem(STORAGE_KEY);
+    if (!bruto) { carrinho = []; return; }
+
+    const d = JSON.parse(bruto);
+
+    // Formato antigo (array puro, sem carimbo): aceita e passa a carimbar a partir de agora.
+    if (Array.isArray(d)) {
+      carrinho = d.filter(validarItem);
+      salvar();
+      return;
+    }
+
+    if (!d || !Array.isArray(d.itens)) { carrinho = []; localStorage.removeItem(STORAGE_KEY); return; }
+
+    const idade = Date.now() - (Number(d.ts) || 0);
+    if (idade > CARRINHO_VALIDADE_MS) {
+      carrinho = [];
+      localStorage.removeItem(STORAGE_KEY);
+      setTimeout(() => showToast('Seu carrinho anterior expirou. Monte o pedido novamente para garantir os valores de hoje.', 'warning'), 1200);
+      return;
+    }
+
+    carrinho = d.itens.filter(validarItem);
+  } catch (e) { carrinho = []; }
+}
 const precoBaseVal = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
 
 function validarItem(item) {
@@ -1576,6 +1687,8 @@ function atualizarStepperUI() {
 
 function tentarAvancarStep2() {
   // Simulação liberada mesmo com a loja fechada; o bloqueio fica no envio final.
+  // Revalidação antecipada: avisa cedo se algo esgotou, em vez de só no envio.
+  if (!revalidarPedido()) return;
   if (!validarCheckout()) return;
   irParaStep(3);
 }
@@ -1846,6 +1959,69 @@ function carregarDadosCliente() {
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value; const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key); let payload = formatField('00', '01') + merchantAccount + formatField('52', '0000') + formatField('53', '986') + formatField('54', strValor) + formatField('58', 'BR') + formatField('59', cleanNome) + formatField('60', cleanCidade) + formatField('62', formatField('05', '***')) + '6304'; let crc = 0xFFFF; for (let c = 0; c < payload.length; c++) { crc ^= payload.charCodeAt(c) << 8; for (let i = 0; i < 8; i++) { if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } } return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'); }
 
+// ------------------------------------------------------------------
+// TRAVA DE INTEGRIDADE: revalida o carrinho contra a configuração atual
+// antes de gravar o pedido. Protege contra itens que esgotaram enquanto
+// o cliente montava o pedido e contra preços defasados vindos de cache.
+// Retorna true apenas quando o pedido pode seguir sem alterações.
+// ------------------------------------------------------------------
+function revalidarPedido() {
+  const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
+  const totalAntes = totais().total;
+
+  const aprovados = [];
+  const removidos = [];
+
+  carrinho.forEach(item => {
+    let rotulo = 'Um item do seu carrinho';
+    try { rotulo = nomeItem(item); } catch (e) {}
+
+    const saborProblema = (item.sabores || []).find(id => !acharSabor(id) || esgotados.includes(id));
+    if (saborProblema) {
+      const sab = acharSabor(saborProblema);
+      removidos.push(sab ? sab.nome : rotulo);
+      return;
+    }
+
+    // validarItem recalcula base, extras, unitário e total com os preços atuais.
+    if (!validarItem(item)) { removidos.push(rotulo); return; }
+    aprovados.push(item);
+  });
+
+  if (removidos.length > 0) {
+    carrinho = aprovados;
+    salvar(); atualizarUI();
+
+    const lista = [...new Set(removidos)];
+    const nomes = lista.slice(0, 2).join(' e ') + (lista.length > 2 ? ` e mais ${lista.length - 2}` : '');
+    const plural = lista.length > 1;
+
+    if (!carrinho.length) {
+      showToast(`${nomes} ${plural ? 'esgotaram' : 'esgotou'} e seu carrinho ficou vazio. Escolha outros sabores.`, 'error');
+      fecharModal('cart-overlay');
+    } else {
+      showToast(`${nomes} ${plural ? 'acabaram' : 'acabou'} de esgotar e ${plural ? 'saíram' : 'saiu'} do carrinho. Confira o pedido antes de enviar.`, 'error');
+      irParaStep(1);
+    }
+    return false;
+  }
+
+  if (!carrinho.length) {
+    showToast('Seu carrinho está vazio.', 'error');
+    return false;
+  }
+
+  const totalDepois = totais().total;
+  if (totalDepois !== totalAntes) {
+    atualizarUI();
+    irParaStep(4);
+    showToast(`Os valores foram atualizados. Novo total: ${brl(totalDepois)}. Confirme para enviar.`, 'warning');
+    return false;
+  }
+
+  return true;
+}
+
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
   const ehEntrega = (tipo === 'Entrega');
@@ -1947,6 +2123,7 @@ async function enviarPedidoFinal(ev) {
       else showToast("Nossa loja está fechada no momento.", "error"); 
       return; 
   } 
+  if (!revalidarPedido()) return;
   if (!validarCheckout()) return;
   if (!validarTroco()) {
     irParaStep(3);
