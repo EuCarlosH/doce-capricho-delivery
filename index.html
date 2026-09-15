@@ -82,6 +82,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
+button, a, input, select, textarea { touch-action: manipulation; }
 body { background: var(--bg-main); color: var(--text-main); font-family: 'Work Sans', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, .brand-font { font-family: 'Fraunces', serif; font-weight: 600; } section, header { scroll-margin-top: 100px; }
 
@@ -266,7 +267,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #map-confirm-overlay .mapa-header strong { font-family: var(--font-title); font-size: 17px; display: block; margin-bottom: 4px; }
 #map-confirm-overlay .mapa-header span { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
 #map-confirm-overlay .mapa-img-wrap { position: relative; width: 100%; aspect-ratio: 5/3; background: var(--bg-main); margin-top: 12px; overflow: hidden; }
-#map-confirm-overlay .mapa-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.15s ease; }
+#map-confirm-overlay .mapa-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.12s ease, transform 0.14s ease-out; transform: translate3d(0,0,0) scale(1); will-change: transform; backface-visibility: hidden; }
 #map-confirm-overlay .mapa-zoom-ctrl { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 1px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); }
 #map-confirm-overlay .mapa-zoom-ctrl button { width: 34px; height: 34px; border: none; background: rgba(255,255,255,0.95); color: var(--text-main); font-size: 17px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
 #map-confirm-overlay .mapa-zoom-ctrl button:disabled { opacity: 0.35; cursor: default; }
@@ -282,6 +283,28 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #map-confirm-overlay .mapa-acoes { display: flex; gap: 10px; padding: 16px 20px 20px; }
 #map-confirm-overlay .btn-mapa-confirmar { flex: 1.4; background: var(--gold); color: #fff; border: none; border-radius: 12px; padding: 13px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
 #map-confirm-overlay .btn-mapa-tentar { flex: 1; background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); border-radius: 12px; padding: 13px; font-weight: 700; font-size: 12.5px; cursor: pointer; font-family: inherit; }
+
+/* PERFORMANCE: renderiza cards fora da tela somente quando estiverem próximos. */
+.card, .destaque-card { content-visibility: auto; contain: layout paint style; contain-intrinsic-size: 340px; }
+.card-img, .carousel-slide { transform: translateZ(0); backface-visibility: hidden; }
+
+/* Filtros de desfoque em camadas fixas custam muitos frames em celulares. */
+@media (max-width: 768px) {
+  nav.top-nav, .sticky-menu-wrapper, .bottom-nav, .modal-overlay, .toast, .btn-close-promo {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  :root[data-theme="light"] nav.top-nav { background: rgba(253,251,247,0.97); }
+  :root[data-theme="dark"] nav.top-nav { background: rgba(13,10,8,0.97); }
+  .sticky-menu-wrapper { background: var(--bg-card); }
+  .bottom-nav { background: var(--bg-card); }
+  .card:hover, .destaque-card:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
 #toast-container { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 400px; }
 .toast { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: var(--text-main); padding: 16px 24px; border-radius: 16px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 15px; animation: toastIn 0.5s var(--smooth) forwards; border: 1px solid rgba(255,255,255,0.5); width: 100%; }
 :root[data-theme="dark"] .toast { background: rgba(30,25,22,0.95); border-color: rgba(255,255,255,0.05); font-weight: 600; color: var(--white);}
@@ -551,7 +574,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     </div>
     <div class="mapa-img-wrap">
       <div class="mapa-loading" id="mapa-confirm-loading">Melhorando a precisão do GPS...</div>
-      <img id="mapa-confirm-img" src="" alt="Mapa com sua localização" style="display:none;" onload="document.getElementById('mapa-confirm-loading').style.display='none'; this.style.display='block';" onerror="document.getElementById('mapa-confirm-loading').textContent='Não foi possível carregar o mapa, mas a coordenada foi capturada.';">
+      <img id="mapa-confirm-img" src="" alt="Mapa com sua localização" decoding="async" style="display:none;">
       <div class="mapa-pino-fixo">📍</div>
       <span class="mapa-precisao-tag" id="mapa-confirm-precisao" style="display:none;"></span>
       <span class="mapa-ajuste-hint">Use as setas para afinar o pino</span>
@@ -1311,7 +1334,7 @@ function renderDestaques() {
     return `
     <article class="destaque-card">
       <div class="card-img-wrap skeleton-bg">
-        <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
+        <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" loading="lazy" decoding="async" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
       </div>
       <div class="card-content">
         <h4 class="card-title">${esc(s.nome)}</h4>
@@ -1468,7 +1491,7 @@ const cardHTML = s => {
   <article class="${classeCard}" data-sabor="${s.id}">
     <div class="card-img-wrap skeleton-bg">
       ${badgeHTML}
-      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
+      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" loading="lazy" decoding="async" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
     </div>
     <div class="card-content">
       <h4 class="card-title">${esc(s.nome)}</h4>
@@ -2577,6 +2600,9 @@ let mapaConfirmPendente = null;
 const MAPA_ZOOM_MIN = 13;
 const MAPA_ZOOM_MAX = 19;
 let mapaZoomAtual = 16;
+let mapaZoomRenderizado = 16;
+let mapaRedrawTimer = null;
+let mapaRequestId = 0;
 
 function montarUrlMapaEstatico(lat, lng, zoom) {
   // O pino fica fixo no HTML. A imagem mostra somente o mapa centralizado
@@ -2592,11 +2618,55 @@ function atualizarBotoesZoomMapa() {
   if (btnMenos) btnMenos.disabled = mapaZoomAtual <= MAPA_ZOOM_MIN;
 }
 
-function redesenharMapaConfirmacao() {
+function aplicarPreviewZoomMapa() {
+  const img = document.getElementById('mapa-confirm-img');
+  if (!img || img.style.display === 'none') return;
+  const diferenca = mapaZoomAtual - mapaZoomRenderizado;
+  const escala = Math.max(0.72, Math.min(1.38, Math.pow(2, diferenca)));
+  img.style.transform = `translate3d(0,0,0) scale(${escala})`;
+}
+
+function carregarMapaConfirmacao() {
   if (!mapaConfirmPendente) return;
   const img = document.getElementById('mapa-confirm-img');
-  img.src = montarUrlMapaEstatico(mapaConfirmPendente.lat, mapaConfirmPendente.lng, mapaZoomAtual);
+  const loading = document.getElementById('mapa-confirm-loading');
+  const lat = mapaConfirmPendente.lat;
+  const lng = mapaConfirmPendente.lng;
+  const zoom = mapaZoomAtual;
+  const url = montarUrlMapaEstatico(lat, lng, zoom);
+  const requestId = ++mapaRequestId;
+  const preload = new Image();
+  preload.decoding = 'async';
+
+  preload.onload = () => {
+    if (requestId !== mapaRequestId || !mapaConfirmPendente) return;
+    img.style.opacity = '0.92';
+    img.src = url;
+    img.style.display = 'block';
+    mapaZoomRenderizado = zoom;
+    requestAnimationFrame(() => {
+      img.style.transform = 'translate3d(0,0,0) scale(1)';
+      img.style.opacity = '1';
+    });
+    loading.style.display = 'none';
+  };
+
+  preload.onerror = () => {
+    if (requestId !== mapaRequestId) return;
+    loading.textContent = 'Não foi possível atualizar o mapa. Tente novamente.';
+    if (img.src) loading.style.display = 'none';
+  };
+  preload.src = url;
   atualizarBotoesZoomMapa();
+}
+
+function redesenharMapaConfirmacao(imediato = false) {
+  clearTimeout(mapaRedrawTimer);
+  // Invalida imediatamente qualquer imagem antiga ainda em trânsito.
+  mapaRequestId++;
+  aplicarPreviewZoomMapa();
+  if (imediato) carregarMapaConfirmacao();
+  else mapaRedrawTimer = setTimeout(carregarMapaConfirmacao, 160);
 }
 
 const btnMapaZoomMais = document.getElementById('btn-mapa-zoom-mais');
@@ -2637,6 +2707,15 @@ function ajustarPinoMapa(direcao) {
   const tagPrecisao = document.getElementById('mapa-confirm-precisao');
   tagPrecisao.style.display = 'block';
   tagPrecisao.textContent = `Ajustado manualmente · passo ~${metrosPorPasso.toFixed(0)}m`;
+  const img = document.getElementById('mapa-confirm-img');
+  const deslocamento = direcao === 'norte' ? 'translate3d(0,8px,0)' :
+    direcao === 'sul' ? 'translate3d(0,-8px,0)' :
+    direcao === 'leste' ? 'translate3d(-8px,0,0)' : 'translate3d(8px,0,0)';
+  if (img && img.animate) img.animate([
+    { transform: 'translate3d(0,0,0)' },
+    { transform: deslocamento },
+    { transform: 'translate3d(0,0,0)' }
+  ], { duration: 150, easing: 'ease-out' });
   redesenharMapaConfirmacao();
 }
 
@@ -2663,6 +2742,7 @@ async function buscarEnderecoPorCoordenada(lat, lng) {
 function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
   mapaConfirmPendente = { lat, lng, precisaoGps, comp };
   mapaZoomAtual = 16;
+  mapaZoomRenderizado = 16;
 
   const img = document.getElementById('mapa-confirm-img');
   const loading = document.getElementById('mapa-confirm-loading');
@@ -2679,8 +2759,8 @@ function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
     tagPrecisao.style.display = 'none';
   }
 
-  img.src = montarUrlMapaEstatico(lat, lng, mapaZoomAtual);
-  atualizarBotoesZoomMapa();
+  img.removeAttribute('src');
+  redesenharMapaConfirmacao(true);
 
   abrirModal('map-confirm-overlay');
 }
