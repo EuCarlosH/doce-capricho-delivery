@@ -47,6 +47,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js"></script>
 
 <style>
 /* PALETA E VARIÁVEIS PREMIUM */
@@ -251,6 +252,30 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #update-banner button { border: none; cursor: pointer; font-family: inherit; }
 #update-banner .upd-btn { background: var(--gold); color: #fff; padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; }
 #update-banner .upd-close { background: transparent; color: var(--text-muted); font-size: 22px; line-height: 1; padding: 0 4px; }
+#notif-opt-overlay .modal-box { max-width: 380px; text-align: center; padding: 30px 26px; }
+#notif-opt-overlay .notif-icon { font-size: 46px; margin-bottom: 6px; }
+#notif-opt-overlay h3 { font-family: var(--font-title); font-size: 20px; margin-bottom: 10px; }
+#notif-opt-overlay p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+#notif-opt-overlay ul { text-align: left; font-size: 12.5px; color: var(--text-main); list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 9px; }
+#notif-opt-overlay ul li { display: flex; gap: 9px; align-items: flex-start; }
+#notif-opt-overlay .notif-btns { display: flex; flex-direction: column; gap: 10px; }
+#notif-opt-overlay .btn-notif-sim { background: var(--gold); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 13.5px; cursor: pointer; font-family: inherit; }
+#notif-opt-overlay .btn-notif-nao { background: transparent; border: none; color: var(--text-muted); font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 6px; }
+#map-confirm-overlay .modal-box { max-width: 420px; padding: 0; overflow: hidden; }
+#map-confirm-overlay .mapa-header { padding: 18px 20px 4px; }
+#map-confirm-overlay .mapa-header strong { font-family: var(--font-title); font-size: 17px; display: block; margin-bottom: 4px; }
+#map-confirm-overlay .mapa-header span { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+#map-confirm-overlay .mapa-img-wrap { position: relative; width: 100%; aspect-ratio: 5/3; background: var(--bg-main); margin-top: 12px; overflow: hidden; }
+#map-confirm-overlay .mapa-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.15s ease; }
+#map-confirm-overlay .mapa-zoom-ctrl { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 1px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); }
+#map-confirm-overlay .mapa-zoom-ctrl button { width: 34px; height: 34px; border: none; background: rgba(255,255,255,0.95); color: var(--text-main); font-size: 17px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+#map-confirm-overlay .mapa-zoom-ctrl button:disabled { opacity: 0.35; cursor: default; }
+#map-confirm-overlay .mapa-zoom-ctrl button:active { background: rgba(240,240,240,0.95); }
+#map-confirm-overlay .mapa-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-muted); font-weight: 700; background: var(--bg-main); }
+#map-confirm-overlay .mapa-precisao-tag { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
+#map-confirm-overlay .mapa-acoes { display: flex; gap: 10px; padding: 16px 20px 20px; }
+#map-confirm-overlay .btn-mapa-confirmar { flex: 1.4; background: var(--gold); color: #fff; border: none; border-radius: 12px; padding: 13px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+#map-confirm-overlay .btn-mapa-tentar { flex: 1; background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); border-radius: 12px; padding: 13px; font-weight: 700; font-size: 12.5px; cursor: pointer; font-family: inherit; }
 #toast-container { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 400px; }
 .toast { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: var(--text-main); padding: 16px 24px; border-radius: 16px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 15px; animation: toastIn 0.5s var(--smooth) forwards; border: 1px solid rgba(255,255,255,0.5); width: 100%; }
 :root[data-theme="dark"] .toast { background: rgba(30,25,22,0.95); border-color: rgba(255,255,255,0.05); font-weight: 600; color: var(--white);}
@@ -266,6 +291,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 
 .modal-overlay { position: fixed; inset: 0; background: var(--bottom-sheet-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.4s var(--smooth); }
 .modal-overlay#modal-aviso-pausa { z-index: 4000 !important; } .modal-overlay#promo-banner-overlay { z-index: 4000 !important; }
+.modal-overlay#map-confirm-overlay { z-index: 4200 !important; }
 .modal-overlay#tracking-overlay { z-index: 4500 !important; }
 
 .modal-overlay.open { display: flex; opacity: 1; }
@@ -493,6 +519,45 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <body>
 
 <div id="toast-container"></div>
+
+<div class="modal-overlay" id="notif-opt-overlay">
+  <div class="modal-box">
+    <div class="notif-icon">🔔</div>
+    <h3 class="brand-font">Quer receber nossas notificações?</h3>
+    <p>Ative as notificações e fique por dentro sem precisar abrir o app toda hora.</p>
+    <ul>
+      <li>🍕 <span>Sabor novo de pizza ou esfiha saiu do forno</span></li>
+      <li>📅 <span>Avisos de funcionamento em datas especiais</span></li>
+      <li>🎉 <span>Combos e promoções do dia</span></li>
+    </ul>
+    <div class="notif-btns">
+      <button type="button" class="btn-notif-sim ripple" id="btn-notif-ativar">Ativar notificações</button>
+      <button type="button" class="btn-notif-nao" id="btn-notif-depois">Agora não</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="map-confirm-overlay">
+  <div class="modal-box">
+    <div class="mapa-header">
+      <strong>É aqui que você está? 📍</strong>
+      <span>Confira o ponto vermelho no mapa antes de confirmarmos a região da entrega.</span>
+    </div>
+    <div class="mapa-img-wrap">
+      <div class="mapa-loading" id="mapa-confirm-loading">Carregando mapa...</div>
+      <img id="mapa-confirm-img" src="" alt="Mapa com sua localização" style="display:none;" onload="document.getElementById('mapa-confirm-loading').style.display='none'; this.style.display='block';" onerror="document.getElementById('mapa-confirm-loading').textContent='Não foi possível carregar o mapa, mas a coordenada foi capturada.';">
+      <span class="mapa-precisao-tag" id="mapa-confirm-precisao" style="display:none;"></span>
+      <div class="mapa-zoom-ctrl">
+        <button type="button" id="btn-mapa-zoom-mais" aria-label="Aproximar">+</button>
+        <button type="button" id="btn-mapa-zoom-menos" aria-label="Afastar">−</button>
+      </div>
+    </div>
+    <div class="mapa-acoes">
+      <button type="button" class="btn-mapa-tentar ripple" id="btn-mapa-tentar-novo">Tentar de novo</button>
+      <button type="button" class="btn-mapa-confirmar ripple" id="btn-mapa-confirmar">Sim, é aqui</button>
+    </div>
+  </div>
+</div>
 
 <div id="update-banner" role="status" aria-live="polite">
   <div class="upd-txt">Nova versão do cardápio disponível<small>Atualize para ver os preços e sabores atuais.</small></div>
@@ -837,6 +902,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
             <span class="gps-spinner"></span>
             <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
           </button>
+          <span style="display:block; font-size: 11px; color: var(--text-muted); margin: 6px 2px 14px; line-height: 1.5;">Toque aqui ou escolha uma sugestão ao digitar a rua — precisamos confirmar a região para liberar a entrega.</span>
 
           <div class="endereco-row">
             <div style="flex: 2.5;" class="mb-autocomplete-wrap">
@@ -1101,6 +1167,10 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&am
 const soDigitos = s => String(s).replace(/\D/g, '');
 
 const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
+
+// Gere essa chave em: Firebase Console > Configurações do projeto > Cloud Messaging >
+// "Configuração da Web" > "Gerar par de chaves". Sem ela, as notificações não funcionam.
+const NOTIF_VAPID_KEY = 'COLE_AQUI_SUA_VAPID_KEY';
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -1140,7 +1210,7 @@ const CARDAPIO = {
     { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
     { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 },
-    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:800 }
+    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
   ],
   esfihas_doces: [
     { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
@@ -1160,7 +1230,7 @@ const CARDAPIO = {
 };
 
 const EXTRAS = [
-  { id:'catupiry', nome:'Catupiry',     tipo:'metade_toda', precos:{ metade:800,  toda:1500 } },
+  { id:'catupiry', nome:'Catupiry',     tipo:'metade_toda', precos:{ metade:800,  toda:1600 } },
   { id:'cream',    nome:'Cream Cheese', tipo:'metade_toda', precos:{ metade:750,  toda:1500 } },
   { id:'bacon',    nome:'Bacon',        tipo:'metade_toda', precos:{ metade:400,  toda:800  } },
   { id:'alho',     nome:'Alho Poró',    tipo:'metade_toda', precos:{ metade:250,  toda:500  } }
@@ -1860,6 +1930,8 @@ function validarCheckout() {
   const erros = []; 
   const nome = $('#cli-nome'), tel = $('#cli-telefone'), rua = $('#cli-rua'), num = $('#cli-numero'), bairro = $('#cli-bairro'); 
   [nome, tel, rua, num, bairro].forEach(c => { if(c) c.classList.remove('field-error') });
+  const btnGpsClear = document.getElementById('btn-gps-localizacao');
+  if (btnGpsClear) btnGpsClear.classList.remove('field-error');
   
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
@@ -1869,6 +1941,14 @@ function validarCheckout() {
       erros.push(`A distância calculada até seu endereço corresponde à zona "${zonaSugeridaAtual.nome}". Selecione essa opção para continuar.`);
       const cardCorreto = $$('.zona-card').find(c => c.dataset.taxa === zonaSugeridaAtual.taxa);
       if (cardCorreto) cardCorreto.style.animation = 'shake 0.4s ease';
+    }
+    // Sem coordenada não há como conferir a zona escolhida contra a distância real.
+    // Só cobramos isso quando o Mapbox está configurado — sem token, a captura de
+    // coordenada nem está disponível, então não faz sentido travar o pedido por isso.
+    if (mbTokenConfigurado() && (!$('#cli-lat').value || !$('#cli-lng').value)) {
+      erros.push('Toque em "Usar Localização Atual" ou selecione seu endereço na lista de sugestões para confirmarmos a região da entrega.');
+      const btnGpsEl = document.getElementById('btn-gps-localizacao');
+      if (btnGpsEl) { btnGpsEl.classList.add('field-error'); btnGpsEl.style.animation = 'shake 0.4s ease'; setTimeout(() => { btnGpsEl.style.animation = ''; }, 500); }
     }
     if (rua.value.trim().length < 2) { erros.push('Informe a rua da entrega.'); rua.classList.add('field-error'); }
     const numVal = num.value.trim();
@@ -2116,8 +2196,12 @@ async function gravarFirestore(pedido) {
   } 
 }
 
+let pedidoEmEnvio = false;
+
 async function enviarPedidoFinal(ev) {
-  ev.preventDefault(); if(!lojaAberta) { 
+  ev.preventDefault();
+  if (pedidoEmEnvio) return;
+  if(!lojaAberta) { 
       const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
       if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
       else showToast("Nossa loja está fechada no momento.", "error"); 
@@ -2139,6 +2223,7 @@ async function enviarPedidoFinal(ev) {
     }
   }
   if (!navigator.onLine) { showToast('Você está sem internet. Reconecte e envie novamente.', 'error'); return; }
+  pedidoEmEnvio = true;
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
@@ -2151,6 +2236,7 @@ async function enviarPedidoFinal(ev) {
   if (aba) aba.location.href = url; else window.location.href = url;
   
   carrinho = []; salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
+  pedidoEmEnvio = false;
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
 
@@ -2461,8 +2547,122 @@ document.addEventListener('click', e => {
   showToast('Endereço preenchido automaticamente!', 'success');
 });
 
-// Botão "Usar Localização Atual": GPS do navegador + geocodificação reversa do Mapbox.
+// Botão "Usar Localização Atual": GPS do navegador + geocodificação reversa do Mapbox,
+// com confirmação visual num mapa antes de aplicar a coordenada ao pedido.
 const btnGps = document.getElementById('btn-gps-localizacao');
+
+// Estado da captura pendente de confirmação no mapa.
+let mapaConfirmPendente = null;
+
+// Zoom do mapa estático: 13 (mais afastado) a 19 (mais perto). Começa em 16.
+const MAPA_ZOOM_MIN = 13;
+const MAPA_ZOOM_MAX = 19;
+let mapaZoomAtual = 16;
+
+function montarUrlMapaEstatico(lat, lng, zoom) {
+  return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-l+e63946(${lng},${lat})/${lng},${lat},${zoom},0/600x360@2x`
+    + `?access_token=${MAPBOX_TOKEN}`;
+}
+
+function atualizarBotoesZoomMapa() {
+  const btnMais = document.getElementById('btn-mapa-zoom-mais');
+  const btnMenos = document.getElementById('btn-mapa-zoom-menos');
+  if (btnMais) btnMais.disabled = mapaZoomAtual >= MAPA_ZOOM_MAX;
+  if (btnMenos) btnMenos.disabled = mapaZoomAtual <= MAPA_ZOOM_MIN;
+}
+
+function redesenharMapaConfirmacao() {
+  if (!mapaConfirmPendente) return;
+  const img = document.getElementById('mapa-confirm-img');
+  img.src = montarUrlMapaEstatico(mapaConfirmPendente.lat, mapaConfirmPendente.lng, mapaZoomAtual);
+  atualizarBotoesZoomMapa();
+}
+
+const btnMapaZoomMais = document.getElementById('btn-mapa-zoom-mais');
+if (btnMapaZoomMais) {
+  btnMapaZoomMais.addEventListener('click', () => {
+    if (mapaZoomAtual >= MAPA_ZOOM_MAX) return;
+    mapaZoomAtual++;
+    redesenharMapaConfirmacao();
+  });
+}
+
+const btnMapaZoomMenos = document.getElementById('btn-mapa-zoom-menos');
+if (btnMapaZoomMenos) {
+  btnMapaZoomMenos.addEventListener('click', () => {
+    if (mapaZoomAtual <= MAPA_ZOOM_MIN) return;
+    mapaZoomAtual--;
+    redesenharMapaConfirmacao();
+  });
+}
+
+function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
+  mapaConfirmPendente = { lat, lng, precisaoGps, comp };
+  mapaZoomAtual = 16;
+
+  const img = document.getElementById('mapa-confirm-img');
+  const loading = document.getElementById('mapa-confirm-loading');
+  const tagPrecisao = document.getElementById('mapa-confirm-precisao');
+
+  img.style.display = 'none';
+  loading.style.display = 'flex';
+  loading.textContent = 'Carregando mapa...';
+
+  if (precisaoGps && precisaoGps > 60) {
+    tagPrecisao.style.display = 'block';
+    tagPrecisao.textContent = `Precisão aproximada: ±${Math.round(precisaoGps)}m`;
+  } else {
+    tagPrecisao.style.display = 'none';
+  }
+
+  img.src = montarUrlMapaEstatico(lat, lng, mapaZoomAtual);
+  atualizarBotoesZoomMapa();
+
+  abrirModal('map-confirm-overlay');
+}
+
+function aplicarLocalizacaoConfirmada() {
+  if (!mapaConfirmPendente) return;
+  const { lat, lng, precisaoGps, comp } = mapaConfirmPendente;
+
+  $('#cli-lat').value = lat;
+  $('#cli-lng').value = lng;
+  $('#cli-gps-precisao').value = precisaoGps ? Math.round(precisaoGps) : '';
+  $('#cli-geo-origem').value = 'gps';
+
+  if (comp) {
+    // O mapa e a geocodificação são APENAS sugestão: nunca sobrescrevem dado digitado pelo cliente.
+    // Rua, numero e bairro digitados sao a informacao oficial do pedido.
+    if (comp.rua && !$('#cli-rua').value.trim()) $('#cli-rua').value = comp.rua;
+    if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
+    if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
+    atualizarZonaSugerida();
+    if (precisaoGps && precisaoGps > 60) {
+      showToast('Local aproximado (±' + Math.round(precisaoGps) + 'm). Confirme numero e bairro.', 'warning');
+    } else {
+      showToast('Localização confirmada. Confirme numero e bairro — e o que vale na entrega.', 'success');
+    }
+  } else {
+    atualizarZonaSugerida();
+    showToast('Localização confirmada. Preencha rua, numero e bairro.', 'warning');
+  }
+
+  mapaConfirmPendente = null;
+  fecharModal('map-confirm-overlay');
+}
+
+const btnMapaConfirmar = document.getElementById('btn-mapa-confirmar');
+if (btnMapaConfirmar) btnMapaConfirmar.addEventListener('click', aplicarLocalizacaoConfirmada);
+
+const btnMapaTentarNovo = document.getElementById('btn-mapa-tentar-novo');
+if (btnMapaTentarNovo) {
+  btnMapaTentarNovo.addEventListener('click', () => {
+    mapaConfirmPendente = null;
+    fecharModal('map-confirm-overlay');
+    showToast('Sem problema. Toque em "Usar Localização Atual" de novo ou digite o endereço.', 'warning');
+  });
+}
+
 if (btnGps) {
   btnGps.addEventListener('click', () => {
     if (!mbTokenConfigurado()) {
@@ -2481,8 +2681,6 @@ if (btnGps) {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       const precisaoGps = position.coords.accuracy || '';
-      $('#cli-gps-precisao').value = precisaoGps ? Math.round(precisaoGps) : '';
-      $('#cli-geo-origem').value = 'gps';
 
       try {
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`
@@ -2494,34 +2692,13 @@ if (btnGps) {
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
 
-        // Mesmo sem endereço legível, guardamos sempre a coordenada exata do GPS —
-        // é ela que garante a localização precisa para o entregador.
-        $('#cli-lat').value = lat;
-        $('#cli-lng').value = lng;
-
-        if (data.features && data.features.length) {
-          const comp = mbExtrairComponentes(data.features[0]);
-          // O mapa e APENAS sugestao: nunca sobrescreve dado digitado pelo cliente.
-          // Rua, numero e bairro digitados sao a informacao oficial do pedido.
-          if (comp.rua && !$('#cli-rua').value.trim()) $('#cli-rua').value = comp.rua;
-          if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
-          if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
-          $('#cli-lat').value = lat; $('#cli-lng').value = lng;
-          atualizarZonaSugerida();
-          if (precisaoGps && precisaoGps > 60) {
-            showToast('Local aproximado (±' + Math.round(precisaoGps) + 'm). Confirme numero e bairro.', 'warning');
-          } else {
-            showToast('Localizacao capturada. Confirme numero e bairro — e o que vale na entrega.', 'success');
-          }
-        } else {
-          atualizarZonaSugerida();
-          showToast('Localizacao capturada. Preencha rua, numero e bairro.', 'warning');
-        }
+        const comp = (data.features && data.features.length) ? mbExtrairComponentes(data.features[0]) : null;
+        abrirConfirmacaoMapa(lat, lng, precisaoGps, comp);
       } catch (err) {
         console.error('[MAPBOX] Falha na geocodificação reversa:', err);
-        $('#cli-lat').value = lat; $('#cli-lng').value = lng;
-        atualizarZonaSugerida();
-        showToast('Coordenadas capturadas, mas houve falha ao traduzir o endereço.', 'warning');
+        // Mesmo sem endereço legível, a coordenada exata do GPS ainda vale — o cliente
+        // confirma no mapa e preenche rua/número/bairro na mão.
+        abrirConfirmacaoMapa(lat, lng, precisaoGps, null);
       } finally {
         btnGps.disabled = false; btnGps.classList.remove('loading');
         document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
@@ -2538,6 +2715,88 @@ if (btnGps) {
 
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
+
+// ------------------------------------------------------------------
+// NOTIFICAÇÕES PUSH
+// Fluxo: 1) na primeira visita, mostramos um modal explicando o valor
+// (pedir a permissão nativa do navegador "no escuro" costuma ser negada
+// e, uma vez negada, o navegador não deixa perguntar de novo). 2) Se o
+// cliente aceitar, pedimos a permissão real, geramos o token FCM e
+// salvamos em 'notif_tokens'. 3) Uma Cloud Function (fora deste arquivo,
+// ver notas de deploy) inscreve esse token no tópico 'novidades'.
+// Depois disso, você envia avisos de sabor novo, funcionamento especial
+// ou combo direto pelo Firebase Console > Messaging > Nova campanha,
+// sem precisar mexer em código nenhuma vez que enviar.
+// ------------------------------------------------------------------
+const NOTIF_PROMPT_KEY = 'dca_notif_prompt_v1';
+let notifMessaging = null;
+
+async function iniciarNotificacoes() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !firebase.messaging) return;
+
+  // Já decidiu antes (aceitou, recusou no navegador, ou fechou nosso modal)? Não insiste de novo.
+  if (localStorage.getItem(NOTIF_PROMPT_KEY)) return;
+  if (Notification.permission === 'denied') { localStorage.setItem(NOTIF_PROMPT_KEY, 'bloqueado-navegador'); return; }
+  if (Notification.permission === 'granted') { localStorage.setItem(NOTIF_PROMPT_KEY, 'ja-ativo'); await capturarTokenNotificacao(); return; }
+
+  setTimeout(() => abrirModal('notif-opt-overlay'), 1200);
+}
+
+async function capturarTokenNotificacao() {
+  try {
+    const registroSW = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    if (!notifMessaging) notifMessaging = firebase.messaging();
+
+    const token = await notifMessaging.getToken({ vapidKey: NOTIF_VAPID_KEY, serviceWorkerRegistration: registroSW });
+    if (!token) return;
+
+    await db.collection('notif_tokens').doc(token).set({
+      token,
+      topico: 'novidades',
+      criado_em: firebase.firestore.FieldValue.serverTimestamp(),
+      atualizado_em: firebase.firestore.FieldValue.serverTimestamp(),
+      cidade: CONFIG.cidade
+    }, { merge: true });
+
+    notifMessaging.onMessage(payload => {
+      const n = (payload && payload.notification) || {};
+      showToast(`${n.title ? n.title + ': ' : ''}${n.body || 'Você tem uma novidade!'}`, 'success');
+    });
+  } catch (e) {
+    console.warn('[NOTIF] Não foi possível ativar as notificações:', e && e.message);
+  }
+}
+
+const btnNotifAtivar = document.getElementById('btn-notif-ativar');
+if (btnNotifAtivar) {
+  btnNotifAtivar.addEventListener('click', async function () {
+    btnNotifAtivar.disabled = true; btnNotifAtivar.textContent = 'Ativando...';
+    try {
+      const permissao = await Notification.requestPermission();
+      localStorage.setItem(NOTIF_PROMPT_KEY, permissao === 'granted' ? 'ja-ativo' : 'recusado');
+      if (permissao === 'granted') {
+        await capturarTokenNotificacao();
+        showToast('Prontinho! Você vai receber nossos avisos por aqui.', 'success');
+      } else {
+        showToast('Sem problema, você pode ativar depois nas configurações do navegador.', 'warning');
+      }
+    } catch (e) {
+      console.warn('[NOTIF]', e);
+    } finally {
+      fecharModal('notif-opt-overlay');
+    }
+  });
+}
+
+const btnNotifDepois = document.getElementById('btn-notif-depois');
+if (btnNotifDepois) {
+  btnNotifDepois.addEventListener('click', function () {
+    localStorage.setItem(NOTIF_PROMPT_KEY, 'adiado');
+    fecharModal('notif-opt-overlay');
+  });
+}
+
+iniciarNotificacoes();
 
 function processarConfig(doc) {
   if(doc.exists) {
