@@ -34,4 +34,7 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
+  self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 });
