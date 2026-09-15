@@ -271,8 +271,14 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #map-confirm-overlay .mapa-zoom-ctrl button { width: 34px; height: 34px; border: none; background: rgba(255,255,255,0.95); color: var(--text-main); font-size: 17px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
 #map-confirm-overlay .mapa-zoom-ctrl button:disabled { opacity: 0.35; cursor: default; }
 #map-confirm-overlay .mapa-zoom-ctrl button:active { background: rgba(240,240,240,0.95); }
+#map-confirm-overlay .mapa-pino-fixo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); font-size: 30px; pointer-events: none; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); z-index: 2; }
+#map-confirm-overlay .mapa-nudge-ctrl { position: absolute; bottom: 10px; right: 10px; display: grid; grid-template-columns: repeat(3, 30px); grid-template-rows: repeat(3, 30px); gap: 1px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); }
+#map-confirm-overlay .mapa-nudge-ctrl button { border: none; background: rgba(255,255,255,0.95); color: var(--text-main); font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+#map-confirm-overlay .mapa-nudge-ctrl button:active { background: rgba(240,240,240,0.95); }
+#map-confirm-overlay .mapa-nudge-ctrl .nudge-vazio { background: transparent; cursor: default; }
+#map-confirm-overlay .mapa-ajuste-hint { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.55); color: #fff; font-size: 10.5px; font-weight: 600; padding: 5px 9px; border-radius: 16px; max-width: 130px; line-height: 1.3; }
 #map-confirm-overlay .mapa-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-muted); font-weight: 700; background: var(--bg-main); }
-#map-confirm-overlay .mapa-precisao-tag { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
+#map-confirm-overlay .mapa-precisao-tag { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
 #map-confirm-overlay .mapa-acoes { display: flex; gap: 10px; padding: 16px 20px 20px; }
 #map-confirm-overlay .btn-mapa-confirmar { flex: 1.4; background: var(--gold); color: #fff; border: none; border-radius: 12px; padding: 13px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
 #map-confirm-overlay .btn-mapa-tentar { flex: 1; background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); border-radius: 12px; padding: 13px; font-weight: 700; font-size: 12.5px; cursor: pointer; font-family: inherit; }
@@ -523,7 +529,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <div class="modal-overlay" id="notif-opt-overlay">
   <div class="modal-box">
     <div class="notif-icon">🔔</div>
-    <h3 class="brand-font">Quer receber nossas notificações?</h3>
+    <h3 class="brand-font">Quer receber nossos avisos?</h3>
     <p>Ative as notificações e fique por dentro sem precisar abrir o app toda hora.</p>
     <ul>
       <li>🍕 <span>Sabor novo de pizza ou esfiha saiu do forno</span></li>
@@ -531,7 +537,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <li>🎉 <span>Combos e promoções do dia</span></li>
     </ul>
     <div class="notif-btns">
-      <button type="button" class="btn-notif-sim ripple" id="btn-notif-ativar">Ativar notificações</button>
+      <button type="button" class="btn-notif-sim ripple" id="btn-notif-ativar">Ativar avisos</button>
       <button type="button" class="btn-notif-nao" id="btn-notif-depois">Agora não</button>
     </div>
   </div>
@@ -541,12 +547,25 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="modal-box">
     <div class="mapa-header">
       <strong>É aqui que você está? 📍</strong>
-      <span>Confira o ponto vermelho no mapa antes de confirmarmos a região da entrega.</span>
+      <span>Ajuste o pino se necessário e confirme antes de definirmos a região da entrega.</span>
     </div>
     <div class="mapa-img-wrap">
-      <div class="mapa-loading" id="mapa-confirm-loading">Carregando mapa...</div>
+      <div class="mapa-loading" id="mapa-confirm-loading">Melhorando a precisão do GPS...</div>
       <img id="mapa-confirm-img" src="" alt="Mapa com sua localização" style="display:none;" onload="document.getElementById('mapa-confirm-loading').style.display='none'; this.style.display='block';" onerror="document.getElementById('mapa-confirm-loading').textContent='Não foi possível carregar o mapa, mas a coordenada foi capturada.';">
+      <div class="mapa-pino-fixo">📍</div>
       <span class="mapa-precisao-tag" id="mapa-confirm-precisao" style="display:none;"></span>
+      <span class="mapa-ajuste-hint">Use as setas para afinar o pino</span>
+      <div class="mapa-nudge-ctrl" aria-label="Ajustar posição do pino">
+        <span class="nudge-vazio"></span>
+        <button type="button" data-mapa-direcao="norte" aria-label="Mover pino para cima">▲</button>
+        <span class="nudge-vazio"></span>
+        <button type="button" data-mapa-direcao="oeste" aria-label="Mover pino para a esquerda">◀</button>
+        <span class="nudge-vazio"></span>
+        <button type="button" data-mapa-direcao="leste" aria-label="Mover pino para a direita">▶</button>
+        <span class="nudge-vazio"></span>
+        <button type="button" data-mapa-direcao="sul" aria-label="Mover pino para baixo">▼</button>
+        <span class="nudge-vazio"></span>
+      </div>
       <div class="mapa-zoom-ctrl">
         <button type="button" id="btn-mapa-zoom-mais" aria-label="Aproximar">+</button>
         <button type="button" id="btn-mapa-zoom-menos" aria-label="Afastar">−</button>
@@ -2560,7 +2579,9 @@ const MAPA_ZOOM_MAX = 19;
 let mapaZoomAtual = 16;
 
 function montarUrlMapaEstatico(lat, lng, zoom) {
-  return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-l+e63946(${lng},${lat})/${lng},${lat},${zoom},0/600x360@2x`
+  // O pino fica fixo no HTML. A imagem mostra somente o mapa centralizado
+  // na coordenada, evitando dois pinos e permitindo o ajuste pelas setas.
+  return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${lng},${lat},${zoom},0/600x360@2x`
     + `?access_token=${MAPBOX_TOKEN}`;
 }
 
@@ -2596,6 +2617,49 @@ if (btnMapaZoomMenos) {
   });
 }
 
+// Move a coordenada sob o pino fixo. Quanto maior o zoom, mais fino o passo.
+function ajustarPinoMapa(direcao) {
+  if (!mapaConfirmPendente) return;
+
+  const metrosPorPasso = Math.max(1.5, 12 / Math.pow(2, mapaZoomAtual - 16));
+  const deltaLat = metrosPorPasso / 111320;
+  const cosLat = Math.max(0.01, Math.cos(mapaConfirmPendente.lat * Math.PI / 180));
+  const deltaLng = metrosPorPasso / (111320 * cosLat);
+
+  if (direcao === 'norte') mapaConfirmPendente.lat += deltaLat;
+  if (direcao === 'sul') mapaConfirmPendente.lat -= deltaLat;
+  if (direcao === 'leste') mapaConfirmPendente.lng += deltaLng;
+  if (direcao === 'oeste') mapaConfirmPendente.lng -= deltaLng;
+
+  mapaConfirmPendente.ajustadoManualmente = true;
+  mapaConfirmPendente.comp = null; // O endereço antigo não corresponde mais ao novo ponto.
+
+  const tagPrecisao = document.getElementById('mapa-confirm-precisao');
+  tagPrecisao.style.display = 'block';
+  tagPrecisao.textContent = `Ajustado manualmente · passo ~${metrosPorPasso.toFixed(0)}m`;
+  redesenharMapaConfirmacao();
+}
+
+document.querySelectorAll('[data-mapa-direcao]').forEach((botao) => {
+  botao.addEventListener('click', () => ajustarPinoMapa(botao.dataset.mapaDirecao));
+});
+
+async function buscarEnderecoPorCoordenada(lat, lng) {
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`
+    + `?access_token=${MAPBOX_TOKEN}&language=pt&country=br&types=address`;
+  const ctrl = new AbortController();
+  const tmr = setTimeout(() => ctrl.abort(), 8000);
+
+  try {
+    const resp = await fetch(url, { signal: ctrl.signal });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    return (data.features && data.features.length) ? mbExtrairComponentes(data.features[0]) : null;
+  } finally {
+    clearTimeout(tmr);
+  }
+}
+
 function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
   mapaConfirmPendente = { lat, lng, precisaoGps, comp };
   mapaZoomAtual = 16;
@@ -2621,13 +2685,28 @@ function abrirConfirmacaoMapa(lat, lng, precisaoGps, comp) {
   abrirModal('map-confirm-overlay');
 }
 
-function aplicarLocalizacaoConfirmada() {
+async function aplicarLocalizacaoConfirmada() {
   if (!mapaConfirmPendente) return;
-  const { lat, lng, precisaoGps, comp } = mapaConfirmPendente;
+  const btnConfirmar = document.getElementById('btn-mapa-confirmar');
+  btnConfirmar.disabled = true;
+  const textoOriginal = btnConfirmar.textContent;
+  btnConfirmar.textContent = 'Confirmando...';
+
+  let { lat, lng, precisaoGps, comp, ajustadoManualmente } = mapaConfirmPendente;
+
+  // Depois de um ajuste manual, consulta novamente o endereço do ponto final.
+  if (ajustadoManualmente) {
+    try {
+      comp = await buscarEnderecoPorCoordenada(lat, lng);
+    } catch (err) {
+      console.error('[MAPBOX] Falha ao atualizar endereço do ponto ajustado:', err);
+      comp = null;
+    }
+  }
 
   $('#cli-lat').value = lat;
   $('#cli-lng').value = lng;
-  $('#cli-gps-precisao').value = precisaoGps ? Math.round(precisaoGps) : '';
+  $('#cli-gps-precisao').value = ajustadoManualmente ? '' : (precisaoGps ? Math.round(precisaoGps) : '');
   $('#cli-geo-origem').value = 'gps';
 
   if (comp) {
@@ -2637,7 +2716,9 @@ function aplicarLocalizacaoConfirmada() {
     if (comp.numero && !$('#cli-numero').value.trim()) $('#cli-numero').value = comp.numero;
     if (comp.bairro && !$('#cli-bairro').value.trim()) $('#cli-bairro').value = comp.bairro;
     atualizarZonaSugerida();
-    if (precisaoGps && precisaoGps > 60) {
+    if (ajustadoManualmente) {
+      showToast('Pino ajustado e localização confirmada. Confira número e bairro.', 'success');
+    } else if (precisaoGps && precisaoGps > 60) {
       showToast('Local aproximado (±' + Math.round(precisaoGps) + 'm). Confirme numero e bairro.', 'warning');
     } else {
       showToast('Localização confirmada. Confirme numero e bairro — e o que vale na entrega.', 'success');
@@ -2649,6 +2730,8 @@ function aplicarLocalizacaoConfirmada() {
 
   mapaConfirmPendente = null;
   fecharModal('map-confirm-overlay');
+  btnConfirmar.disabled = false;
+  btnConfirmar.textContent = textoOriginal;
 }
 
 const btnMapaConfirmar = document.getElementById('btn-mapa-confirmar');
@@ -2663,8 +2746,49 @@ if (btnMapaTentarNovo) {
   });
 }
 
+function capturarMelhorLocalizacao(duracaoMs = 8000) {
+  return new Promise((resolve, reject) => {
+    let melhorPosicao = null;
+    let leituras = 0;
+    let encerrado = false;
+    const inicio = Date.now();
+    let watchId;
+
+    const finalizar = (erro) => {
+      if (encerrado) return;
+      encerrado = true;
+      clearTimeout(tmr);
+      if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
+      if (melhorPosicao) resolve(melhorPosicao);
+      else reject(erro || new Error('Nenhuma leitura de GPS recebida.'));
+    };
+
+    const tmr = setTimeout(() => finalizar(), duracaoMs);
+    watchId = navigator.geolocation.watchPosition((position) => {
+      leituras++;
+      if (!melhorPosicao || position.coords.accuracy < melhorPosicao.coords.accuracy) {
+        melhorPosicao = position;
+        const precisao = Math.round(position.coords.accuracy || 0);
+        document.getElementById('btn-gps-label').textContent = precisao
+          ? `Melhorando precisão... ±${precisao}m`
+          : 'Melhorando precisão...';
+      }
+
+      // Evita aceitar imediatamente a primeira leitura, mas encerra antes se
+      // ao menos duas leituras produzirem uma precisão excelente.
+      if (leituras >= 2 && Date.now() - inicio >= 2500 && melhorPosicao.coords.accuracy <= 15) {
+        finalizar();
+      }
+    }, (error) => {
+      // Permissão negada não melhora com novas tentativas. Nos demais erros,
+      // usa a melhor leitura já recebida ou aguarda o limite da captura.
+      if (error.code === error.PERMISSION_DENIED || melhorPosicao) finalizar(error);
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+  });
+}
+
 if (btnGps) {
-  btnGps.addEventListener('click', () => {
+  btnGps.addEventListener('click', async () => {
     if (!mbTokenConfigurado()) {
       showToast('Configuração de mapas pendente. Preencha o endereço manualmente.', 'warning');
       return;
@@ -2677,39 +2801,29 @@ if (btnGps) {
     btnGps.disabled = true; btnGps.classList.add('loading');
     document.getElementById('btn-gps-label').textContent = 'Localizando...';
 
-    navigator.geolocation.getCurrentPosition(async (position) => {
+    try {
+      const position = await capturarMelhorLocalizacao(8000);
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       const precisaoGps = position.coords.accuracy || '';
 
       try {
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`
-          + `?access_token=${MAPBOX_TOKEN}&language=pt&country=br&types=address`;
-        const ctrl = new AbortController();
-        const tmr = setTimeout(() => ctrl.abort(), 8000);
-        const resp = await fetch(url, { signal: ctrl.signal });
-        clearTimeout(tmr);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-
-        const comp = (data.features && data.features.length) ? mbExtrairComponentes(data.features[0]) : null;
+        const comp = await buscarEnderecoPorCoordenada(lat, lng);
         abrirConfirmacaoMapa(lat, lng, precisaoGps, comp);
       } catch (err) {
         console.error('[MAPBOX] Falha na geocodificação reversa:', err);
         // Mesmo sem endereço legível, a coordenada exata do GPS ainda vale — o cliente
         // confirma no mapa e preenche rua/número/bairro na mão.
         abrirConfirmacaoMapa(lat, lng, precisaoGps, null);
-      } finally {
-        btnGps.disabled = false; btnGps.classList.remove('loading');
-        document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
       }
-    }, (error) => {
-      btnGps.disabled = false; btnGps.classList.remove('loading');
-      document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
+    } catch (error) {
       if (error.code === error.PERMISSION_DENIED) { showToast('Permissão de localização negada. Preencha rua, número e bairro.', 'error'); }
       else if (error.code === error.TIMEOUT) { showToast('O GPS demorou demais. Preencha o endereço manualmente.', 'warning'); }
       else { showToast('Não foi possível obter sua localização. Preencha o endereço manualmente.', 'error'); }
-    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    } finally {
+      btnGps.disabled = false; btnGps.classList.remove('loading');
+      document.getElementById('btn-gps-label').textContent = '📍 USAR LOCALIZAÇÃO ATUAL';
+    }
   });
 }
 
