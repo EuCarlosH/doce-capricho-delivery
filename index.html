@@ -463,6 +463,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .footer-socials a:hover { color: var(--gold-dark); border-color: var(--gold); transform: translateY(-4px); background: var(--bg-card); box-shadow: var(--shadow-sm);} :root[data-theme="dark"] .footer-socials a:hover { color: var(--gold); background: rgba(212,175,55,0.1); }
 .footer-socials svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .footer-info { font-size: 13px; color: var(--text-muted); line-height: 1.8; letter-spacing: 1px; font-weight: 500;} :root[data-theme="dark"] .footer-info { font-weight: 400; }
+.footer-company-btn { appearance: none; border: 0; background: transparent; color: var(--gold-dark); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .8px; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: 6px 10px; } :root[data-theme="dark"] .footer-company-btn { color: var(--gold); }
+.company-data { display: grid; gap: 14px; text-align: left; }
+.company-data-row { padding: 14px 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); }
+.company-data-row span { display: block; color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; }
+.company-data-row strong { display: block; color: var(--text-main); font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.company-data-note { color: var(--text-muted); font-size: 11px; line-height: 1.6; text-align: left; margin-top: 16px; }
 .footer-copy { font-size: 11px; color: #A0AEC0; margin-top: 10px; font-weight: 500;} :root[data-theme="dark"] .footer-copy { color: #666; font-weight: 400; }
 
 @media (max-width: 768px) {
@@ -648,10 +654,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <div class="smart-card-head"><div><h3 class="brand-font">Seus Caprichos</h3><p id="loyalty-text">Faça pedidos e desbloqueie uma recompensa.</p></div><span>✨</span></div>
       <div class="loyalty-dots" id="loyalty-dots" aria-label="Progresso da fidelidade"></div>
     </article>
-    <article class="smart-card">
-      <div class="smart-card-head"><div><h3 class="brand-font">Vai presentear?</h3><p>Adicione nome, mensagem e ocultação do valor durante o pedido.</p></div><span>🎁</span></div>
-      <div class="smart-card-actions"><button type="button" class="smart-btn" id="btn-start-gift">Montar presente</button></div>
-    </article>
   </div>
   <div class="promo-banner-inline" id="promo-banner-inline">
     <span class="promo-banner-eyebrow" id="promo-banner-inline-eyebrow">Feito com carinho</span>
@@ -743,7 +745,9 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="footer-info">
     <p>São Miguel / RN</p>
     <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
+    <p>CNPJ 69.149.841/0001-61</p>
   </div>
+  <button type="button" class="footer-company-btn ripple" id="btn-company-data">Dados da empresa</button>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
@@ -943,13 +947,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
           </div>
         </div>
 
-        <div>
-          <label>Quando deseja receber?</label>
-          <input type="hidden" id="cli-quando" value="agora">
-          <div class="choice-toggle" id="schedule-toggle"><button type="button" class="active" data-quando="agora">O mais rápido possível</button><button type="button" data-quando="agendar">Agendar horário</button></div>
-          <div class="optional-panel" id="schedule-panel"><label for="cli-agendamento">Data e horário</label><input type="datetime-local" id="cli-agendamento"><span class="campo-hint">Agendamentos precisam de pelo menos 45 minutos de antecedência.</span></div>
-        </div>
-
         <div id="box-endereco">
           <div id="box-taxas-entrega" style="margin-bottom: 25px;">
             <label style="margin-bottom: 8px;">Qual a região da entrega?</label>
@@ -1032,17 +1029,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
           <span class="campo-hint" id="cli-troco-hint">Informe o valor da nota usada no pagamento. Ele precisa ser <strong>maior</strong> que o total do pedido. Se for pagar o valor exato, deixe em branco.</span>
         </div>
 
-        <div>
-          <label>Este pedido é um presente?</label>
-          <div class="choice-toggle" id="gift-toggle"><button type="button" class="active" data-gift="nao">Pedido normal</button><button type="button" data-gift="sim">É um presente 🎁</button></div>
-          <input type="hidden" id="cli-presente" value="nao">
-          <div class="optional-panel" id="gift-panel">
-            <div><label for="cli-presente-para">Nome de quem vai receber</label><input type="text" id="cli-presente-para" maxlength="60" placeholder="Ex: Para Ana"></div>
-            <div><label for="cli-presente-msg">Mensagem do cartão</label><textarea id="cli-presente-msg" maxlength="180" placeholder="Escreva uma mensagem carinhosa" style="width:100%;min-height:90px;padding:14px;border:1px solid var(--border-light);border-radius:12px;background:var(--bg-main);color:var(--text-main);font-family:inherit;"></textarea></div>
-            <label style="display:flex;gap:9px;align-items:center;font-size:12px;color:var(--text-main);"><input type="checkbox" id="cli-ocultar-valor" checked> Não mostrar valores na embalagem</label>
-          </div>
-        </div>
-
         <div style="display:flex; gap:10px;">
           <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(2)">Voltar</button>
           <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-avancar" onclick="tentarAvancarStep3()">Avançar para Revisão</button>
@@ -1099,6 +1085,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="company-data-overlay">
+  <div class="modal-box" style="max-width: 480px;">
+    <button class="close-modal ripple" data-close="company-data-overlay" aria-label="Fechar dados da empresa">&times;</button>
+    <h2 class="brand-font">Dados da Empresa</h2>
+    <div class="company-data">
+      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Ateliê</strong></div>
+      <div class="company-data-row"><span>Razão social</span><strong>69.149.841 Carlos Henrique Vitor Gomes</strong></div>
+      <div class="company-data-row"><span>CNPJ</span><strong>69.149.841/0001-61</strong></div>
+      <div class="company-data-row"><span>Endereço</span><strong>Rua Monsenhor José Aires, 188, Centro — São Miguel/RN</strong></div>
+    </div>
+    <p class="company-data-note">Informações cadastrais disponibilizadas para identificação e transparência do estabelecimento.</p>
   </div>
 </div>
 
@@ -1480,36 +1480,6 @@ function creditarFidelidade(orderId) {
   dados.creditados.push(orderId); dados.pontos = (dados.pontos || 0) + 1;
   localStorage.setItem(LOYALTY_KEY, JSON.stringify(dados)); renderFidelidade();
   showToast('Você ganhou 1 Capricho pela conclusão do pedido!', 'success');
-}
-
-function dataLocalInput(data) {
-  const p = n => String(n).padStart(2,'0');
-  return `${data.getFullYear()}-${p(data.getMonth()+1)}-${p(data.getDate())}T${p(data.getHours())}:${p(data.getMinutes())}`;
-}
-
-function prepararAgendamento() {
-  const campo = $('#cli-agendamento'); if (!campo) return;
-  const min = new Date(Date.now() + 45 * 60000); const max = new Date(Date.now() + 7 * 86400000);
-  campo.min = dataLocalInput(min); campo.max = dataLocalInput(max);
-}
-
-function agendamentoSelecionado() { return $('#cli-quando') && $('#cli-quando').value === 'agendar'; }
-
-function validarAgendamento() {
-  if (!agendamentoSelecionado()) return true;
-  const valor = $('#cli-agendamento').value; const data = new Date(valor);
-  if (!valor || Number.isNaN(data.getTime()) || data.getTime() < Date.now() + 44 * 60000) {
-    $('#cli-agendamento').classList.add('field-error'); showToast('Escolha um horário com pelo menos 45 minutos de antecedência.', 'warning'); return false;
-  }
-  $('#cli-agendamento').classList.remove('field-error'); return true;
-}
-
-function presenteAtivo() { return $('#cli-presente') && $('#cli-presente').value === 'sim'; }
-
-function validarPresente() {
-  if (!presenteAtivo()) return true;
-  if ($('#cli-presente-para').value.trim().length < 2) { $('#cli-presente-para').classList.add('field-error'); showToast('Informe o nome de quem receberá o presente.', 'warning'); return false; }
-  $('#cli-presente-para').classList.remove('field-error'); return true;
 }
 
 function atualizarBarraCarrinho() {
@@ -1969,7 +1939,6 @@ function tentarAvancarStep2() {
   // Revalidação antecipada: avisa cedo se algo esgotou, em vez de só no envio.
   if (!revalidarPedido()) return;
   if (!validarCheckout()) return;
-  if (!validarAgendamento()) return;
   irParaStep(3);
 }
 
@@ -2134,7 +2103,6 @@ function validarTroco() {
 
 function tentarAvancarStep3() {
   if (!validarTroco()) return;
-  if (!validarPresente()) return;
   irParaStep(4);
 }
 
@@ -2215,14 +2183,7 @@ function montarRevisao() {
     $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
   }
 
-  if (agendamentoSelecionado() && $('#cli-agendamento').value) {
-    const dataAgendada = new Date($('#cli-agendamento').value);
-    $('#review-delivery').innerHTML += `<br><span class="review-item-detalhe">🗓️ Agendado para ${esc(dataAgendada.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}))}</span>`;
-  } else {
-    $('#review-delivery').innerHTML += `<br><span class="review-item-detalhe">⏱️ O mais rápido possível</span>`;
-  }
-
-  $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>` + (presenteAtivo() ? `<span class="review-item-detalhe">🎁 Presente para ${esc($('#cli-presente-para').value.trim())}${$('#cli-presente-msg').value.trim() ? '<br>Mensagem: ' + esc($('#cli-presente-msg').value.trim()) : ''}</span>` : '');
+  $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total); } else { $('#rev-box-pix').style.display = 'none'; }
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
   if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega); } else { $('#rev-linha-taxa').style.display = 'none'; }
@@ -2363,13 +2324,7 @@ function montarPedido() {
     end_geo_origem: geoOrigem,
     end_confirmado_pelo_cliente: ehEntrega,
     tipo_entrega: tipo,
-    quando: agendamentoSelecionado() ? 'Agendado' : 'Imediato',
-    agendamento_iso: agendamentoSelecionado() ? new Date($('#cli-agendamento').value).toISOString() : '',
     forma_pagamento: pgtoStr,
-    presente: presenteAtivo(),
-    presente_para: presenteAtivo() ? $('#cli-presente-para').value.trim() : '',
-    presente_mensagem: presenteAtivo() ? $('#cli-presente-msg').value.trim() : '',
-    presente_ocultar_valor: presenteAtivo() ? $('#cli-ocultar-valor').checked : false,
     itens: carrinho.map(i => ({
       nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
       extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
@@ -2383,8 +2338,6 @@ function montarPedido() {
 
 function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
-  if (p.agendamento_iso) L.push(`*Agendado para:* ${new Date(p.agendamento_iso).toLocaleString('pt-BR')}`); else L.push('*Quando:* O mais rápido possível');
-  if (p.presente) { L.push('', `*🎁 PRESENTE PARA:* ${p.presente_para}`); if (p.presente_mensagem) L.push(`*Mensagem:* ${p.presente_mensagem}`); if (p.presente_ocultar_valor) L.push('*Embalagem:* Não mostrar valores'); }
   if (p.tipo_entrega === 'Entrega') {
     L.push('', '*ENDEREÇO CONFIRMADO PELO CLIENTE (este é o oficial)*');
     L.push(`*Rua/Sítio:* ${p.end_rua}`);
@@ -2428,9 +2381,7 @@ let pedidoEmEnvio = false;
 async function enviarPedidoFinal(ev) {
   ev.preventDefault();
   if (pedidoEmEnvio) return;
-  const statusManualAtual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
-  const podeAgendarFechado = agendamentoSelecionado() && statusManualAtual !== 'pausado' && statusManualAtual !== 'esgotado';
-  if(!lojaAberta && !podeAgendarFechado) { 
+  if(!lojaAberta) { 
       const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
       if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
       else showToast("Nossa loja está fechada no momento.", "error"); 
@@ -2438,7 +2389,6 @@ async function enviarPedidoFinal(ev) {
   } 
   if (!revalidarPedido()) return;
   if (!validarCheckout()) return;
-  if (!validarAgendamento() || !validarPresente()) return;
   if (!validarTroco()) {
     irParaStep(3);
     return;
@@ -2606,29 +2556,7 @@ $('#filter-chips').addEventListener('click', e => {
 
 $('#btn-repeat-order').addEventListener('click', () => repetirUltimoPedido(false));
 $('#btn-repeat-edit').addEventListener('click', () => repetirUltimoPedido(true));
-$('#btn-start-gift').addEventListener('click', () => {
-  $('#cli-presente').value = 'sim';
-  $$('#gift-toggle [data-gift]').forEach(b => b.classList.toggle('active', b.dataset.gift === 'sim'));
-  $('#gift-panel').classList.add('show');
-  document.getElementById('cardapio').scrollIntoView({behavior:'smooth'});
-  showToast('Escolha os produtos. A mensagem do presente aparecerá no pagamento.', 'success');
-});
-
-$('#schedule-toggle').addEventListener('click', e => {
-  const btn = e.target.closest('[data-quando]'); if (!btn) return;
-  $('#cli-quando').value = btn.dataset.quando;
-  $$('#schedule-toggle [data-quando]').forEach(b => b.classList.toggle('active', b === btn));
-  $('#schedule-panel').classList.toggle('show', btn.dataset.quando === 'agendar');
-  prepararAgendamento();
-});
-
-$('#gift-toggle').addEventListener('click', e => {
-  const btn = e.target.closest('[data-gift]'); if (!btn) return;
-  $('#cli-presente').value = btn.dataset.gift;
-  $$('#gift-toggle [data-gift]').forEach(b => b.classList.toggle('active', b === btn));
-  $('#gift-panel').classList.toggle('show', btn.dataset.gift === 'sim');
-});
-
+$('#btn-company-data').addEventListener('click', () => abrirModal('company-data-overlay'));
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
@@ -3100,7 +3028,7 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.warn('[STATS]', err.code); });
 
-verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); prepararAgendamento(); renderUltimoPedido(); renderFidelidade(); atualizarUI();
+verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); renderUltimoPedido(); renderFidelidade(); atualizarUI();
 </script>
 </body>
 </html>
