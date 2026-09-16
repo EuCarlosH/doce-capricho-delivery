@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="dca-admin-version" content="2026.09.16-signature-1">
 <title>Admin Operacional — Doce Capricho</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -182,13 +183,110 @@ input:checked + .slider:before { transform: translateX(18px); }
 .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
 .kpi-value { font-size: 24px; font-family: 'Cinzel', serif; font-weight: 700; color: var(--text-main); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* =========================================================
+   PAINEL SIGNATURE — identidade visual Doce Capricho
+   ========================================================= */
+:root {
+  --gold: #DFAE4C; --gold-dark: #A9681D; --bronze: #7D341D;
+  --bg-main: #F6F1E9; --bg-sidebar: #17100C; --bg-card: #FFFDF9;
+  --text-main: #302017; --text-muted: #887568;
+  --border-light: rgba(91, 52, 29, .11);
+  --shadow-sm: 0 8px 24px rgba(69, 38, 20, .07);
+  --shadow-md: 0 24px 60px rgba(43, 23, 12, .18);
+}
+body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transparent 28%), var(--bg-main); }
+.top-bar { min-height:68px; padding:10px 24px; background:rgba(255,253,249,.88); backdrop-filter:blur(18px); border-bottom-color:rgba(125,52,29,.1); }
+.top-bar-logo { font-size:16px; letter-spacing:1.7px; }
+.top-bar-logo::before { content:""; width:34px; height:34px; border-radius:50%; background:url('img/admin-identidade.png') center/cover; box-shadow:0 0 0 2px rgba(223,174,76,.25); }
+.top-bar-logo span { background:linear-gradient(135deg, rgba(223,174,76,.18), rgba(125,52,29,.08)); color:var(--bronze); }
+.menu-toggle { width:40px; height:40px; border-radius:12px; background:#fff; box-shadow:0 5px 16px rgba(69,38,20,.06); }
+.top-bar-status { padding:8px 13px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.5); }
+
+.sidebar { width:294px; left:-314px; background:
+  linear-gradient(180deg, rgba(19,11,7,.2), rgba(19,11,7,.96) 220px),
+  url('img/admin-identidade.png') center top/auto 230px no-repeat,
+  #17100C; }
+.sidebar-header { min-height:104px; align-items:flex-end; padding:22px; background:linear-gradient(180deg, transparent, rgba(19,11,7,.8)); }
+.sidebar-logo { color:#FFE2A2; text-shadow:0 2px 14px rgba(0,0,0,.5); font-size:17px; }
+.stats-container { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:16px; }
+.stat-item { background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.07); border-radius:13px; padding:12px; }
+.stat-value { font-size:18px; }
+.sidebar-nav { padding:12px; }
+.nav-btn { padding:13px 14px; border-radius:11px; }
+.nav-btn.active { border-left:0; background:linear-gradient(135deg, rgba(223,174,76,.2), rgba(125,52,29,.2)); box-shadow:inset 0 0 0 1px rgba(223,174,76,.16); }
+
+.main-content { background:transparent; }
+.operation-hero { margin:16px 16px 0; min-height:132px; border-radius:20px; padding:20px 22px; color:#FFF8E9; position:relative; overflow:hidden; flex-shrink:0; display:flex; justify-content:space-between; align-items:center; gap:22px; background:linear-gradient(100deg, rgba(35,17,8,.93), rgba(90,40,19,.83) 58%, rgba(168,94,27,.7)), url('img/admin-identidade.png') center 47%/cover; box-shadow:0 18px 42px rgba(75,36,14,.18); }
+.operation-hero::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg, transparent 50%, rgba(255,196,88,.08)); pointer-events:none; }
+.hero-copy,.hero-metrics { position:relative; z-index:1; }
+.hero-kicker { display:block; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:2.4px; color:#F3C96C; margin-bottom:7px; }
+.hero-title { font-size:clamp(20px,2.6vw,30px); margin:0 0 7px; line-height:1.15; }
+.hero-subtitle { font-size:11px; opacity:.72; font-weight:500; }
+.hero-metrics { display:grid; grid-template-columns:repeat(4,minmax(92px,1fr)); gap:9px; min-width:min(54%,560px); }
+.hero-metric { padding:12px; border-radius:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,225,166,.15); backdrop-filter:blur(10px); }
+.hero-metric span { display:block; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; opacity:.67; margin-bottom:5px; }
+.hero-metric strong { display:block; font-size:17px; color:#FFF5D6; white-space:nowrap; }
+
+.kanban-board { gap:14px; padding:16px; }
+.kanban-col { min-width:286px; max-width:none; padding:10px; border:1px solid rgba(91,52,29,.08); background:rgba(255,255,255,.35); border-radius:18px; }
+.col-header { padding:3px 4px 13px; font-size:10px; }
+.col-header::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 4px rgba(223,174,76,.12); margin-right:9px; }
+.col-header .count { margin-left:auto; background:#FFF9ED; color:var(--bronze); border:1px solid rgba(223,174,76,.2); }
+.card-pedido { border-radius:16px; padding:16px; gap:10px; border-color:rgba(91,52,29,.1); box-shadow:0 10px 26px rgba(75,40,20,.07); cursor:grab; }
+.card-pedido:hover { transform:translateY(-2px); box-shadow:0 16px 34px rgba(75,40,20,.11); border-color:rgba(223,174,76,.38); }
+.p-id { color:var(--bronze); }
+.p-footer { background:linear-gradient(135deg, #FBF5E9, #FFFDF9); border:1px solid rgba(223,174,76,.12); }
+.btn-action-card { border-radius:11px; }
+.btn-action-novo { background:linear-gradient(135deg,#347A56,#245B40); }
+.btn-action-prep { background:linear-gradient(135deg,#D7A13C,#A86B20); }
+.btn-action-saiu { background:linear-gradient(135deg,#4A2B1C,#24150E); }
+.empty-state { min-height:130px; justify-content:center; border:1px dashed rgba(91,52,29,.13); border-radius:13px; background:rgba(255,255,255,.26); }
+
+.modal-overlay { background:rgba(29,15,8,.62); backdrop-filter:blur(9px); }
+.modal-box { border-radius:22px; border:1px solid rgba(255,218,142,.18); box-shadow:0 28px 80px rgba(25,12,6,.3); }
+.tabs-header { gap:8px; padding:4px; background:#F7F0E5; border:0; border-radius:12px; }
+.tab-btn { border:0; padding:10px 12px; border-radius:9px; white-space:nowrap; }
+.tab-btn.active { color:#fff; background:linear-gradient(135deg,var(--bronze),var(--gold-dark)); box-shadow:0 5px 14px rgba(125,52,29,.18); }
+.catalog-item { padding:12px; margin-bottom:7px; border:1px solid var(--border-light); border-radius:11px; background:#FFFDFA; }
+.kpi-card { border-radius:16px; padding:18px; }
+
+#login-screen { background:linear-gradient(90deg, rgba(22,11,6,.96), rgba(63,27,12,.74)), url('img/admin-identidade.png') center/cover; padding:24px; }
+.login-box { max-width:410px; padding:40px; border-radius:24px; background:rgba(255,253,249,.94); backdrop-filter:blur(18px); border:1px solid rgba(255,231,178,.28); box-shadow:0 30px 90px rgba(0,0,0,.35); }
+.login-brand-mark { width:82px; height:82px; margin:0 auto 18px; border-radius:50%; background:url('img/admin-identidade.png') center/cover; box-shadow:0 0 0 5px rgba(223,174,76,.13), 0 12px 30px rgba(95,48,18,.2); }
+.login-box h2 { margin-bottom:7px; }
+.login-caption { color:var(--text-muted); font-size:11px; margin-bottom:24px; line-height:1.5; }
+.login-box input { border-radius:11px; background:#FFFCF7; padding:15px; }
+.login-box button { border-radius:11px; padding:15px; }
+#overlay-start { background:linear-gradient(100deg,rgba(20,10,5,.92),rgba(83,35,13,.78)),url('img/admin-identidade.png') center/cover; }
+
+@media (max-width: 980px) {
+  .operation-hero { align-items:flex-start; flex-direction:column; }
+  .hero-metrics { width:100%; min-width:0; }
+}
+@media (max-width: 650px) {
+  .top-bar { min-height:60px; padding:9px 12px; }
+  .top-bar-logo { font-size:12px; gap:7px; }
+  .top-bar-logo::before { width:28px; height:28px; }
+  .top-bar-logo span { display:none; }
+  .top-bar-status { max-width:126px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:8px; }
+  .operation-hero { margin:10px 10px 0; min-height:auto; border-radius:17px; padding:17px; }
+  .hero-title { font-size:20px; }
+  .hero-metrics { grid-template-columns:repeat(2,1fr); }
+  .hero-metric { padding:10px; }
+  .kanban-board { padding:10px; }
+  .kanban-col { flex:0 0 88vw; min-width:88vw; }
+  .login-box { padding:30px 24px; }
+}
 </style>
 </head>
 <body>
 
 <div id="login-screen">
   <form class="login-box" id="form-login">
+    <div class="login-brand-mark" aria-hidden="true"></div>
     <h2 class="brand-font">Acesso Administrativo</h2>
+    <p class="login-caption">Gestão operacional · Doce Capricho Ateliê</p>
     <input type="email" id="admin-email" placeholder="E-mail Operacional" required>
     <input type="password" id="admin-senha" placeholder="Senha" required>
     <button type="submit" class="btn-gradient">Autenticar</button>
@@ -261,6 +359,19 @@ input:checked + .slider:before { transform: translateX(18px); }
     </aside>
 
     <main class="main-content">
+      <section class="operation-hero" id="operation-hero">
+        <div class="hero-copy">
+          <span class="hero-kicker">Central de operação</span>
+          <h1 class="hero-title brand-font" id="hero-greeting">Uma noite cheia de capricho</h1>
+          <p class="hero-subtitle" id="hero-date">Acompanhe a cozinha e os pedidos em tempo real.</p>
+        </div>
+        <div class="hero-metrics" aria-label="Resumo da operação">
+          <div class="hero-metric"><span>Pedidos hoje</span><strong id="hero-qtd">0</strong></div>
+          <div class="hero-metric"><span>Faturamento</span><strong id="hero-fat">R$ 0,00</strong></div>
+          <div class="hero-metric"><span>Aguardando</span><strong id="hero-novos">0</strong></div>
+          <div class="hero-metric"><span>Na cozinha</span><strong id="hero-preparo">0</strong></div>
+        </div>
+      </section>
       
       <div class="kanban-board" id="view-kanban">
         <div class="kanban-col" data-status="Novo" ondragover="dragOver(event)" ondrop="drop(event, 'Novo')">
@@ -404,7 +515,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     </div>
 
     <div id="tab-ofertas" class="tab-content">
-      <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">Ative apenas os combos que podem ser pedidos. Os demais continuarão visíveis no site como <strong>Esgotado</strong>.</p>
+      <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">Ative apenas os combos disponíveis para pedido. Os combos desligados ficam <strong>ocultos no site</strong>.</p>
       <h4 class="section-subtitle">🔥 Combos e ofertas</h4>
       <div id="catalog-list-combos" style="margin-bottom:15px;"></div>
     </div>
@@ -599,6 +710,7 @@ function alternarTela(tela) {
   navs.forEach(n => n.classList.remove('active'));
   
   if (tela === 'relatorios') {
+    document.getElementById('operation-hero').style.display = 'none';
     document.getElementById('view-kanban').style.display = 'none';
     document.getElementById('view-relatorios').style.display = 'flex';
     document.getElementById('btn-nav-relatorios').classList.add('active');
@@ -610,11 +722,23 @@ function alternarTela(tela) {
        gerarRelatorio();
     }
   } else {
+    document.getElementById('operation-hero').style.display = 'flex';
     document.getElementById('view-kanban').style.display = 'flex';
     document.getElementById('view-relatorios').style.display = 'none';
     document.getElementById('btn-nav-kanban').classList.add('active');
   }
 }
+
+function atualizarSaudacaoPainel() {
+  const agora = new Date();
+  const hora = agora.getHours();
+  const saudacao = hora < 12 ? 'Bom dia, vamos caprichar?' : hora < 18 ? 'Boa tarde, vamos caprichar?' : 'Uma noite cheia de capricho';
+  const titulo = document.getElementById('hero-greeting');
+  const data = document.getElementById('hero-date');
+  if (titulo) titulo.textContent = saudacao;
+  if (data) data.textContent = agora.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' }) + ' · Pedidos atualizados em tempo real';
+}
+atualizarSaudacaoPainel();
 
 function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -750,6 +874,10 @@ function renderizarKanban() {
   });
   
   document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
+  document.getElementById('hero-qtd').textContent = qtd;
+  document.getElementById('hero-fat').textContent = brl(fat);
+  document.getElementById('hero-novos').textContent = cols['Novo'].length;
+  document.getElementById('hero-preparo').textContent = cols['Preparando'].length;
 
   Object.keys(cols).forEach(status => {
     const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : 'concluido';
@@ -775,7 +903,19 @@ function renderizarKanban() {
           <span style="font-size: 11px; color: var(--text-main); font-weight: 800;">🛍️ CLIENTE FARÁ A RETIRADA</span></div>`;
       }
       
-      let itensHTML = p.itens.map(i => { let extrasHtml = (i.extras && i.extras.length > 0) ? `<div style="margin-top: 2px; padding-left: 10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight: 600;">+ ${e.nome}</span>`).join('') + `</div>` : ''; let obsHtml = i.obs ? `<div class="p-obs">${i.obs}</div>` : ''; return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${i.nome}</strong>${extrasHtml}${obsHtml}</div>`; }).join('');
+      let itensHTML = p.itens.map(i => {
+        let extrasHtml = (i.extras && i.extras.length > 0) ? `<div style="margin-top:2px; padding-left:10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight:600;">+ ${esc(e.nome)}</span>`).join('') + `</div>` : '';
+        let comboHtml = '';
+        if (Array.isArray(i.combo_itens) && i.combo_itens.length) {
+          const rotulos = { tradicional:'Tradicionais', premium:'Premium', incluso:'Incluso' };
+          comboHtml = `<div style="margin-top:7px; padding:9px 10px; border-radius:9px; background:#FBF5E9; border:1px solid rgba(223,174,76,.18);">` + Object.entries(rotulos).map(([cat, rotulo]) => {
+            const escolhas = i.combo_itens.filter(ci => ci.categoria === cat).map(ci => `${ci.qtd}× ${esc(ci.nome || ci.id)}`);
+            return escolhas.length ? `<span style="display:block; color:var(--text-main); font-size:10px; line-height:1.55;"><b>${rotulo}:</b> ${escolhas.join(', ')}</span>` : '';
+          }).join('') + `</div>`;
+        }
+        let obsHtml = i.obs ? `<div class="p-obs">${esc(i.obs)}</div>` : '';
+        return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${esc(i.nome)}</strong>${comboHtml}${extrasHtml}${obsHtml}</div>`;
+      }).join('');
       let btnCancel = status !== 'Concluído' ? `<button class="btn-icon-only" onclick="cancelarPedido('${p.id}')" title="Cancelar Pedido">${icons.cancel}</button>` : '';
 
       let crmId = `crm-${p.id}`; fetchCRM(p.cliente_telefone, crmId);
@@ -938,7 +1078,19 @@ function imprimirComanda(id) {
   }
   
   html += `<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
-  p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; });
+  p.itens.forEach(i => {
+    html += `<div class="item-row"><span class="bold">${i.qtd}x ${esc(i.nome)}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`;
+    if (Array.isArray(i.combo_itens)) {
+      const rotulos = { tradicional:'TRADICIONAIS', premium:'PREMIUM', incluso:'INCLUSO' };
+      Object.entries(rotulos).forEach(([cat, rotulo]) => {
+        const escolhas = i.combo_itens.filter(ci => ci.categoria === cat).map(ci => `${ci.qtd}x ${esc(ci.nome || ci.id)}`);
+        if (escolhas.length) html += `<div class="extras"><b>${rotulo}:</b> ${escolhas.join(', ')}</div>`;
+      });
+    }
+    if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${esc(e.nome)} (${esc(e.aplicacao)})</div>`; }); }
+    if(i.obs) { html += `<div class="obs">OBS: ${esc(i.obs)}</div>`; }
+    html += `<br>`;
+  });
   html += `<div class="linha"></div>${p.desconto_centavos?`<div class="flex"><span>Itens:</span><span>${brl(p.subtotal_bruto_centavos || (p.subtotal_centavos + p.desconto_centavos))}</span></div>${p.desconto_geral_centavos?`<div class="flex"><span>Promoção${p.desconto_percentual ? ` (${p.desconto_percentual}%)` : ''}:</span><span>- ${brl(p.desconto_geral_centavos)}</span></div>`:''}${p.desconto_cupom_centavos?`<div class="flex bold"><span>Cupom ${esc(p.cupom_codigo || '')}:</span><span>- ${brl(p.desconto_cupom_centavos)}</span></div>`:''}`:''}<div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
   
   let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
