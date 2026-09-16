@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<!-- Altere este identificador sempre que publicar uma nova versão do index. -->
+<meta name="dca-app-version" content="2026.09.16-entrega-auto-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -1127,9 +1129,11 @@ function exibirBotaoInstalacao() {
 // ------------------------------------------------------------------
 let swAguardando = null;
 let recarregandoPorUpdate = false;
+let atualizacaoSomenteConteudo = false;
+const APP_VERSION_ATUAL = document.querySelector('meta[name="dca-app-version"]')?.content || '';
 
 function mostrarAvisoAtualizacao(worker) {
-  swAguardando = worker;
+  swAguardando = worker || null;
   const banner = document.getElementById('update-banner');
   if (!banner) return;
   banner.style.display = 'flex';
@@ -1149,6 +1153,13 @@ if (btnAplicarUpdate) {
     btnAplicarUpdate.textContent = 'ATUALIZANDO...';
     btnAplicarUpdate.disabled = true;
     try { if (swAguardando) swAguardando.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
+    if (!swAguardando && atualizacaoSomenteConteudo) {
+      recarregandoPorUpdate = true;
+      const urlAtualizada = new URL(window.location.href);
+      urlAtualizada.searchParams.set('_atualizar', Date.now().toString());
+      window.location.replace(urlAtualizada.toString());
+      return;
+    }
     // Se o service worker não responder ao SKIP_WAITING, recarrega mesmo assim.
     setTimeout(function () {
       if (!recarregandoPorUpdate) { recarregandoPorUpdate = true; window.location.reload(); }
@@ -1158,6 +1169,21 @@ if (btnAplicarUpdate) {
 
 const btnFecharUpdate = document.getElementById('btn-fechar-update');
 if (btnFecharUpdate) btnFecharUpdate.addEventListener('click', esconderAvisoAtualizacao);
+
+async function verificarVersaoDoConteudo() {
+  try {
+    const resposta = await fetch(`/?_verificar_versao=${Date.now()}`, { cache:'no-store' });
+    if (!resposta.ok) return;
+    const htmlPublicado = await resposta.text();
+    const versaoPublicada = htmlPublicado.match(/<meta\s+name=["']dca-app-version["']\s+content=["']([^"']+)["']/i)?.[1] || '';
+    if (versaoPublicada && APP_VERSION_ATUAL && versaoPublicada !== APP_VERSION_ATUAL) {
+      atualizacaoSomenteConteudo = true;
+      mostrarAvisoAtualizacao(null);
+    }
+  } catch (erro) {
+    // Sem conexão: mantém a versão disponível no cache sem incomodar o cliente.
+  }
+}
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', function () {
@@ -1170,7 +1196,10 @@ if ('serviceWorker' in navigator) {
     try {
       const reg = await navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
 
-      const checarAtualizacao = () => { reg.update().catch(function () {}); };
+      const checarAtualizacao = () => {
+        reg.update().catch(function () {});
+        verificarVersaoDoConteudo();
+      };
 
       // Já existe versão nova instalada e parada, esperando ativação.
       if (reg.waiting && navigator.serviceWorker.controller) mostrarAvisoAtualizacao(reg.waiting);
@@ -1185,7 +1214,7 @@ if ('serviceWorker' in navigator) {
       });
 
       checarAtualizacao();
-      setInterval(checarAtualizacao, 30 * 60 * 1000);
+      setInterval(checarAtualizacao, 10 * 60 * 1000);
       document.addEventListener('visibilitychange', function () { if (!document.hidden) checarAtualizacao(); });
     } catch (error) {
       console.error('Falha ao registrar o service worker:', error);
