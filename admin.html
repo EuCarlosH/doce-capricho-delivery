@@ -342,6 +342,7 @@ input:checked + .slider:before { transform: translateX(18px); }
       <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">Automação & Expediente</button>
       <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">Pizzas</button>
       <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">Esfihas</button>
+      <button class="tab-btn" onclick="switchTab('tab-ofertas', this)">Ofertas</button>
       <button class="tab-btn" onclick="switchTab('tab-descontos', this)">Descontos</button>
       <button class="tab-btn" onclick="switchTab('tab-cupons', this)">Cupons</button>
       <button class="tab-btn" onclick="switchTab('tab-divulgacao', this)">Divulgação</button>
@@ -400,6 +401,12 @@ input:checked + .slider:before { transform: translateX(18px); }
       <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px;">Desligue para bloquear a venda (Esgotado).</p>
       <h4 class="section-subtitle">🥟 Esfihas</h4>
       <div id="catalog-list-esfihas" style="margin-bottom: 15px;"></div>
+    </div>
+
+    <div id="tab-ofertas" class="tab-content">
+      <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">Ative apenas os combos que podem ser pedidos. Os demais continuarão visíveis no site como <strong>Esgotado</strong>.</p>
+      <h4 class="section-subtitle">🔥 Combos e ofertas</h4>
+      <div id="catalog-list-combos" style="margin-bottom:15px;"></div>
     </div>
 
     <div id="tab-descontos" class="tab-content">
@@ -884,6 +891,13 @@ const CARDAPIO = [
   { id:'esf_carnesol_coalho', nome:'Esf. C. Sol c/ Coalho', tipo: 'esfiha' }, { id:'esf_carnesol_catupiry', nome:'Esf. C. Sol c/ Catupiry', tipo: 'esfiha' }, { id:'esf_carnesol_cream', nome:'Esf. C. Sol c/ Cream', tipo: 'esfiha' },
   { id:'esf_calabresa_coalho', nome:'Esf. Cal. c/ Coalho', tipo: 'esfiha' }, { id:'esf_calabresa_catupiry', nome:'Esf. Cal. c/ Catupiry', tipo: 'esfiha' }, { id:'esf_calabresa_cream', nome:'Esf. Cal. c/ Cream', tipo: 'esfiha' },
   { id:'esf_peru', nome:'Esf. Peito de Peru', tipo: 'esfiha' }, { id:'esf_bacon_mus', nome:'Esf. Bacon c/ Mus.', tipo: 'esfiha' }, { id:'esf_choc_leite', nome:'Esf. Choc. Leite', tipo: 'esfiha' }, { id:'esf_choc_mm', nome:'Esf. Choc. M&Ms', tipo: 'esfiha' }, { id:'esf_choc_morango', nome:'Esf. Choc. c/ Morango', tipo: 'esfiha' },
+  { id:'combo_aniversariante', nome:'Combo Festa do Aniversariante', tipo:'combo' },
+  { id:'combo_sextou', nome:'Combo Sextou (10 Esfihas)', tipo:'combo' },
+  { id:'combo_casal_esf', nome:'Combo Casal', tipo:'combo' },
+  { id:'combo_mega_sexta', nome:'Mega Sexta', tipo:'combo' },
+  { id:'combo_sabado_dois', nome:'Sábado a Dois', tipo:'combo' },
+  { id:'combo_dupla', nome:'Dupla Tradicional', tipo:'combo' },
+  { id:'combo_sabadoprem', nome:'Sabadão Premium', tipo:'combo' },
   { id:'catupiry', nome:'Catupiry', tipo: 'extra' }, { id:'cream', nome:'Cream Cheese', tipo: 'extra' }, { id:'bacon', nome:'Bacon', tipo: 'extra' }, { id:'alho', nome:'Alho Poró', tipo: 'extra' }
 ];
 const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -896,6 +910,7 @@ function renderizarModaisConfig() {
   };
   document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
   document.getElementById('catalog-list-esfihas').innerHTML = CARDAPIO.filter(i => i.tipo === 'esfiha').map(renderItem).join('');
+  document.getElementById('catalog-list-combos').innerHTML = CARDAPIO.filter(i => i.tipo === 'combo').map(renderItem).join('');
   document.getElementById('catalog-list-extras').innerHTML = CARDAPIO.filter(i => i.tipo === 'extra').map(renderItem).join('');
 
   let htmlHorarios = '';
