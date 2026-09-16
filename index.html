@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-4">
+<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-5">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -570,7 +570,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 #aviso-popup-img { width:100%; height:100%; object-fit:contain; object-position:center; display:block; }
 .aviso-popup-content { padding: 28px; text-align: center; }
 .promo-img-wrapper { width: 100%; height: 350px; background: var(--img-bg); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.promo-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+.promo-img-wrapper img { width: 100%; height: 100%; object-fit: contain; object-position:center; display: block; transition: transform 0.5s ease; }
 .promo-content { background: var(--bg-card); padding: 35px; text-align: center; flex-shrink: 0; }
 .btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
 .btn-close-promo:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
@@ -1101,7 +1101,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <div class="promo-content">
       <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
       <p id="promo-banner-desc" style="font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">Separamos combos incríveis para o seu dia. Aproveite!</p>
-      <button class="btn-gradient ripple" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 13px; font-weight: 800; letter-spacing: 2px;" onclick="irParaCombos()">EU QUERO VER</button>
+      <button id="promo-banner-btn" class="btn-gradient ripple" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 13px; font-weight: 800; letter-spacing: 2px;" onclick="irParaCombos()">EU QUERO VER</button>
     </div>
   </div>
 </div>
@@ -1400,6 +1400,7 @@ let pedidoStepAtual = 1;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
+let promoComboDireto = null;
 const STORAGE_KEY = 'dca_carrinho_final';
 let cupomAplicado = null;
 
@@ -1753,11 +1754,23 @@ const cardHTML = s => {
   </article>`;
 };
 
-function checkBannerPromo(titulo, desc) {
+function checkBannerPromo(titulo, desc, combosAtivos = []) {
   if (bannerJaMostrado) return;
   bannerJaMostrado = true;
-  $('#promo-banner-title').textContent = titulo;
-  $('#promo-banner-desc').textContent = desc;
+  const comboUnico = combosAtivos.length === 1 ? combosAtivos[0] : null;
+  const imagem = $('#promo-banner-img');
+  const emoji = $('#promo-banner-emoj');
+  const botao = $('#promo-banner-btn');
+
+  promoComboDireto = comboUnico ? comboUnico.id : null;
+  $('#promo-banner-title').textContent = comboUnico ? comboUnico.nome : titulo;
+  $('#promo-banner-desc').textContent = comboUnico ? comboUnico.desc : desc;
+  botao.textContent = comboUnico ? 'MONTAR MEU COMBO' : 'EU QUERO VER';
+  imagem.alt = comboUnico ? comboUnico.nome : 'Oferta Especial';
+  imagem.style.display = 'block';
+  emoji.style.display = 'none';
+  imagem.onerror = () => { imagem.style.display = 'none'; emoji.style.display = 'block'; };
+  imagem.src = comboUnico ? comboUnico.img : 'img/banner-promo.jpg';
   
   if (promoTimer) clearTimeout(promoTimer);
   
@@ -1771,7 +1784,11 @@ function checkBannerPromo(titulo, desc) {
 
 function irParaCombos() {
   fecharModal('promo-banner-overlay');
-  setTimeout(() => { abrirModal('modal-promocoes'); }, 300);
+  const comboId = promoComboDireto;
+  setTimeout(() => {
+    if (comboId) abrirBuilder([comboId]);
+    else abrirModal('modal-promocoes');
+  }, 300);
 }
 
 function renderCardapio() {
@@ -1829,7 +1846,7 @@ function renderCardapio() {
   if (combosHoje.length > 0) {
       $('#grid-promocoes-modal').innerHTML = combosHoje.map(cardHTML).join('');
       if (configsCarregadasDB) {
-          checkBannerPromo(tituloBanner, descBanner);
+          checkBannerPromo(tituloBanner, descBanner, combosHoje);
       }
   } else {
       if (promoTimer) clearTimeout(promoTimer);
