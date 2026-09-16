@@ -1,40 +1,77 @@
-const CACHE_NAME = "doce-capricho-v1";
+const CACHE_NAME = 'doce-capricho-v2';
+
 const APP_SHELL = [
-  "/",
-  "/manifest.json",
-  "/icon-192.png",
-  "/icon-512.png"
+  '/',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
-self.addEventListener("install", event => {
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
   );
-
-  self.skipWaiting();
 });
 
-self.addEventListener("activate", event => {
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+    caches.keys()
+      .then(keys => Promise.all(
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
-      )
-    )
+      ))
+      .then(() => self.clients.claim())
   );
-
-  self.clients.claim();
 });
 
-self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+self.addEventListener('fetch', event => {
+  const request = event.request;
+
+  if (request.method !== 'GET') return;
 
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(request)
+      .then(response => {
+        if (
+          request.mode === 'navigate' &&
+          response &&
+          response.ok &&
+          new URL(request.url).origin === self.location.origin
+        ) {
+          const copia = response.clone();
+
+          event.waitUntil(
+            caches
+              .open(CACHE_NAME)
+              .then(cache => cache.put(request, copia))
+          );
+        }
+
+        return response;
+      })
+      .catch(async () => {
+        const respostaEmCache = await caches.match(request);
+
+        if (respostaEmCache) {
+          return respostaEmCache;
+        }
+
+        if (request.mode === 'navigate') {
+          const paginaInicial = await caches.match('/');
+
+          if (paginaInicial) {
+            return paginaInicial;
+          }
+        }
+
+        return Response.error();
+      })
   );
-  self.addEventListener('message', e => {
-  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
-});
 });
