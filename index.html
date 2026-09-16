@@ -225,8 +225,13 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .preco-promocional strong { color:var(--terracotta); font-size:inherit; font-weight:900; }
 .desconto-geral-banner { display:none; align-items:center; justify-content:space-between; gap:15px; margin:0 0 24px; padding:15px 18px; border-radius:14px; color:#fff; background:linear-gradient(135deg, var(--terracotta), #8B3A2B); box-shadow:0 10px 24px rgba(139,58,43,.18); }
 .desconto-geral-banner.show { display:flex; animation:fadeIn .35s ease; }
-.desconto-geral-banner strong { font-size:14px; }
+.desconto-geral-banner strong { font-family:var(--font-title); font-size:17px; line-height:1.25; letter-spacing:.3px; padding:7px 10px; border-radius:9px; background:rgba(255,255,255,.14); text-shadow:0 1px 2px rgba(0,0,0,.14); }
 .desconto-geral-banner span { font-size:12px; opacity:.92; text-align:right; }
+@media (max-width:600px) {
+  .desconto-geral-banner { align-items:flex-start; flex-direction:column; gap:8px; }
+  .desconto-geral-banner strong { font-size:16px; }
+  .desconto-geral-banner span { text-align:left; }
+}
 .btn-add { background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-main); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--smooth); font-size: 20px; font-weight: 500; line-height: 1; }
 :root[data-theme="dark"] .btn-add { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--white); font-weight: 400; }
 .btn-add:hover { background: var(--gold); color: #FFF; border-color: var(--gold); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .btn-add:hover { color: var(--bg-main); }
