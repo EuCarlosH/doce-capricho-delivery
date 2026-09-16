@@ -463,12 +463,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .footer-socials a:hover { color: var(--gold-dark); border-color: var(--gold); transform: translateY(-4px); background: var(--bg-card); box-shadow: var(--shadow-sm);} :root[data-theme="dark"] .footer-socials a:hover { color: var(--gold); background: rgba(212,175,55,0.1); }
 .footer-socials svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .footer-info { font-size: 13px; color: var(--text-muted); line-height: 1.8; letter-spacing: 1px; font-weight: 500;} :root[data-theme="dark"] .footer-info { font-weight: 400; }
-.footer-company-btn { appearance: none; border: 0; background: transparent; color: var(--gold-dark); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .8px; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: 6px 10px; } :root[data-theme="dark"] .footer-company-btn { color: var(--gold); }
-.company-data { display: grid; gap: 14px; text-align: left; }
-.company-data-row { padding: 14px 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); }
-.company-data-row span { display: block; color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; }
-.company-data-row strong { display: block; color: var(--text-main); font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
-.company-data-note { color: var(--text-muted); font-size: 11px; line-height: 1.6; text-align: left; margin-top: 16px; }
 .footer-copy { font-size: 11px; color: #A0AEC0; margin-top: 10px; font-weight: 500;} :root[data-theme="dark"] .footer-copy { color: #666; font-weight: 400; }
 
 @media (max-width: 768px) {
@@ -520,44 +514,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
 .modal-overlay#modal-promocoes { z-index: 3500; }
 #modal-promocoes .modal-box { max-width: 800px; }
-
-/* ===== EXPERIÊNCIA INTELIGENTE DO CARDÁPIO ===== */
-.smart-home-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:0 0 28px; }
-.smart-card { background:var(--bg-card); border:1px solid var(--border-light); border-radius:18px; padding:20px; box-shadow:var(--shadow-sm); }
-.smart-card[hidden] { display:none; }
-.smart-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
-.smart-card h3 { font-size:17px; color:var(--text-main); margin:0 0 4px; }
-.smart-card p { font-size:12px; color:var(--text-muted); line-height:1.55; }
-.smart-card-actions { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
-.smart-btn { border:1px solid var(--border-light); background:var(--bg-main); color:var(--text-main); border-radius:10px; padding:11px 14px; font:700 11px 'Work Sans',sans-serif; cursor:pointer; }
-.smart-btn.primary { background:var(--gold); color:#fff; border-color:var(--gold); }
-.loyalty-dots { display:flex; gap:7px; margin-top:12px; }
-.loyalty-dot { width:24px; height:24px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--border-light); color:var(--text-muted); font-size:10px; }
-.loyalty-dot.on { background:var(--gold); color:#fff; border-color:var(--gold); }
-.menu-discovery { margin-bottom:24px; }
-.menu-search-wrap { position:relative; }
-.menu-search { width:100%; padding:15px 46px 15px 16px; border-radius:14px; border:1px solid var(--border-light); background:var(--bg-card); color:var(--text-main); font:500 14px 'Work Sans',sans-serif; outline:none; }
-.menu-search:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(192,138,46,.12); }
-.menu-search-icon { position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; }
-.filter-chips { display:flex; gap:8px; overflow-x:auto; padding:10px 1px 4px; scrollbar-width:none; }
-.filter-chips::-webkit-scrollbar { display:none; }
-.filter-chip { flex:0 0 auto; border:1px solid var(--border-light); background:var(--bg-card); color:var(--text-muted); padding:9px 13px; border-radius:30px; font:700 10px 'Work Sans',sans-serif; cursor:pointer; }
-.filter-chip.active { background:var(--text-main); border-color:var(--text-main); color:var(--bg-card); }
-.search-empty { display:none; text-align:center; padding:28px; color:var(--text-muted); font-size:13px; }
-.smart-cart-bar { position:fixed; left:50%; bottom:22px; transform:translate(-50%,140%); width:min(92%,520px); z-index:2100; border:0; border-radius:16px; background:var(--gold); color:#fff; box-shadow:0 12px 35px rgba(0,0,0,.22); padding:14px 17px; display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer; transition:transform .28s var(--smooth); font-family:inherit; }
-.smart-cart-bar.show { transform:translate(-50%,0); }
-.smart-cart-bar strong { font-size:13px; }
-.smart-cart-bar span { font-size:12px; opacity:.92; }
-.builder-product-hero { display:flex; gap:14px; align-items:center; margin:0 0 18px; padding:12px; background:var(--bg-main); border-radius:14px; }
-.builder-product-hero img { width:78px; height:78px; object-fit:cover; border-radius:11px; background:var(--img-bg); }
-.builder-product-hero p { font-size:12px; line-height:1.5; color:var(--text-muted); }
-.choice-toggle { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-.choice-toggle button { border:1px solid var(--border-light); border-radius:11px; padding:12px 10px; background:var(--bg-main); color:var(--text-muted); font-weight:700; cursor:pointer; }
-.choice-toggle button.active { border-color:var(--gold); background:rgba(192,138,46,.1); color:var(--gold-dark); }
-.optional-panel { display:none; padding:14px; margin-top:10px; border:1px dashed var(--gold); border-radius:12px; background:rgba(192,138,46,.05); }
-.optional-panel.show { display:block; }
-.track-meta { margin:14px 0 4px; padding:12px; border-radius:11px; background:var(--bg-main); font-size:12px; color:var(--text-muted); line-height:1.55; }
-@media(max-width:700px){ .smart-home-grid{grid-template-columns:1fr;} .cart-floating-btn{display:none!important;} .bottom-nav{bottom:86px;} }
 </style>
 </head>
 <body>
@@ -645,16 +601,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 </header>
 
 <section class="section-container" style="padding-top: 20px; padding-bottom: 0;">
-  <div class="smart-home-grid">
-    <article class="smart-card" id="last-order-card" hidden>
-      <div class="smart-card-head"><div><h3 class="brand-font">Seu pedido de sempre</h3><p id="last-order-summary">Seu último pedido está pronto para repetir.</p></div><span>↻</span></div>
-      <div class="smart-card-actions"><button type="button" class="smart-btn primary" id="btn-repeat-order">Pedir novamente</button><button type="button" class="smart-btn" id="btn-repeat-edit">Personalizar</button></div>
-    </article>
-    <article class="smart-card" id="loyalty-card">
-      <div class="smart-card-head"><div><h3 class="brand-font">Seus Caprichos</h3><p id="loyalty-text">Faça pedidos e desbloqueie uma recompensa.</p></div><span>✨</span></div>
-      <div class="loyalty-dots" id="loyalty-dots" aria-label="Progresso da fidelidade"></div>
-    </article>
-  </div>
   <div class="promo-banner-inline" id="promo-banner-inline">
     <span class="promo-banner-eyebrow" id="promo-banner-inline-eyebrow">Feito com carinho</span>
     <h3 class="promo-banner-title brand-font" id="promo-banner-inline-title">Pizzas e esfihas artesanais para o seu momento</h3>
@@ -677,18 +623,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 </section>
 
 <section id="cardapio" class="section-container">
-  <div class="menu-discovery">
-    <div class="menu-search-wrap"><input type="search" class="menu-search" id="menu-search" placeholder="O que você deseja hoje?" autocomplete="off"><span class="menu-search-icon">⌕</span></div>
-    <div class="filter-chips" id="filter-chips" aria-label="Filtros do cardápio">
-      <button type="button" class="filter-chip active" data-filter="todos">Todos</button>
-      <button type="button" class="filter-chip" data-filter="mais-pedidos">Mais pedidos</button>
-      <button type="button" class="filter-chip" data-filter="tradicional">Tradicionais</button>
-      <button type="button" class="filter-chip" data-filter="premium">Premium</button>
-      <button type="button" class="filter-chip" data-filter="doce">Doces</button>
-      <button type="button" class="filter-chip" data-filter="ate10">Até R$ 10</button>
-    </div>
-    <div class="search-empty" id="search-empty">Nenhum item encontrado. Tente outro nome ou filtro.</div>
-  </div>
   <div class="sticky-menu-wrapper" id="sticky-menu">
     <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
@@ -745,9 +679,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="footer-info">
     <p>São Miguel / RN</p>
     <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
-    <p>CNPJ 69.149.841/0001-61</p>
   </div>
-  <button type="button" class="footer-company-btn ripple" id="btn-company-data">Dados da empresa</button>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
@@ -771,7 +703,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </svg>
   <span class="cart-count" id="cart-count">0</span>
 </button>
-<button type="button" class="smart-cart-bar" id="smart-cart-bar"><strong id="smart-cart-label">1 item</strong><span id="smart-cart-total">Ver pedido · R$ 0,00</span></button>
 
 <div class="modal-overlay" id="tracking-overlay">
   <div class="modal-box" style="max-width: 400px;">
@@ -780,7 +711,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <h3 class="brand-font" id="track-id">Pedido #...</h3>
       <p id="track-desc">Acompanhe o status em tempo real</p>
     </div>
-    <div class="track-meta" id="track-meta">Assim que a loja aceitar o pedido, mostraremos a previsão por aqui.</div>
     
     <div class="timeline" id="tracking-timeline">
       <div class="tl-step" id="step-novo">
@@ -844,7 +774,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
     <h2 id="builder-title" class="brand-font">Montar</h2>
     <form id="builder-form" novalidate>
-      <div class="builder-product-hero"><img id="builder-product-img" src="" alt=""><div><p id="builder-product-desc"></p><small id="builder-product-badge" style="color:var(--gold-dark);font-weight:800;"></small></div></div>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
       
       <fieldset class="builder-group" id="builder-extras-container">
@@ -1085,20 +1014,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="company-data-overlay">
-  <div class="modal-box" style="max-width: 480px;">
-    <button class="close-modal ripple" data-close="company-data-overlay" aria-label="Fechar dados da empresa">&times;</button>
-    <h2 class="brand-font">Dados da Empresa</h2>
-    <div class="company-data">
-      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Ateliê</strong></div>
-      <div class="company-data-row"><span>Razão social</span><strong>69.149.841 Carlos Henrique Vitor Gomes</strong></div>
-      <div class="company-data-row"><span>CNPJ</span><strong>69.149.841/0001-61</strong></div>
-      <div class="company-data-row"><span>Endereço</span><strong>Rua Monsenhor José Aires, 188, Centro — São Miguel/RN</strong></div>
-    </div>
-    <p class="company-data-note">Informações cadastrais disponibilizadas para identificação e transparência do estabelecimento.</p>
   </div>
 </div>
 
@@ -1395,9 +1310,6 @@ let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
 const STORAGE_KEY = 'dca_carrinho_final';
-const LAST_ORDER_KEY = 'dca_last_cart_v1';
-const LOYALTY_KEY = 'dca_loyalty_v1';
-let menuFiltroAtual = 'todos';
 
 function showToast(msg, type='warning') {
   const container = document.getElementById('toast-container'); if(!container) return;
@@ -1408,87 +1320,6 @@ function showToast(msg, type='warning') {
   if (navigator.vibrate && type === 'error') navigator.vibrate([50, 50, 50]);
   setTimeout(() => { toast.style.animation = 'toastOut 0.4s var(--smooth) forwards'; setTimeout(() => toast.remove(), 400); }, 3000);
 }
-
-function normalizarBusca(valor) {
-  return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-}
-
-function aplicarFiltrosCardapio() {
-  const termo = normalizarBusca($('#menu-search') ? $('#menu-search').value : '');
-  let visiveis = 0;
-  $$('.card[data-sabor]').forEach(card => {
-    const sabor = acharSabor(card.dataset.sabor);
-    const correspondeTexto = !termo || normalizarBusca(card.dataset.busca).includes(termo);
-    let correspondeFiltro = menuFiltroAtual === 'todos';
-    if (menuFiltroAtual === 'mais-pedidos') correspondeFiltro = card.dataset.sabor === saborMaisPedido || ['peru','nordestina','esf_peru'].includes(card.dataset.sabor);
-    if (['tradicional','premium','doce'].includes(menuFiltroAtual)) correspondeFiltro = card.dataset.categoria === menuFiltroAtual;
-    if (menuFiltroAtual === 'ate10') correspondeFiltro = sabor && sabor.preco <= 1000;
-    const mostrar = correspondeTexto && correspondeFiltro;
-    card.style.display = mostrar ? '' : 'none';
-    if (mostrar) visiveis++;
-  });
-  if ($('#search-empty')) $('#search-empty').style.display = visiveis ? 'none' : 'block';
-}
-
-function clonarItensValidos(itens) {
-  return (Array.isArray(itens) ? itens : []).map(item => ({ ...item, uid: Date.now().toString(36) + Math.random().toString(36).slice(2,7), sabores:[...(item.sabores || [])], extras:(item.extras || []).map(e => ({...e})) })).filter(validarItem);
-}
-
-function renderUltimoPedido() {
-  const card = $('#last-order-card'); if (!card) return;
-  try {
-    const salvo = JSON.parse(localStorage.getItem(LAST_ORDER_KEY));
-    const itens = clonarItensValidos(salvo && salvo.itens);
-    if (!itens.length) { card.hidden = true; return; }
-    card.hidden = false;
-    const qtd = itens.reduce((s,i) => s + i.qtd, 0);
-    $('#last-order-summary').textContent = `${qtd} ${qtd === 1 ? 'item' : 'itens'} · ${itens.slice(0,2).map(nomeItem).join(' + ')}${itens.length > 2 ? '…' : ''}`;
-  } catch (e) { card.hidden = true; }
-}
-
-function repetirUltimoPedido(abrirEdicao = false) {
-  try {
-    const salvo = JSON.parse(localStorage.getItem(LAST_ORDER_KEY));
-    const itens = clonarItensValidos(salvo && salvo.itens).filter(i => !(configLoja.itensEsgotados || []).some(id => i.sabores.includes(id)));
-    if (!itens.length) return showToast('Os itens do último pedido não estão disponíveis agora.', 'warning');
-    itens.forEach(novo => {
-      const igual = carrinho.find(i => saoItensIguais(i, novo));
-      if (igual) { igual.qtd = Math.min(20, igual.qtd + novo.qtd); igual.total = igual.unitario * igual.qtd; }
-      else carrinho.push(novo);
-    });
-    salvar(); atualizarUI();
-    showToast('Último pedido adicionado ao carrinho.', 'success');
-    if (abrirEdicao) abrirModal('cart-overlay');
-  } catch (e) { showToast('Não foi possível recuperar o último pedido.', 'error'); }
-}
-
-function dadosFidelidade() {
-  try { return JSON.parse(localStorage.getItem(LOYALTY_KEY)) || { pontos:0, creditados:[] }; }
-  catch (e) { return { pontos:0, creditados:[] }; }
-}
-
-function renderFidelidade() {
-  const dados = dadosFidelidade(); const meta = 6; const atual = dados.pontos % meta;
-  if ($('#loyalty-text')) $('#loyalty-text').textContent = dados.pontos >= meta ? `${dados.pontos} Caprichos acumulados. Você já pode consultar sua recompensa!` : `${atual} de ${meta} Caprichos para a próxima recompensa.`;
-  if ($('#loyalty-dots')) $('#loyalty-dots').innerHTML = Array.from({length:meta},(_,i) => `<span class="loyalty-dot ${i < atual ? 'on' : ''}">${i < atual ? '✓' : i+1}</span>`).join('');
-}
-
-function creditarFidelidade(orderId) {
-  if (!orderId) return;
-  const dados = dadosFidelidade();
-  if (dados.creditados.includes(orderId)) return;
-  dados.creditados.push(orderId); dados.pontos = (dados.pontos || 0) + 1;
-  localStorage.setItem(LOYALTY_KEY, JSON.stringify(dados)); renderFidelidade();
-  showToast('Você ganhou 1 Capricho pela conclusão do pedido!', 'success');
-}
-
-function atualizarBarraCarrinho() {
-  const qtd = carrinho.reduce((s,i) => s+i.qtd,0); const bar = $('#smart-cart-bar'); if (!bar) return;
-  bar.classList.toggle('show', qtd > 0);
-  $('#smart-cart-label').textContent = `${qtd} ${qtd === 1 ? 'item' : 'itens'}`;
-  $('#smart-cart-total').textContent = `Ver pedido · ${brl(totais().total)}`;
-}
-
 
 function verificarHorario() {
   try {
@@ -1614,12 +1445,8 @@ const cardHTML = s => {
   if (s.id === saborMaisPedido && !isEsgotado) { badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`); }
   let badgeHTML = badges.length ? `<div class="badges-container">${badges.join('')}</div>` : '';
 
-  const categoria = CARDAPIO.tradicionais.includes(s) || CARDAPIO.esfihas_tradicionais.includes(s) ? 'tradicional'
-    : CARDAPIO.premium.includes(s) || CARDAPIO.esfihas_premium.includes(s) ? 'premium'
-    : CARDAPIO.esfihas_doces.includes(s) ? 'doce' : 'combo';
-  const busca = `${s.nome} ${s.desc} ${categoria}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   return `
-  <article class="${classeCard}" data-sabor="${s.id}" data-categoria="${categoria}" data-preco="${s.preco}" data-busca="${esc(busca)}">
+  <article class="${classeCard}" data-sabor="${s.id}">
     <div class="card-img-wrap skeleton-bg">
       ${badgeHTML}
       <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
@@ -1718,7 +1545,6 @@ function renderCardapio() {
   }
 
   atualizarBotoes();
-  aplicarFiltrosCardapio();
 }
 
 function atualizarBotoes() {
@@ -1758,15 +1584,10 @@ function escolherSabor(id) {
 
 function abrirBuilder(ids) {
   builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
-  const produtoPrincipal = acharSabor(ids[0]);
   const isCombo = ids[0].startsWith('combo_');
   const isEsfiha = ids[0].startsWith('esf_');
   
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
-  $('#builder-product-img').src = produtoPrincipal ? produtoPrincipal.img : '';
-  $('#builder-product-img').alt = produtoPrincipal ? produtoPrincipal.nome : 'Produto';
-  $('#builder-product-desc').textContent = ids.length === 2 ? `Duas escolhas artesanais: ${nomes.join(' e ')}.` : (produtoPrincipal ? produtoPrincipal.desc : '');
-  $('#builder-product-badge').textContent = ids.length === 2 ? 'Pizza meio a meio' : (isCombo ? 'Combo especial' : isEsfiha ? 'Esfiha artesanal' : 'Pizza artesanal');
   $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
   
   if (isEsfiha || isCombo) {
@@ -2015,7 +1836,6 @@ function atualizarUI() {
   const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
 
   const btnStep1Avancar = $('#btn-step1-avancar'); if(btnStep1Avancar) btnStep1Avancar.disabled = carrinho.length === 0;
-  atualizarBarraCarrinho();
 }
 
 $('#cli-pagamento').addEventListener('change', e => {
@@ -2407,9 +2227,7 @@ async function enviarPedidoFinal(ev) {
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
-  const pedido = montarPedido();
-  localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({ ts:Date.now(), itens:carrinho.map(i => ({...i, extras:(i.extras || []).map(e => ({...e}))})) }));
-  const id = await gravarFirestore(pedido); 
+  const pedido = montarPedido(); const id = await gravarFirestore(pedido); 
   
   if(id) localStorage.setItem('dca_last_order', id);
 
@@ -2417,7 +2235,7 @@ async function enviarPedidoFinal(ev) {
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  carrinho = []; salvar(); atualizarUI(); renderUltimoPedido(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
+  carrinho = []; salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
   pedidoEmEnvio = false;
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
@@ -2448,11 +2266,6 @@ function abrirRastreio() {
       const dados = doc.data() || {};
       if (elDesc) elDesc.textContent = 'Acompanhe o status em tempo real';
       atualizarTimeline(dados.status, dados.tipo_entrega);
-      const meta = document.getElementById('track-meta');
-      const criado = dados.data_pedido && dados.data_pedido.toDate ? dados.data_pedido.toDate() : null;
-      const previsao = dados.previsao_minutos ? `Previsão atual: cerca de ${dados.previsao_minutos} minutos.` : 'A previsão será atualizada conforme o preparo avançar.';
-      if (meta) meta.textContent = `${criado ? 'Pedido recebido às ' + criado.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '. ' : ''}${previsao}`;
-      if (['concluido','entregue','finalizado'].includes(normStatus(dados.status))) creditarFidelidade(lastOrderId);
     },
     error => {
       console.error('[RASTREIO]', error.code, error.message);
@@ -2544,19 +2357,7 @@ function abrirCarrinhoSeguro() {
 $('#btn-cart-float').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-nav-order').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-bottom-order').addEventListener('click', abrirCarrinhoSeguro);
-$('#smart-cart-bar').addEventListener('click', abrirCarrinhoSeguro);
 
-$('#menu-search').addEventListener('input', aplicarFiltrosCardapio);
-$('#filter-chips').addEventListener('click', e => {
-  const btn = e.target.closest('[data-filter]'); if (!btn) return;
-  menuFiltroAtual = btn.dataset.filter;
-  $$('#filter-chips .filter-chip').forEach(b => b.classList.toggle('active', b === btn));
-  aplicarFiltrosCardapio();
-});
-
-$('#btn-repeat-order').addEventListener('click', () => repetirUltimoPedido(false));
-$('#btn-repeat-edit').addEventListener('click', () => repetirUltimoPedido(true));
-$('#btn-company-data').addEventListener('click', () => abrirModal('company-data-overlay'));
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
 $('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
@@ -3028,7 +2829,7 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.warn('[STATS]', err.code); });
 
-verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); renderUltimoPedido(); renderFidelidade(); atualizarUI();
+verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
 </html>
