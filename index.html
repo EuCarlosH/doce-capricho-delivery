@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-1">
+<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-3">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -551,8 +551,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .modal-overlay#aviso-popup-overlay { z-index: 4100 !important; align-items: center; justify-content: center; padding: 20px; }
 #aviso-popup-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 500px; border-radius: 24px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
 #aviso-popup-overlay.open #aviso-popup-box { transform: scale(1); }
-#aviso-popup-img-wrap { width: 100%; max-height: 330px; background: linear-gradient(135deg, rgba(221,167,58,.18), rgba(139,58,43,.13)); display: none; align-items: center; justify-content: center; overflow: hidden; }
-#aviso-popup-img { width: 100%; height: 100%; max-height: 330px; object-fit: cover; display: block; }
+#aviso-popup-img-wrap { width:100%; height:min(52vh, 500px); background:linear-gradient(135deg, rgba(221,167,58,.18), rgba(139,58,43,.13)); display:none; align-items:center; justify-content:center; overflow:hidden; }
+#aviso-popup-img { width:100%; height:100%; object-fit:contain; object-position:center; display:block; }
 .aviso-popup-content { padding: 28px; text-align: center; }
 .promo-img-wrapper { width: 100%; height: 350px; background: var(--img-bg); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .promo-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
@@ -1797,6 +1797,13 @@ function renderCardapio() {
           combosHoje = [];
       }
   }
+
+  // Combos desativados no admin não aparecem para o cliente. Os demais
+  // produtos continuam usando normalmente o estado visual de "Esgotado".
+  const combosIndisponiveis = new Set(
+    Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []
+  );
+  combosHoje = combosHoje.filter(combo => !combosIndisponiveis.has(combo.id));
 
   $('#btn-scroll-combos').style.display = 'inline-block';
   $('#btn-nav-promos').style.display = 'inline-block';
@@ -3091,7 +3098,13 @@ function executarDestinoAviso(destino) {
 
     if (alvo.startsWith('#combo_')) {
       const comboId = alvo.slice(1);
-      if (acharSabor(comboId)) abrirBuilder([comboId]);
+      const combo = acharSabor(comboId);
+      const indisponivel = Array.isArray(configLoja.itensEsgotados) && configLoja.itensEsgotados.includes(comboId);
+      if (indisponivel) {
+        showToast('Esta oferta está indisponível no momento.', 'warning');
+      } else if (combo) {
+        abrirBuilder([comboId]);
+      }
       return;
     }
 
