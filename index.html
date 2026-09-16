@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-3">
+<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-4">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -394,6 +394,21 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .builder-base strong { color: var(--text-main); font-size: 16px; font-weight: 800; transition: color 0.3s; } :root[data-theme="dark"] .builder-base strong { color: var(--gold); font-weight: 700; }
 .builder-group textarea { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); color: var(--text-main); font-family: 'Work Sans', sans-serif; font-size: 14px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .builder-group textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 3px rgba(221, 167, 58, 0.15); background: var(--bg-card);} :root[data-theme="dark"] .builder-group textarea:focus { box-shadow: 0 0 0 3px rgba(212,175,55,0.15); background: var(--bg-card); }
+.combo-builder { display:none; margin-bottom:24px; }
+.combo-category { border:1px solid var(--border-light); border-radius:14px; padding:14px; margin-bottom:14px; background:var(--bg-main); }
+.combo-category-head { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:11px; }
+.combo-category-head strong { color:var(--text-main); font-size:13px; }
+.combo-counter { flex:none; color:var(--terracotta); background:rgba(193,68,58,.09); border-radius:999px; padding:5px 9px; font-size:11px; font-weight:800; }
+.combo-counter.complete { color:var(--success); background:rgba(47,133,90,.1); }
+.combo-flavor-row { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; padding:10px 0; border-top:1px solid var(--border-light); }
+.combo-flavor-row:first-of-type { border-top:0; }
+.combo-flavor-name { color:var(--text-main); font-size:12px; line-height:1.35; font-weight:650; }
+.combo-flavor-controls { display:flex; align-items:center; gap:7px; }
+.combo-flavor-controls button { width:30px; height:30px; border:1px solid var(--border-light); border-radius:9px; background:var(--bg-card); color:var(--text-main); font-size:18px; cursor:pointer; }
+.combo-flavor-controls button:disabled { opacity:.35; cursor:not-allowed; }
+.combo-flavor-qtd { min-width:20px; text-align:center; color:var(--text-main); font-size:13px; font-weight:800; }
+.combo-fixed-item { display:flex; justify-content:space-between; gap:12px; padding:12px; border-radius:12px; background:rgba(47,133,90,.08); color:var(--text-main); font-size:12px; }
+.combo-fixed-item strong { color:var(--success); }
 
 .extra-row { display: flex; flex-direction: column; padding: 16px; background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 12px; transition: all 0.3s var(--smooth); } :root[data-theme="dark"] .extra-row { background: rgba(255,255,255,0.02); border-color: transparent;}
 .extra-row.checked { border-color: rgba(221, 167, 58, 0.4); background: rgba(221, 167, 58, 0.05); } :root[data-theme="dark"] .extra-row.checked { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.05); }
@@ -815,11 +830,13 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <div id="builder-extras"></div>
       </fieldset>
 
+      <div class="combo-builder" id="builder-combo-container"></div>
+
       <div class="builder-group">
         <label class="builder-label" id="label-obs" for="builder-obs">Observações</label>
         <textarea id="builder-obs" maxlength="200" placeholder="Ex: sem cebola, massa bem assada..."></textarea>
       </div>
-      <div class="builder-group" style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="builder-group" id="builder-qty-container" style="display: flex; justify-content: space-between; align-items: center;">
         <span class="builder-label" style="margin:0;">Quantidade</span>
         <div class="qty-row">
           <button type="button" class="qty-btn ripple" id="qty-minus">−</button>
@@ -1707,6 +1724,7 @@ function validarItem(item) {
     ex.nome = def.nome; return true;
   });
   item.base = precoBaseVal(item.sabores); item.unitario = item.base + item.extras.reduce((s, e) => s + e.preco, 0); item.total = item.unitario * item.qtd; item.obs = String(item.obs || '').slice(0, 200);
+  if (item.sabores[0] === 'combo_aniversariante' && !validarComboAniversariante(item.comboItens)) return false;
   return true;
 }
 
@@ -1864,7 +1882,14 @@ function escolherSabor(id) {
 }
 
 function abrirBuilder(ids) {
-  builder = { sabores: ids, qtd: 1 }; const nomes = ids.map(i => acharSabor(i).nome);
+  if (ids[0] === 'combo_aniversariante') {
+    const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
+    if (esgotados.includes('esf_choc_leite')) {
+      showToast('O combo está temporariamente indisponível porque a esfiha de chocolate ao leite acabou.', 'warning');
+      return;
+    }
+  }
+  builder = { sabores: ids, qtd: 1, comboItens: [] }; const nomes = ids.map(i => acharSabor(i).nome);
   const isCombo = ids[0].startsWith('combo_');
   const isEsfiha = ids[0].startsWith('esf_');
   
@@ -1885,11 +1910,24 @@ function abrirBuilder(ids) {
     }).join('');
   }
 
+  const comboContainer = $('#builder-combo-container');
+  const qtyContainer = $('#builder-qty-container');
+  if (ids[0] === 'combo_aniversariante') {
+     comboContainer.style.display = 'block';
+     qtyContainer.style.display = 'none';
+     builder.comboItens = [{ id:'esf_choc_leite', qtd:1, categoria:'incluso' }];
+     renderMontadorComboAniversariante();
+  } else {
+     comboContainer.style.display = 'none';
+     comboContainer.innerHTML = '';
+     qtyContainer.style.display = 'flex';
+  }
+
   const labelObs = document.getElementById('label-obs');
   if (isCombo) {
      if (ids[0] === 'combo_aniversariante') {
-       labelObs.innerHTML = 'Escolha os sabores do Combo <span style="color:var(--terracotta); font-weight:800;">*Obrigatório</span>';
-       $('#builder-obs').placeholder = 'Informe os sabores das 10 tradicionais e das 2 premium de R$ 8. A esfiha de chocolate ao leite já está incluída.';
+       labelObs.innerHTML = 'Observações <span style="color:var(--text-muted); font-weight:500;">(opcional)</span>';
+       $('#builder-obs').placeholder = 'Ex: retirar algum ingrediente de uma das esfihas...';
      } else {
        labelObs.innerHTML = 'Quais os sabores do Combo? <span style="color:var(--terracotta); font-weight:800;">*Obrigatório</span>';
        $('#builder-obs').placeholder = 'Digite aqui os sabores das pizzas/esfihas que acompanham...';
@@ -1905,8 +1943,109 @@ function abrirBuilder(ids) {
   abrirModal('builder-overlay');
 }
 
+function qtdComboCategoria(categoria) {
+  if (!builder || !Array.isArray(builder.comboItens)) return 0;
+  return builder.comboItens.filter(i => i.categoria === categoria).reduce((s, i) => s + i.qtd, 0);
+}
+
+function opcoesComboDisponiveis(lista) {
+  const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
+  return lista.filter(item => !esgotados.includes(item.id));
+}
+
+function linhasSaboresCombo(lista, categoria, limite) {
+  const totalCategoria = qtdComboCategoria(categoria);
+  return opcoesComboDisponiveis(lista).map(item => {
+    const escolha = builder.comboItens.find(i => i.id === item.id && i.categoria === categoria);
+    const qtd = escolha ? escolha.qtd : 0;
+    return `<div class="combo-flavor-row">
+      <span class="combo-flavor-name">${esc(item.nome)}</span>
+      <div class="combo-flavor-controls">
+        <button type="button" data-combo-sabor="${item.id}" data-combo-cat="${categoria}" data-combo-delta="-1" ${qtd === 0 ? 'disabled' : ''} aria-label="Remover ${esc(item.nome)}">−</button>
+        <span class="combo-flavor-qtd">${qtd}</span>
+        <button type="button" data-combo-sabor="${item.id}" data-combo-cat="${categoria}" data-combo-delta="1" ${totalCategoria >= limite ? 'disabled' : ''} aria-label="Adicionar ${esc(item.nome)}">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMontadorComboAniversariante() {
+  if (!builder || builder.sabores[0] !== 'combo_aniversariante') return;
+  const esgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
+  builder.comboItens = builder.comboItens.filter(i => i.categoria === 'incluso' || !esgotados.has(i.id));
+  if (esgotados.has('esf_choc_leite')) {
+    fecharModal('builder-overlay');
+    showToast('O combo ficou indisponível porque a esfiha de chocolate ao leite acabou.', 'warning');
+    return;
+  }
+  const totalTrad = qtdComboCategoria('tradicional');
+  const totalPremium = qtdComboCategoria('premium');
+  const premiumsOito = CARDAPIO.esfihas_premium.filter(item => item.preco === 800);
+  $('#builder-combo-container').innerHTML = `
+    <div class="combo-category">
+      <div class="combo-category-head"><strong>Esfihas tradicionais</strong><span class="combo-counter ${totalTrad === 10 ? 'complete' : ''}">${totalTrad}/10</span></div>
+      ${linhasSaboresCombo(CARDAPIO.esfihas_tradicionais, 'tradicional', 10) || '<small>Nenhum sabor disponível.</small>'}
+    </div>
+    <div class="combo-category">
+      <div class="combo-category-head"><strong>Premium de R$ 8,00</strong><span class="combo-counter ${totalPremium === 2 ? 'complete' : ''}">${totalPremium}/2</span></div>
+      ${linhasSaboresCombo(premiumsOito, 'premium', 2) || '<small>Nenhum sabor disponível.</small>'}
+    </div>
+    <div class="combo-fixed-item"><span>1× Esfiha Chocolate ao Leite</span><strong>Incluída ✓</strong></div>`;
+}
+
+function alterarSaborCombo(id, categoria, delta) {
+  if (!builder || builder.sabores[0] !== 'combo_aniversariante') return;
+  const limite = categoria === 'tradicional' ? 10 : categoria === 'premium' ? 2 : 0;
+  if (!limite || !acharSabor(id)) return;
+  const total = qtdComboCategoria(categoria);
+  let item = builder.comboItens.find(i => i.id === id && i.categoria === categoria);
+  if (delta > 0 && total >= limite) return;
+  if (!item && delta > 0) {
+    builder.comboItens.push({ id, qtd:1, categoria });
+  } else if (item) {
+    item.qtd = Math.max(0, item.qtd + delta);
+    if (item.qtd === 0) builder.comboItens = builder.comboItens.filter(i => i !== item);
+  }
+  renderMontadorComboAniversariante();
+}
+
+function validarComboAniversariante(comboItens, avisar = false) {
+  const itens = Array.isArray(comboItens) ? comboItens : [];
+  const soma = categoria => itens.filter(i => i.categoria === categoria).reduce((s, i) => s + (parseInt(i.qtd, 10) || 0), 0);
+  const tradValidos = new Set(CARDAPIO.esfihas_tradicionais.map(i => i.id));
+  const premiumValidos = new Set(CARDAPIO.esfihas_premium.filter(i => i.preco === 800).map(i => i.id));
+  const estruturaValida = itens.every(i => Number.isInteger(i.qtd) && i.qtd > 0 && (
+    (i.categoria === 'tradicional' && tradValidos.has(i.id)) ||
+    (i.categoria === 'premium' && premiumValidos.has(i.id)) ||
+    (i.categoria === 'incluso' && i.id === 'esf_choc_leite' && i.qtd === 1)
+  ));
+  const valido = estruturaValida && soma('tradicional') === 10 && soma('premium') === 2 && soma('incluso') === 1;
+  if (!valido && avisar) {
+    showToast(`Complete o combo: ${soma('tradicional')}/10 tradicionais e ${soma('premium')}/2 premium.`, 'warning');
+  }
+  return valido;
+}
+
+function detalhesComboTexto(item) {
+  if (!item || !Array.isArray(item.comboItens)) return [];
+  const agrupar = categoria => item.comboItens
+    .filter(i => i.categoria === categoria)
+    .map(i => `${i.qtd}× ${acharSabor(i.id)?.nome || i.id}`)
+    .join(', ');
+  const linhas = [];
+  const tradicionais = agrupar('tradicional');
+  const premium = agrupar('premium');
+  const incluso = agrupar('incluso');
+  if (tradicionais) linhas.push(`Tradicionais: ${tradicionais}`);
+  if (premium) linhas.push(`Premium: ${premium}`);
+  if (incluso) linhas.push(`Incluso: ${incluso}`);
+  return linhas;
+}
+
 function atualizarEstoqueNoBuilder() {
-  if (!$('#builder-overlay').classList.contains('open') || !builder || builder.sabores[0].startsWith('esf_') || builder.sabores[0].startsWith('combo_')) return;
+  if (!$('#builder-overlay').classList.contains('open') || !builder) return;
+  if (builder.sabores[0] === 'combo_aniversariante') { renderMontadorComboAniversariante(); return; }
+  if (builder.sabores[0].startsWith('esf_') || builder.sabores[0].startsWith('combo_')) return;
   
   $$('.extra-row').forEach(row => {
     const chk = row.querySelector('.extra-chk'); if (!chk) return;
@@ -1950,24 +2089,29 @@ function saoItensIguais(itemA, itemB) {
     const strA = JSON.stringify({
         s: [...itemA.sabores].sort(),
         e: [...(itemA.extras || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => x.id + x.aplicacao),
-        o: (itemA.obs || "").trim()
+        o: (itemA.obs || "").trim(),
+        c: [...(itemA.comboItens || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => `${x.categoria}:${x.id}:${x.qtd}`)
     });
     const strB = JSON.stringify({
         s: [...itemB.sabores].sort(),
         e: [...(itemB.extras || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => x.id + x.aplicacao),
-        o: (itemB.obs || "").trim()
+        o: (itemB.obs || "").trim(),
+        c: [...(itemB.comboItens || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => `${x.categoria}:${x.id}:${x.qtd}`)
     });
     return strA === strB;
 }
 
 function adicionar() {
-  if (builder.sabores[0].startsWith('combo_') && $('#builder-obs').value.trim() === '') {
+  if (builder.sabores[0] === 'combo_aniversariante' && !validarComboAniversariante(builder.comboItens, true)) {
+      return;
+  }
+  if (builder.sabores[0].startsWith('combo_') && builder.sabores[0] !== 'combo_aniversariante' && $('#builder-obs').value.trim() === '') {
       showToast("Por favor, digite os sabores do combo nas observações.", "error");
       $('#builder-obs').focus();
       return;
   }
   
-  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim() };
+  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim(), comboItens: builder.comboItens ? builder.comboItens.map(i => ({...i})) : [] };
   if (!validarItem(novoItem)) return; 
   
   let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
@@ -2078,6 +2222,7 @@ function atualizarUI() {
 
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
     const det = []; 
+    detalhesComboTexto(i).forEach(linha => det.push(esc(linha)));
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join(' · ')); 
     if (i.obs) det.push('Obs: ' + esc(i.obs));
     
@@ -2268,6 +2413,7 @@ function montarRevisao() {
 
   $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
+    detalhesComboTexto(i).forEach(linha => det.push(esc(linha)));
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
     if (i.obs) det.push(`Obs: ${esc(i.obs)}`);
     const detalhesHTML = det.length > 0 ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4;">${det.join('<br>')}</div>` : '';
@@ -2362,7 +2508,8 @@ function revalidarPedido() {
     let rotulo = 'Um item do seu carrinho';
     try { rotulo = nomeItem(item); } catch (e) {}
 
-    const saborProblema = (item.sabores || []).find(id => !acharSabor(id) || esgotados.includes(id));
+    const idsDoItem = [...(item.sabores || []), ...(item.comboItens || []).map(ci => ci.id)];
+    const saborProblema = idsDoItem.find(id => !acharSabor(id) || esgotados.includes(id));
     if (saborProblema) {
       const sab = acharSabor(saborProblema);
       removidos.push(sab ? sab.nome : rotulo);
@@ -2456,6 +2603,7 @@ function montarPedido() {
     forma_pagamento: pgtoStr,
     itens: carrinho.map(i => ({
       nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
+      combo_itens: (i.comboItens || []).map(ci => ({ id:ci.id, nome:acharSabor(ci.id)?.nome || ci.id, qtd:ci.qtd, categoria:ci.categoria })),
       extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
       obs: i.obs,
       unitario_original_centavos: i.unitario,
@@ -2496,7 +2644,16 @@ function montarMensagem(p) {
     L.push('');
   }
   L.push(`*Pagamento:* ${p.forma_pagamento}`, '', '*ITENS*');
-  p.itens.forEach((i, n) => { L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); if (i.obs) L.push(`    • Obs: ${i.obs}`); });
+  p.itens.forEach((i, n) => {
+    L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`);
+    const categorias = { tradicional:'Tradicionais', premium:'Premium', incluso:'Incluso' };
+    Object.entries(categorias).forEach(([categoria, rotulo]) => {
+      const escolhas = (i.combo_itens || []).filter(ci => ci.categoria === categoria).map(ci => `${ci.qtd}× ${ci.nome}`);
+      if (escolhas.length) L.push(`    • ${rotulo}: ${escolhas.join(', ')}`);
+    });
+    i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`));
+    if (i.obs) L.push(`    • Obs: ${i.obs}`);
+  });
   if (p.desconto_centavos > 0) {
     L.push('', `Valor dos itens: ${brl(p.subtotal_bruto_centavos)}`);
     if (p.desconto_geral_centavos > 0) L.push(`Promoção geral${p.desconto_percentual ? ` (${p.desconto_percentual}%)` : ''}: - ${brl(p.desconto_geral_centavos)}`);
@@ -2652,6 +2809,11 @@ document.addEventListener('visibilitychange', () => {
 });
 
 document.addEventListener('click', e => { 
+  const comboBtn = e.target.closest('[data-combo-sabor]');
+  if (comboBtn) {
+    alterarSaborCombo(comboBtn.dataset.comboSabor, comboBtn.dataset.comboCat, parseInt(comboBtn.dataset.comboDelta, 10));
+    return;
+  }
   const cardOpt = e.target.closest('.extra-opt-card'); 
   if (cardOpt) { const grid = cardOpt.closest('.extra-options-grid'); if (grid) { grid.querySelectorAll('.extra-opt-card').forEach(c => c.classList.remove('active')); cardOpt.classList.add('active'); atualizarBuilderTotal(); } } 
   
