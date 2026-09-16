@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.16-combo-aniversariante-5">
+<meta name="dca-app-version" content="2026.09.16-install-multiplataforma-6">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -575,6 +575,22 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
 .btn-close-promo:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
 
+/* SUGESTÃO DE INSTALAÇÃO MULTIPLATAFORMA */
+.install-suggestion { position:fixed; left:50%; bottom:max(18px, env(safe-area-inset-bottom)); transform:translate(-50%,24px); width:min(92vw,540px); z-index:3400; padding:14px 14px; border-radius:18px; color:#FFF8E9; background:linear-gradient(135deg,rgba(44,23,14,.98),rgba(139,58,43,.97)); border:1px solid rgba(255,218,142,.24); box-shadow:0 20px 55px rgba(20,9,4,.38); display:none; align-items:center; gap:12px; opacity:0; transition:opacity .3s ease, transform .35s var(--smooth); }
+.install-suggestion.show { display:flex; opacity:1; transform:translate(-50%,0); }
+.install-suggestion-icon { width:44px; height:44px; border-radius:13px; flex:none; background:var(--bg-card) url('/icon-192.png') center/cover no-repeat; box-shadow:0 5px 18px rgba(0,0,0,.2); }
+.install-suggestion-copy { flex:1; min-width:0; font-size:11px; line-height:1.45; color:rgba(255,248,233,.78); }
+.install-suggestion-copy strong { display:block; color:#FFF4D4; font-size:13px; margin-bottom:2px; }
+.install-suggestion-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:11px 13px; font-family:'Work Sans',sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
+.install-suggestion-close { border:0; background:transparent; color:rgba(255,255,255,.68); font-size:22px; cursor:pointer; padding:2px; }
+@media (max-width:600px) {
+  .install-suggestion { bottom:calc(76px + env(safe-area-inset-bottom)); width:calc(100vw - 22px); padding:12px; gap:10px; }
+  .install-suggestion-icon { width:40px; height:40px; }
+  .install-suggestion-copy { font-size:10px; }
+  .install-suggestion-copy strong { font-size:12px; }
+  .install-suggestion-action { padding:10px; font-size:9px; }
+}
+
 .modal-overlay#modal-promocoes { z-index: 3500; }
 #modal-promocoes .modal-box { max-width: 800px; }
 </style>
@@ -582,6 +598,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <body>
 
 <div id="toast-container"></div>
+<div class="install-suggestion" id="install-suggestion" role="status" aria-live="polite">
+  <div class="install-suggestion-icon" aria-hidden="true"></div>
+  <div class="install-suggestion-copy"><strong id="install-suggestion-title">Instalar Doce Capricho</strong><span id="install-suggestion-text">Tenha nosso cardápio na sua tela inicial.</span></div>
+  <button type="button" class="install-suggestion-action ripple" id="install-suggestion-action">Instalar</button>
+  <button type="button" class="install-suggestion-close" id="install-suggestion-close" aria-label="Fechar sugestão">×</button>
+</div>
 
 <div class="modal-overlay" id="map-confirm-overlay">
   <div class="modal-box">
@@ -1124,6 +1146,24 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 // PWA: registra o service worker e controla a instalação no Android.
 let deferredPrompt = null;
 const btnInstallApp = document.getElementById('btn-install-app');
+const installSuggestion = document.getElementById('install-suggestion');
+const installSuggestionTitle = document.getElementById('install-suggestion-title');
+const installSuggestionText = document.getElementById('install-suggestion-text');
+const installSuggestionAction = document.getElementById('install-suggestion-action');
+const installSuggestionClose = document.getElementById('install-suggestion-close');
+
+const PLATAFORMA_APP = (() => {
+  const ua = navigator.userAgent || '';
+  const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/i.test(ua);
+  const mac = /Macintosh|Mac OS X/i.test(ua) && !iOS;
+  const windows = /Windows/i.test(ua);
+  const chromeOS = /CrOS/i.test(ua);
+  const linux = /Linux/i.test(ua) && !android && !chromeOS;
+  const safari = /^((?!chrome|android|crios|fxios|edgios|edg).)*safari/i.test(ua);
+  const firefox = /Firefox|FxiOS/i.test(ua);
+  return { iOS, android, mac, windows, chromeOS, linux, safari, firefox };
+})();
 
 function appEstaInstalado() {
   return window.matchMedia('(display-mode: standalone)').matches ||
@@ -1132,12 +1172,50 @@ function appEstaInstalado() {
 
 function ocultarBotaoInstalacao() {
   if (btnInstallApp) btnInstallApp.style.display = 'none';
+  if (installSuggestion) installSuggestion.classList.remove('show');
 }
 
 function exibirBotaoInstalacao() {
   if (btnInstallApp && !appEstaInstalado()) {
     btnInstallApp.style.display = 'block';
   }
+}
+
+function configurarSugestaoInstalacao(tipo) {
+  if (!installSuggestion || appEstaInstalado() || sessionStorage.getItem('dca_install_closed') === '1') return false;
+  if (tipo === 'ios') {
+    installSuggestionTitle.textContent = PLATAFORMA_APP.iOS ? 'Instalar no iPhone ou iPad' : 'Instalar no dispositivo Apple';
+    installSuggestionText.textContent = 'No Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.';
+    installSuggestionAction.textContent = 'Entendi';
+  } else if (tipo === 'mac-safari') {
+    installSuggestionTitle.textContent = 'Instalar no Mac';
+    installSuggestionText.textContent = 'No Safari, abra Compartilhar e escolha “Adicionar ao Dock”.';
+    installSuggestionAction.textContent = 'Entendi';
+  } else {
+    installSuggestionTitle.textContent = 'Instalar Doce Capricho';
+    installSuggestionText.textContent = PLATAFORMA_APP.android
+      ? 'Acesse o cardápio como aplicativo direto da tela inicial.'
+      : 'Abra o cardápio como aplicativo diretamente no computador.';
+    installSuggestionAction.textContent = 'Instalar';
+  }
+  return true;
+}
+
+function tentarExibirSugestaoInstalacao(tipo, tentativas = 30) {
+  if (!configurarSugestaoInstalacao(tipo)) return;
+  const modalAberto = document.querySelector('.modal-overlay.open');
+  const atualizacaoAberta = document.getElementById('update-banner')?.classList.contains('show');
+  if ((modalAberto || atualizacaoAberta) && tentativas > 0) {
+    setTimeout(() => tentarExibirSugestaoInstalacao(tipo, tentativas - 1), 1000);
+    return;
+  }
+  installSuggestion.classList.add('show');
+}
+
+function mostrarOrientacaoManualInstalacao() {
+  if (PLATAFORMA_APP.iOS) tentarExibirSugestaoInstalacao('ios');
+  else if (PLATAFORMA_APP.mac && PLATAFORMA_APP.safari) tentarExibirSugestaoInstalacao('mac-safari');
+  else if (!PLATAFORMA_APP.firefox) tentarExibirSugestaoInstalacao('automatico');
 }
 
 // ------------------------------------------------------------------
@@ -1211,6 +1289,7 @@ window.addEventListener('beforeinstallprompt', function (event) {
   event.preventDefault();
   deferredPrompt = event;
   exibirBotaoInstalacao();
+  setTimeout(() => tentarExibirSugestaoInstalacao('automatico'), 2200);
 });
 
 if (btnInstallApp) {
@@ -1221,7 +1300,7 @@ if (btnInstallApp) {
     }
 
     if (!deferredPrompt) {
-      alert('Para instalar no Android, abra o menu do Chrome e toque em "Instalar app" ou "Adicionar à tela inicial".');
+      mostrarOrientacaoManualInstalacao();
       return;
     }
 
@@ -1241,7 +1320,30 @@ window.addEventListener('appinstalled', function () {
   ocultarBotaoInstalacao();
 });
 
+if (installSuggestionAction) {
+  installSuggestionAction.addEventListener('click', async function () {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const escolha = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (escolha.outcome === 'accepted') ocultarBotaoInstalacao();
+      else installSuggestion.classList.remove('show');
+      return;
+    }
+    installSuggestion.classList.remove('show');
+  });
+}
+
+if (installSuggestionClose) {
+  installSuggestionClose.addEventListener('click', function () {
+    sessionStorage.setItem('dca_install_closed', '1');
+    installSuggestion.classList.remove('show');
+  });
+}
+
 if (appEstaInstalado()) ocultarBotaoInstalacao();
+else if (PLATAFORMA_APP.iOS) setTimeout(() => tentarExibirSugestaoInstalacao('ios'), 2600);
+else if (PLATAFORMA_APP.mac && PLATAFORMA_APP.safari) setTimeout(() => tentarExibirSugestaoInstalacao('mac-safari'), 2600);
 
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -1249,7 +1351,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '69149841000161', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
 
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
