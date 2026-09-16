@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.16-entrega-auto-1">
+<meta name="dca-app-version" content="2026.09.16-entrega-auto-2">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -1127,13 +1127,9 @@ function exibirBotaoInstalacao() {
 // PWA: registro + detecção de nova versão. Sem isso, quem instalou o app
 // pode ficar semanas com o cardápio e os preços antigos em cache.
 // ------------------------------------------------------------------
-let swAguardando = null;
-let recarregandoPorUpdate = false;
-let atualizacaoSomenteConteudo = false;
 const APP_VERSION_ATUAL = document.querySelector('meta[name="dca-app-version"]')?.content || '';
 
-function mostrarAvisoAtualizacao(worker) {
-  swAguardando = worker || null;
+function mostrarAvisoAtualizacao() {
   const banner = document.getElementById('update-banner');
   if (!banner) return;
   banner.style.display = 'flex';
@@ -1152,18 +1148,9 @@ if (btnAplicarUpdate) {
   btnAplicarUpdate.addEventListener('click', function () {
     btnAplicarUpdate.textContent = 'ATUALIZANDO...';
     btnAplicarUpdate.disabled = true;
-    try { if (swAguardando) swAguardando.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
-    if (!swAguardando && atualizacaoSomenteConteudo) {
-      recarregandoPorUpdate = true;
-      const urlAtualizada = new URL(window.location.href);
-      urlAtualizada.searchParams.set('_atualizar', Date.now().toString());
-      window.location.replace(urlAtualizada.toString());
-      return;
-    }
-    // Se o service worker não responder ao SKIP_WAITING, recarrega mesmo assim.
-    setTimeout(function () {
-      if (!recarregandoPorUpdate) { recarregandoPorUpdate = true; window.location.reload(); }
-    }, 2000);
+    const urlAtualizada = new URL(window.location.href);
+    urlAtualizada.searchParams.set('_atualizar', Date.now().toString());
+    window.location.replace(urlAtualizada.toString());
   });
 }
 
@@ -1177,8 +1164,7 @@ async function verificarVersaoDoConteudo() {
     const htmlPublicado = await resposta.text();
     const versaoPublicada = htmlPublicado.match(/<meta\s+name=["']dca-app-version["']\s+content=["']([^"']+)["']/i)?.[1] || '';
     if (versaoPublicada && APP_VERSION_ATUAL && versaoPublicada !== APP_VERSION_ATUAL) {
-      atualizacaoSomenteConteudo = true;
-      mostrarAvisoAtualizacao(null);
+      mostrarAvisoAtualizacao();
     }
   } catch (erro) {
     // Sem conexão: mantém a versão disponível no cache sem incomodar o cliente.
@@ -1186,12 +1172,6 @@ async function verificarVersaoDoConteudo() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('controllerchange', function () {
-    if (recarregandoPorUpdate) return;
-    recarregandoPorUpdate = true;
-    window.location.reload();
-  });
-
   window.addEventListener('load', async function () {
     try {
       const reg = await navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
@@ -1200,18 +1180,6 @@ if ('serviceWorker' in navigator) {
         reg.update().catch(function () {});
         verificarVersaoDoConteudo();
       };
-
-      // Já existe versão nova instalada e parada, esperando ativação.
-      if (reg.waiting && navigator.serviceWorker.controller) mostrarAvisoAtualizacao(reg.waiting);
-
-      reg.addEventListener('updatefound', function () {
-        const novo = reg.installing;
-        if (!novo) return;
-        novo.addEventListener('statechange', function () {
-          // 'installed' com controller já ativo = atualização, não primeira instalação.
-          if (novo.state === 'installed' && navigator.serviceWorker.controller) mostrarAvisoAtualizacao(novo);
-        });
-      });
 
       checarAtualizacao();
       setInterval(checarAtualizacao, 10 * 60 * 1000);
