@@ -47,7 +47,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js"></script>
 
 <style>
 /* PALETA E VARIÁVEIS PREMIUM */
@@ -266,15 +265,6 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #update-banner button { border: none; cursor: pointer; font-family: inherit; }
 #update-banner .upd-btn { background: var(--gold); color: #fff; padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; }
 #update-banner .upd-close { background: transparent; color: var(--text-muted); font-size: 22px; line-height: 1; padding: 0 4px; }
-#notif-opt-overlay .modal-box { max-width: 380px; text-align: center; padding: 30px 26px; }
-#notif-opt-overlay .notif-icon { font-size: 46px; margin-bottom: 6px; }
-#notif-opt-overlay h3 { font-family: var(--font-title); font-size: 20px; margin-bottom: 10px; }
-#notif-opt-overlay p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
-#notif-opt-overlay ul { text-align: left; font-size: 12.5px; color: var(--text-main); list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 9px; }
-#notif-opt-overlay ul li { display: flex; gap: 9px; align-items: flex-start; }
-#notif-opt-overlay .notif-btns { display: flex; flex-direction: column; gap: 10px; }
-#notif-opt-overlay .btn-notif-sim { background: var(--gold); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 13.5px; cursor: pointer; font-family: inherit; }
-#notif-opt-overlay .btn-notif-nao { background: transparent; border: none; color: var(--text-muted); font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 6px; }
 #map-confirm-overlay .modal-box { max-width: 420px; padding: 0; overflow: hidden; }
 #map-confirm-overlay .mapa-header { padding: 18px 20px 4px; }
 #map-confirm-overlay .mapa-header strong { font-family: var(--font-title); font-size: 17px; display: block; margin-bottom: 4px; }
@@ -557,23 +547,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <body>
 
 <div id="toast-container"></div>
-
-<div class="modal-overlay" id="notif-opt-overlay">
-  <div class="modal-box">
-    <div class="notif-icon">🔔</div>
-    <h3 class="brand-font">Quer receber nossas notificações?</h3>
-    <p>Ative as notificações e fique por dentro sem precisar abrir o app toda hora.</p>
-    <ul>
-      <li>🍕 <span>Sabor novo de pizza ou esfiha saiu do forno</span></li>
-      <li>📅 <span>Avisos de funcionamento em datas especiais</span></li>
-      <li>🎉 <span>Combos e promoções do dia</span></li>
-    </ul>
-    <div class="notif-btns">
-      <button type="button" class="btn-notif-sim ripple" id="btn-notif-ativar">Ativar notificações</button>
-      <button type="button" class="btn-notif-nao" id="btn-notif-depois">Agora não</button>
-    </div>
-  </div>
-</div>
 
 <div class="modal-overlay" id="map-confirm-overlay">
   <div class="modal-box">
@@ -1236,9 +1209,6 @@ const soDigitos = s => String(s).replace(/\D/g, '');
 
 const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
 
-// Gere essa chave em: Firebase Console > Configurações do projeto > Cloud Messaging >
-// "Configuração da Web" > "Gerar par de chaves". Sem ela, as notificações não funcionam.
-const NOTIF_VAPID_KEY = 'COLE_AQUI_SUA_VAPID_KEY';
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
 
@@ -2784,88 +2754,6 @@ if (btnGps) {
 
 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
-
-// ------------------------------------------------------------------
-// NOTIFICAÇÕES PUSH
-// Fluxo: 1) na primeira visita, mostramos um modal explicando o valor
-// (pedir a permissão nativa do navegador "no escuro" costuma ser negada
-// e, uma vez negada, o navegador não deixa perguntar de novo). 2) Se o
-// cliente aceitar, pedimos a permissão real, geramos o token FCM e
-// salvamos em 'notif_tokens'. 3) Uma Cloud Function (fora deste arquivo,
-// ver notas de deploy) inscreve esse token no tópico 'novidades'.
-// Depois disso, você envia avisos de sabor novo, funcionamento especial
-// ou combo direto pelo Firebase Console > Messaging > Nova campanha,
-// sem precisar mexer em código nenhuma vez que enviar.
-// ------------------------------------------------------------------
-const NOTIF_PROMPT_KEY = 'dca_notif_prompt_v1';
-let notifMessaging = null;
-
-async function iniciarNotificacoes() {
-  if (!('Notification' in window) || !('serviceWorker' in navigator) || !firebase.messaging) return;
-
-  // Já decidiu antes (aceitou, recusou no navegador, ou fechou nosso modal)? Não insiste de novo.
-  if (localStorage.getItem(NOTIF_PROMPT_KEY)) return;
-  if (Notification.permission === 'denied') { localStorage.setItem(NOTIF_PROMPT_KEY, 'bloqueado-navegador'); return; }
-  if (Notification.permission === 'granted') { localStorage.setItem(NOTIF_PROMPT_KEY, 'ja-ativo'); await capturarTokenNotificacao(); return; }
-
-  setTimeout(() => abrirModal('notif-opt-overlay'), 1200);
-}
-
-async function capturarTokenNotificacao() {
-  try {
-    const registroSW = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-    if (!notifMessaging) notifMessaging = firebase.messaging();
-
-    const token = await notifMessaging.getToken({ vapidKey: NOTIF_VAPID_KEY, serviceWorkerRegistration: registroSW });
-    if (!token) return;
-
-    await db.collection('notif_tokens').doc(token).set({
-      token,
-      topico: 'novidades',
-      criado_em: firebase.firestore.FieldValue.serverTimestamp(),
-      atualizado_em: firebase.firestore.FieldValue.serverTimestamp(),
-      cidade: CONFIG.cidade
-    }, { merge: true });
-
-    notifMessaging.onMessage(payload => {
-      const n = (payload && payload.notification) || {};
-      showToast(`${n.title ? n.title + ': ' : ''}${n.body || 'Você tem uma novidade!'}`, 'success');
-    });
-  } catch (e) {
-    console.warn('[NOTIF] Não foi possível ativar as notificações:', e && e.message);
-  }
-}
-
-const btnNotifAtivar = document.getElementById('btn-notif-ativar');
-if (btnNotifAtivar) {
-  btnNotifAtivar.addEventListener('click', async function () {
-    btnNotifAtivar.disabled = true; btnNotifAtivar.textContent = 'Ativando...';
-    try {
-      const permissao = await Notification.requestPermission();
-      localStorage.setItem(NOTIF_PROMPT_KEY, permissao === 'granted' ? 'ja-ativo' : 'recusado');
-      if (permissao === 'granted') {
-        await capturarTokenNotificacao();
-        showToast('Prontinho! Você vai receber nossos avisos por aqui.', 'success');
-      } else {
-        showToast('Sem problema, você pode ativar depois nas configurações do navegador.', 'warning');
-      }
-    } catch (e) {
-      console.warn('[NOTIF]', e);
-    } finally {
-      fecharModal('notif-opt-overlay');
-    }
-  });
-}
-
-const btnNotifDepois = document.getElementById('btn-notif-depois');
-if (btnNotifDepois) {
-  btnNotifDepois.addEventListener('click', function () {
-    localStorage.setItem(NOTIF_PROMPT_KEY, 'adiado');
-    fecharModal('notif-opt-overlay');
-  });
-}
-
-iniciarNotificacoes();
 
 function processarConfig(doc) {
   if(doc.exists) {
