@@ -401,6 +401,37 @@ input:checked + .slider:before { transform: translateX(18px); }
     </div>
 
     <div id="tab-divulgacao" class="tab-content">
+      <div style="margin-bottom: 24px; padding: 16px; border: 1px solid var(--border-light); border-radius: 10px; background: #F8FAFC;">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">📣 Pop-up de divulgação</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">Publique um aviso no site sem alterar o código. Uma nova publicação recebe um identificador diferente e volta a aparecer para todos os clientes.</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Título *</label>
+          <input type="text" id="aviso-titulo" maxlength="80" placeholder="Ex: Novo sabor disponível!" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Descrição</label>
+          <textarea id="aviso-descricao" maxlength="300" rows="4" placeholder="Conte a novidade ao cliente" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px; resize:vertical;"></textarea>
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">URL HTTPS da imagem (opcional)</label>
+          <input type="url" id="aviso-imagem" placeholder="https://.../imagem.jpg" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Texto do botão</label>
+              <input type="text" id="aviso-botao-texto" maxlength="40" value="VER NOVIDADE" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Destino</label>
+              <input type="text" id="aviso-destino" value="#cardapio" placeholder="#cardapio ou https://..." style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <div id="aviso-status-admin" style="font-size:10px; font-weight:700; color:var(--text-muted); min-height:14px;"></div>
+          <button type="button" onclick="publicarAvisoPopup(event)" class="btn-gradient" style="padding:12px; width:100%;">Publicar nova divulgação</button>
+          <button type="button" onclick="desativarAvisoPopup(event)" style="padding:11px; width:100%; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">Desativar pop-up atual</button>
+        </div>
+      </div>
+
       <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
         <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">📢 Gerador de QR Code (Alta Qualidade)</strong>
         <p style="font-size:10px; color:var(--text-muted); margin-bottom:15px; line-height: 1.4;">Baixe a imagem e envie para a gráfica imprimir nas suas caixas. Qualquer celular poderá escanear na mesa de jantar!</p>
@@ -522,6 +553,7 @@ function iniciarSistema() {
         document.getElementById('select-status-loja').value = configuracoesGlobais.statusLoja;
         document.getElementById('select-modo-promo').value = configuracoesGlobais.modoPromocoes;
         document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
+        preencherFormularioAviso(configuracoesGlobais.avisoPopup || null);
     }
     atualizarUIConfig();
   });
@@ -848,6 +880,86 @@ async function gerarRelatorio() {
 }
 
 let qrCodeObj = null;
+
+function preencherFormularioAviso(aviso) {
+  const status = document.getElementById('aviso-status-admin');
+  if (!status) return;
+
+  if (!aviso) {
+    status.textContent = 'Nenhuma divulgação publicada.';
+    return;
+  }
+
+  document.getElementById('aviso-titulo').value = aviso.titulo || '';
+  document.getElementById('aviso-descricao').value = aviso.descricao || '';
+  document.getElementById('aviso-imagem').value = aviso.imagem || '';
+  document.getElementById('aviso-botao-texto').value = aviso.botaoTexto || 'VER NOVIDADE';
+  document.getElementById('aviso-destino').value = aviso.destino || '#cardapio';
+  status.textContent = aviso.ativo ? '🟢 Pop-up ativo no site.' : '⚪ Pop-up desativado.';
+}
+
+async function publicarAvisoPopup(e) {
+  const btn = e.currentTarget;
+  const titulo = document.getElementById('aviso-titulo').value.trim();
+  const descricao = document.getElementById('aviso-descricao').value.trim();
+  const imagem = document.getElementById('aviso-imagem').value.trim();
+  const botaoTexto = document.getElementById('aviso-botao-texto').value.trim();
+  const destino = document.getElementById('aviso-destino').value.trim();
+
+  if (!titulo) return alert('Informe o título da divulgação.');
+  if (imagem && !/^https:\/\//i.test(imagem)) return alert('A imagem precisa usar uma URL HTTPS.');
+  if (destino && !destino.startsWith('#') && !/^https:\/\//i.test(destino)) {
+    return alert('O destino deve começar com # ou usar uma URL HTTPS.');
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'PUBLICANDO...';
+
+  const avisoPopup = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    ativo: true,
+    titulo,
+    descricao,
+    imagem,
+    botaoTexto: botaoTexto || 'VER NOVIDADE',
+    destino: destino || '#cardapio',
+    publicadoEm: firebase.firestore.Timestamp.now()
+  };
+
+  try {
+    await db.collection('configuracoes').doc('geral').set({ avisoPopup }, { merge: true });
+    document.getElementById('aviso-status-admin').textContent = '🟢 Divulgação publicada com sucesso.';
+    btn.textContent = 'PUBLICADO!';
+  } catch (erro) {
+    console.error('[AVISO POPUP]', erro);
+    alert('Não foi possível publicar. Confirme sua conexão e seu login.');
+    btn.textContent = 'PUBLICAR NOVA DIVULGAÇÃO';
+  } finally {
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'PUBLICAR NOVA DIVULGAÇÃO';
+    }, 1800);
+  }
+}
+
+async function desativarAvisoPopup(e) {
+  if (!confirm('Deseja desativar o pop-up atual?')) return;
+  const btn = e.currentTarget;
+  btn.disabled = true;
+
+  try {
+    const atual = configuracoesGlobais.avisoPopup || {};
+    await db.collection('configuracoes').doc('geral').set({
+      avisoPopup: { ...atual, ativo: false }
+    }, { merge: true });
+    document.getElementById('aviso-status-admin').textContent = '⚪ Pop-up desativado.';
+  } catch (erro) {
+    console.error('[AVISO POPUP]', erro);
+    alert('Não foi possível desativar o pop-up.');
+  } finally {
+    btn.disabled = false;
+  }
+}
 
 function gerarQRCode() {
   const container = document.getElementById('qrcode-container');
