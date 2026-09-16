@@ -463,6 +463,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .footer-socials a:hover { color: var(--gold-dark); border-color: var(--gold); transform: translateY(-4px); background: var(--bg-card); box-shadow: var(--shadow-sm);} :root[data-theme="dark"] .footer-socials a:hover { color: var(--gold); background: rgba(212,175,55,0.1); }
 .footer-socials svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .footer-info { font-size: 13px; color: var(--text-muted); line-height: 1.8; letter-spacing: 1px; font-weight: 500;} :root[data-theme="dark"] .footer-info { font-weight: 400; }
+.footer-company-btn { appearance: none; border: 0; background: transparent; color: var(--gold-dark); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .8px; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: 6px 10px; } :root[data-theme="dark"] .footer-company-btn { color: var(--gold); }
+.company-data { display: grid; gap: 14px; text-align: left; }
+.company-data-row { padding: 14px 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); }
+.company-data-row span { display: block; color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; }
+.company-data-row strong { display: block; color: var(--text-main); font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.company-data-note { color: var(--text-muted); font-size: 11px; line-height: 1.6; text-align: left; margin-top: 16px; }
 .footer-copy { font-size: 11px; color: #A0AEC0; margin-top: 10px; font-weight: 500;} :root[data-theme="dark"] .footer-copy { color: #666; font-weight: 400; }
 
 @media (max-width: 768px) {
@@ -679,7 +685,9 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="footer-info">
     <p>São Miguel / RN</p>
     <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
+    <p>CNPJ 69.149.841/0001-61</p>
   </div>
+  <button type="button" class="footer-company-btn ripple" id="btn-company-data">Dados da empresa</button>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
@@ -1014,6 +1022,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="company-data-overlay">
+  <div class="modal-box" style="max-width: 480px;">
+    <button class="close-modal ripple" data-close="company-data-overlay" aria-label="Fechar dados da empresa">&times;</button>
+    <h2 class="brand-font">Dados da Empresa</h2>
+    <div class="company-data">
+      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Ateliê</strong></div>
+      <div class="company-data-row"><span>Razão social</span><strong>69.149.841 Carlos Henrique Vitor Gomes</strong></div>
+      <div class="company-data-row"><span>CNPJ</span><strong>69.149.841/0001-61</strong></div>
+      <div class="company-data-row"><span>Endereço</span><strong>Rua Monsenhor José Aires, 188, Centro — São Miguel/RN</strong></div>
+    </div>
+    <p class="company-data-note">Informações cadastrais disponibilizadas para identificação e transparência do estabelecimento.</p>
   </div>
 </div>
 
@@ -2334,6 +2356,7 @@ document.addEventListener('click', e => {
 });
 
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+$('#btn-company-data').addEventListener('click', () => abrirModal('company-data-overlay'));
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
 
