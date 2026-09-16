@@ -538,6 +538,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .modal-overlay#promo-banner-overlay { z-index: 3800 !important; align-items: center; justify-content: center; padding: 20px;}
 #promo-modal-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 500px; border-radius: 24px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
 #promo-banner-overlay.open #promo-modal-box { transform: scale(1); }
+.modal-overlay#aviso-popup-overlay { z-index: 4100 !important; align-items: center; justify-content: center; padding: 20px; }
+#aviso-popup-box { padding: 0; background: var(--bg-card); border: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 500px; border-radius: 24px; transform: scale(0.9); margin: auto; display: flex; flex-direction: column; overflow: hidden; }
+#aviso-popup-overlay.open #aviso-popup-box { transform: scale(1); }
+#aviso-popup-img-wrap { width: 100%; max-height: 330px; background: linear-gradient(135deg, rgba(221,167,58,.18), rgba(139,58,43,.13)); display: none; align-items: center; justify-content: center; overflow: hidden; }
+#aviso-popup-img { width: 100%; height: 100%; max-height: 330px; object-fit: cover; display: block; }
+.aviso-popup-content { padding: 28px; text-align: center; }
 .promo-img-wrapper { width: 100%; height: 350px; background: var(--img-bg); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .promo-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
 .promo-content { background: var(--bg-card); padding: 35px; text-align: center; flex-shrink: 0; }
@@ -625,7 +631,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="hero-carousel" id="hero-carousel"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <span class="hero-eyebrow">Atelier artesanal em São Miguel, RN</span>
+    <span class="hero-eyebrow">Ateliê artesanal em São Miguel, RN</span>
     <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
     <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
     <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
@@ -648,7 +654,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="review-cta">
     <div>
       <strong>Gostou do pedido?</strong>
-      <p>Deixe sua avaliação no Google e ajude outras pessoas a conhecer o atelier.</p>
+      <p>Deixe sua avaliação no Google e ajude outras pessoas a conhecer o ateliê.</p>
     </div>
     <a href="https://g.page/r/CdZZy4ieQQE3ECE/review" id="link-avaliar-google" class="btn-gradient ripple" target="_blank" rel="noopener noreferrer">Avaliar no Google</a>
   </div>
@@ -1056,7 +1062,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <button class="close-modal ripple" data-close="company-data-overlay" aria-label="Fechar dados da empresa">&times;</button>
     <h2 class="brand-font">Dados da Empresa</h2>
     <div class="company-data">
-      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Atelier</strong></div>
+      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Ateliê</strong></div>
       <div class="company-data-row"><span>Razão social</span><strong>69.149.841 Carlos Henrique Vitor Gomes</strong></div>
       <div class="company-data-row"><span>CNPJ</span><strong>69.149.841/0001-61</strong></div>
       <div class="company-data-row"><span>Endereço</span><strong>Rua Monsenhor José Aires, 188, Centro — São Miguel/RN</strong></div>
@@ -1076,6 +1082,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
       <p id="promo-banner-desc" style="font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">Separamos combos incríveis para o seu dia. Aproveite!</p>
       <button class="btn-gradient ripple" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 13px; font-weight: 800; letter-spacing: 2px;" onclick="irParaCombos()">EU QUERO VER</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="aviso-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="aviso-popup-title">
+  <div class="modal-box" id="aviso-popup-box">
+    <button class="btn-close-promo ripple" data-close="aviso-popup-overlay" aria-label="Fechar divulgação">&times;</button>
+    <div id="aviso-popup-img-wrap">
+      <img id="aviso-popup-img" src="" alt="">
+    </div>
+    <div class="aviso-popup-content">
+      <h2 id="aviso-popup-title" class="brand-font" style="margin-bottom:10px; border:none; padding:0;"></h2>
+      <p id="aviso-popup-desc" style="font-size:14px; color:var(--text-muted); margin-bottom:25px; line-height:1.6;"></p>
+      <button type="button" id="aviso-popup-btn" class="btn-gradient ripple" style="width:100%; padding:18px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1.5px;"></button>
     </div>
   </div>
 </div>
@@ -2864,10 +2884,85 @@ function processarConfig(doc) {
         abrirModal('modal-aviso-pausa'); 
     }
     lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
+    processarAvisoPopup(configLoja.avisoPopup);
     
     configsCarregadasDB = true; 
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
   }
+}
+
+const AVISO_POPUP_STORAGE_KEY = 'dca_aviso_popup_visto';
+let avisoPopupAgendadoId = null;
+
+function destinoAvisoSeguro(destino) {
+  const valor = String(destino || '').trim();
+  return valor.startsWith('#') || /^https:\/\//i.test(valor) ? valor : '#cardapio';
+}
+
+function executarDestinoAviso(destino) {
+  fecharModal('aviso-popup-overlay');
+  const alvo = destinoAvisoSeguro(destino);
+
+  setTimeout(() => {
+    if (alvo === '#modal-promocoes') {
+      abrirModal('modal-promocoes');
+      return;
+    }
+
+    if (alvo.startsWith('#')) {
+      const elemento = document.querySelector(alvo);
+      if (elemento) elemento.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    window.location.href = alvo;
+  }, 320);
+}
+
+function processarAvisoPopup(aviso) {
+  if (!aviso || aviso.ativo !== true || !aviso.id || !aviso.titulo) return;
+
+  const id = String(aviso.id);
+  if (localStorage.getItem(AVISO_POPUP_STORAGE_KEY) === id || avisoPopupAgendadoId === id) return;
+
+  avisoPopupAgendadoId = id;
+  bannerJaMostrado = true;
+
+  const titulo = document.getElementById('aviso-popup-title');
+  const descricao = document.getElementById('aviso-popup-desc');
+  const botao = document.getElementById('aviso-popup-btn');
+  const imagem = document.getElementById('aviso-popup-img');
+  const imagemWrap = document.getElementById('aviso-popup-img-wrap');
+
+  titulo.textContent = aviso.titulo;
+  descricao.textContent = aviso.descricao || '';
+  descricao.style.display = aviso.descricao ? 'block' : 'none';
+  botao.textContent = aviso.botaoTexto || 'VER NOVIDADE';
+  botao.onclick = () => executarDestinoAviso(aviso.destino);
+
+  if (aviso.imagem && /^https:\/\//i.test(aviso.imagem)) {
+    imagemWrap.style.display = 'flex';
+    imagem.style.display = 'block';
+    imagem.alt = aviso.titulo;
+    imagem.onerror = () => { imagemWrap.style.display = 'none'; };
+    imagem.src = aviso.imagem;
+  } else {
+    imagem.removeAttribute('src');
+    imagemWrap.style.display = 'none';
+  }
+
+  const tentarAbrir = (tentativasRestantes) => {
+    const outroModalAberto = document.querySelector('.modal-overlay.open');
+    if (outroModalAberto && tentativasRestantes > 0) {
+      setTimeout(() => tentarAbrir(tentativasRestantes - 1), 700);
+      return;
+    }
+
+    localStorage.setItem(AVISO_POPUP_STORAGE_KEY, id);
+    abrirModal('aviso-popup-overlay');
+  };
+
+  setTimeout(() => tentarAbrir(12), 900);
 }
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { 
   console.error('[CONFIG]', error.code, error.message); 
