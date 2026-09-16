@@ -1351,7 +1351,7 @@ const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const soDigitos = s => String(s).replace(/\D/g, '');
 
-const CONFIG = { whatsapp: '5585921440055', pixChave: '+5585921440055', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
+const CONFIG = { whatsapp: '5585921440055', pixChave: '69149841000161', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
 
 document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
 const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
