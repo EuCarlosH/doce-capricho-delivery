@@ -226,20 +226,6 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .btn-add:hover { background: var(--gold); color: #FFF; border-color: var(--gold); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .btn-add:hover { color: var(--bg-main); }
 .card.selecionada .btn-add { background: var(--gold); color: #FFF; border-color: var(--gold); transform: rotate(0deg); } :root[data-theme="dark"] .card.selecionada .btn-add { color: var(--bg-main); }
 
-/* Cards compactos exclusivos para o catalogo de esfihas */
-.grid-menu.esfiha-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-.esfiha-grid .card-img-wrap { height: 170px; }
-.esfiha-grid .card-content { padding: 18px; }
-.esfiha-grid .card-title { margin-bottom: 7px; }
-.esfiha-grid .card-desc {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  margin-bottom: 16px;
-}
-.esfiha-grid .btn-add { width: 36px; height: 36px; border-radius: 10px; font-size: 18px; }
-
 .extras-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); margin-top: 10px; } :root[data-theme="dark"] .extras-table { border-radius: 12px; border-color: transparent;}
 .extras-table th, .extras-table td { padding: 18px 20px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-light); }
 .extras-table th { color: var(--text-main); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; background: var(--bg-main);} :root[data-theme="dark"] .extras-table th { color: var(--gold); font-weight: 700; background: rgba(255,255,255,0.02); border-bottom-color: rgba(255,255,255,0.05); }
@@ -477,6 +463,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .footer-socials a:hover { color: var(--gold-dark); border-color: var(--gold); transform: translateY(-4px); background: var(--bg-card); box-shadow: var(--shadow-sm);} :root[data-theme="dark"] .footer-socials a:hover { color: var(--gold); background: rgba(212,175,55,0.1); }
 .footer-socials svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .footer-info { font-size: 13px; color: var(--text-muted); line-height: 1.8; letter-spacing: 1px; font-weight: 500;} :root[data-theme="dark"] .footer-info { font-weight: 400; }
+.footer-company-btn { appearance: none; border: 0; background: transparent; color: var(--gold-dark); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .8px; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: 6px 10px; } :root[data-theme="dark"] .footer-company-btn { color: var(--gold); }
+.company-data { display: grid; gap: 14px; text-align: left; }
+.company-data-row { padding: 14px 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); }
+.company-data-row span { display: block; color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; }
+.company-data-row strong { display: block; color: var(--text-main); font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.company-data-note { color: var(--text-muted); font-size: 11px; line-height: 1.6; text-align: left; margin-top: 16px; }
 .footer-copy { font-size: 11px; color: #A0AEC0; margin-top: 10px; font-weight: 500;} :root[data-theme="dark"] .footer-copy { color: #666; font-weight: 400; }
 
 @media (max-width: 768px) {
@@ -510,18 +502,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   #promo-modal-box { max-width: 100%; width: 100%; border-radius: 30px 30px 0 0; margin: 0; max-height: 88vh; overflow-y: auto; }
   .promo-img-wrapper { height: 260px; }
   .promo-content { padding: 30px 20px; }
-
-  /* Duas opcoes de esfiha visiveis lado a lado no celular */
-  .grid-menu.esfiha-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .esfiha-grid .card { border-radius: 12px; }
-  .esfiha-grid .card-img-wrap { height: auto; aspect-ratio: 1 / 0.82; }
-  .esfiha-grid .card-content { padding: 12px; }
-  .esfiha-grid .card-title { font-size: 13px; line-height: 1.3; margin-bottom: 10px; }
-  .esfiha-grid .card-desc { display: none; }
-  .esfiha-grid .card-price-text { font-size: 14px; }
-  .esfiha-grid .btn-add { width: 32px; height: 32px; border-radius: 9px; font-size: 17px; flex-shrink: 0; }
-  .esfiha-grid .badges-container { top: 7px; right: 7px; gap: 4px; }
-  .esfiha-grid .badge-destaque { padding: 4px 6px; border-radius: 6px; font-size: 7px; letter-spacing: 0.5px; }
 }
 
 @media (max-width: 450px) {
@@ -675,13 +655,13 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
     <div id="wrap-esfihas" style="order: 3; padding-top: 60px;">
       <h3 class="category-title brand-font" id="cat-esfihas-trad" style="margin-top: 0;">Esfihas Tradicionais</h3>
-      <div class="grid-menu esfiha-grid" id="grid-esfihas-trad"></div>
+      <div class="grid-menu" id="grid-esfihas-trad"></div>
       
       <h3 class="category-title brand-font" id="cat-esfihas-prem" style="margin-top: 60px;">Esfihas Premium</h3>
-      <div class="grid-menu esfiha-grid" id="grid-esfihas-prem"></div>
+      <div class="grid-menu" id="grid-esfihas-prem"></div>
 
       <h3 class="category-title brand-font" id="cat-esfihas-doces" style="margin-top: 60px;">Esfihas Doces</h3>
-      <div class="grid-menu esfiha-grid" id="grid-esfihas-doces"></div>
+      <div class="grid-menu" id="grid-esfihas-doces"></div>
     </div>
 
     <div id="wrap-extras" style="order: 4; padding-top: 60px;">
@@ -705,7 +685,9 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="footer-info">
     <p>São Miguel / RN</p>
     <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
+    <p>CNPJ 69.149.841/0001-61</p>
   </div>
+  <button type="button" class="footer-company-btn ripple" id="btn-company-data">Dados da empresa</button>
   <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
@@ -1043,6 +1025,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </div>
 </div>
 
+<div class="modal-overlay" id="company-data-overlay">
+  <div class="modal-box" style="max-width: 480px;">
+    <button class="close-modal ripple" data-close="company-data-overlay" aria-label="Fechar dados da empresa">&times;</button>
+    <h2 class="brand-font">Dados da Empresa</h2>
+    <div class="company-data">
+      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Ateliê</strong></div>
+      <div class="company-data-row"><span>Razão social</span><strong>69.149.841 Carlos Henrique Vitor Gomes</strong></div>
+      <div class="company-data-row"><span>CNPJ</span><strong>69.149.841/0001-61</strong></div>
+      <div class="company-data-row"><span>Endereço</span><strong>Rua Monsenhor José Aires, 188, Centro — São Miguel/RN</strong></div>
+    </div>
+    <p class="company-data-note">Informações cadastrais disponibilizadas para identificação e transparência do estabelecimento.</p>
+  </div>
+</div>
+
 <div class="modal-overlay" id="promo-banner-overlay">
   <div class="modal-box" id="promo-modal-box">
     <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
@@ -1235,7 +1231,7 @@ const CARDAPIO = {
     { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
     { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
     { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1100 },
+    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 },
     { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
   ],
   esfihas_doces: [
@@ -2360,6 +2356,7 @@ document.addEventListener('click', e => {
 });
 
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+$('#btn-company-data').addEventListener('click', () => abrirModal('company-data-overlay'));
 $$('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) fecharModal(ov.id); }));
 $$('[data-close]').forEach(b => b.addEventListener('click', () => fecharModal(b.dataset.close)));
 
