@@ -158,6 +158,16 @@ input:checked + .slider:before { transform: translateX(18px); }
 .section-subtitle { font-size: 11px; color: var(--text-muted); margin: 15px 0 8px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
 .btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s ease; cursor: pointer; border-radius: 8px;}
 .btn-gradient:hover { background-position: right center; box-shadow: 0 5px 15px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
+.divulgacao-form { display: grid; gap: 10px; }
+.divulgacao-form label { display: grid; gap: 5px; font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; }
+.divulgacao-form input, .divulgacao-form textarea, .divulgacao-form select { width: 100%; padding: 11px; border: 1px solid var(--border-light); border-radius: 7px; background: #FFF; color: var(--text-main); font: 500 11px 'Montserrat', sans-serif; resize: vertical; }
+.divulgacao-form input:focus, .divulgacao-form textarea:focus, .divulgacao-form select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(221,167,58,.1); }
+.aviso-preview { display: none; overflow: hidden; border: 1px solid var(--border-light); border-radius: 10px; background: #FFF; }
+.aviso-preview.show { display: block; }
+.aviso-preview img { display: block; width: 100%; max-height: 190px; object-fit: cover; }
+.aviso-preview-info { padding: 12px; font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+.aviso-status { padding: 10px 12px; border-radius: 8px; background: #F8FAFC; border: 1px solid var(--border-light); font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+.aviso-status strong { color: var(--text-main); }
 
 .dia-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; margin-bottom: 8px; background: #F8FAFC; border-radius: 8px; border: 1px solid var(--border-light); transition: all 0.2s ease; }
 .dia-row:hover { border-color: rgba(221, 167, 58, 0.4); box-shadow: var(--shadow-sm); }
@@ -401,6 +411,51 @@ input:checked + .slider:before { transform: translateX(18px); }
     </div>
 
     <div id="tab-divulgacao" class="tab-content">
+      <div style="margin-bottom: 22px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">✨ Aviso em destaque</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">Publique uma novidade que aparecerá automaticamente ao cliente. A imagem é opcional e deve ser um endereço HTTPS ou um caminho do site, como <b>img/avisos/lancamento.webp</b>.</p>
+
+        <div class="divulgacao-form">
+          <label>Título
+            <input type="text" id="aviso-titulo" maxlength="80" placeholder="Ex: Novo sabor disponível!">
+          </label>
+          <label>Descrição
+            <textarea id="aviso-descricao" rows="3" maxlength="240" placeholder="Conte a novidade de forma curta e convidativa."></textarea>
+          </label>
+          <label>Imagem opcional — URL ou caminho
+            <input type="text" id="aviso-imagem" maxlength="500" placeholder="img/avisos/novo-sabor.webp" oninput="atualizarPreviewAviso()">
+          </label>
+          <div class="aviso-preview" id="aviso-preview">
+            <img id="aviso-preview-img" alt="Prévia da campanha">
+            <div class="aviso-preview-info">Prévia da imagem. Caso o caminho ainda não esteja publicado no site, ela aparecerá somente depois do deploy.</div>
+          </div>
+          <label>Texto do botão
+            <input type="text" id="aviso-botao" maxlength="35" value="VER NOVIDADE">
+          </label>
+          <label>Destino do botão
+            <select id="aviso-destino">
+              <option value="#cardapio">Cardápio</option>
+              <option value="#wrap-pizzas">Pizzas</option>
+              <option value="#wrap-esfihas">Esfihas</option>
+              <option value="combos">Combos e ofertas</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+          </label>
+          <label>Frequência de exibição
+            <select id="aviso-frequencia">
+              <option value="uma_vez">Uma vez por campanha</option>
+              <option value="uma_vez_dia">Uma vez por dia</option>
+              <option value="sempre">Sempre que abrir o site/app</option>
+            </select>
+          </label>
+          <div class="aviso-status" id="aviso-status"><strong>Status:</strong> nenhum aviso publicado.</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <button type="button" onclick="publicarAvisoPopup(event)" class="btn-gradient" style="padding:12px;">Publicar aviso</button>
+            <button type="button" onclick="desativarAvisoPopup(event)" style="padding:12px; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font:800 10px 'Montserrat',sans-serif; text-transform:uppercase; cursor:pointer;">Desativar</button>
+          </div>
+        </div>
+      </div>
+
       <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
         <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">📢 Gerador de QR Code (Alta Qualidade)</strong>
         <p style="font-size:10px; color:var(--text-muted); margin-bottom:15px; line-height: 1.4;">Baixe a imagem e envie para a gráfica imprimir nas suas caixas. Qualquer celular poderá escanear na mesa de jantar!</p>
@@ -446,6 +501,7 @@ let auth = firebase.auth();
 let pedidosMap = new Map(); 
 let crmCache = new Map();
 let configuracoesGlobais = { statusLoja: 'auto', itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
+let avisoPopupAtual = null;
 let somLigado = true; 
 let chartInstance = null;
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
@@ -525,6 +581,11 @@ function iniciarSistema() {
     }
     atualizarUIConfig();
   });
+
+  db.collection('configuracoes').doc('avisoPopup').onSnapshot(doc => {
+    avisoPopupAtual = doc.exists ? doc.data() : null;
+    preencherFormularioAviso(avisoPopupAtual);
+  }, err => console.warn('[AVISO POPUP]', err.code));
 
   const hoje = new Date(); hoje.setHours(0,0,0,0);
   db.collection('pedidos').where('data_pedido', '>=', hoje).orderBy('data_pedido', 'asc').onSnapshot(snapshot => {
@@ -735,6 +796,72 @@ function salvarTextoFuncionamento(e) {
   db.collection('configuracoes').doc('geral').set({ textoFuncionamento: document.getElementById('input-texto-funcionamento').value.trim() }, { merge: true }).then(() => {
     btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Rodapé', 2000);
   }).catch(err => alert("Erro."));
+}
+
+function preencherFormularioAviso(aviso) {
+  const dados = aviso || {};
+  document.getElementById('aviso-titulo').value = dados.titulo || '';
+  document.getElementById('aviso-descricao').value = dados.descricao || '';
+  document.getElementById('aviso-imagem').value = dados.imagemUrl || '';
+  document.getElementById('aviso-botao').value = dados.textoBotao || 'VER NOVIDADE';
+  document.getElementById('aviso-destino').value = ['#cardapio','#wrap-pizzas','#wrap-esfihas','combos','whatsapp'].includes(dados.destino) ? dados.destino : '#cardapio';
+  document.getElementById('aviso-frequencia').value = ['uma_vez','uma_vez_dia','sempre'].includes(dados.frequencia) ? dados.frequencia : 'uma_vez';
+  const status = document.getElementById('aviso-status');
+  status.innerHTML = dados.id
+    ? `<strong>Status:</strong> ${dados.ativo ? '🟢 ativo' : '⚪ desativado'} · Publicação ${esc(dados.id)}`
+    : '<strong>Status:</strong> nenhum aviso publicado.';
+  atualizarPreviewAviso();
+}
+
+function imagemAvisoValida(valor) {
+  if (!valor) return true;
+  if (/^https:\/\//i.test(valor)) return true;
+  return /^(?:\.\/)?(?:img|images|assets)\/[a-zA-Z0-9_./%-]+$/.test(valor);
+}
+
+function atualizarPreviewAviso() {
+  const valor = document.getElementById('aviso-imagem').value.trim();
+  const box = document.getElementById('aviso-preview');
+  const img = document.getElementById('aviso-preview-img');
+  if (!valor || !imagemAvisoValida(valor)) { box.classList.remove('show'); img.removeAttribute('src'); return; }
+  img.onerror = () => box.classList.remove('show');
+  img.onload = () => box.classList.add('show');
+  img.src = valor;
+}
+
+function publicarAvisoPopup(e) {
+  const btn = e.currentTarget;
+  const titulo = document.getElementById('aviso-titulo').value.trim();
+  const descricao = document.getElementById('aviso-descricao').value.trim();
+  const imagemUrl = document.getElementById('aviso-imagem').value.trim();
+  if (!titulo || !descricao) return alert('Informe o título e a descrição do aviso.');
+  if (!imagemAvisoValida(imagemUrl)) return alert('Use uma URL HTTPS ou um caminho de imagem do site, como img/avisos/campanha.webp.');
+
+  const aviso = {
+    ativo: true,
+    id: `aviso_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    titulo,
+    descricao,
+    imagemUrl,
+    textoBotao: document.getElementById('aviso-botao').value.trim() || 'VER NOVIDADE',
+    destino: document.getElementById('aviso-destino').value,
+    frequencia: document.getElementById('aviso-frequencia').value,
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  btn.disabled = true; btn.textContent = 'Publicando...';
+  db.collection('configuracoes').doc('avisoPopup').set(aviso).then(() => {
+    btn.textContent = 'Publicado!';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Publicar aviso'; }, 1800);
+  }).catch(err => { console.error(err); btn.disabled = false; btn.textContent = 'Publicar aviso'; alert('Não foi possível publicar o aviso.'); });
+}
+
+function desativarAvisoPopup(e) {
+  if (!avisoPopupAtual || !avisoPopupAtual.id) return alert('Não existe aviso publicado para desativar.');
+  const btn = e.currentTarget; btn.disabled = true; btn.textContent = 'Desativando...';
+  db.collection('configuracoes').doc('avisoPopup').set({ ativo: false, atualizadoEm: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => {
+    btn.textContent = 'Desativado'; setTimeout(() => { btn.disabled = false; btn.textContent = 'Desativar'; }, 1600);
+  }).catch(err => { console.error(err); btn.disabled = false; btn.textContent = 'Desativar'; alert('Não foi possível desativar o aviso.'); });
 }
 
 function salvarHorarios(e) {
