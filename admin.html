@@ -343,6 +343,7 @@ input:checked + .slider:before { transform: translateX(18px); }
       <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">Pizzas</button>
       <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">Esfihas</button>
       <button class="tab-btn" onclick="switchTab('tab-descontos', this)">Descontos</button>
+      <button class="tab-btn" onclick="switchTab('tab-cupons', this)">Cupons</button>
       <button class="tab-btn" onclick="switchTab('tab-divulgacao', this)">Divulgação</button>
     </div>
 
@@ -429,6 +430,56 @@ input:checked + .slider:before { transform: translateX(18px); }
           <button type="button" onclick="desativarPromocaoGeral(event)" style="padding:11px; width:100%; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">Desativar desconto atual</button>
         </div>
       </div>
+    </div>
+
+    <div id="tab-cupons" class="tab-content">
+      <div style="padding:16px; border:1px solid var(--border-light); border-radius:10px; background:#F8FAFC; margin-bottom:16px;">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">🎟️ Criar cupom</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">O código será convertido em maiúsculas. Use letras, números, hífen ou sublinhado, sem espaços.</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Código do cupom</label>
+          <input type="text" id="cupom-codigo-admin" maxlength="24" placeholder="Ex: INSTA10" autocomplete="off" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:12px; font-weight:800; text-transform:uppercase;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Tipo</label>
+              <select id="cupom-tipo-admin" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+                <option value="percentual">Percentual (%)</option>
+                <option value="fixo">Valor fixo (R$)</option>
+              </select>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Valor</label>
+              <input type="number" id="cupom-valor-admin" min="1" step="1" placeholder="Ex: 10" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Pedido mínimo (R$)</label>
+          <input type="text" id="cupom-minimo-admin" inputmode="decimal" value="0,00" placeholder="Ex: 50,00" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Início</label>
+              <input type="datetime-local" id="cupom-inicio-admin" style="padding:10px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Término</label>
+              <input type="datetime-local" id="cupom-fim-admin" style="padding:10px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <label style="display:flex; align-items:center; gap:9px; font-size:11px; font-weight:700; color:var(--text-main); cursor:pointer;">
+            <input type="checkbox" id="cupom-acumula-admin" style="width:17px; height:17px; accent-color:var(--success);">
+            Permitir junto com o desconto geral
+          </label>
+
+          <button type="button" onclick="salvarCupom(event)" class="btn-gradient" style="padding:12px; width:100%;">Criar ou atualizar cupom</button>
+        </div>
+      </div>
+
+      <h4 class="section-subtitle">Cupons cadastrados</h4>
+      <div id="lista-cupons-admin"><div class="empty-state">Carregando cupons...</div></div>
     </div>
 
     <div id="tab-divulgacao" class="tab-content">
@@ -604,6 +655,7 @@ function iniciarSistema() {
     if (existeNovo && somLigado) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
   });
   setInterval(renderizarKanban, 30000);
+  iniciarMonitoramentoCupons();
 }
 
 // ------------------------------------------------------------------
@@ -872,7 +924,7 @@ function imprimirComanda(id) {
   
   html += `<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
   p.itens.forEach(i => { html += `<div class="item-row"><span class="bold">${i.qtd}x ${i.nome}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`; if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${e.nome} (${e.aplicacao})</div>`; }); } if(i.obs) { html += `<div class="obs">OBS: ${i.obs}</div>`; } html += `<br>`; });
-  html += `<div class="linha"></div>${p.desconto_centavos?`<div class="flex"><span>Itens:</span><span>${brl(p.subtotal_bruto_centavos || (p.subtotal_centavos + p.desconto_centavos))}</span></div><div class="flex bold"><span>Desconto${p.desconto_percentual ? ` (${p.desconto_percentual}%)` : ''}:</span><span>- ${brl(p.desconto_centavos)}</span></div>`:''}<div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
+  html += `<div class="linha"></div>${p.desconto_centavos?`<div class="flex"><span>Itens:</span><span>${brl(p.subtotal_bruto_centavos || (p.subtotal_centavos + p.desconto_centavos))}</span></div>${p.desconto_geral_centavos?`<div class="flex"><span>Promoção${p.desconto_percentual ? ` (${p.desconto_percentual}%)` : ''}:</span><span>- ${brl(p.desconto_geral_centavos)}</span></div>`:''}${p.desconto_cupom_centavos?`<div class="flex bold"><span>Cupom ${esc(p.cupom_codigo || '')}:</span><span>- ${brl(p.desconto_cupom_centavos)}</span></div>`:''}`:''}<div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
   
   let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
   iframe.contentWindow.document.open(); iframe.contentWindow.document.write(html); iframe.contentWindow.document.close();
@@ -912,6 +964,141 @@ async function gerarRelatorio() {
 }
 
 let qrCodeObj = null;
+let unsubscribeCuponsAdmin = null;
+
+function normalizarCodigoCupom(codigo) {
+  return String(codigo || '').trim().toUpperCase().replace(/\s+/g, '');
+}
+
+function reaisParaCentavosAdmin(valor) {
+  let texto = String(valor || '').trim().replace(/R\$/gi, '').replace(/\s+/g, '').replace(/[^0-9,.-]/g, '');
+  if (!texto) return 0;
+  const ultimaVirgula = texto.lastIndexOf(',');
+  const ultimoPonto = texto.lastIndexOf('.');
+  if (ultimaVirgula > -1 && ultimoPonto > -1) {
+    texto = ultimaVirgula > ultimoPonto ? texto.replace(/\./g, '').replace(',', '.') : texto.replace(/,/g, '');
+  } else if (ultimaVirgula > -1) {
+    texto = texto.replace(/\./g, '').replace(',', '.');
+  } else if ((texto.match(/\./g) || []).length > 1) {
+    texto = texto.replace(/\./g, '');
+  }
+  const reais = Number(texto);
+  return Number.isFinite(reais) && reais >= 0 ? Math.round(reais * 100) : NaN;
+}
+
+async function hashCodigoCupom(codigo) {
+  const bytes = new TextEncoder().encode(normalizarCodigoCupom(codigo));
+  const hash = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function iniciarMonitoramentoCupons() {
+  if (unsubscribeCuponsAdmin) return;
+  unsubscribeCuponsAdmin = db.collection('cupons').onSnapshot(snapshot => {
+    const cupons = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    cupons.sort((a, b) => String(a.codigo || '').localeCompare(String(b.codigo || '')));
+    renderizarCuponsAdmin(cupons);
+  }, erro => {
+    console.error('[CUPONS]', erro);
+    const lista = document.getElementById('lista-cupons-admin');
+    if (lista) lista.innerHTML = '<div class="empty-state">Não foi possível carregar os cupons.</div>';
+  });
+}
+
+function renderizarCuponsAdmin(cupons) {
+  const lista = document.getElementById('lista-cupons-admin');
+  if (!lista) return;
+  if (!cupons.length) {
+    lista.innerHTML = '<div class="empty-state"><span>🎟️</span>Nenhum cupom cadastrado.</div>';
+    return;
+  }
+
+  const agora = Date.now();
+  lista.innerHTML = cupons.map(cupom => {
+    const inicio = cupom.inicio && cupom.inicio.toMillis ? cupom.inicio.toMillis() : 0;
+    const fim = cupom.fim && cupom.fim.toMillis ? cupom.fim.toMillis() : 0;
+    const vigente = cupom.ativo && inicio <= agora && agora <= fim;
+    const valor = cupom.tipo === 'fixo' ? brl(cupom.valor) : `${cupom.valor}%`;
+    const status = !cupom.ativo ? 'Desativado' : vigente ? 'Ativo' : agora < inicio ? 'Programado' : 'Encerrado';
+    const cor = vigente ? 'var(--success)' : cupom.ativo ? 'var(--warning)' : 'var(--danger)';
+
+    return `<div class="catalog-item" style="align-items:flex-start; gap:10px;">
+      <div class="catalog-info" style="flex:1; min-width:0;">
+        <strong style="font-size:13px;">${esc(cupom.codigo || 'CUPOM')}</strong>
+        <span style="font-size:10px; color:${cor}; font-weight:800;">${status} · ${valor}</span>
+        <span style="display:block; margin-top:4px; font-size:9px; color:var(--text-muted);">Pedido mínimo: ${brl(cupom.pedidoMinimoCentavos || 0)}${cupom.acumulaPromocao ? ' · Acumulativo' : ''}</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button type="button" onclick="alternarCupom('${cupom.id}', ${cupom.ativo ? 'false' : 'true'})" style="border:1px solid var(--border-light); background:#FFF; border-radius:6px; padding:6px 8px; font:700 9px inherit; cursor:pointer;">${cupom.ativo ? 'Desativar' : 'Ativar'}</button>
+        <button type="button" onclick="excluirCupom('${cupom.id}', '${esc(cupom.codigo || '')}')" style="border:1px solid rgba(230,57,70,.3); color:var(--danger); background:#FFF; border-radius:6px; padding:6px 8px; font:700 9px inherit; cursor:pointer;">Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function salvarCupom(e) {
+  const btn = e.currentTarget;
+  const codigo = normalizarCodigoCupom(document.getElementById('cupom-codigo-admin').value);
+  const tipo = document.getElementById('cupom-tipo-admin').value;
+  const valorDigitado = Number(document.getElementById('cupom-valor-admin').value);
+  const minimo = reaisParaCentavosAdmin(document.getElementById('cupom-minimo-admin').value);
+  const inicioData = new Date(document.getElementById('cupom-inicio-admin').value);
+  const fimData = new Date(document.getElementById('cupom-fim-admin').value);
+
+  if (!/^[A-Z0-9_-]{3,24}$/.test(codigo)) return alert('Use de 3 a 24 caracteres: letras, números, hífen ou sublinhado.');
+  if (!Number.isFinite(valorDigitado) || valorDigitado <= 0) return alert('Informe um valor válido para o cupom.');
+  if (tipo === 'percentual' && (!Number.isInteger(valorDigitado) || valorDigitado > 90)) return alert('O desconto percentual deve ser um número inteiro entre 1% e 90%.');
+  if (!Number.isFinite(minimo) || minimo < 0) return alert('Informe um pedido mínimo válido.');
+  if (Number.isNaN(inicioData.getTime()) || Number.isNaN(fimData.getTime())) return alert('Informe o início e o término do cupom.');
+  if (fimData <= inicioData) return alert('O término precisa ser posterior ao início.');
+
+  const valor = tipo === 'fixo' ? Math.round(valorDigitado * 100) : valorDigitado;
+  btn.disabled = true;
+  btn.textContent = 'SALVANDO...';
+
+  try {
+    const id = await hashCodigoCupom(codigo);
+    await db.collection('cupons').doc(id).set({
+      codigo,
+      tipo,
+      valor,
+      pedidoMinimoCentavos: minimo,
+      inicio: firebase.firestore.Timestamp.fromDate(inicioData),
+      fim: firebase.firestore.Timestamp.fromDate(fimData),
+      ativo: true,
+      acumulaPromocao: document.getElementById('cupom-acumula-admin').checked,
+      atualizadoEm: firebase.firestore.Timestamp.now()
+    }, { merge: true });
+    alert(`Cupom ${codigo} salvo com sucesso.`);
+    document.getElementById('cupom-codigo-admin').value = '';
+    document.getElementById('cupom-valor-admin').value = '';
+  } catch (erro) {
+    console.error('[CUPOM]', erro);
+    alert('Não foi possível salvar o cupom.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'CRIAR OU ATUALIZAR CUPOM';
+  }
+}
+
+async function alternarCupom(id, ativo) {
+  try {
+    await db.collection('cupons').doc(id).update({ ativo, atualizadoEm: firebase.firestore.Timestamp.now() });
+  } catch (erro) {
+    console.error('[CUPOM]', erro);
+    alert('Não foi possível alterar o cupom.');
+  }
+}
+
+async function excluirCupom(id, codigo) {
+  if (!confirm(`Excluir definitivamente o cupom ${codigo}?`)) return;
+  try {
+    await db.collection('cupons').doc(id).delete();
+  } catch (erro) {
+    console.error('[CUPOM]', erro);
+    alert('Não foi possível excluir o cupom.');
+  }
+}
 
 function preencherFormularioAviso(aviso) {
   const status = document.getElementById('aviso-status-admin');
