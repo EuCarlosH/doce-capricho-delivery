@@ -378,17 +378,13 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .delivery-card.active strong { color: var(--gold-dark); } :root[data-theme="dark"] .delivery-card.active strong { color: var(--gold); }
 .delivery-card.active small { color: var(--text-main); font-weight: 600;} :root[data-theme="dark"] .delivery-card.active small { color: var(--gold-dark); font-weight: 400;}
 
-.zonas-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-.zona-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s var(--smooth); display: flex; justify-content: space-between; align-items: center; } :root[data-theme="dark"] .zona-card { background: rgba(255,255,255,0.02); border-color: transparent;}
-.zona-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-sm);}
-.zona-card.active { border-color: var(--gold); background: var(--bg-card); box-shadow: 0 0 0 2px var(--gold); } :root[data-theme="dark"] .zona-card.active { background: rgba(212, 175, 55, 0.1); }
-.zona-card.sugerida:not(.active) { border-color: var(--success); box-shadow: 0 0 0 1px var(--success); }
 #zona-distancia-hint { display: none; font-size: 12px; font-weight: 600; color: var(--text-muted); background: rgba(47, 133, 90, 0.08); border: 1px dashed var(--success); border-radius: 10px; padding: 10px 14px; margin-top: 12px; line-height: 1.5; }
 #zona-distancia-hint strong { color: var(--success); }
-.zona-info { display: flex; flex-direction: column; gap: 4px; }
-.zona-nome { font-size: 14px; font-weight: 700; color: var(--text-main); } :root[data-theme="dark"] .zona-nome { font-weight: 600; color: var(--white); }
-.zona-desc { font-size: 11px; color: var(--text-muted); }
-.zona-preco { font-size: 14px; font-weight: 800; color: var(--gold-dark); background: rgba(221, 167, 58, 0.1); padding: 6px 10px; border-radius: 8px; } :root[data-theme="dark"] .zona-preco { color: var(--gold); background: rgba(212, 175, 55, 0.15); }
+.taxa-auto-card { padding:15px 16px; border:1px dashed var(--gold); border-radius:12px; background:rgba(221,167,58,.06); display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.taxa-auto-card div { display:flex; flex-direction:column; gap:4px; }
+.taxa-auto-card strong { color:var(--text-main); font-size:13px; }
+.taxa-auto-card small { color:var(--text-muted); font-size:10.5px; line-height:1.4; }
+.taxa-auto-valor { flex:0 0 auto; color:var(--gold-dark); font-size:14px; font-weight:900; }
 
 .builder-group { margin-bottom: 25px; border: none; }
 .builder-label { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700; } :root[data-theme="dark"] .builder-label { font-weight: 600; }
@@ -574,7 +570,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="modal-box">
     <div class="mapa-header">
       <strong>É aqui que você está? 📍</strong>
-      <span>Confira o ponto vermelho no mapa antes de confirmarmos a região da entrega.</span>
+      <span>Confira o ponto vermelho no mapa antes de calcularmos automaticamente a taxa de entrega.</span>
     </div>
     <div class="mapa-img-wrap">
       <div class="mapa-loading" id="mapa-confirm-loading">Carregando mapa...</div>
@@ -927,22 +923,15 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
         <div id="box-endereco">
           <div id="box-taxas-entrega" style="margin-bottom: 25px;">
-            <label style="margin-bottom: 8px;">Qual a região da entrega?</label>
             <input type="hidden" id="cli-taxa-id" value="">
             <input type="hidden" id="cli-taxa-nome" value="">
-            <div class="zonas-grid">
-              <div class="zona-card ripple" data-taxa="300" data-nome="Centro/Proximidades (2km)">
-                <div class="zona-info"><span class="zona-nome">Centro/Proximidades (2km)</span></div>
-                <span class="zona-preco">+ R$ 3,00</span>
+            <input type="hidden" id="cli-distancia-km" value="">
+            <div class="taxa-auto-card" id="taxa-auto-card">
+              <div>
+                <strong>Taxa calculada automaticamente</strong>
+                <small id="taxa-auto-descricao">Confirme sua localização ou escolha uma sugestão de endereço.</small>
               </div>
-              <div class="zona-card ripple" data-taxa="600" data-nome="Localidades Afastadas">
-                <div class="zona-info"><span class="zona-nome">Localidades Afastadas</span><span class="zona-desc">ex.: Sítio Lagoa Nova</span></div>
-                <span class="zona-preco">+ R$ 6,00</span>
-              </div>
-              <div class="zona-card ripple" data-taxa="1000" data-nome="Zonas Extremas">
-                <div class="zona-info"><span class="zona-nome">Zonas Extremas</span><span class="zona-desc">ex.: Sede Brisanet, Bairro Oiteiro</span></div>
-                <span class="zona-preco">+ R$ 10,00</span>
-              </div>
+              <span class="taxa-auto-valor" id="taxa-auto-valor">—</span>
             </div>
             <div id="zona-distancia-hint"></div>
           </div>
@@ -951,7 +940,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
             <span class="gps-spinner"></span>
             <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
           </button>
-          <span style="display:block; font-size: 11px; color: var(--text-muted); margin: 6px 2px 14px; line-height: 1.5;">Toque aqui ou escolha uma sugestão ao digitar a rua — precisamos confirmar a região para liberar a entrega.</span>
+          <span style="display:block; font-size: 11px; color: var(--text-muted); margin: 6px 2px 14px; line-height: 1.5;">Toque aqui ou escolha uma sugestão ao digitar a rua. A taxa será calculada automaticamente pela distância aproximada até a loja.</span>
 
           <div class="endereco-row">
             <div style="flex: 2.5;" class="mb-autocomplete-wrap">
@@ -2110,7 +2099,7 @@ function atualizarUI() {
     if(boxRet) { boxRet.style.opacity = '0'; setTimeout(() => boxRet.style.display = 'none', 300); }
     boxEnd.style.display = 'block'; setTimeout(() => boxEnd.style.opacity = '1', 10);
     const taxaValor = parseInt($('#cli-taxa-id').value, 10);
-    $('#text-taxa-card').textContent = isNaN(taxaValor) ? "Selecione a região" : `+ ${brl(taxaValor)}`;
+    $('#text-taxa-card').textContent = isNaN(taxaValor) ? "Calcular taxa" : `+ ${brl(taxaValor)}`;
   } else { 
     boxEnd.style.opacity = '0'; setTimeout(() => boxEnd.style.display = 'none', 300); 
     if(boxRet) { boxRet.style.display = 'block'; setTimeout(() => boxRet.style.opacity = '1', 10); }
@@ -2222,17 +2211,8 @@ function validarCheckout() {
   if (nome.value.trim().length < 3) { erros.push('Informe seu nome completo.'); nome.classList.add('field-error'); }
   const d = soDigitos(tel.value); if (d.length < 10 || d.length > 11) { erros.push('WhatsApp inválido (DDD + número).'); tel.classList.add('field-error'); }
   if ($('#cli-tipo-pedido').value === 'Entrega') {
-    if ($('#cli-taxa-id').value === '') { erros.push('Selecione a região da entrega nos cartões acima.'); $$('.zona-card').forEach(c => c.style.animation = 'shake 0.4s ease'); }
-    else if (zonaSugeridaAtual && $('#cli-taxa-id').value !== zonaSugeridaAtual.taxa) {
-      erros.push(`A distância calculada até seu endereço corresponde à zona "${zonaSugeridaAtual.nome}". Selecione essa opção para continuar.`);
-      const cardCorreto = $$('.zona-card').find(c => c.dataset.taxa === zonaSugeridaAtual.taxa);
-      if (cardCorreto) cardCorreto.style.animation = 'shake 0.4s ease';
-    }
-    // Sem coordenada não há como conferir a zona escolhida contra a distância real.
-    // Só cobramos isso quando o Mapbox está configurado — sem token, a captura de
-    // coordenada nem está disponível, então não faz sentido travar o pedido por isso.
-    if (mbTokenConfigurado() && (!$('#cli-lat').value || !$('#cli-lng').value)) {
-      erros.push('Toque em "Usar Localização Atual" ou selecione seu endereço na lista de sugestões para confirmarmos a região da entrega.');
+    if (!$('#cli-lat').value || !$('#cli-lng').value || $('#cli-taxa-id').value === '') {
+      erros.push('Confirme sua localização ou escolha uma sugestão de endereço para calcularmos a taxa de entrega.');
       const btnGpsEl = document.getElementById('btn-gps-localizacao');
       if (btnGpsEl) { btnGpsEl.classList.add('field-error'); btnGpsEl.style.animation = 'shake 0.4s ease'; setTimeout(() => { btnGpsEl.style.animation = ''; }, 500); }
     }
@@ -2243,7 +2223,7 @@ function validarCheckout() {
     if (bairro.value.trim().length < 2) { erros.push('Informe o seu bairro.'); bairro.classList.add('field-error'); }
   }
   if (!carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return false; }
-  if (erros.length > 0) { showToast(erros[0], 'error'); setTimeout(() => {$$('.zona-card').forEach(c => c.style.animation = '')}, 500); }
+  if (erros.length > 0) { showToast(erros[0], 'error'); }
   return erros.length === 0;
 }
 
@@ -2278,11 +2258,12 @@ function montarRevisao() {
 
   if(tipo === 'Entrega') {
     const nomeZona = $('#cli-taxa-nome').value;
+    const distanciaKm = $('#cli-distancia-km').value;
     const bairroStr = $('#cli-bairro').value.trim();
     const ref = $('#cli-referencia').value.trim();
     $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong><br><span style="font-size:13px; color:var(--text-main); font-weight:600;">Bairro: ${esc(bairroStr)}</span>`
       + (ref ? `<br><span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
-      + `<br><span class="review-item-detalhe">${esc(nomeZona)} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`
+      + `<br><span class="review-item-detalhe">${esc(nomeZona)}${distanciaKm ? ` &middot; ${esc(distanciaKm.replace('.', ','))} km` : ''} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`
       + ($('#cli-lat').value ? `<br><span class="review-item-detalhe">📍 Mapa anexado apenas como referência &mdash; vale o endereço digitado acima</span>` : '')
       + `<label id="rev-confirma-wrap" style="display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding:12px; border-radius:10px; background:rgba(221,167,58,0.08); font-size:12px; font-weight:700; line-height:1.45; color:var(--text-main); cursor:pointer;"><input type="checkbox" id="rev-confirma-endereco" style="margin-top:2px; width:17px; height:17px; flex:0 0 auto; accent-color:var(--gold);"><span>Confirmo que o <strong>número</strong> e o <strong>bairro</strong> acima estão corretos para a entrega.</span></label>`;
   } else {
@@ -2313,9 +2294,7 @@ function salvarDadosCliente() {
       rua: $('#cli-rua').value, 
       numero: $('#cli-numero').value, 
       bairro: $('#cli-bairro').value, 
-      referencia: $('#cli-referencia').value,
-      taxaId: $('#cli-taxa-id').value, 
-      taxaNome: $('#cli-taxa-nome').value 
+      referencia: $('#cli-referencia').value
   };
   localStorage.setItem('dca_user_data', JSON.stringify(userData));
 }
@@ -2328,7 +2307,6 @@ function carregarDadosCliente() {
       if(data.rua) $('#cli-rua').value = data.rua; if(data.numero) $('#cli-numero').value = data.numero; 
       if(data.bairro) $('#cli-bairro').value = data.bairro;
       if(data.referencia) $('#cli-referencia').value = data.referencia;
-      if(data.taxaId) { $('#cli-taxa-id').value = data.taxaId; $('#cli-taxa-nome').value = data.taxaNome; $$('.zona-card').forEach(c => { c.classList.remove('active'); if(c.dataset.taxa === data.taxaId) c.classList.add('active'); }); }
     }
   } catch(e) {}
 }
@@ -2412,9 +2390,10 @@ function montarPedido() {
   const lng = ehEntrega ? $('#cli-lng').value : '';
   const gpsPrecisao = ehEntrega ? $('#cli-gps-precisao').value : '';
   const geoOrigem = ehEntrega ? $('#cli-geo-origem').value : '';
+  const distanciaKm = ehEntrega ? $('#cli-distancia-km').value : '';
 
   const endStr = ehEntrega
-    ? `${rua}, ${numero} - Bairro: ${bairro}${referencia ? ` (Ref.: ${referencia})` : ''} | Região: ${regiao}`
+    ? `${rua}, ${numero} - Bairro: ${bairro}${referencia ? ` (Ref.: ${referencia})` : ''} | Faixa automática: ${regiao}${distanciaKm ? ` (${Number(distanciaKm).toFixed(1)} km)` : ''}`
     : '';
 
   let pgtoStr = $('#cli-pagamento').value;
@@ -2439,6 +2418,7 @@ function montarPedido() {
     end_lng: lng,
     end_gps_precisao: gpsPrecisao,
     end_geo_origem: geoOrigem,
+    end_distancia_km: distanciaKm ? Number(distanciaKm) : null,
     end_confirmado_pelo_cliente: ehEntrega,
     tipo_entrega: tipo,
     forma_pagamento: pgtoStr,
@@ -2474,7 +2454,8 @@ function montarMensagem(p) {
     L.push(`*Número:* ${p.end_numero || 'S/N'}`);
     L.push(`*Bairro:* ${p.end_bairro}`);
     if (p.end_referencia) L.push(`*Referência:* ${p.end_referencia}`);
-    if (p.end_regiao) L.push(`*Região/Taxa:* ${p.end_regiao}`);
+    if (p.end_regiao) L.push(`*Faixa automática da taxa:* ${p.end_regiao}`);
+    if (p.end_distancia_km != null) L.push(`*Distância aproximada:* ${Number(p.end_distancia_km).toFixed(1).replace('.', ',')} km`);
     if (p.end_cidade) L.push(`*Cidade:* ${p.end_cidade}${p.end_estado ? ' / ' + p.end_estado : ''}`);
     if (p.end_lat && p.end_lng) {
       const prec = p.end_gps_precisao ? ` ±${p.end_gps_precisao}m` : '';
@@ -2665,7 +2646,6 @@ $('#checkout-form').addEventListener('submit', e => {
 });
 
 $$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
-$$('.zona-card').forEach(card => { card.addEventListener('click', () => { $$('.zona-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-taxa-id').value = card.dataset.taxa; $('#cli-taxa-nome').value = card.dataset.nome; atualizarUI(); }); });
 
 function abrirCarrinhoSeguro() {
     // Carrinho sempre acessível, inclusive com a loja fechada (modo simulação).
@@ -2698,9 +2678,7 @@ let mbUltimaBuscaId = 0;
 // ==========================================================
 // CÁLCULO DE DISTÂNCIA — zona sugerida a partir da loja
 // ==========================================================
-// Faixas de distância (em km) correspondentes a cada cartão de zona (data-taxa em .zona-card).
-// AJUSTE os valores de kmMax das duas últimas faixas conforme a realidade das entregas —
-// só o limite de 2km do Centro foi confirmado; os outros são um ponto de partida razoável.
+// Faixas e valores atuais da loja. A seleção é automática pela distância aproximada.
 const ZONAS_DISTANCIA = [
   { taxa: '300', nome: 'Centro/Proximidades (2km)', kmMax: 2 },
   { taxa: '600', nome: 'Localidades Afastadas', kmMax: 6 },
@@ -2721,35 +2699,46 @@ function zonaPelaDistancia(km) {
   return ZONAS_DISTANCIA.find(z => km <= z.kmMax) || ZONAS_DISTANCIA[ZONAS_DISTANCIA.length - 1];
 }
 
-// Guarda a última zona sugerida pelo cálculo, para comparar na validação do checkout.
+// Guarda a faixa e a distância calculadas para o pedido.
 let zonaSugeridaAtual = null;
+let distanciaEntregaKmAtual = null;
 
-// Roda sempre que cli-lat/cli-lng mudam: calcula a distância até a loja, mostra a sugestão
-// e destaca visualmente o cartão correspondente (sem forçar a seleção do cliente).
+// Roda sempre que cli-lat/cli-lng mudam e preenche automaticamente a taxa.
 function atualizarZonaSugerida() {
   const hint = document.getElementById('zona-distancia-hint');
+  const descricao = document.getElementById('taxa-auto-descricao');
+  const valor = document.getElementById('taxa-auto-valor');
   const lat = parseFloat($('#cli-lat').value);
   const lng = parseFloat($('#cli-lng').value);
 
-  $$('.zona-card').forEach(c => c.classList.remove('sugerida'));
-
   if (isNaN(lat) || isNaN(lng)) {
     zonaSugeridaAtual = null;
+    distanciaEntregaKmAtual = null;
+    $('#cli-taxa-id').value = '';
+    $('#cli-taxa-nome').value = '';
+    $('#cli-distancia-km').value = '';
+    if (descricao) descricao.textContent = 'Confirme sua localização ou escolha uma sugestão de endereço.';
+    if (valor) valor.textContent = '—';
     if (hint) hint.style.display = 'none';
+    atualizarUI();
     return;
   }
 
   const km = calcularDistanciaKm(lat, lng, CONFIG.lojaLat, CONFIG.lojaLng);
   const zona = zonaPelaDistancia(km);
   zonaSugeridaAtual = zona;
-
-  const cardSugerido = $$('.zona-card').find(c => c.dataset.taxa === zona.taxa);
-  if (cardSugerido) cardSugerido.classList.add('sugerida');
+  distanciaEntregaKmAtual = km;
+  $('#cli-taxa-id').value = zona.taxa;
+  $('#cli-taxa-nome').value = zona.nome;
+  $('#cli-distancia-km').value = km.toFixed(2);
+  if (descricao) descricao.textContent = `${zona.nome} · aproximadamente ${km.toFixed(1)} km da loja`;
+  if (valor) valor.textContent = `+ ${brl(parseInt(zona.taxa, 10))}`;
 
   if (hint) {
     hint.style.display = 'block';
-    hint.innerHTML = `📍 Distância calculada até a loja: <strong>${km.toFixed(1)} km</strong> — zona sugerida: <strong>${esc(zona.nome)}</strong>`;
+    hint.innerHTML = `📍 Distância aproximada: <strong>${km.toFixed(1)} km</strong> — taxa aplicada automaticamente.`;
   }
+  atualizarUI();
 }
 
 function mbTokenConfigurado() {
