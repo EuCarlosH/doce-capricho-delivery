@@ -220,6 +220,13 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .card-desc { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; } :root[data-theme="dark"] .card-desc { font-weight: 400; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 800; color: var(--text-main); font-size: 16px; } :root[data-theme="dark"] .card-price-text { color: var(--gold); font-weight: 700; }
+.preco-promocional { display:inline-flex; flex-direction:column; align-items:flex-start; gap:1px; }
+.preco-promocional del { color:var(--text-muted); font-size:10px; font-weight:600; opacity:.8; }
+.preco-promocional strong { color:var(--terracotta); font-size:inherit; font-weight:900; }
+.desconto-geral-banner { display:none; align-items:center; justify-content:space-between; gap:15px; margin:0 0 24px; padding:15px 18px; border-radius:14px; color:#fff; background:linear-gradient(135deg, var(--terracotta), #8B3A2B); box-shadow:0 10px 24px rgba(139,58,43,.18); }
+.desconto-geral-banner.show { display:flex; animation:fadeIn .35s ease; }
+.desconto-geral-banner strong { font-size:14px; }
+.desconto-geral-banner span { font-size:12px; opacity:.92; text-align:right; }
 .btn-add { background: var(--bg-main); border: 1px solid var(--border-light); color: var(--text-main); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--smooth); font-size: 20px; font-weight: 500; line-height: 1; }
 :root[data-theme="dark"] .btn-add { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--white); font-weight: 400; }
 .btn-add:hover { background: var(--gold); color: #FFF; border-color: var(--gold); transform: scale(1.1) rotate(90deg); } :root[data-theme="dark"] .btn-add:hover { color: var(--bg-main); }
@@ -642,6 +649,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </div>
   
   <div id="banner-pausado"></div>
+  <div id="desconto-geral-banner" class="desconto-geral-banner" role="status"></div>
 
   <div id="menu-wrapper" style="display: flex; flex-direction: column;">
     <div id="wrap-pizzas" style="order: 2;">
@@ -844,7 +852,9 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <ul class="cart-items-list" id="cart-items-list"></ul>
 
       <div class="cart-totals-area">
-        <div class="cart-sub-line"><span>Subtotal dos itens</span><span id="cart-subtotal-value">R$ 0,00</span></div>
+        <div class="cart-sub-line"><span>Valor dos itens</span><span id="cart-bruto-value">R$ 0,00</span></div>
+        <div class="cart-sub-line" id="cart-desconto-line" style="display:none; color:var(--success);"><span id="cart-desconto-label">Desconto</span><span id="cart-desconto-value">- R$ 0,00</span></div>
+        <div class="cart-sub-line"><span>Subtotal</span><span id="cart-subtotal-value">R$ 0,00</span></div>
       </div>
 
       <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 12px; padding: 15px; text-align: center; animation: fadeIn 0.5s ease;">
@@ -853,7 +863,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
           <img src="img/esf_choc_morango.jpg" alt="Esfiha Doce" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
           <div style="text-align: left; flex: 1;">
             <strong style="display: block; font-size: 14px; color: var(--text-main);">Esfiha Choc. c/ Morango</strong>
-            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
+            <span id="upsell-preco" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
           </div>
           <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_morango')" style="width: 36px; height: 36px; font-size: 20px;">+</button>
         </div>
@@ -1005,6 +1015,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       </div>
 
       <div class="review-total-box">
+        <div class="cart-sub-line"><span>Valor dos itens</span><span id="rev-bruto-value">R$ 0,00</span></div>
+        <div class="cart-sub-line" id="rev-desconto-line" style="display:none; color:var(--success);"><span id="rev-desconto-label">Desconto</span><span id="rev-desconto-value">- R$ 0,00</span></div>
         <div class="cart-sub-line"><span>Subtotal</span><span id="rev-subtotal-value">R$ 0,00</span></div>
         <div class="cart-sub-line" id="rev-linha-taxa"><span>Taxa de entrega</span><span id="rev-taxa-value">R$ 0,00</span></div>
         <div class="cart-total-line" style="border-top-color: rgba(58,42,32,0.05);"><span>Total a Pagar</span><span id="rev-total-value">R$ 0,00</span></div>
@@ -1335,7 +1347,7 @@ function renderDestaques() {
       <div class="card-content">
         <h4 class="card-title">${esc(s.nome)}</h4>
         <div class="card-bottom">
-          <span class="card-price-text">${brl(s.preco)}</span>
+          <span class="card-price-text">${precoPromocionalHTML(s.preco)}</span>
           <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? '—' : '+'}</button>
         </div>
       </div>
@@ -1348,6 +1360,51 @@ let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
 const STORAGE_KEY = 'dca_carrinho_final';
+
+function millisConfig(valor) {
+  if (!valor) return 0;
+  if (typeof valor.toMillis === 'function') return valor.toMillis();
+  if (typeof valor.toDate === 'function') return valor.toDate().getTime();
+  const data = new Date(valor);
+  return Number.isNaN(data.getTime()) ? 0 : data.getTime();
+}
+
+function promocaoGeralAtiva() {
+  const promocao = configLoja && configLoja.promocaoGeral;
+  if (!promocao || promocao.ativo !== true) return null;
+  const percentual = Number(promocao.percentual);
+  const inicio = millisConfig(promocao.inicio);
+  const fim = millisConfig(promocao.fim);
+  const agora = Date.now();
+  if (!Number.isInteger(percentual) || percentual < 1 || percentual > 90) return null;
+  if (!inicio || !fim || agora < inicio || agora > fim) return null;
+  return promocao;
+}
+
+function valorComDesconto(valorCentavos) {
+  const promocao = promocaoGeralAtiva();
+  if (!promocao) return Math.round(valorCentavos);
+  return Math.max(0, Math.round(valorCentavos * (100 - promocao.percentual) / 100));
+}
+
+function precoPromocionalHTML(valorCentavos) {
+  const promocao = promocaoGeralAtiva();
+  if (!promocao) return brl(valorCentavos);
+  return `<span class="preco-promocional"><del>${brl(valorCentavos)}</del><strong>${brl(valorComDesconto(valorCentavos))}</strong></span>`;
+}
+
+function atualizarBannerDesconto() {
+  const banner = document.getElementById('desconto-geral-banner');
+  if (!banner) return;
+  const promocao = promocaoGeralAtiva();
+  if (!promocao) {
+    banner.classList.remove('show');
+    banner.innerHTML = '';
+    return;
+  }
+  banner.innerHTML = `<strong>🏷️ ${esc(promocao.titulo || 'Oferta especial')}</strong><span>${promocao.percentual}% de desconto nos produtos</span>`;
+  banner.classList.add('show');
+}
 
 function showToast(msg, type='warning') {
   const container = document.getElementById('toast-container'); if(!container) return;
@@ -1493,7 +1550,7 @@ const cardHTML = s => {
       <h4 class="card-title">${esc(s.nome)}</h4>
       <p class="card-desc">${esc(s.desc)}</p>
       <div class="card-bottom">
-        <span class="card-price-text">${brl(s.preco)}</span>
+        <span class="card-price-text">${precoPromocionalHTML(s.preco)}</span>
         <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? 'Esgotado' : '+'}</button>
       </div>
     </div>
@@ -1522,6 +1579,7 @@ function irParaCombos() {
 }
 
 function renderCardapio() {
+  atualizarBannerDesconto();
   renderDestaques();
   $('#grid-tradicionais').innerHTML = CARDAPIO.tradicionais.map(cardHTML).join('');
   $('#grid-premium').innerHTML = CARDAPIO.premium.map(cardHTML).join('');
@@ -1626,7 +1684,7 @@ function abrirBuilder(ids) {
   const isEsfiha = ids[0].startsWith('esf_');
   
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
-  $('#builder-base-valor').textContent = brl(precoBaseVal(ids));
+  $('#builder-base-valor').innerHTML = precoPromocionalHTML(precoBaseVal(ids));
   
   if (isEsfiha || isCombo) {
      $('#builder-extras-container').style.display = 'none';
@@ -1688,7 +1746,8 @@ function lerExtras() {
 function atualizarBuilderTotal() { 
   if (!builder) return; builder.qtd = parseInt($('#qty-val').textContent, 10) || 1; 
   const extras = lerExtras().reduce((s, e) => s + e.preco, 0); 
-  $('#builder-subtotal').textContent = brl((precoBaseVal(builder.sabores) + extras) * builder.qtd); 
+  const totalBruto = (precoBaseVal(builder.sabores) + extras) * builder.qtd;
+  $('#builder-subtotal').innerHTML = precoPromocionalHTML(totalBruto); 
 }
 
 function popQtyVal() { const el = $('#qty-val'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
@@ -1804,17 +1863,21 @@ function tentarAvancarStep2() {
 function irParaCarrinho() { fecharModal('success-overlay'); setTimeout(() => { abrirModal('cart-overlay'); }, 150); }
 
 function totais() { 
-  const subtotal = carrinho.reduce((s, i) => s + i.total, 0); 
+  const bruto = carrinho.reduce((s, i) => s + i.total, 0);
+  const subtotal = carrinho.reduce((s, i) => s + valorComDesconto(i.total), 0);
+  const desconto = bruto - subtotal;
   let entrega = 0;
   if ($('#cli-tipo-pedido').value === 'Entrega' && carrinho.length) {
      const val = parseInt($('#cli-taxa-id').value, 10);
      if(!isNaN(val)) entrega = val;
   }
-  return { subtotal, entrega, total: subtotal + entrega }; 
+  return { bruto, desconto, subtotal, entrega, total: subtotal + entrega }; 
 }
 
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
+  const upsellPreco = document.getElementById('upsell-preco');
+  if (upsellPreco) upsellPreco.innerHTML = '+ ' + precoPromocionalHTML(1200);
   
   let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc_morango') || s.startsWith('esf_choc')));
   if (carrinho.length > 0 && !temSobremesa) { $('#upsell-container').style.display = 'block'; } else { $('#upsell-container').style.display = 'none'; }
@@ -1844,14 +1907,21 @@ function atualizarUI() {
                 <button type="button" onclick="mudarQtd('${i.uid}', 1)" style="background:none; border:none; width:30px; height:30px; font-size:20px; cursor:pointer; color:var(--text-main); display:flex; align-items:center; justify-content:center;">+</button>
             </div>
             <div style="display:flex; align-items:center; gap:15px;">
-                <span class="cart-item-price">${brl(i.total)}</span>
+                <span class="cart-item-price">${precoPromocionalHTML(i.total)}</span>
                 <button type="button" class="remove-btn ripple" onclick="removerDoCarrinho('${i.uid}')">&times;</button>
             </div>
         </div>
       </li>`;
   }).join('') : '<li class="cart-empty">Seu carrinho está vazio.</li>';
   
-  const t = totais(); $('#cart-subtotal-value').textContent = brl(t.subtotal); 
+  const t = totais();
+  $('#cart-bruto-value').textContent = brl(t.bruto);
+  $('#cart-subtotal-value').textContent = brl(t.subtotal);
+  const linhaDesconto = $('#cart-desconto-line');
+  linhaDesconto.style.display = t.desconto > 0 ? 'flex' : 'none';
+  $('#cart-desconto-value').textContent = `- ${brl(t.desconto)}`;
+  const promocaoAtiva = promocaoGeralAtiva();
+  $('#cart-desconto-label').textContent = promocaoAtiva ? `Desconto (${promocaoAtiva.percentual}%)` : 'Desconto';
   const badge = $('#cart-count'); badge.textContent = qtdTotal; badge.classList.toggle('show', qtdTotal > 0);
   const badgeBottom = $('#bottom-cart-count'); if(badgeBottom) { badgeBottom.textContent = qtdTotal; badgeBottom.classList.toggle('show', qtdTotal > 0); }
   
@@ -2021,7 +2091,7 @@ function montarRevisao() {
         <div style="flex:1;">
           <div style="display:flex; justify-content:space-between; width:100%;">
             <strong style="font-size:14px; color:var(--text-main);">${i.qtd}x ${esc(nomeItem(i))}</strong>
-            <span style="color:var(--text-main); font-weight:800; font-size:14px;">${brl(i.total)}</span>
+            <span style="color:var(--text-main); font-weight:800; font-size:14px;">${precoPromocionalHTML(i.total)}</span>
           </div>
           ${detalhesHTML}
         </div>
@@ -2043,7 +2113,13 @@ function montarRevisao() {
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
   if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total); } else { $('#rev-box-pix').style.display = 'none'; }
+  $('#rev-bruto-value').textContent = brl(t.bruto);
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
+  const revLinhaDesconto = $('#rev-desconto-line');
+  revLinhaDesconto.style.display = t.desconto > 0 ? 'flex' : 'none';
+  $('#rev-desconto-value').textContent = `- ${brl(t.desconto)}`;
+  const promocaoAtiva = promocaoGeralAtiva();
+  $('#rev-desconto-label').textContent = promocaoAtiva ? `Desconto (${promocaoAtiva.percentual}%)` : 'Desconto';
   if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega); } else { $('#rev-linha-taxa').style.display = 'none'; }
   $('#rev-total-value').textContent = brl(t.total);
 }
@@ -2142,6 +2218,7 @@ function revalidarPedido() {
 
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
+  const promocaoAtiva = promocaoGeralAtiva();
   const ehEntrega = (tipo === 'Entrega');
 
   const rua = ehEntrega ? $('#cli-rua').value.trim() : '';
@@ -2186,8 +2263,17 @@ function montarPedido() {
     itens: carrinho.map(i => ({
       nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
       extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
-      obs: i.obs, unitario_centavos: i.unitario, total_centavos: i.total
+      obs: i.obs,
+      unitario_original_centavos: i.unitario,
+      unitario_centavos: valorComDesconto(i.unitario),
+      total_original_centavos: i.total,
+      total_centavos: valorComDesconto(i.total)
     })),
+    subtotal_bruto_centavos: t.bruto,
+    desconto_centavos: t.desconto,
+    desconto_percentual: promocaoAtiva ? promocaoAtiva.percentual : 0,
+    promocao_geral_id: promocaoAtiva ? promocaoAtiva.id : '',
+    promocao_geral_titulo: promocaoAtiva ? (promocaoAtiva.titulo || 'Oferta especial') : '',
     subtotal_centavos: t.subtotal,
     taxa_centavos: t.entrega,
     total_centavos: t.total
@@ -2212,6 +2298,10 @@ function montarMensagem(p) {
   }
   L.push(`*Pagamento:* ${p.forma_pagamento}`, '', '*ITENS*');
   p.itens.forEach((i, n) => { L.push(`${n + 1}) ${i.qtd}× ${i.nome} — ${brl(i.total_centavos)}`); i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`)); if (i.obs) L.push(`    • Obs: ${i.obs}`); });
+  if (p.desconto_centavos > 0) {
+    L.push('', `Valor dos itens: ${brl(p.subtotal_bruto_centavos)}`);
+    L.push(`Desconto${p.desconto_percentual ? ` (${p.desconto_percentual}%)` : ''}: - ${brl(p.desconto_centavos)}`);
+  }
   L.push('', `Subtotal: ${brl(p.subtotal_centavos)}`); if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
   if (p.forma_pagamento.includes('PIX')) { const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', p.total_centavos); L.push('', `*CHAVE PIX (Celular/Telefone):*`, CONFIG.pixChave, '', `*PIX COPIA E COLA:*`, payload, '', `Por favor, envie o comprovante respondendo a esta mensagem.`); }
   return L.join('\n');
@@ -2861,7 +2951,14 @@ function processarEstatisticas(doc) {
 }
 db.collection('configuracoes').doc('estatisticas').onSnapshot(processarEstatisticas, err => { console.warn('[STATS]', err.code); });
 
-verificarHorario(); setInterval(verificarHorario, 60000); renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
+verificarHorario();
+setInterval(() => {
+  verificarHorario();
+  renderCardapio();
+  atualizarUI();
+  if (pedidoStepAtual === 4 && carrinho.length) montarRevisao();
+}, 60000);
+renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
 </script>
 </body>
 </html>
