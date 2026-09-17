@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.16-install-multiplataforma-6">
+<meta name="dca-app-version" content="2026.09.17-onesignal-web-2">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -41,6 +41,29 @@
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+
+<!-- OneSignal Web Push: worker isolado do service worker principal do PWA. -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.dcaOneSignalReady = new Promise(function(resolve) {
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.init({
+          appId: "50ed9f81-4fa2-41e7-b470-b235bcefe85d",
+          serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
+          serviceWorkerParam: { scope: "/push/onesignal/" },
+          notifyButton: { enable: false }
+        });
+        window.dcaOneSignal = OneSignal;
+        resolve(OneSignal);
+      } catch (erro) {
+        console.error('[ONESIGNAL] Falha ao inicializar:', erro);
+        resolve(null);
+      }
+    });
+  });
+</script>
 
 
 
@@ -569,6 +592,11 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 #aviso-popup-img-wrap { width:100%; height:min(52vh, 500px); background:linear-gradient(135deg, rgba(221,167,58,.18), rgba(139,58,43,.13)); display:none; align-items:center; justify-content:center; overflow:hidden; }
 #aviso-popup-img { width:100%; height:100%; object-fit:contain; object-position:center; display:block; }
 .aviso-popup-content { padding: 28px; text-align: center; }
+#aviso-popup-box.somente-imagem { width:auto; max-width:min(92vw,620px); background:transparent; }
+#aviso-popup-box.somente-imagem #aviso-popup-img-wrap { width:auto; height:auto; max-width:92vw; max-height:86vh; background:transparent; cursor:pointer; }
+#aviso-popup-box.somente-imagem #aviso-popup-img { width:auto; max-width:92vw; height:auto; max-height:86vh; object-fit:contain; }
+#aviso-popup-box.somente-imagem .aviso-popup-content { display:none; }
+#aviso-popup-img-wrap.imagem-clicavel { cursor:pointer; }
 .promo-img-wrapper { width: 100%; height: 350px; background: var(--img-bg); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .promo-img-wrapper img { width: 100%; height: 100%; object-fit: contain; object-position:center; display: block; transition: transform 0.5s ease; }
 .promo-content { background: var(--bg-card); padding: 35px; text-align: center; flex-shrink: 0; }
@@ -583,6 +611,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .install-suggestion-copy strong { display:block; color:#FFF4D4; font-size:13px; margin-bottom:2px; }
 .install-suggestion-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:11px 13px; font-family:'Work Sans',sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
 .install-suggestion-close { border:0; background:transparent; color:rgba(255,255,255,.68); font-size:22px; cursor:pointer; padding:2px; }
+
+/* CONVITE PARA NOTIFICAÇÕES — o pedido nativo só abre após o toque do cliente. */
+.push-suggestion { position:fixed; inset:0; z-index:4200; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(15,8,5,.58); backdrop-filter:blur(5px); }
+.push-suggestion.show { display:flex; animation:pushFadeIn .25s ease both; }
+.push-suggestion-card { position:relative; width:min(100%,430px); padding:28px; border-radius:24px; text-align:center; color:var(--text-main); background:var(--bg-card); border:1px solid var(--border); box-shadow:0 24px 70px rgba(15,8,5,.4); }
+.push-suggestion-icon { width:68px; height:68px; margin:0 auto 17px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:31px; background:linear-gradient(135deg,rgba(221,167,58,.24),rgba(139,58,43,.16)); box-shadow:inset 0 0 0 1px rgba(221,167,58,.22); }
+.push-suggestion-card h2 { margin:0 30px 9px; font-family:'Fraunces',serif; font-size:25px; line-height:1.18; }
+.push-suggestion-card p { margin:0 0 22px; color:var(--text-muted); font-size:13px; line-height:1.65; }
+.push-suggestion-actions { display:grid; gap:9px; }
+.push-suggestion-enable { width:100%; border:0; border-radius:12px; padding:15px 18px; cursor:pointer; background:linear-gradient(135deg,var(--gold),#C88724); color:#2A160D; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:900; letter-spacing:1px; text-transform:uppercase; box-shadow:0 8px 24px rgba(200,135,36,.2); }
+.push-suggestion-later { width:100%; border:0; border-radius:12px; padding:13px 18px; cursor:pointer; color:var(--text-muted); background:transparent; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; }
+.push-suggestion-close { position:absolute; top:12px; right:12px; width:36px; height:36px; border:0; border-radius:50%; cursor:pointer; color:var(--text-muted); background:transparent; font-size:24px; line-height:1; }
+.push-suggestion-enable:disabled,.push-suggestion-later:disabled { opacity:.6; cursor:wait; }
+@keyframes pushFadeIn { from { opacity:0; } to { opacity:1; } }
 @media (max-width:600px) {
   .install-suggestion { bottom:calc(76px + env(safe-area-inset-bottom)); width:calc(100vw - 22px); padding:12px; gap:10px; }
   .install-suggestion-icon { width:40px; height:40px; }
@@ -603,6 +645,19 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="install-suggestion-copy"><strong id="install-suggestion-title">Instalar Doce Capricho</strong><span id="install-suggestion-text">Tenha nosso cardápio na sua tela inicial.</span></div>
   <button type="button" class="install-suggestion-action ripple" id="install-suggestion-action">Instalar</button>
   <button type="button" class="install-suggestion-close" id="install-suggestion-close" aria-label="Fechar sugestão">×</button>
+</div>
+
+<div class="push-suggestion" id="push-suggestion" role="dialog" aria-modal="true" aria-labelledby="push-suggestion-title" aria-describedby="push-suggestion-desc">
+  <div class="push-suggestion-card">
+    <button type="button" class="push-suggestion-close" id="push-suggestion-close" aria-label="Fechar">×</button>
+    <div class="push-suggestion-icon" aria-hidden="true">🔔</div>
+    <h2 id="push-suggestion-title">Um capricho chegando até você</h2>
+    <p id="push-suggestion-desc">Ative as notificações para receber lançamentos, combos especiais e promoções da Doce Capricho.</p>
+    <div class="push-suggestion-actions">
+      <button type="button" class="push-suggestion-enable ripple" id="push-suggestion-enable">Ativar notificações</button>
+      <button type="button" class="push-suggestion-later" id="push-suggestion-later">Agora não</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="map-confirm-overlay">
@@ -1151,6 +1206,12 @@ const installSuggestionTitle = document.getElementById('install-suggestion-title
 const installSuggestionText = document.getElementById('install-suggestion-text');
 const installSuggestionAction = document.getElementById('install-suggestion-action');
 const installSuggestionClose = document.getElementById('install-suggestion-close');
+const pushSuggestion = document.getElementById('push-suggestion');
+const pushSuggestionEnable = document.getElementById('push-suggestion-enable');
+const pushSuggestionLater = document.getElementById('push-suggestion-later');
+const pushSuggestionClose = document.getElementById('push-suggestion-close');
+const PUSH_DISMISS_KEY = 'dca_push_prompt_dismissed_at_v1';
+const PUSH_DISMISS_TTL = 7 * 24 * 60 * 60 * 1000;
 
 const PLATAFORMA_APP = (() => {
   const ua = navigator.userAgent || '';
@@ -1169,6 +1230,69 @@ function appEstaInstalado() {
   return window.matchMedia('(display-mode: standalone)').matches ||
          window.navigator.standalone === true;
 }
+
+function pushFoiAdiadoRecentemente() {
+  const salvo = Number(localStorage.getItem(PUSH_DISMISS_KEY) || 0);
+  return salvo > 0 && Date.now() - salvo < PUSH_DISMISS_TTL;
+}
+
+function fecharSugestaoPush(adiar) {
+  if (adiar) localStorage.setItem(PUSH_DISMISS_KEY, String(Date.now()));
+  if (pushSuggestion) pushSuggestion.classList.remove('show');
+}
+
+async function podeOferecerPush() {
+  if (!pushSuggestion || !('Notification' in window) || !('serviceWorker' in navigator)) return false;
+  if (Notification.permission !== 'default' || pushFoiAdiadoRecentemente()) return false;
+  // No iPhone/iPad, Web Push só funciona depois de adicionar o PWA à Tela de Início.
+  if (PLATAFORMA_APP.iOS && !appEstaInstalado()) return false;
+  const OneSignal = await window.dcaOneSignalReady;
+  return !!OneSignal;
+}
+
+async function tentarExibirSugestaoPush(tentativas = 24) {
+  if (!(await podeOferecerPush())) return;
+  const outroModalAberto = document.querySelector('.modal-overlay.open');
+  const instalacaoAberta = installSuggestion?.classList.contains('show');
+  const atualizacaoAberta = document.getElementById('update-banner')?.classList.contains('show');
+  if (outroModalAberto || instalacaoAberta || atualizacaoAberta) {
+    if (tentativas > 0) setTimeout(() => tentarExibirSugestaoPush(tentativas - 1), 1000);
+    return;
+  }
+  pushSuggestion.classList.add('show');
+}
+
+if (pushSuggestionEnable) {
+  pushSuggestionEnable.addEventListener('click', async function() {
+    pushSuggestionEnable.disabled = true;
+    if (pushSuggestionLater) pushSuggestionLater.disabled = true;
+    pushSuggestionEnable.textContent = 'Ativando...';
+    try {
+      const OneSignal = await window.dcaOneSignalReady;
+      if (!OneSignal) throw new Error('SDK indisponível');
+      await OneSignal.Notifications.requestPermission();
+      if (Notification.permission === 'granted') {
+        localStorage.removeItem(PUSH_DISMISS_KEY);
+        fecharSugestaoPush(false);
+        if (typeof showToast === 'function') showToast('Notificações ativadas neste aparelho.', 'success');
+      } else {
+        fecharSugestaoPush(true);
+      }
+    } catch (erro) {
+      console.error('[ONESIGNAL] Não foi possível ativar:', erro);
+      if (typeof showToast === 'function') showToast('Não foi possível ativar as notificações agora.', 'warning');
+      fecharSugestaoPush(true);
+    } finally {
+      pushSuggestionEnable.disabled = false;
+      if (pushSuggestionLater) pushSuggestionLater.disabled = false;
+      pushSuggestionEnable.textContent = 'Ativar notificações';
+    }
+  });
+}
+
+if (pushSuggestionLater) pushSuggestionLater.addEventListener('click', () => fecharSugestaoPush(true));
+if (pushSuggestionClose) pushSuggestionClose.addEventListener('click', () => fecharSugestaoPush(true));
+window.addEventListener('load', () => setTimeout(() => tentarExibirSugestaoPush(), 6500));
 
 function ocultarBotaoInstalacao() {
   if (btnInstallApp) btnInstallApp.style.display = 'none';
@@ -3400,7 +3524,8 @@ function executarDestinoAviso(destino) {
 }
 
 function processarAvisoPopup(aviso) {
-  if (!aviso || aviso.ativo !== true || !aviso.id || !aviso.titulo) return;
+  const imagemValida = !!(aviso && aviso.imagem && /^https:\/\//i.test(aviso.imagem));
+  if (!aviso || aviso.ativo !== true || !aviso.id || (!aviso.titulo && !imagemValida)) return;
 
   const id = String(aviso.id);
   if (localStorage.getItem(AVISO_POPUP_STORAGE_KEY) === id || avisoPopupAgendadoId === id) return;
@@ -3413,22 +3538,46 @@ function processarAvisoPopup(aviso) {
   const botao = document.getElementById('aviso-popup-btn');
   const imagem = document.getElementById('aviso-popup-img');
   const imagemWrap = document.getElementById('aviso-popup-img-wrap');
+  const conteudo = document.querySelector('#aviso-popup-box .aviso-popup-content');
+  const caixa = document.getElementById('aviso-popup-box');
+  const somenteImagem = aviso.somenteImagem === true && imagemValida;
 
-  titulo.textContent = aviso.titulo;
+  titulo.textContent = aviso.titulo || 'Divulgação Doce Capricho';
+  titulo.style.display = aviso.titulo ? 'block' : 'none';
   descricao.textContent = aviso.descricao || '';
   descricao.style.display = aviso.descricao ? 'block' : 'none';
   botao.textContent = aviso.botaoTexto || 'VER NOVIDADE';
+  botao.style.display = somenteImagem ? 'none' : 'block';
   botao.onclick = () => executarDestinoAviso(aviso.destino);
+  caixa.classList.toggle('somente-imagem', somenteImagem);
+  if (conteudo) conteudo.style.display = somenteImagem ? 'none' : 'block';
 
-  if (aviso.imagem && /^https:\/\//i.test(aviso.imagem)) {
+  if (imagemValida) {
     imagemWrap.style.display = 'flex';
+    imagemWrap.classList.add('imagem-clicavel');
+    imagemWrap.setAttribute('role', 'link');
+    imagemWrap.setAttribute('tabindex', '0');
+    imagemWrap.setAttribute('aria-label', aviso.titulo || 'Abrir divulgação');
+    imagemWrap.onclick = () => executarDestinoAviso(aviso.destino);
+    imagemWrap.onkeydown = evento => {
+      if (evento.key === 'Enter' || evento.key === ' ') {
+        evento.preventDefault();
+        executarDestinoAviso(aviso.destino);
+      }
+    };
     imagem.style.display = 'block';
-    imagem.alt = aviso.titulo;
+    imagem.alt = aviso.titulo || 'Divulgação Doce Capricho';
     imagem.onerror = () => { imagemWrap.style.display = 'none'; };
     imagem.src = aviso.imagem;
   } else {
     imagem.removeAttribute('src');
     imagemWrap.style.display = 'none';
+    imagemWrap.classList.remove('imagem-clicavel');
+    imagemWrap.removeAttribute('role');
+    imagemWrap.removeAttribute('tabindex');
+    imagemWrap.removeAttribute('aria-label');
+    imagemWrap.onclick = null;
+    imagemWrap.onkeydown = null;
   }
 
   const tentarAbrir = (tentativasRestantes) => {
