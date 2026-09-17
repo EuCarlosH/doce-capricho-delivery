@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="dca-admin-version" content="2026.09.17-crm-2">
+<meta name="theme-color" content="#17100C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Capricho Admin">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Admin Operacional — Doce Capricho</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+/* PALETA DOCE CAPRICHO SAAS */
+:root {
+  --gold: #DDA73A; --gold-dark: #C28F2A; --terracotta: #8B3A2B;   
+  --bg-main: #F4F7F6; --bg-sidebar: #1A1512; --bg-card: #FFFFFF;      
+  --text-main: #2C2018; --text-muted: #8C7A6B;   
+  --danger: #E63946; --warning: #F59E0B; --success: #2F855A; --wp: #25D366;
+  --border-light: rgba(44, 32, 24, 0.08);
+  --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.03); 
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.08); 
+  --smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; height: 100dvh; width: 100vw; overflow: hidden; margin: 0; }
+h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
+
+/* LAYOUT E TOP BAR */
+.app-container { display: flex; flex-direction: column; height: 100dvh; width: 100vw; overflow: hidden; }
+.top-bar { background: var(--bg-card); border-bottom: 1px solid var(--border-light); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+.top-bar-left { display: flex; align-items: center; gap: 15px; }
+.menu-toggle { background: transparent; border: 1px solid var(--border-light); cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 8px; transition: 0.2s; }
+.menu-toggle:hover { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); border-color: var(--gold); }
+.top-bar-logo { font-size: 15px; font-weight: 800; color: var(--text-main); letter-spacing: 1px; display: flex; align-items: center; gap: 10px;}
+.top-bar-logo span { color: var(--gold-dark); font-size: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; background: rgba(221, 167, 58, 0.1); padding: 4px 8px; border-radius: 6px; letter-spacing: 1px;}
+.top-bar-status { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 20px; border: 1px solid transparent; }
+.status-aberto { color: var(--success); background: rgba(47, 133, 90, 0.1); border-color: rgba(47, 133, 90, 0.3); }
+.status-pausado { color: var(--warning); background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+.status-encerrado { color: var(--danger); background: rgba(230, 57, 70, 0.1); border-color: rgba(230, 57, 70, 0.3); }
+
+/* SIDEBAR E CONTEÚDO */
+.content-wrapper { display: flex; flex-grow: 1; position: relative; overflow: hidden; background: var(--bg-main); }
+.sidebar { position: absolute; top: 0; left: -300px; width: 280px; height: 100%; background: var(--bg-sidebar); color: #FFF; display: flex; flex-direction: column; box-shadow: 10px 0 30px rgba(0,0,0,0.3); z-index: 1000; transition: left 0.3s var(--smooth); }
+.sidebar.open { left: 0; }
+.sidebar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s var(--smooth); }
+.sidebar-overlay.show { opacity: 1; }
+.sidebar-header { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
+.sidebar-logo { font-size: 18px; font-weight: 700; color: var(--gold); letter-spacing: 2px; line-height: 1.3; }
+.btn-close-menu { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 24px; cursor: pointer; transition: 0.3s; }
+.btn-close-menu:hover { color: #FFF; }
+.stats-container { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; }
+.stat-item { display: flex; flex-direction: column; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); font-weight: 700; margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-family: 'Cinzel', serif; color: #FFF; font-weight: 700; }
+.sidebar-nav { padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.nav-btn { background: transparent; border: none; padding: 12px 15px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 12px; font-family: inherit; }
+.nav-btn:hover { background: rgba(255,255,255,0.05); color: #FFF; }
+.nav-btn.active { background: rgba(221, 167, 58, 0.1); color: var(--gold); border-left: 3px solid var(--gold); }
+.nav-btn.danger { color: #E63946; } .nav-btn.danger:hover { background: rgba(230, 57, 70, 0.1); }
+.main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-main); width: 100%; }
+
+/* KANBAN BOARD */
+.kanban-board { display: flex; gap: 12px; padding: 15px; flex-grow: 1; overflow-x: auto; overflow-y: hidden; align-items: stretch; }
+.kanban-col { display: flex; flex-direction: column; flex: 1 1 0; min-width: 280px; max-width: 400px; max-height: 100%; border-radius: 12px; transition: background 0.3s; }
+.kanban-col.drag-over { background: rgba(221, 167, 58, 0.05); border: 2px dashed var(--gold); }
+.col-header { padding: 0 0 10px 0; font-weight: 800; font-size: 11px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; letter-spacing: 1px; color: var(--text-main); }
+.col-header .count { background: #E2E8F0; padding: 4px 10px; border-radius: 20px; font-size: 10px; color: var(--text-main); font-weight: 800;}
+.col-body { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding: 2px; padding-bottom: 20px; }
+
+/* CRM BADGE */
+.crm-badge { font-size: 9px; padding: 3px 8px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px; opacity: 0; animation: fadeIn 0.4s ease forwards;}
+.crm-novo { background: rgba(47, 133, 90, 0.1); color: var(--success); border: 1px solid rgba(47, 133, 90, 0.3); }
+.crm-recorrente { background: rgba(140, 122, 107, 0.1); color: var(--text-muted); border: 1px solid var(--border-light); }
+.crm-fiel { background: rgba(221, 167, 58, 0.15); color: var(--gold-dark); border: 1px solid var(--gold); box-shadow: 0 0 5px rgba(221,167,58,0.3); }
+.crm-indisponivel { background: rgba(230,57,70,.07); color: var(--danger); border: 1px solid rgba(230,57,70,.2); }
+
+/* CARDS E FORMATAÇÃO */
+.card-pedido { background: var(--bg-card); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-light); flex-shrink: 0; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-sm); cursor: grab; }
+.card-pedido:active { cursor: grabbing; transform: scale(0.98); }
+.card-pedido.dragging { opacity: 0.5; transform: scale(0.95); box-shadow: none; border: 2px dashed var(--gold); }
+.card-pedido.atencao { border-left: 4px solid var(--warning); }
+.card-pedido.atrasado { border-left: 4px solid var(--danger); animation: subtlePulse 2s infinite; }
+@keyframes subtlePulse { 0% { box-shadow: 0 0 0 0 rgba(230,57,70,0.1); } 50% { box-shadow: 0 0 0 4px rgba(230,57,70,0); } 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); } }
+
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.p-id { font-size: 18px; font-weight: 900; color: var(--text-main); font-family: 'Cinzel', serif; letter-spacing: 1px; line-height: 1;}
+.p-time { font-size: 14px; color: var(--text-muted); font-weight: 800; display: flex; align-items: center; gap: 6px;}
+.p-time.timer-atencao { color: var(--warning); }
+.p-time.timer-atrasado { color: var(--danger); }
+.p-cliente-area { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 2px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-light);}
+.p-nome { font-size: 14px; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 4px;}
+.p-badge { font-size: 9px; padding: 4px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+.badge-entrega { background: rgba(230, 57, 70, 0.1); color: var(--danger); }
+.badge-retirada { background: rgba(221, 167, 58, 0.1); color: var(--gold-dark); }
+.p-itens { font-size: 13px; color: var(--text-main); line-height: 1.5; padding: 2px 0; font-weight: 500; }
+.p-obs { font-size: 10px; color: var(--danger); background: rgba(230, 57, 70, 0.05); padding: 8px; border-radius: 6px; margin-top: 6px; font-weight: 700; border: 1px dashed var(--danger);}
+.p-footer { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; padding: 10px; border-radius: 8px; margin-top: 2px;}
+.p-total { font-size: 14px; font-weight: 800; color: var(--text-main); }
+.badge-pgto { color: var(--text-muted); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+.p-endereco { font-size: 10px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; font-weight: 600; margin-top: 2px;}
+
+.action-buttons { display: flex; gap: 6px; margin-top: 2px; }
+.btn-icon-only { flex: 1; background: var(--bg-card); border: 1px solid var(--border-light); color: var(--text-muted); padding: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: inherit;}
+.btn-icon-only:hover { color: var(--text-main); border-color: rgba(58, 42, 32, 0.3); background: #F8FAFC; }
+.btn-icon-only.btn-wp { background: rgba(37, 211, 102, 0.05); color: var(--wp); border-color: rgba(37, 211, 102, 0.2); }
+.btn-icon-only.btn-wp:hover { background: var(--wp); color: #FFF; }
+.btn-icon-only svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+
+/* EFEITO BOTÕES DE AÇÃO DOS CARDS */
+.btn-action-card {
+    border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 12px; 
+    cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; 
+    transition: all 0.2s ease; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-action-card:active { transform: scale(0.98); }
+.btn-action-novo { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(47, 133, 90, 0.2); }
+.btn-action-novo:hover { background: #226645; }
+.btn-action-prep { background: var(--gold-dark); color: white; box-shadow: 0 4px 10px rgba(221, 167, 58, 0.2); }
+.btn-action-prep:hover { background: #A87A24; }
+.btn-action-saiu { background: var(--text-main); color: white; box-shadow: 0 4px 10px rgba(44, 32, 24, 0.2); }
+.btn-action-saiu:hover { background: #1C140F; }
+
+::-webkit-scrollbar { width: 4px; height: 4px;}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
+@media (max-width: 600px) { .kanban-col { flex: 0 0 85vw; min-width: 85vw; } }
+
+.empty-state { text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 8px;}
+.empty-state span { font-size: 28px; filter: grayscale(1); opacity: 0.5;}
+
+/* MODAIS E TABS */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 11000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+.modal-box { background: var(--bg-card); width: 100%; max-width: 550px; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-md); position: relative; max-height: 90vh; display: flex; flex-direction: column; }
+.close-modal { position: absolute; top: 15px; right: 15px; font-size: 24px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); z-index: 10;}
+.tabs-header { display: flex; gap: 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 15px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+.tabs-header::-webkit-scrollbar { display: none; }
+.tab-btn { background: none; border: none; padding: 10px 5px; font-size: 11px; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;}
+.tab-btn.active { color: var(--gold-dark); border-bottom-color: var(--gold); }
+.tab-content { display: none; flex-grow: 1; overflow-y: auto; padding-right: 5px;}
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+.toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E2E8F0; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s var(--smooth); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+input:checked + .slider { background-color: var(--success); }
+input:checked + .slider:before { transform: translateX(18px); }
+
+.catalog-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+.catalog-info strong { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;}
+.section-subtitle { font-size: 11px; color: var(--text-muted); margin: 15px 0 8px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
+.btn-gradient { background: linear-gradient(135deg, #C28F2A 0%, #E8C87A 50%, #DDA73A 100%); background-size: 200% auto; color: #FFF !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s ease; cursor: pointer; border-radius: 8px;}
+.btn-gradient:hover { background-position: right center; box-shadow: 0 5px 15px rgba(221, 167, 58, 0.3); transform: translateY(-2px); }
+
+.dia-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; margin-bottom: 8px; background: #F8FAFC; border-radius: 8px; border: 1px solid var(--border-light); transition: all 0.2s ease; }
+.dia-row:hover { border-color: rgba(221, 167, 58, 0.4); box-shadow: var(--shadow-sm); }
+.dia-label { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer; }
+.dia-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--success); cursor: pointer; }
+.dia-inputs { display: flex; align-items: center; gap: 8px; }
+.dia-inputs input[type="time"] { padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 700; color: var(--text-main); background: #FFF; transition: all 0.3s; }
+.dia-inputs input[type="time"]:focus { outline: none; border-color: var(--gold); }
+.dia-inputs span { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+
+#login-screen { position: fixed; inset: 0; background: var(--bg-sidebar); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+.login-box { background: #FFF; padding: 35px; border-radius: 16px; width: 100%; max-width: 380px; text-align: center; }
+.login-box h2 { color: var(--text-main); margin-bottom: 25px; letter-spacing: 1px; font-size: 20px; }
+.login-box input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 13px; }
+.login-box button { width: 100%; padding: 14px; }
+#overlay-start { position: fixed; inset: 0; background: rgba(26, 21, 18, 0.9); backdrop-filter: blur(10px); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.btn-start { padding: 15px 40px; font-size: 14px; border-radius: 50px; letter-spacing: 2px;}
+
+#view-relatorios { display:none; padding: 25px; overflow-y: auto; flex-grow: 1; background: var(--bg-main); flex-direction: column;}
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+.kpi-card { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 5px;}
+.kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
+.kpi-value { font-size: 24px; font-family: 'Cinzel', serif; font-weight: 700; color: var(--text-main); }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* =========================================================
+   PAINEL SIGNATURE — identidade visual Doce Capricho
+   ========================================================= */
+:root {
+  --gold: #DFAE4C; --gold-dark: #A9681D; --bronze: #7D341D;
+  --bg-main: #F6F1E9; --bg-sidebar: #17100C; --bg-card: #FFFDF9;
+  --text-main: #302017; --text-muted: #887568;
+  --border-light: rgba(91, 52, 29, .11);
+  --shadow-sm: 0 8px 24px rgba(69, 38, 20, .07);
+  --shadow-md: 0 24px 60px rgba(43, 23, 12, .18);
+}
+body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transparent 28%), var(--bg-main); }
+.top-bar { min-height:68px; padding:10px 24px; background:rgba(255,253,249,.88); backdrop-filter:blur(18px); border-bottom-color:rgba(125,52,29,.1); }
+.top-bar-logo { font-size:16px; letter-spacing:1.7px; }
+.top-bar-logo::before { content:""; width:34px; height:34px; border-radius:50%; background:url('img/admin-identidade.png') center/cover; box-shadow:0 0 0 2px rgba(223,174,76,.25); }
+.top-bar-logo span { background:linear-gradient(135deg, rgba(223,174,76,.18), rgba(125,52,29,.08)); color:var(--bronze); }
+.menu-toggle { width:40px; height:40px; border-radius:12px; background:#fff; box-shadow:0 5px 16px rgba(69,38,20,.06); }
+.top-bar-status { padding:8px 13px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.5); }
+
+.sidebar { width:294px; left:-314px; background:
+  linear-gradient(180deg, rgba(19,11,7,.2), rgba(19,11,7,.96) 220px),
+  url('img/admin-identidade.png') center top/auto 230px no-repeat,
+  #17100C; }
+.sidebar-header { min-height:104px; align-items:flex-end; padding:22px; background:linear-gradient(180deg, transparent, rgba(19,11,7,.8)); }
+.sidebar-logo { color:#FFE2A2; text-shadow:0 2px 14px rgba(0,0,0,.5); font-size:17px; }
+.stats-container { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:16px; }
+.stat-item { background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.07); border-radius:13px; padding:12px; }
+.stat-value { font-size:18px; }
+.sidebar-nav { padding:12px; }
+.nav-btn { padding:13px 14px; border-radius:11px; }
+.nav-btn.active { border-left:0; background:linear-gradient(135deg, rgba(223,174,76,.2), rgba(125,52,29,.2)); box-shadow:inset 0 0 0 1px rgba(223,174,76,.16); }
+
+.main-content { background:transparent; }
+.operation-hero { margin:16px 16px 0; min-height:132px; border-radius:20px; padding:20px 22px; color:#FFF8E9; position:relative; overflow:hidden; flex-shrink:0; display:flex; justify-content:space-between; align-items:center; gap:22px; background:linear-gradient(100deg, rgba(35,17,8,.93), rgba(90,40,19,.83) 58%, rgba(168,94,27,.7)), url('img/admin-identidade.png') center 47%/cover; box-shadow:0 18px 42px rgba(75,36,14,.18); }
+.operation-hero::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg, transparent 50%, rgba(255,196,88,.08)); pointer-events:none; }
+.hero-copy,.hero-metrics { position:relative; z-index:1; }
+.hero-kicker { display:block; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:2.4px; color:#F3C96C; margin-bottom:7px; }
+.hero-title { font-size:clamp(20px,2.6vw,30px); margin:0 0 7px; line-height:1.15; }
+.hero-subtitle { font-size:11px; opacity:.72; font-weight:500; }
+.hero-metrics { display:grid; grid-template-columns:repeat(4,minmax(92px,1fr)); gap:9px; min-width:min(54%,560px); }
+.hero-metric { padding:12px; border-radius:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,225,166,.15); backdrop-filter:blur(10px); }
+.hero-metric span { display:block; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; opacity:.67; margin-bottom:5px; }
+.hero-metric strong { display:block; font-size:17px; color:#FFF5D6; white-space:nowrap; }
+
+.kanban-board { gap:14px; padding:16px; }
+.kanban-col { min-width:286px; max-width:none; padding:10px; border:1px solid rgba(91,52,29,.08); background:rgba(255,255,255,.35); border-radius:18px; }
+.col-header { padding:3px 4px 13px; font-size:10px; }
+.col-header::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 4px rgba(223,174,76,.12); margin-right:9px; }
+.col-header .count { margin-left:auto; background:#FFF9ED; color:var(--bronze); border:1px solid rgba(223,174,76,.2); }
+.card-pedido { border-radius:16px; padding:16px; gap:10px; border-color:rgba(91,52,29,.1); box-shadow:0 10px 26px rgba(75,40,20,.07); cursor:grab; }
+.card-pedido:hover { transform:translateY(-2px); box-shadow:0 16px 34px rgba(75,40,20,.11); border-color:rgba(223,174,76,.38); }
+.p-id { color:var(--bronze); }
+.p-footer { background:linear-gradient(135deg, #FBF5E9, #FFFDF9); border:1px solid rgba(223,174,76,.12); }
+.btn-action-card { border-radius:11px; }
+.btn-action-novo { background:linear-gradient(135deg,#347A56,#245B40); }
+.btn-action-prep { background:linear-gradient(135deg,#D7A13C,#A86B20); }
+.btn-action-saiu { background:linear-gradient(135deg,#4A2B1C,#24150E); }
+.empty-state { min-height:130px; justify-content:center; border:1px dashed rgba(91,52,29,.13); border-radius:13px; background:rgba(255,255,255,.26); }
+
+.modal-overlay { background:rgba(29,15,8,.62); backdrop-filter:blur(9px); }
+.modal-box { border-radius:22px; border:1px solid rgba(255,218,142,.18); box-shadow:0 28px 80px rgba(25,12,6,.3); }
+.tabs-header { gap:8px; padding:4px; background:#F7F0E5; border:0; border-radius:12px; }
+.tab-btn { border:0; padding:10px 12px; border-radius:9px; white-space:nowrap; }
+.tab-btn.active { color:#fff; background:linear-gradient(135deg,var(--bronze),var(--gold-dark)); box-shadow:0 5px 14px rgba(125,52,29,.18); }
+.catalog-item { padding:12px; margin-bottom:7px; border:1px solid var(--border-light); border-radius:11px; background:#FFFDFA; }
+.kpi-card { border-radius:16px; padding:18px; }
+
+#login-screen { background:linear-gradient(90deg, rgba(22,11,6,.96), rgba(63,27,12,.74)), url('img/admin-identidade.png') center/cover; padding:24px; }
+.login-box { max-width:410px; padding:40px; border-radius:24px; background:rgba(255,253,249,.94); backdrop-filter:blur(18px); border:1px solid rgba(255,231,178,.28); box-shadow:0 30px 90px rgba(0,0,0,.35); }
+.login-brand-mark { width:82px; height:82px; margin:0 auto 18px; border-radius:50%; background:url('img/admin-identidade.png') center/cover; box-shadow:0 0 0 5px rgba(223,174,76,.13), 0 12px 30px rgba(95,48,18,.2); }
+.login-box h2 { margin-bottom:7px; }
+.login-caption { color:var(--text-muted); font-size:11px; margin-bottom:24px; line-height:1.5; }
+.login-box input { border-radius:11px; background:#FFFCF7; padding:15px; }
+.login-box button { border-radius:11px; padding:15px; }
+#overlay-start { background:linear-gradient(100deg,rgba(20,10,5,.92),rgba(83,35,13,.78)),url('img/admin-identidade.png') center/cover; }
+
+@media (max-width: 980px) {
+  .operation-hero { align-items:flex-start; flex-direction:column; }
+  .hero-metrics { width:100%; min-width:0; }
+}
+@media (max-width: 650px) {
+  .top-bar { min-height:60px; padding:9px 12px; }
+  .top-bar-logo { font-size:12px; gap:7px; }
+  .top-bar-logo::before { width:28px; height:28px; }
+  .top-bar-logo span { display:none; }
+  .top-bar-status { max-width:126px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:8px; }
+  .operation-hero { margin:10px 10px 0; min-height:auto; border-radius:17px; padding:17px; }
+  .hero-title { font-size:20px; }
+  .hero-metrics { grid-template-columns:repeat(2,1fr); }
+  .hero-metric { padding:10px; }
+  .kanban-board { padding:10px; }
+  .kanban-col { flex:0 0 88vw; min-width:88vw; }
+  .login-box { padding:30px 24px; }
+}
+.pwa-install-card { position:fixed; left:50%; bottom:18px; transform:translate(-50%,18px); width:min(92vw,520px); z-index:12000; padding:14px 15px; border-radius:16px; color:#FFF8E9; background:linear-gradient(135deg,#2C170E,#7D341D); border:1px solid rgba(255,218,142,.24); box-shadow:0 18px 50px rgba(20,9,4,.38); display:none; align-items:center; gap:12px; opacity:0; transition:.3s var(--smooth); }
+.pwa-install-card.show { display:flex; opacity:1; transform:translate(-50%,0); }
+.pwa-install-icon { width:42px; height:42px; flex:none; border-radius:12px; background:url('icons/icon-192.png') center/cover; }
+.pwa-install-copy { flex:1; font-size:10px; line-height:1.45; color:rgba(255,248,233,.78); }
+.pwa-install-copy strong { display:block; color:#FFF4D4; font-size:12px; margin-bottom:2px; }
+.pwa-install-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:10px 12px; font:800 9px 'Montserrat',sans-serif; text-transform:uppercase; cursor:pointer; }
+.pwa-install-close { border:0; background:transparent; color:rgba(255,255,255,.65); font-size:20px; cursor:pointer; padding:3px; }
+.offline-pill { position:fixed; top:76px; left:50%; transform:translateX(-50%); z-index:11900; background:#A72828; color:#fff; border-radius:999px; padding:8px 14px; font-size:9px; font-weight:800; letter-spacing:.8px; display:none; box-shadow:0 8px 24px rgba(90,15,15,.25); }
+.offline-pill.show { display:block; }
+</style>
+</head>
+<body>
+
+<div class="offline-pill" id="offline-pill">SEM INTERNET · ações temporariamente indisponíveis</div>
+<div class="pwa-install-card" id="pwa-install-card" role="status">
+  <div class="pwa-install-icon" aria-hidden="true"></div>
+  <div class="pwa-install-copy"><strong id="pwa-install-title">Instalar Capricho Admin</strong><span id="pwa-install-text">Tenha o painel na sua tela inicial.</span></div>
+  <button type="button" class="pwa-install-action" id="pwa-install-action">Instalar</button>
+  <button type="button" class="pwa-install-close" id="pwa-install-close" aria-label="Fechar">×</button>
+</div>
+
+<div id="login-screen">
+  <form class="login-box" id="form-login">
+    <div class="login-brand-mark" aria-hidden="true"></div>
+    <h2 class="brand-font">Acesso Administrativo</h2>
+    <p class="login-caption">Gestão operacional · Doce Capricho Ateliê</p>
+    <input type="email" id="admin-email" placeholder="E-mail Operacional" required>
+    <input type="password" id="admin-senha" placeholder="Senha" required>
+    <button type="submit" class="btn-gradient">Autenticar</button>
+  </form>
+</div>
+
+<div id="overlay-start">
+  <h1 class="brand-font" style="color:#FFF; margin-bottom: 25px; letter-spacing: 2px; font-size: 28px;">SISTEMA PRONTO</h1>
+  <button class="btn-gradient btn-start" onclick="iniciarSistema()">Iniciar Operação</button>
+</div>
+
+<audio id="audio-alerta" src="alerta.mp3" loop preload="auto"></audio>
+
+<div class="app-container">
+  
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="top-bar-logo brand-font">DOCE CAPRICHO <span>OPERAÇÃO</span></div>
+    </div>
+    <div>
+      <span class="top-bar-status status-aberto" id="header-status-badge">🟢 Aberto</span>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo brand-font">DOCE CAPRICHO</div>
+        <button class="btn-close-menu" onclick="fecharSidebar()">&times;</button>
+      </div>
+      
+      <div class="stats-container" id="sidebar-stats">
+        <div class="stat-item">
+          <span class="stat-label">Pedidos Hoje</span>
+          <span class="stat-value" id="dash-qtd">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Faturamento Diário</span>
+          <span class="stat-value" style="color: var(--gold);" id="dash-fat">R$ 0,00</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" id="btn-nav-kanban" onclick="alternarTela('kanban')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Painel de Pedidos
+        </button>
+        <button class="nav-btn" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Financeiro / KPI
+        </button>
+        <button class="nav-btn" onclick="abrirModalCatalogo(); fecharSidebar();">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Ajustes / Fechar Loja
+        </button>
+        <button class="nav-btn" id="btn-sound" onclick="toggleSom()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>Som Ligado</span>
+        </button>
+        <button class="nav-btn danger" onclick="sair()" style="margin-top: auto;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Encerrar Sessão
+        </button>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <section class="operation-hero" id="operation-hero">
+        <div class="hero-copy">
+          <span class="hero-kicker">Central de operação</span>
+          <h1 class="hero-title brand-font" id="hero-greeting">Uma noite cheia de capricho</h1>
+          <p class="hero-subtitle" id="hero-date">Acompanhe a cozinha e os pedidos em tempo real.</p>
+        </div>
+        <div class="hero-metrics" aria-label="Resumo da operação">
+          <div class="hero-metric"><span>Pedidos hoje</span><strong id="hero-qtd">0</strong></div>
+          <div class="hero-metric"><span>Faturamento</span><strong id="hero-fat">R$ 0,00</strong></div>
+          <div class="hero-metric"><span>Aguardando</span><strong id="hero-novos">0</strong></div>
+          <div class="hero-metric"><span>Na cozinha</span><strong id="hero-preparo">0</strong></div>
+        </div>
+      </section>
+      
+      <div class="kanban-board" id="view-kanban">
+        <div class="kanban-col" data-status="Novo" ondragover="dragOver(event)" ondrop="drop(event, 'Novo')">
+          <div class="col-header">Novos Pedidos <span class="count" id="count-novo">0</span></div>
+          <div class="col-body" id="list-novo"></div>
+        </div>
+        
+        <div class="kanban-col" data-status="Preparando" ondragover="dragOver(event)" ondrop="drop(event, 'Preparando')">
+          <div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div>
+          <div class="col-body" id="list-preparando"></div>
+        </div>
+        
+        <div class="kanban-col" data-status="Saiu para Entrega" ondragover="dragOver(event)" ondrop="drop(event, 'Saiu para Entrega')">
+          <div class="col-header">Pronto / Em Rota <span class="count" id="count-saiu">0</span></div>
+          <div class="col-body" id="list-saiu"></div>
+        </div>
+        
+        <div class="kanban-col" data-status="Concluído" ondragover="dragOver(event)" ondrop="drop(event, 'Concluído')">
+          <div class="col-header" style="color:var(--text-muted);">Finalizados <span class="count" id="count-concluido">0</span></div>
+          <div class="col-body" id="list-concluido"></div>
+        </div>
+      </div>
+
+      <div id="view-relatorios">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <h2 class="brand-font" style="color: var(--text-main); font-size: 20px; border:none; margin:0;">Dashboard Analytics</h2>
+          <div style="display: flex; gap: 10px; align-items: center; background: var(--bg-card); padding: 8px; border-radius: 10px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <input type="date" id="rel-inicio" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 11px;">
+            <span style="color: var(--text-muted); font-size: 10px; font-weight: 700;">ATÉ</span>
+            <input type="date" id="rel-fim" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 11px;">
+            <button class="btn-gradient" onclick="gerarRelatorio()" style="padding: 8px 15px; font-size: 10px; width: auto; margin:0;">Filtrar</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card" style="border-left: 4px solid var(--success);">
+            <span class="kpi-title">Faturamento Bruto</span>
+            <strong class="kpi-value" id="kpi-fat" style="color: var(--success);">R$ 0,00</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">Pedidos Entregues</span>
+            <strong class="kpi-value" id="kpi-qtd">0</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">Ticket Médio</span>
+            <strong class="kpi-value" id="kpi-ticket">R$ 0,00</strong>
+          </div>
+          <div class="kpi-card" style="border-left: 4px solid var(--danger);">
+            <span class="kpi-title" style="color: var(--danger);">Perdas / Cancelados</span>
+            <strong class="kpi-value" id="kpi-falhas" style="color: var(--danger);">0</strong>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; padding-bottom: 30px;">
+          <div style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-light); height: 300px;">
+            <h3 style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight:800;">Curva Diária</h3>
+            <canvas id="chart-fat"></canvas>
+          </div>
+          <div style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-light); height: 300px; overflow-y: auto;">
+            <h3 style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-weight:800;">Top 10 Produtos</h3>
+            <div id="lista-top-produtos" style="display: flex; flex-direction: column; gap: 6px;">
+               <div class="empty-state">Use o filtro acima para ver os dados.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIGURAÇÕES -->
+<div class="modal-overlay" id="modal-catalogo">
+  <div class="modal-box">
+    <button class="close-modal" onclick="fecharModalCatalogo()">&times;</button>
+    <h2>Ajustes Operacionais</h2>
+    
+    <div class="tabs-header">
+      <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">Automação & Expediente</button>
+      <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">Pizzas</button>
+      <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">Esfihas</button>
+      <button class="tab-btn" onclick="switchTab('tab-ofertas', this)">Ofertas</button>
+      <button class="tab-btn" onclick="switchTab('tab-descontos', this)">Descontos</button>
+      <button class="tab-btn" onclick="switchTab('tab-cupons', this)">Cupons</button>
+      <button class="tab-btn" onclick="switchTab('tab-divulgacao', this)">Divulgação</button>
+    </div>
+
+    <div id="tab-expediente" class="tab-content active">
+      <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light); background: rgba(230, 57, 70, 0.02); padding: 15px; border-radius: 8px;">
+        <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">🚦 Status da Loja (Visível para o Cliente)</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px; line-height: 1.4;">Controle a abertura da loja em caso de emergência ou esgotamento total.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <select id="select-status-loja" style="padding: 10px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 700;">
+            <option value="auto">🟢 Automático (Segue o Calendário/Relógio)</option>
+            <option value="pausado">🟡 Pausar Temporariamente (Cozinha Cheia)</option>
+            <option value="esgotado">🔴 Encerrar por Hoje (Insumos Esgotados)</option>
+          </select>
+          <button onclick="salvarStatusLoja(event)" class="btn-gradient btn-save" style="margin-top: 0; padding:10px;">Aplicar Status Imediatamente</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display: block; font-size: 12px; color: var(--text-main); margin-bottom: 6px;">🔥 Interruptor de Promoções (Combos)</strong>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <select id="select-modo-promo" style="padding: 10px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 600;">
+            <option value="auto">🤖 Modo Calendário (Sexta e Sábado)</option>
+            <option value="on">🟢 Forçar Combos Hoje (Ativar Agora)</option>
+            <option value="off">🔴 Esconder Combos (Pausar Ofertas)</option>
+          </select>
+          <button onclick="salvarModoPromo(event)" class="btn-gradient btn-save" style="margin-top: 0; padding:10px;">Salvar Status</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display: block; font-size: 12px; color: var(--text-main); margin-bottom: 6px;">Relógio Automático da Loja</strong>
+        <div id="schedule-list"></div>
+        <button class="btn-gradient btn-save" onclick="salvarHorarios(event)" style="padding:10px; margin-top:10px;">Salvar Calendário</button>
+      </div>
+
+      <div style="margin-bottom: 15px;">
+        <strong style="display: block; font-size: 12px; color: var(--text-main); margin-bottom: 6px;">Aviso no Site (Rodapé)</strong>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <input type="text" id="input-texto-funcionamento" placeholder="Ex: Quinta a Domingo, 18:30 às 23:00" style="padding: 10px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px;">
+          <button onclick="salvarTextoFuncionamento(event)" class="btn-gradient btn-save" style="margin-top: 0; padding:10px;">Salvar Rodapé</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-pizzas" class="tab-content">
+      <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px;">Desligue para bloquear a venda (Esgotado).</p>
+      <h4 class="section-subtitle">🍕 Pizzas</h4>
+      <div id="catalog-list-pizzas" style="margin-bottom: 20px;"></div>
+      <h4 class="section-subtitle">🧀 Adicionais</h4>
+      <div id="catalog-list-extras" style="margin-bottom: 15px;"></div>
+    </div>
+
+    <div id="tab-esfihas" class="tab-content">
+      <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px;">Desligue para bloquear a venda (Esgotado).</p>
+      <h4 class="section-subtitle">🥟 Esfihas</h4>
+      <div id="catalog-list-esfihas" style="margin-bottom: 15px;"></div>
+    </div>
+
+    <div id="tab-ofertas" class="tab-content">
+      <p style="font-size:10px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">Ative apenas os combos disponíveis para pedido. Os combos desligados ficam <strong>ocultos no site</strong>.</p>
+      <h4 class="section-subtitle">🔥 Combos e ofertas</h4>
+      <div id="catalog-list-combos" style="margin-bottom:15px;"></div>
+    </div>
+
+    <div id="tab-descontos" class="tab-content">
+      <div style="padding:16px; border:1px solid var(--border-light); border-radius:10px; background:#F8FAFC;">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">🏷️ Desconto geral programado</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">O desconto será aplicado automaticamente aos produtos durante o período definido. A taxa de entrega não recebe desconto.</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Nome da promoção</label>
+          <input type="text" id="desconto-titulo" maxlength="60" placeholder="Ex: Quarta da Esfiha" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Desconto (%)</label>
+          <input type="number" id="desconto-percentual" min="1" max="90" step="1" placeholder="Ex: 10" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Início</label>
+              <input type="datetime-local" id="desconto-inicio" style="padding:10px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Término</label>
+              <input type="datetime-local" id="desconto-fim" style="padding:10px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <div id="desconto-status-admin" style="font-size:10px; font-weight:700; color:var(--text-muted); min-height:14px;"></div>
+          <button type="button" onclick="salvarPromocaoGeral(event)" class="btn-gradient" style="padding:12px; width:100%;">Programar e ativar desconto</button>
+          <button type="button" onclick="desativarPromocaoGeral(event)" style="padding:11px; width:100%; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">Desativar desconto atual</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-cupons" class="tab-content">
+      <div style="padding:16px; border:1px solid var(--border-light); border-radius:10px; background:#F8FAFC; margin-bottom:16px;">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">🎟️ Criar cupom</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">O código será convertido em maiúsculas. Use letras, números, hífen ou sublinhado, sem espaços.</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Código do cupom</label>
+          <input type="text" id="cupom-codigo-admin" maxlength="24" placeholder="Ex: INSTA10" autocomplete="off" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:12px; font-weight:800; text-transform:uppercase;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Tipo</label>
+              <select id="cupom-tipo-admin" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+                <option value="percentual">Percentual (%)</option>
+                <option value="fixo">Valor fixo (R$)</option>
+              </select>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Valor</label>
+              <input type="number" id="cupom-valor-admin" min="1" step="1" placeholder="Ex: 10" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Pedido mínimo (R$)</label>
+          <input type="text" id="cupom-minimo-admin" inputmode="decimal" value="0,00" placeholder="Ex: 50,00" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Início</label>
+              <input type="datetime-local" id="cupom-inicio-admin" style="padding:10px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Término</label>
+              <input type="datetime-local" id="cupom-fim-admin" style="padding:10px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <label style="display:flex; align-items:center; gap:9px; font-size:11px; font-weight:700; color:var(--text-main); cursor:pointer;">
+            <input type="checkbox" id="cupom-acumula-admin" style="width:17px; height:17px; accent-color:var(--success);">
+            Permitir junto com o desconto geral
+          </label>
+
+          <button type="button" onclick="salvarCupom(event)" class="btn-gradient" style="padding:12px; width:100%;">Criar ou atualizar cupom</button>
+        </div>
+      </div>
+
+      <h4 class="section-subtitle">Cupons cadastrados</h4>
+      <div id="lista-cupons-admin"><div class="empty-state">Carregando cupons...</div></div>
+    </div>
+
+    <div id="tab-divulgacao" class="tab-content">
+      <div style="margin-bottom: 24px; padding: 16px; border: 1px solid var(--border-light); border-radius: 10px; background: #F8FAFC;">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">📣 Pop-up de divulgação</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">Publique um aviso no site sem alterar o código. Uma nova publicação recebe um identificador diferente e volta a aparecer para todos os clientes.</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Título *</label>
+          <input type="text" id="aviso-titulo" maxlength="80" placeholder="Ex: Novo sabor disponível!" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Descrição</label>
+          <textarea id="aviso-descricao" maxlength="300" rows="4" placeholder="Conte a novidade ao cliente" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px; resize:vertical;"></textarea>
+
+          <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">URL HTTPS da imagem (opcional)</label>
+          <input type="url" id="aviso-imagem" placeholder="https://.../imagem.jpg" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Texto do botão</label>
+              <input type="text" id="aviso-botao-texto" maxlength="40" value="VER NOVIDADE" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Destino</label>
+              <input type="text" id="aviso-destino" value="#cardapio" placeholder="#cardapio ou https://..." style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+            </div>
+          </div>
+
+          <div id="aviso-status-admin" style="font-size:10px; font-weight:700; color:var(--text-muted); min-height:14px;"></div>
+          <button type="button" onclick="publicarAvisoPopup(event)" class="btn-gradient" style="padding:12px; width:100%;">Publicar nova divulgação</button>
+          <button type="button" onclick="desativarAvisoPopup(event)" style="padding:11px; width:100%; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">Desativar pop-up atual</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light);">
+        <strong style="display: block; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">📢 Gerador de QR Code (Alta Qualidade)</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:15px; line-height: 1.4;">Baixe a imagem e envie para a gráfica imprimir nas suas caixas. Qualquer celular poderá escanear na mesa de jantar!</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+          <input type="text" id="input-qrcode-url" value="https://docecaprichoatelier.vercel.app/" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 11px; text-align: center; font-weight: bold; color: var(--gold-dark);">
+          <button onclick="gerarQRCode()" class="btn-gradient" style="padding:12px; width:100%; margin-top:0;">Gerar QR Code</button>
+          <div id="qrcode-container" style="margin-top: 15px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-light); display: none; justify-content: center; align-items: center;"></div>
+          <button id="btn-baixar-qr" onclick="baixarQRCode()" class="btn-gradient" style="padding:12px; width:100%; display:none; background: var(--success); color: white !important; border: none; margin-top:0;">⬇️ Baixar Imagem (Para Gráfica)</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (sidebar.classList.contains('open')) { fecharSidebar(); } else { sidebar.classList.add('open'); overlay.style.display = 'block'; setTimeout(() => overlay.classList.add('show'), 10); }
+}
+
+function fecharSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.remove('open'); overlay.classList.remove('show'); setTimeout(() => overlay.style.display = 'none', 300);
+}
+
+const icons = {
+  clock: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+  mapPin: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
+  whatsapp: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`,
+  printer: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path></svg>`,
+  cancel: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
+};
+
+const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+let db = firebase.firestore();
+let auth = firebase.auth();
+
+let pedidosMap = new Map(); 
+let crmCache = new Map();
+let crmConsultasPendentes = new Map();
+let configuracoesGlobais = { statusLoja: 'auto', itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
+let somLigado = true; 
+let chartInstance = null;
+const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+auth.onAuthStateChanged(user => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const modoDev = urlParams.get('dev') === 'true';
+
+  if (user || modoDev) { 
+    document.getElementById('login-screen').style.display = 'none'; 
+    document.getElementById('overlay-start').style.display = 'flex'; 
+  } else { 
+    document.getElementById('login-screen').style.display = 'flex'; 
+    document.getElementById('overlay-start').style.display = 'none'; 
+  }
+});
+
+document.getElementById('form-login').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-senha').value).catch(error => alert("Erro ao logar. Verifique os dados.")); });
+function sair() { auth.signOut(); location.reload(); }
+
+function toggleSom() {
+  somLigado = !somLigado;
+  document.getElementById('btn-sound').querySelector('span').textContent = somLigado ? 'Som Ligado' : 'Mutado';
+  if(!somLigado) { document.getElementById('audio-alerta').pause(); document.getElementById('audio-alerta').currentTime = 0; }
+}
+
+function alternarTela(tela) {
+  fecharSidebar();
+  const navs = document.querySelectorAll('.sidebar-nav .nav-btn');
+  navs.forEach(n => n.classList.remove('active'));
+  
+  if (tela === 'relatorios') {
+    document.getElementById('operation-hero').style.display = 'none';
+    document.getElementById('view-kanban').style.display = 'none';
+    document.getElementById('view-relatorios').style.display = 'flex';
+    document.getElementById('btn-nav-relatorios').classList.add('active');
+    
+    if(!document.getElementById('rel-inicio').value) {
+       const hoje = new Date(); const inicio = new Date(hoje); inicio.setDate(hoje.getDate() - 7);
+       document.getElementById('rel-inicio').value = inicio.toISOString().split('T')[0];
+       document.getElementById('rel-fim').value = hoje.toISOString().split('T')[0];
+       gerarRelatorio();
+    }
+  } else {
+    document.getElementById('operation-hero').style.display = 'flex';
+    document.getElementById('view-kanban').style.display = 'flex';
+    document.getElementById('view-relatorios').style.display = 'none';
+    document.getElementById('btn-nav-kanban').classList.add('active');
+  }
+}
+
+function atualizarSaudacaoPainel() {
+  const agora = new Date();
+  const hora = agora.getHours();
+  const saudacao = hora < 12 ? 'Bom dia, vamos caprichar?' : hora < 18 ? 'Boa tarde, vamos caprichar?' : 'Uma noite cheia de capricho';
+  const titulo = document.getElementById('hero-greeting');
+  const data = document.getElementById('hero-date');
+  if (titulo) titulo.textContent = saudacao;
+  if (data) data.textContent = agora.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' }) + ' · Pedidos atualizados em tempo real';
+}
+atualizarSaudacaoPainel();
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+function abrirModalCatalogo() { document.getElementById('modal-catalogo').classList.add('open'); renderizarModaisConfig(); }
+function fecharModalCatalogo() { document.getElementById('modal-catalogo').classList.remove('open'); }
+
+function iniciarSistema() {
+  document.getElementById('overlay-start').style.display = 'none';
+  if(somLigado) { document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{}); }
+  
+  db.collection('configuracoes').doc('geral').onSnapshot(doc => {
+    if(doc.exists) {
+        configuracoesGlobais = doc.data();
+        if(!configuracoesGlobais.itensEsgotados) configuracoesGlobais.itensEsgotados = [];
+        if(!configuracoesGlobais.horarios) configuracoesGlobais.horarios = {};
+        if(!configuracoesGlobais.modoPromocoes) configuracoesGlobais.modoPromocoes = 'auto'; 
+        if(!configuracoesGlobais.statusLoja) {
+             configuracoesGlobais.statusLoja = configuracoesGlobais.forcarFechamento ? 'pausado' : 'auto';
+        }
+        
+        document.getElementById('select-status-loja').value = configuracoesGlobais.statusLoja;
+        document.getElementById('select-modo-promo').value = configuracoesGlobais.modoPromocoes;
+        document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
+        preencherFormularioAviso(configuracoesGlobais.avisoPopup || null);
+        preencherFormularioDesconto(configuracoesGlobais.promocaoGeral || null);
+    }
+    atualizarUIConfig();
+  });
+
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  db.collection('pedidos').where('data_pedido', '>=', hoje).orderBy('data_pedido', 'asc').onSnapshot(snapshot => {
+    let temNovo = false;
+    snapshot.docChanges().forEach(change => {
+      const dados = change.doc.data(); dados.id = change.doc.id;
+      if (change.type === 'added' || change.type === 'modified') { pedidosMap.set(dados.id, dados); if (dados.status === 'Novo') temNovo = true; }
+      if (change.type === 'removed') pedidosMap.delete(dados.id);
+    });
+    renderizarKanban();
+    const existeNovo = Array.from(pedidosMap.values()).some(p => p.status === 'Novo');
+    const audio = document.getElementById('audio-alerta');
+    if (existeNovo && somLigado) { if(audio.paused) audio.play().catch(()=>{}); } else { audio.pause(); audio.currentTime = 0; }
+  });
+  setInterval(renderizarKanban, 30000);
+  iniciarMonitoramentoCupons();
+}
+
+// ------------------------------------------------------------------
+// MENSAGENS DE WHATSAPP POR STATUS
+// ------------------------------------------------------------------
+// Link de avaliação do Doce Capricho Atelier no Google (mesmo usado no site).
+const GOOGLE_REVIEW_LINK = 'https://g.page/r/CdZZy4ieQQE3ECE/review';
+
+function montarMensagemStatus(p, novoStatus) {
+  const primeiroNome = (p.cliente_nome || '').split(' ')[0];
+
+  if (novoStatus === 'Pronto para Retirada') {
+    return `Olá, ${primeiroNome}! 🛍️\n\nSeu pedido do *Doce Capricho Atelier* já está pronto e te esperando no balcão, quentinho! 🍕✨\n\n📍 Rua Monsenhor José Aires, 188 - Centro, São Miguel/RN\n\nAté já!`;
+  }
+
+  if (novoStatus === 'Saiu para Entrega') {
+    return `Olá, ${primeiroNome}! 🛵\n\nSeu pedido do *Doce Capricho Atelier* acabou de sair do forno e já está a caminho, quentinho e fresquinho! 🍕✨\n\nQualquer coisa, é só chamar por aqui.`;
+  }
+
+  if (novoStatus === 'Concluído') {
+    return `✅ *Pedido entregue!*\n\n${primeiroNome}, esperamos que tenha aproveitado muito! 😋\n\nSe puder, deixar uma avaliação no Google leva menos de 1 minuto e ajuda demais o nosso ateliê a crescer e chegar em mais gente da nossa cidade:\n👉 ${GOOGLE_REVIEW_LINK}\n\nMuito obrigado pela confiança e até a próxima! 🙏🍕`;
+  }
+
+  return '';
+}
+
+// ------------------------------------------------------------------
+// BOTÕES DE AÇÃO: MOVER STATUS
+// ------------------------------------------------------------------
+function moverPedido(id, novoStatus) {
+    const p = pedidosMap.get(id);
+    if(!p) return;
+
+    const statusComMensagem = ['Saiu para Entrega', 'Pronto para Retirada', 'Concluído'];
+    if (statusComMensagem.includes(novoStatus)) {
+        const msg = montarMensagemStatus(p, novoStatus);
+        if (msg) window.open(`https://wa.me/55${p.cliente_telefone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    
+    if (novoStatus === 'Concluído') {
+      const telefoneNormalizado = normalizarTelefoneCRM(p.cliente_telefone);
+      crmCache.delete(telefoneNormalizado);
+      crmConsultasPendentes.delete(telefoneNormalizado);
+    }
+    document.getElementById(`card-${id}`).style.opacity = '0.5';
+    db.collection('pedidos').doc(id).update({ status: novoStatus }).catch(err => alert("Erro ao mover pedido. Verifique sua conexão."));
+}
+
+let dragSourceId = null;
+function dragStart(e, id) { dragSourceId = id; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); setTimeout(() => { e.target.classList.add('dragging'); }, 0); }
+function dragEnd(e) { e.target.classList.remove('dragging'); document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over')); }
+function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const col = e.currentTarget.closest('.kanban-col'); if(col) col.classList.add('drag-over'); }
+function drop(e, newStatus) {
+  e.preventDefault(); document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
+  const id = e.dataTransfer.getData('text/plain'); if(!id) return;
+  const p = pedidosMap.get(id);
+  if(p && p.status !== newStatus) {
+     let finalStatus = newStatus;
+     if (newStatus === 'Saiu para Entrega' && p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada';
+     moverPedido(id, finalStatus);
+  }
+}
+
+function normalizarTelefoneCRM(telefone) {
+  return String(telefone || '').replace(/\D/g, '');
+}
+
+function atualizarBadgeCRMQuandoDisponivel(elementId, count, statusAtual, tentativa = 0) {
+  const el = document.getElementById(elementId);
+  if (!el && tentativa < 8) {
+    setTimeout(() => atualizarBadgeCRMQuandoDisponivel(elementId, count, statusAtual, tentativa + 1), 40);
+    return;
+  }
+  if (!el) return;
+
+  const totalConsiderado = statusAtual === 'Concluído' ? count : count + 1;
+  if (totalConsiderado <= 1) {
+    el.innerHTML = '🌟 Cliente Novo';
+    el.className = 'crm-badge crm-novo';
+  } else if (totalConsiderado >= 5) {
+    el.innerHTML = `👑 Cliente fiel · ${totalConsiderado} pedidos`;
+    el.className = 'crm-badge crm-fiel';
+  } else {
+    el.innerHTML = `🍕 ${totalConsiderado}º pedido`;
+    el.className = 'crm-badge crm-recorrente';
+  }
+}
+
+function marcarCRMIndisponivel(elementId) {
+  setTimeout(() => {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.innerHTML = '⚠ Histórico indisponível';
+    el.className = 'crm-badge crm-indisponivel';
+  }, 0);
+}
+
+async function consultarHistoricoCRM(telefoneNormalizado) {
+  if (crmCache.has(telefoneNormalizado)) return crmCache.get(telefoneNormalizado);
+  if (crmConsultasPendentes.has(telefoneNormalizado)) return crmConsultasPendentes.get(telefoneNormalizado);
+
+  const consulta = db.collection('pedidos')
+    .where('cliente_telefone', '==', telefoneNormalizado)
+    .get()
+    .then(snapshot => {
+      let concluidos = 0;
+      snapshot.forEach(doc => { if (doc.data().status === 'Concluído') concluidos++; });
+      crmCache.set(telefoneNormalizado, concluidos);
+      return concluidos;
+    })
+    .finally(() => crmConsultasPendentes.delete(telefoneNormalizado));
+
+  crmConsultasPendentes.set(telefoneNormalizado, consulta);
+  return consulta;
+}
+
+async function fetchCRM(telefone, elementId, statusAtual) {
+  const telefoneNormalizado = normalizarTelefoneCRM(telefone);
+  if (!telefoneNormalizado) { marcarCRMIndisponivel(elementId); return; }
+  try {
+    const count = await consultarHistoricoCRM(telefoneNormalizado);
+    atualizarBadgeCRMQuandoDisponivel(elementId, count, statusAtual);
+  } catch (erro) {
+    console.error('[CRM] Não foi possível consultar o histórico:', erro.code || erro.message || erro);
+    marcarCRMIndisponivel(elementId);
+  }
+}
+
+function renderizarKanban() {
+  const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
+  let fat = 0, qtd = 0;
+  
+  Array.from(pedidosMap.values()).sort((a,b) => (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0)).forEach(p => { 
+      if(p.status !== 'Cancelado') {
+          let mapStatus = p.status;
+          if(p.status === 'Pronto para Retirada') mapStatus = 'Saiu para Entrega';
+          if(cols[mapStatus||'Novo']) cols[mapStatus||'Novo'].push(p); 
+          qtd++; if(p.status === 'Concluído') { fat += p.total_centavos; }
+      }
+  });
+  
+  document.getElementById('dash-qtd').textContent = qtd; document.getElementById('dash-fat').textContent = brl(fat);
+  document.getElementById('hero-qtd').textContent = qtd;
+  document.getElementById('hero-fat').textContent = brl(fat);
+  document.getElementById('hero-novos').textContent = cols['Novo'].length;
+  document.getElementById('hero-preparo').textContent = cols['Preparando'].length;
+
+  Object.keys(cols).forEach(status => {
+    const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : 'concluido';
+    document.getElementById(`count-${cid}`).textContent = cols[status].length;
+    if (cols[status].length === 0) { document.getElementById(`list-${cid}`).innerHTML = `<div class="empty-state"><span>🍃</span> Sem pedidos.</div>`; return; }
+
+    document.getElementById(`list-${cid}`).innerHTML = cols[status].map(p => {
+      let dif = Math.floor((Date.now() - (p.data_pedido?.toMillis()||Date.now())) / 60000);
+      let tText = dif<1?'Agora':dif<60?`${dif}m`:`${Math.floor(dif/60)}h ${dif%60}m`;
+      let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
+      let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
+      
+      // ------------------------------------------------------------------
+      // NOVO: ENDEREÇO DESTACADO NO KANBAN E MENSAGEM DE RETIRADA
+      // ------------------------------------------------------------------
+      let enderecoHTML = ''; 
+      if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) { 
+          enderecoHTML = `<div class="p-endereco" style="background: rgba(221, 167, 58, 0.1); border: 1px dashed var(--gold); padding: 8px; border-radius: 6px; margin-top: 6px; flex-direction: column; gap: 4px;">
+          <div style="display:flex; gap:6px; margin-bottom:2px;">${icons.mapPin} <span style="font-weight: 800; color: var(--gold-dark); text-transform: uppercase;">Endereço de Entrega:</span></div>
+          <span style="font-size: 11px; color: var(--text-main); font-weight: 600;">${esc(p.cliente_endereco)}</span></div>`; 
+      } else if (p.tipo_entrega === 'Retirada') {
+          enderecoHTML = `<div class="p-endereco" style="background: rgba(44, 32, 24, 0.05); border: 1px dashed var(--border-light); padding: 8px; border-radius: 6px; margin-top: 6px; justify-content: center;">
+          <span style="font-size: 11px; color: var(--text-main); font-weight: 800;">🛍️ CLIENTE FARÁ A RETIRADA</span></div>`;
+      }
+      
+      let itensHTML = p.itens.map(i => {
+        let extrasHtml = (i.extras && i.extras.length > 0) ? `<div style="margin-top:2px; padding-left:10px;">` + i.extras.map(e => `<span style="display:block; color:var(--text-muted); font-size:10px; font-weight:600;">+ ${esc(e.nome)}</span>`).join('') + `</div>` : '';
+        let comboHtml = '';
+        if (Array.isArray(i.combo_itens) && i.combo_itens.length) {
+          const rotulos = { tradicional:'Tradicionais', premium:'Premium', incluso:'Incluso' };
+          comboHtml = `<div style="margin-top:7px; padding:9px 10px; border-radius:9px; background:#FBF5E9; border:1px solid rgba(223,174,76,.18);">` + Object.entries(rotulos).map(([cat, rotulo]) => {
+            const escolhas = i.combo_itens.filter(ci => ci.categoria === cat).map(ci => `${ci.qtd}× ${esc(ci.nome || ci.id)}`);
+            return escolhas.length ? `<span style="display:block; color:var(--text-main); font-size:10px; line-height:1.55;"><b>${rotulo}:</b> ${escolhas.join(', ')}</span>` : '';
+          }).join('') + `</div>`;
+        }
+        let obsHtml = i.obs ? `<div class="p-obs">${esc(i.obs)}</div>` : '';
+        return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${esc(i.nome)}</strong>${comboHtml}${extrasHtml}${obsHtml}</div>`;
+      }).join('');
+      let btnCancel = status !== 'Concluído' ? `<button class="btn-icon-only" onclick="cancelarPedido('${p.id}')" title="Cancelar Pedido">${icons.cancel}</button>` : '';
+
+      let crmId = `crm-${p.id}`; fetchCRM(p.cliente_telefone, crmId, status);
+
+      let btnAcaoStatus = '';
+      if (status === 'Novo') {
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Preparando')" class="btn-action-card btn-action-novo">✅ ACEITAR PEDIDO</button>`;
+      } else if (status === 'Preparando') {
+          let txtDespacho = p.tipo_entrega === 'Retirada' ? '🛍️ PRONTO (RETIRADA)' : '🛵 DESPACHAR (ENTREGA)';
+          let proxStatus = p.tipo_entrega === 'Retirada' ? 'Pronto para Retirada' : 'Saiu para Entrega';
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', '${proxStatus}')" class="btn-action-card btn-action-prep">${txtDespacho}</button>`;
+      } else if (status === 'Saiu para Entrega') {
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Concluído')" class="btn-action-card btn-action-saiu">🎉 FINALIZAR PEDIDO</button>`;
+      }
+
+      return `
+      <div class="card-pedido ${bCor}" id="card-${p.id}" draggable="true" ondragstart="dragStart(event, '${p.id}')" ondragend="dragEnd(event)">
+        <div class="card-header">
+          <span class="p-id">#${p.id.slice(-5).toUpperCase()}</span>
+          <span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span>
+        </div>
+        <div class="p-cliente-area">
+          <div>
+            <span class="p-nome">${esc(p.cliente_nome)}</span>
+            <span id="${crmId}" class="crm-badge">⏳ Buscando...</span>
+          </div>
+          <span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span>
+        </div>
+        <div class="p-itens">${itensHTML}</div>
+        <div class="p-footer">
+          <span class="p-total">${brl(p.total_centavos)}</span>
+          <span class="badge-pgto">${p.forma_pagamento}</span>
+        </div>
+        ${enderecoHTML}
+        <div class="action-buttons">
+          <a href="https://wa.me/55${p.cliente_telefone}" target="_blank" class="btn-icon-only btn-wp" title="WhatsApp Cliente">${icons.whatsapp}</a>
+          <button class="btn-icon-only" onclick="imprimirComanda('${p.id}')" title="Imprimir Comanda">${icons.printer}</button>
+          ${btnCancel}
+        </div>
+        ${btnAcaoStatus}
+      </div>`;
+    }).join('');
+  });
+}
+
+function cancelarPedido(id) { if(confirm("🛑 ATENÇÃO!\nTem certeza que deseja MARCAR ESTE PEDIDO COMO CANCELADO?")) { db.collection('pedidos').doc(id).update({ status: 'Cancelado' }); } }
+
+function atualizarUIConfig() {
+  const badgeTop = document.getElementById('header-status-badge');
+  const statusAtual = configuracoesGlobais.statusLoja || 'auto';
+
+  if (statusAtual === 'pausado') {
+    badgeTop.className = 'top-bar-status status-pausado'; badgeTop.innerHTML = '🟡 Pausado (Cozinha Cheia)';
+  } else if (statusAtual === 'esgotado') {
+    badgeTop.className = 'top-bar-status status-encerrado'; badgeTop.innerHTML = '🔴 Encerrado por Hoje';
+  } else {
+    badgeTop.className = 'top-bar-status status-aberto'; badgeTop.innerHTML = '🟢 Aberto (Automático)';
+  }
+  renderizarModaisConfig();
+}
+
+function salvarStatusLoja(e) {
+  const btn = e.target; btn.textContent = '...';
+  const novoStatus = document.getElementById('select-status-loja').value;
+  db.collection('configuracoes').doc('geral').set({ statusLoja: novoStatus }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Aplicar Status Imediatamente', 2000);
+  }).catch(err => { alert("Erro."); btn.textContent = 'Aplicar Status Imediatamente'; });
+}
+
+function salvarModoPromo(e) {
+  const btn = e.target; btn.textContent = '...';
+  const modo = document.getElementById('select-modo-promo').value;
+  db.collection('configuracoes').doc('geral').set({ modoPromocoes: modo }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Status', 2000);
+  }).catch(err => { alert("Erro."); btn.textContent = 'Salvar Status'; });
+}
+
+function salvarTextoFuncionamento(e) {
+  const btn = e.target; btn.textContent = '...';
+  db.collection('configuracoes').doc('geral').set({ textoFuncionamento: document.getElementById('input-texto-funcionamento').value.trim() }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Rodapé', 2000);
+  }).catch(err => alert("Erro."));
+}
+
+function salvarHorarios(e) {
+  const btn = e.target; btn.textContent = '...';
+  let novosHorarios = {};
+  for(let i=0; i<7; i++) {
+     novosHorarios[i] = {
+       ativo: document.getElementById(`dia-ativo-${i}`).checked,
+       abre: document.getElementById(`dia-abre-${i}`).value || '18:30',
+       fecha: document.getElementById(`dia-fecha-${i}`).value || '23:00'
+     };
+  }
+  db.collection('configuracoes').doc('geral').set({ horarios: novosHorarios }, { merge: true }).then(() => {
+    btn.textContent = 'Salvo!'; setTimeout(() => btn.textContent = 'Salvar Calendário', 2000);
+  }).catch(err => alert("Erro."));
+}
+
+function toggleItem(id, marcarComoAtivo) {
+  let esgotados = [...(configuracoesGlobais.itensEsgotados || [])];
+  if (marcarComoAtivo) { esgotados = esgotados.filter(item => item !== id); } else { if (!esgotados.includes(id)) esgotados.push(id); }
+  db.collection('configuracoes').doc('geral').set({ itensEsgotados: esgotados }, { merge: true });
+}
+
+const CARDAPIO = [
+  { id:'mussarela', nome:'Mussarela', tipo: 'pizza' }, { id:'mista', nome:'Mista', tipo: 'pizza' }, { id:'frango', nome:'Frango', tipo: 'pizza' },
+  { id:'calabresa', nome:'Calabresa', tipo: 'pizza' }, { id:'carnesol', nome:'Carne de Sol', tipo: 'pizza' }, { id:'frangocat', nome:'Frango c/ Catupiry', tipo: 'pizza' },
+  { id:'nordestina', nome:'Nordestina', tipo: 'pizza' }, { id:'lombo', nome:'Lombo Canadense', tipo: 'pizza' }, { id:'arretada', nome:'Arretada', tipo: 'pizza' }, { id:'peru', nome:'Peito de Peru', tipo: 'pizza' },
+  { id:'esf_mussarela', nome:'Esf. Mussarela', tipo: 'esfiha' }, { id:'esf_mista', nome:'Esf. Mista', tipo: 'esfiha' }, { id:'esf_frango_mus', nome:'Esf. Frango c/ Mus.', tipo: 'esfiha' },
+  { id:'esf_calabresa_mus', nome:'Esf. Calabresa c/ Mus.', tipo: 'esfiha' }, { id:'esf_carnesol_mus', nome:'Esf. C. de Sol c/ Mus.', tipo: 'esfiha' }, { id:'esf_carnemoida', nome:'Esf. Carne Moída', tipo: 'esfiha' },
+  { id:'esf_frango_coalho', nome:'Esf. Frango c/ Coalho', tipo: 'esfiha' }, { id:'esf_frango_catupiry', nome:'Esf. Frango c/ Catupiry', tipo: 'esfiha' }, { id:'esf_frango_cream', nome:'Esf. Frango c/ Cream', tipo: 'esfiha' },
+  { id:'esf_carnesol_coalho', nome:'Esf. C. Sol c/ Coalho', tipo: 'esfiha' }, { id:'esf_carnesol_catupiry', nome:'Esf. C. Sol c/ Catupiry', tipo: 'esfiha' }, { id:'esf_carnesol_cream', nome:'Esf. C. Sol c/ Cream', tipo: 'esfiha' },
+  { id:'esf_calabresa_coalho', nome:'Esf. Cal. c/ Coalho', tipo: 'esfiha' }, { id:'esf_calabresa_catupiry', nome:'Esf. Cal. c/ Catupiry', tipo: 'esfiha' }, { id:'esf_calabresa_cream', nome:'Esf. Cal. c/ Cream', tipo: 'esfiha' },
+  { id:'esf_peru', nome:'Esf. Peito de Peru', tipo: 'esfiha' }, { id:'esf_bacon_mus', nome:'Esf. Bacon c/ Mus.', tipo: 'esfiha' }, { id:'esf_choc_leite', nome:'Esf. Choc. Leite', tipo: 'esfiha' }, { id:'esf_choc_mm', nome:'Esf. Choc. M&Ms', tipo: 'esfiha' }, { id:'esf_choc_morango', nome:'Esf. Choc. c/ Morango', tipo: 'esfiha' },
+  { id:'combo_aniversariante', nome:'Combo Festa do Aniversariante', tipo:'combo' },
+  { id:'combo_sextou', nome:'Combo Sextou (10 Esfihas)', tipo:'combo' },
+  { id:'combo_casal_esf', nome:'Combo Casal', tipo:'combo' },
+  { id:'combo_mega_sexta', nome:'Mega Sexta', tipo:'combo' },
+  { id:'combo_sabado_dois', nome:'Sábado a Dois', tipo:'combo' },
+  { id:'combo_dupla', nome:'Dupla Tradicional', tipo:'combo' },
+  { id:'combo_sabadoprem', nome:'Sabadão Premium', tipo:'combo' },
+  { id:'catupiry', nome:'Catupiry', tipo: 'extra' }, { id:'cream', nome:'Cream Cheese', tipo: 'extra' }, { id:'bacon', nome:'Bacon', tipo: 'extra' }, { id:'alho', nome:'Alho Poró', tipo: 'extra' }
+];
+const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+function renderizarModaisConfig() {
+  const esgotados = configuracoesGlobais.itensEsgotados || [];
+  const renderItem = (item) => {
+    const isAtivo = !esgotados.includes(item.id);
+    return `<div class="catalog-item"><div class="catalog-info"><strong>${item.nome}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}">${isAtivo ? 'Disponível' : 'Esgotado'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
+  };
+  document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
+  document.getElementById('catalog-list-esfihas').innerHTML = CARDAPIO.filter(i => i.tipo === 'esfiha').map(renderItem).join('');
+  document.getElementById('catalog-list-combos').innerHTML = CARDAPIO.filter(i => i.tipo === 'combo').map(renderItem).join('');
+  document.getElementById('catalog-list-extras').innerHTML = CARDAPIO.filter(i => i.tipo === 'extra').map(renderItem).join('');
+
+  let htmlHorarios = '';
+  for(let i=0; i<7; i++) {
+    let h = configuracoesGlobais.horarios[i] || { ativo: (i===0 || (i>=4 && i<=6)), abre: '18:30', fecha: '23:00' }; 
+    htmlHorarios += `<div class="dia-row"><label class="dia-label"><input type="checkbox" id="dia-ativo-${i}" ${h.ativo ? 'checked' : ''}> ${DIAS_SEMANA[i]}</label><div class="dia-inputs"><input type="time" id="dia-abre-${i}" value="${h.abre}"><span style="font-size:11px; color:var(--text-muted);">às</span><input type="time" id="dia-fecha-${i}" value="${h.fecha}"></div></div>`;
+  }
+  document.getElementById('schedule-list').innerHTML = htmlHorarios;
+}
+
+// ------------------------------------------------------------------
+// IMPRESSÃO COM ENDEREÇO GRANDE
+// ------------------------------------------------------------------
+function imprimirComanda(id) {
+  const p = pedidosMap.get(id); if(!p) return;
+  const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
+  
+  let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p>`;
+  
+  // BLOCO DE ENDEREÇO GIGANTE NA IMPRESSÃO
+  if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) {
+      html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">ENTREGA:<br>${esc(p.cliente_endereco)}</div>`;
+  } else if (p.tipo_entrega === 'Retirada') {
+      html += `<div style="border: 2px solid #000; padding: 5px; margin: 10px 0; font-size: 16px; font-weight: bold; text-align: center;">🛍️ RETIRADA NO BALCÃO</div>`;
+  }
+  
+  html += `<div class="linha"></div><h3 style="text-align:left;">ITENS:</h3>`;
+  p.itens.forEach(i => {
+    html += `<div class="item-row"><span class="bold">${i.qtd}x ${esc(i.nome)}</span> <span style="float:right;">${brl(i.total_centavos)}</span></div>`;
+    if (Array.isArray(i.combo_itens)) {
+      const rotulos = { tradicional:'TRADICIONAIS', premium:'PREMIUM', incluso:'INCLUSO' };
+      Object.entries(rotulos).forEach(([cat, rotulo]) => {
+        const escolhas = i.combo_itens.filter(ci => ci.categoria === cat).map(ci => `${ci.qtd}x ${esc(ci.nome || ci.id)}`);
+        if (escolhas.length) html += `<div class="extras"><b>${rotulo}:</b> ${escolhas.join(', ')}</div>`;
+      });
+    }
+    if(i.extras) { i.extras.forEach(e => { html += `<div class="extras">+ ${esc(e.nome)} (${esc(e.aplicacao)})</div>`; }); }
+    if(i.obs) { html += `<div class="obs">OBS: ${esc(i.obs)}</div>`; }
+    html += `<br>`;
+  });
+  html += `<div class="linha"></div>${p.desconto_centavos?`<div class="flex"><span>Itens:</span><span>${brl(p.subtotal_bruto_centavos || (p.subtotal_centavos + p.desconto_centavos))}</span></div>${p.desconto_geral_centavos?`<div class="flex"><span>Promoção${p.desconto_percentual ? ` (${p.desconto_percentual}%)` : ''}:</span><span>- ${brl(p.desconto_geral_centavos)}</span></div>`:''}${p.desconto_cupom_centavos?`<div class="flex bold"><span>Cupom ${esc(p.cupom_codigo || '')}:</span><span>- ${brl(p.desconto_cupom_centavos)}</span></div>`:''}`:''}<div class="flex"><span>Subtotal:</span><span>${brl(p.subtotal_centavos)}</span></div>${p.taxa_centavos?`<div class="flex"><span>Taxa Entrega:</span><span>${brl(p.taxa_centavos)}</span></div>`:''}<div class="linha"></div><div class="flex bold" style="font-size:16px;"><span>TOTAL:</span><span>${brl(p.total_centavos)}</span></div><p style="text-align:center; margin-top:10px;">Pagamento: <span class="bold">${p.forma_pagamento}</span></p><br><br><br>.</body></html>`;
+  
+  let iframe = document.getElementById('iframe-impressao'); if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'iframe-impressao'; iframe.style.display = 'none'; document.body.appendChild(iframe); }
+  iframe.contentWindow.document.open(); iframe.contentWindow.document.write(html); iframe.contentWindow.document.close();
+  setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
+}
+
+async function gerarRelatorio() {
+  const dI = document.getElementById('rel-inicio').value, dF = document.getElementById('rel-fim').value;
+  if(!dI || !dF) return alert("Selecione a data de início e fim.");
+  const dtInicio = new Date(dI + 'T00:00:00'), dtFim = new Date(dF + 'T23:59:59');
+  try {
+    const snapshot = await db.collection('pedidos').where('data_pedido', '>=', dtInicio).where('data_pedido', '<=', dtFim).get();
+    let fat = 0, qConc = 0, qFalha = 0, fatDia = {}, itensCount = {};
+    snapshot.forEach(doc => {
+      const p = doc.data();
+      if (p.status === 'Cancelado') qFalha++;
+      else if (p.status === 'Concluído') {
+        qConc++; fat += (p.total_centavos || 0);
+        const dataStr = p.data_pedido.toDate().toLocaleDateString('pt-BR');
+        if (!fatDia[dataStr]) fatDia[dataStr] = 0; fatDia[dataStr] += (p.total_centavos || 0);
+        if(p.itens) { p.itens.forEach(item => { if(!itensCount[item.nome]) itensCount[item.nome] = 0; itensCount[item.nome] += item.qtd; }); }
+      }
+    });
+    document.getElementById('kpi-fat').textContent = brl(fat); document.getElementById('kpi-qtd').textContent = qConc;
+    document.getElementById('kpi-ticket').textContent = qConc > 0 ? brl(fat / qConc) : 'R$ 0,00'; document.getElementById('kpi-falhas').textContent = qFalha;
+    
+    const topItens = Object.entries(itensCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    document.getElementById('lista-top-produtos').innerHTML = topItens.length === 0 ? `<div class="empty-state">Nenhum produto concluído.</div>` : topItens.map(([n, q], idx) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom: 1px solid var(--border-light);"><span style="font-size:11px; font-weight:700;"><span style="color:var(--gold-dark); margin-right:8px;">${idx+1}º</span>${n}</span><span style="font-size:10px; font-weight:800; background:#E2E8F0; padding:2px 8px; border-radius:12px;">${q} un</span></div>`).join('');
+    
+    const labels = Object.keys(fatDia).sort((a,b) => { const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/'); return new Date(`${ya}-${ma}-${da}`) - new Date(`${yb}-${mb}-${db}`); });
+    const dataVals = labels.map(l => fatDia[l] / 100);
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('chart-fat').getContext('2d');
+    let grad = ctx.createLinearGradient(0, 0, 0, 400); grad.addColorStop(0, 'rgba(218, 165, 32, 0.8)'); grad.addColorStop(1, 'rgba(218, 165, 32, 0)');
+    chartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Faturamento Bruto (R$)', data: dataVals, backgroundColor: grad, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  } catch(e) {}
+}
+
+let qrCodeObj = null;
+let unsubscribeCuponsAdmin = null;
+
+function normalizarCodigoCupom(codigo) {
+  return String(codigo || '').trim().toUpperCase().replace(/\s+/g, '');
+}
+
+function reaisParaCentavosAdmin(valor) {
+  let texto = String(valor || '').trim().replace(/R\$/gi, '').replace(/\s+/g, '').replace(/[^0-9,.-]/g, '');
+  if (!texto) return 0;
+  const ultimaVirgula = texto.lastIndexOf(',');
+  const ultimoPonto = texto.lastIndexOf('.');
+  if (ultimaVirgula > -1 && ultimoPonto > -1) {
+    texto = ultimaVirgula > ultimoPonto ? texto.replace(/\./g, '').replace(',', '.') : texto.replace(/,/g, '');
+  } else if (ultimaVirgula > -1) {
+    texto = texto.replace(/\./g, '').replace(',', '.');
+  } else if ((texto.match(/\./g) || []).length > 1) {
+    texto = texto.replace(/\./g, '');
+  }
+  const reais = Number(texto);
+  return Number.isFinite(reais) && reais >= 0 ? Math.round(reais * 100) : NaN;
+}
+
+async function hashCodigoCupom(codigo) {
+  const bytes = new TextEncoder().encode(normalizarCodigoCupom(codigo));
+  const hash = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function iniciarMonitoramentoCupons() {
+  if (unsubscribeCuponsAdmin) return;
+  unsubscribeCuponsAdmin = db.collection('cupons').onSnapshot(snapshot => {
+    const cupons = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    cupons.sort((a, b) => String(a.codigo || '').localeCompare(String(b.codigo || '')));
+    renderizarCuponsAdmin(cupons);
+  }, erro => {
+    console.error('[CUPONS]', erro);
+    const lista = document.getElementById('lista-cupons-admin');
+    if (lista) lista.innerHTML = '<div class="empty-state">Não foi possível carregar os cupons.</div>';
+  });
+}
+
+function renderizarCuponsAdmin(cupons) {
+  const lista = document.getElementById('lista-cupons-admin');
+  if (!lista) return;
+  if (!cupons.length) {
+    lista.innerHTML = '<div class="empty-state"><span>🎟️</span>Nenhum cupom cadastrado.</div>';
+    return;
+  }
+
+  const agora = Date.now();
+  lista.innerHTML = cupons.map(cupom => {
+    const inicio = cupom.inicio && cupom.inicio.toMillis ? cupom.inicio.toMillis() : 0;
+    const fim = cupom.fim && cupom.fim.toMillis ? cupom.fim.toMillis() : 0;
+    const vigente = cupom.ativo && inicio <= agora && agora <= fim;
+    const valor = cupom.tipo === 'fixo' ? brl(cupom.valor) : `${cupom.valor}%`;
+    const status = !cupom.ativo ? 'Desativado' : vigente ? 'Ativo' : agora < inicio ? 'Programado' : 'Encerrado';
+    const cor = vigente ? 'var(--success)' : cupom.ativo ? 'var(--warning)' : 'var(--danger)';
+
+    return `<div class="catalog-item" style="align-items:flex-start; gap:10px;">
+      <div class="catalog-info" style="flex:1; min-width:0;">
+        <strong style="font-size:13px;">${esc(cupom.codigo || 'CUPOM')}</strong>
+        <span style="font-size:10px; color:${cor}; font-weight:800;">${status} · ${valor}</span>
+        <span style="display:block; margin-top:4px; font-size:9px; color:var(--text-muted);">Pedido mínimo: ${brl(cupom.pedidoMinimoCentavos || 0)}${cupom.acumulaPromocao ? ' · Acumulativo' : ''}</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button type="button" onclick="alternarCupom('${cupom.id}', ${cupom.ativo ? 'false' : 'true'})" style="border:1px solid var(--border-light); background:#FFF; border-radius:6px; padding:6px 8px; font:700 9px inherit; cursor:pointer;">${cupom.ativo ? 'Desativar' : 'Ativar'}</button>
+        <button type="button" onclick="excluirCupom('${cupom.id}', '${esc(cupom.codigo || '')}')" style="border:1px solid rgba(230,57,70,.3); color:var(--danger); background:#FFF; border-radius:6px; padding:6px 8px; font:700 9px inherit; cursor:pointer;">Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function salvarCupom(e) {
+  const btn = e.currentTarget;
+  const codigo = normalizarCodigoCupom(document.getElementById('cupom-codigo-admin').value);
+  const tipo = document.getElementById('cupom-tipo-admin').value;
+  const valorDigitado = Number(document.getElementById('cupom-valor-admin').value);
+  const minimo = reaisParaCentavosAdmin(document.getElementById('cupom-minimo-admin').value);
+  const inicioData = new Date(document.getElementById('cupom-inicio-admin').value);
+  const fimData = new Date(document.getElementById('cupom-fim-admin').value);
+
+  if (!/^[A-Z0-9_-]{3,24}$/.test(codigo)) return alert('Use de 3 a 24 caracteres: letras, números, hífen ou sublinhado.');
+  if (!Number.isFinite(valorDigitado) || valorDigitado <= 0) return alert('Informe um valor válido para o cupom.');
+  if (tipo === 'percentual' && (!Number.isInteger(valorDigitado) || valorDigitado > 90)) return alert('O desconto percentual deve ser um número inteiro entre 1% e 90%.');
+  if (!Number.isFinite(minimo) || minimo < 0) return alert('Informe um pedido mínimo válido.');
+  if (Number.isNaN(inicioData.getTime()) || Number.isNaN(fimData.getTime())) return alert('Informe o início e o término do cupom.');
+  if (fimData <= inicioData) return alert('O término precisa ser posterior ao início.');
+
+  const valor = tipo === 'fixo' ? Math.round(valorDigitado * 100) : valorDigitado;
+  btn.disabled = true;
+  btn.textContent = 'SALVANDO...';
+
+  try {
+    const id = await hashCodigoCupom(codigo);
+    await db.collection('cupons').doc(id).set({
+      codigo,
+      tipo,
+      valor,
+      pedidoMinimoCentavos: minimo,
+      inicio: firebase.firestore.Timestamp.fromDate(inicioData),
+      fim: firebase.firestore.Timestamp.fromDate(fimData),
+      ativo: true,
+      acumulaPromocao: document.getElementById('cupom-acumula-admin').checked,
+      atualizadoEm: firebase.firestore.Timestamp.now()
+    }, { merge: true });
+    alert(`Cupom ${codigo} salvo com sucesso.`);
+    document.getElementById('cupom-codigo-admin').value = '';
+    document.getElementById('cupom-valor-admin').value = '';
+  } catch (erro) {
+    console.error('[CUPOM]', erro);
+    alert('Não foi possível salvar o cupom.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'CRIAR OU ATUALIZAR CUPOM';
+  }
+}
+
+async function alternarCupom(id, ativo) {
+  try {
+    await db.collection('cupons').doc(id).update({ ativo, atualizadoEm: firebase.firestore.Timestamp.now() });
+  } catch (erro) {
+    console.error('[CUPOM]', erro);
+    alert('Não foi possível alterar o cupom.');
+  }
+}
+
+async function excluirCupom(id, codigo) {
+  if (!confirm(`Excluir definitivamente o cupom ${codigo}?`)) return;
+  try {
+    await db.collection('cupons').doc(id).delete();
+  } catch (erro) {
+    console.error('[CUPOM]', erro);
+    alert('Não foi possível excluir o cupom.');
+  }
+}
+
+function preencherFormularioAviso(aviso) {
+  const status = document.getElementById('aviso-status-admin');
+  if (!status) return;
+
+  if (!aviso) {
+    status.textContent = 'Nenhuma divulgação publicada.';
+    return;
+  }
+
+  document.getElementById('aviso-titulo').value = aviso.titulo || '';
+  document.getElementById('aviso-descricao').value = aviso.descricao || '';
+  document.getElementById('aviso-imagem').value = aviso.imagem || '';
+  document.getElementById('aviso-botao-texto').value = aviso.botaoTexto || 'VER NOVIDADE';
+  document.getElementById('aviso-destino').value = aviso.destino || '#cardapio';
+  status.textContent = aviso.ativo ? '🟢 Pop-up ativo no site.' : '⚪ Pop-up desativado.';
+}
+
+function timestampParaInput(valor) {
+  if (!valor) return '';
+  const data = valor.toDate ? valor.toDate() : new Date(valor);
+  if (Number.isNaN(data.getTime())) return '';
+  const pad = n => String(n).padStart(2, '0');
+  return `${data.getFullYear()}-${pad(data.getMonth() + 1)}-${pad(data.getDate())}T${pad(data.getHours())}:${pad(data.getMinutes())}`;
+}
+
+function preencherFormularioDesconto(promocao) {
+  const status = document.getElementById('desconto-status-admin');
+  if (!status) return;
+
+  if (!promocao) {
+    status.textContent = 'Nenhum desconto programado.';
+    return;
+  }
+
+  document.getElementById('desconto-titulo').value = promocao.titulo || '';
+  document.getElementById('desconto-percentual').value = promocao.percentual || '';
+  document.getElementById('desconto-inicio').value = timestampParaInput(promocao.inicio);
+  document.getElementById('desconto-fim').value = timestampParaInput(promocao.fim);
+
+  const agora = Date.now();
+  const inicio = promocao.inicio && promocao.inicio.toMillis ? promocao.inicio.toMillis() : 0;
+  const fim = promocao.fim && promocao.fim.toMillis ? promocao.fim.toMillis() : 0;
+  if (!promocao.ativo) status.textContent = '⚪ Desconto desativado.';
+  else if (inicio && agora < inicio) status.textContent = '🕒 Desconto programado para iniciar automaticamente.';
+  else if (fim && agora > fim) status.textContent = '⌛ Período encerrado.';
+  else status.textContent = `🟢 Desconto de ${promocao.percentual}% ativo no site.`;
+}
+
+async function salvarPromocaoGeral(e) {
+  const btn = e.currentTarget;
+  const titulo = document.getElementById('desconto-titulo').value.trim() || 'Oferta especial';
+  const percentual = Number(document.getElementById('desconto-percentual').value);
+  const inicioData = new Date(document.getElementById('desconto-inicio').value);
+  const fimData = new Date(document.getElementById('desconto-fim').value);
+
+  if (!Number.isInteger(percentual) || percentual < 1 || percentual > 90) return alert('Informe um desconto inteiro entre 1% e 90%.');
+  if (Number.isNaN(inicioData.getTime()) || Number.isNaN(fimData.getTime())) return alert('Informe o início e o término da promoção.');
+  if (fimData <= inicioData) return alert('O término precisa ser posterior ao início.');
+
+  btn.disabled = true;
+  btn.textContent = 'SALVANDO...';
+  const promocaoGeral = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    ativo: true,
+    titulo,
+    percentual,
+    inicio: firebase.firestore.Timestamp.fromDate(inicioData),
+    fim: firebase.firestore.Timestamp.fromDate(fimData),
+    atualizadoEm: firebase.firestore.Timestamp.now()
+  };
+
+  try {
+    await db.collection('configuracoes').doc('geral').set({ promocaoGeral }, { merge: true });
+    document.getElementById('desconto-status-admin').textContent = '🟢 Desconto programado com sucesso.';
+    btn.textContent = 'SALVO!';
+  } catch (erro) {
+    console.error('[DESCONTO GERAL]', erro);
+    alert('Não foi possível salvar o desconto.');
+  } finally {
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'PROGRAMAR E ATIVAR DESCONTO'; }, 1800);
+  }
+}
+
+async function desativarPromocaoGeral(e) {
+  if (!confirm('Deseja desativar o desconto geral?')) return;
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  try {
+    const atual = configuracoesGlobais.promocaoGeral || {};
+    await db.collection('configuracoes').doc('geral').set({ promocaoGeral: { ...atual, ativo: false } }, { merge: true });
+    document.getElementById('desconto-status-admin').textContent = '⚪ Desconto desativado.';
+  } catch (erro) {
+    console.error('[DESCONTO GERAL]', erro);
+    alert('Não foi possível desativar o desconto.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function publicarAvisoPopup(e) {
+  const btn = e.currentTarget;
+  const titulo = document.getElementById('aviso-titulo').value.trim();
+  const descricao = document.getElementById('aviso-descricao').value.trim();
+  const imagem = document.getElementById('aviso-imagem').value.trim();
+  const botaoTexto = document.getElementById('aviso-botao-texto').value.trim();
+  const destino = document.getElementById('aviso-destino').value.trim();
+
+  if (!titulo) return alert('Informe o título da divulgação.');
+  if (imagem && !/^https:\/\//i.test(imagem)) return alert('A imagem precisa usar uma URL HTTPS.');
+  if (destino && !destino.startsWith('#') && !/^https:\/\//i.test(destino)) {
+    return alert('O destino deve começar com # ou usar uma URL HTTPS.');
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'PUBLICANDO...';
+
+  const avisoPopup = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    ativo: true,
+    titulo,
+    descricao,
+    imagem,
+    botaoTexto: botaoTexto || 'VER NOVIDADE',
+    destino: destino || '#cardapio',
+    publicadoEm: firebase.firestore.Timestamp.now()
+  };
+
+  try {
+    await db.collection('configuracoes').doc('geral').set({ avisoPopup }, { merge: true });
+    document.getElementById('aviso-status-admin').textContent = '🟢 Divulgação publicada com sucesso.';
+    btn.textContent = 'PUBLICADO!';
+  } catch (erro) {
+    console.error('[AVISO POPUP]', erro);
+    alert('Não foi possível publicar. Confirme sua conexão e seu login.');
+    btn.textContent = 'PUBLICAR NOVA DIVULGAÇÃO';
+  } finally {
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'PUBLICAR NOVA DIVULGAÇÃO';
+    }, 1800);
+  }
+}
+
+async function desativarAvisoPopup(e) {
+  if (!confirm('Deseja desativar o pop-up atual?')) return;
+  const btn = e.currentTarget;
+  btn.disabled = true;
+
+  try {
+    const atual = configuracoesGlobais.avisoPopup || {};
+    await db.collection('configuracoes').doc('geral').set({
+      avisoPopup: { ...atual, ativo: false }
+    }, { merge: true });
+    document.getElementById('aviso-status-admin').textContent = '⚪ Pop-up desativado.';
+  } catch (erro) {
+    console.error('[AVISO POPUP]', erro);
+    alert('Não foi possível desativar o pop-up.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function gerarQRCode() {
+  const container = document.getElementById('qrcode-container');
+  const btnBaixar = document.getElementById('btn-baixar-qr');
+  const url = document.getElementById('input-qrcode-url').value.trim();
+  
+  if(!url) return alert("Por favor, informe a URL da sua loja.");
+  
+  container.style.display = 'flex';
+  container.innerHTML = ''; 
+  
+  qrCodeObj = new QRCode(container, {
+    text: url,
+    width: 512,
+    height: 512,
+    colorDark : "#1A1512",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+  
+  btnBaixar.style.display = 'block';
+  
+  setTimeout(() => {
+      const imgOrCanvas = container.querySelector('canvas') || container.querySelector('img');
+      if(imgOrCanvas) {
+          imgOrCanvas.style.width = '200px';
+          imgOrCanvas.style.height = '200px';
+      }
+  }, 100);
+}
+
+function baixarQRCode() {
+   const container = document.getElementById('qrcode-container');
+   const canvas = container.querySelector('canvas');
+   const img = container.querySelector('img');
+   
+   let url = '';
+   if(canvas) { url = canvas.toDataURL("image/png"); } 
+   else if (img) { url = img.src; } 
+   else { return alert("Gere o QR Code primeiro!"); }
+   
+   const a = document.createElement('a');
+   a.href = url;
+   a.download = 'DoceCapricho_QRCode.png';
+   document.body.appendChild(a);
+   a.click();
+   document.body.removeChild(a);
+}
+
+// ---------------------------------------------------------------
+// APP ADMINISTRATIVO (PWA) — instalação e estado de conectividade
+// ---------------------------------------------------------------
+let eventoInstalacaoAdmin = null;
+const installCard = document.getElementById('pwa-install-card');
+const installTitle = document.getElementById('pwa-install-title');
+const installText = document.getElementById('pwa-install-text');
+const installAction = document.getElementById('pwa-install-action');
+const installClose = document.getElementById('pwa-install-close');
+const executandoComoApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const ehIPadOuIphone = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+function exibirInstalacaoAdmin(tipo) {
+  if (executandoComoApp || sessionStorage.getItem('dca_admin_install_closed') === '1') return;
+  if (tipo === 'ios') {
+    installTitle.textContent = 'Instalar no iPad';
+    installText.textContent = 'No Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.';
+    installAction.textContent = 'Entendi';
+  } else {
+    installTitle.textContent = 'Instalar Capricho Admin';
+    installText.textContent = 'Abra o painel em tela cheia diretamente da sua tela inicial.';
+    installAction.textContent = 'Instalar';
+  }
+  installCard.classList.add('show');
+}
+
+window.addEventListener('beforeinstallprompt', evento => {
+  evento.preventDefault();
+  eventoInstalacaoAdmin = evento;
+  setTimeout(() => exibirInstalacaoAdmin('automatico'), 1200);
+});
+
+installAction.addEventListener('click', async () => {
+  if (eventoInstalacaoAdmin) {
+    eventoInstalacaoAdmin.prompt();
+    await eventoInstalacaoAdmin.userChoice;
+    eventoInstalacaoAdmin = null;
+  }
+  installCard.classList.remove('show');
+});
+
+installClose.addEventListener('click', () => {
+  sessionStorage.setItem('dca_admin_install_closed', '1');
+  installCard.classList.remove('show');
+});
+
+window.addEventListener('appinstalled', () => installCard.classList.remove('show'));
+if (ehIPadOuIphone && !executandoComoApp) setTimeout(() => exibirInstalacaoAdmin('ios'), 1600);
+
+function atualizarConectividadeAdmin() {
+  document.getElementById('offline-pill').classList.toggle('show', !navigator.onLine);
+}
+window.addEventListener('online', atualizarConectividadeAdmin);
+window.addEventListener('offline', atualizarConectividadeAdmin);
+atualizarConectividadeAdmin();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./admin-sw.js', { scope:'./' })
+      .then(registro => registro.update())
+      .catch(erro => console.warn('[ADMIN PWA]', erro));
+  });
+}
+</script>
+</body>
+</html>
