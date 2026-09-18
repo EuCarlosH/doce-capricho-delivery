@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-onesignal-1">
+<meta name="dca-app-version" content="2026.09.18-montador-pizza-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -331,6 +331,42 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 :root[data-theme="dark"] .close-modal { background: rgba(255,255,255,0.05); }
 .close-modal:hover { background: var(--danger); color: #FFF; transform: rotate(90deg); } 
 .modal-box h2 { color: var(--text-main); margin-bottom: 25px; border-bottom: 1px dashed var(--border-light); padding-bottom: 15px; font-size: 20px; letter-spacing: 1.5px; font-weight: 800; padding-right: 40px; } :root[data-theme="dark"] .modal-box h2 { color: var(--gold); font-weight: 700; }
+
+/* Previa visual do montador de pizzas */
+.pizza-preview-panel { display:none; margin:-6px 0 22px; padding:18px; border:1px solid var(--border-light); border-radius:20px; background:linear-gradient(145deg, rgba(221,167,58,.08), rgba(139,58,43,.035)); }
+.pizza-preview-panel.show { display:block; animation:fadeIn .35s ease; }
+.pizza-preview-stage { position:relative; width:min(250px, 76vw); aspect-ratio:1; margin:0 auto 16px; border-radius:50%; filter:drop-shadow(0 14px 15px rgba(58,42,32,.22)); }
+.pizza-preview-fill { position:absolute; inset:7%; overflow:hidden; border-radius:50%; background:var(--bg-main); }
+.pizza-preview-half { position:absolute; top:0; bottom:0; width:50%; overflow:hidden; }
+.pizza-preview-half.left { left:0; }
+.pizza-preview-half.right { right:0; }
+.pizza-preview-half img { position:absolute; top:0; width:200%; height:100%; max-width:none; object-fit:cover; }
+.pizza-preview-half.left img { left:0; }
+.pizza-preview-half.right img { right:0; }
+.pizza-preview-whole { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.pizza-preview-crust { position:absolute; inset:0; z-index:3; border:17px solid #c7833d; border-radius:50%; box-shadow:inset 0 0 0 5px #efbd72, inset 0 0 14px rgba(67,31,8,.55), 0 0 0 2px rgba(111,60,18,.28); pointer-events:none; }
+.pizza-preview-divider { position:absolute; z-index:4; top:8%; bottom:8%; left:50%; width:2px; transform:translateX(-50%); background:rgba(255,255,255,.72); box-shadow:0 0 5px rgba(0,0,0,.4); }
+.pizza-preview-legend { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.pizza-preview-flavor { min-width:0; padding:10px 11px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-light); text-align:center; }
+.pizza-preview-flavor small { display:block; margin-bottom:3px; color:var(--text-muted); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:1px; }
+.pizza-preview-flavor strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-main); font-size:12px; }
+.pizza-preview-price { margin-top:11px; color:var(--text-muted); font-size:11px; line-height:1.5; text-align:center; }
+.pizza-preview-price strong { color:var(--gold-dark); }
+.pizza-flavor-picker { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-top:18px; }
+.pizza-flavor-option { display:flex; align-items:center; gap:9px; min-width:0; padding:9px; border:1px solid var(--border-light); border-radius:13px; background:var(--bg-card); color:var(--text-main); font-family:inherit; text-align:left; cursor:pointer; transition:.25s ease; }
+.pizza-flavor-option img { width:47px; height:47px; flex:0 0 47px; border-radius:10px; object-fit:cover; }
+.pizza-flavor-option span { min-width:0; }
+.pizza-flavor-option strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
+.pizza-flavor-option small { display:block; margin-top:3px; color:var(--text-muted); font-size:9.5px; }
+.pizza-flavor-option.selected { border-color:var(--gold); box-shadow:0 0 0 2px rgba(221,167,58,.18); }
+.pizza-flavor-option:disabled { opacity:.42; cursor:not-allowed; filter:grayscale(1); }
+.pizza-montador-instrucao { margin:-8px 0 14px; color:var(--text-muted); font-size:12px; line-height:1.5; text-align:center; }
+.pizza-montador-actions { display:flex; gap:10px; margin-top:16px; }
+.pizza-montador-actions button { flex:1; margin:0; }
+:root[data-theme="dark"] .pizza-preview-panel { background:linear-gradient(145deg, rgba(212,175,55,.10), rgba(255,255,255,.025)); }
+:root[data-theme="dark"] .pizza-preview-price strong { color:var(--gold); }
+@media (max-width:480px) { .pizza-preview-panel { padding:15px 12px; } .pizza-preview-stage { width:min(220px, 70vw); } .pizza-preview-crust { border-width:14px; } }
+@media (max-width:420px) { .pizza-flavor-picker { grid-template-columns:1fr; } }
 
 .tracking-header { text-align: center; margin-bottom: 25px; }
 .tracking-header h3 { font-size: 15px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: 800;} :root[data-theme="dark"] .tracking-header h3 { color: var(--gold); font-weight: 700;}
@@ -862,10 +898,25 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </div>
 </div>
 
+<div class="modal-overlay" id="pizza-montador-overlay">
+  <div class="modal-box" style="max-width:620px;">
+    <button class="close-modal ripple" data-close="pizza-montador-overlay">&times;</button>
+    <h2 class="brand-font">Monte sua Pizza</h2>
+    <p class="pizza-montador-instrucao" id="pizza-montador-instrucao">Escolha o sabor da primeira metade.</p>
+    <div class="pizza-preview-panel show" id="pizza-montador-preview"></div>
+    <div class="pizza-flavor-picker" id="pizza-flavor-picker"></div>
+    <div class="pizza-montador-actions">
+      <button type="button" class="btn-continue ripple" id="pizza-montador-limpar">Recomeçar</button>
+      <button type="button" class="btn-add-modal btn-gradient ripple" id="pizza-montador-confirmar" disabled>Continuar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="builder-overlay">
   <div class="modal-box">
     <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
     <h2 id="builder-title" class="brand-font">Montar</h2>
+    <div class="pizza-preview-panel" id="pizza-preview-panel" aria-live="polite"></div>
     <form id="builder-form" novalidate>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
       
@@ -1627,6 +1678,7 @@ function renderDestaques() {
   }).join('');
 } 
 let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
+let montagemPizza = [];
 let pedidoStepAtual = 1;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
@@ -1946,6 +1998,48 @@ function carregar() {
 }
 const precoBaseVal = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
 
+function renderPreviaPizza(ids) {
+  const painel = $('#pizza-preview-panel');
+  if (!painel) return;
+  const sabores = (Array.isArray(ids) ? ids : []).map(acharSabor).filter(Boolean);
+  const ehPizza = sabores.length > 0 && sabores.length <= 2 && sabores.every(s => !s.id.startsWith('esf_') && !s.id.startsWith('combo_'));
+  if (!ehPizza) {
+    painel.classList.remove('show');
+    painel.innerHTML = '';
+    return;
+  }
+
+  if (sabores.length === 1) {
+    const sabor = sabores[0];
+    painel.innerHTML = `
+      <div class="pizza-preview-stage" aria-label="Prévia da pizza inteira de ${esc(sabor.nome)}">
+        <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(sabor.img)}" alt=""></div>
+        <div class="pizza-preview-crust"></div>
+      </div>
+      <div class="pizza-preview-legend" style="grid-template-columns:1fr;">
+        <div class="pizza-preview-flavor"><small>Pizza inteira</small><strong>${esc(sabor.nome)}</strong></div>
+      </div>`;
+  } else {
+    const [primeiro, segundo] = sabores;
+    const metadePrimeiro = primeiro.preco / 2;
+    const metadeSegundo = segundo.preco / 2;
+    painel.innerHTML = `
+      <div class="pizza-preview-stage" aria-label="Prévia meio a meio: ${esc(primeiro.nome)} e ${esc(segundo.nome)}">
+        <div class="pizza-preview-fill">
+          <div class="pizza-preview-half left"><img src="${esc(primeiro.img)}" alt=""></div>
+          <div class="pizza-preview-half right"><img src="${esc(segundo.img)}" alt=""></div>
+        </div>
+        <div class="pizza-preview-crust"></div><div class="pizza-preview-divider"></div>
+      </div>
+      <div class="pizza-preview-legend">
+        <div class="pizza-preview-flavor"><small>1ª metade</small><strong>${esc(primeiro.nome)}</strong></div>
+        <div class="pizza-preview-flavor"><small>2ª metade</small><strong>${esc(segundo.nome)}</strong></div>
+      </div>
+      <div class="pizza-preview-price">½ ${esc(primeiro.nome)} (${brl(metadePrimeiro)}) + ½ ${esc(segundo.nome)} (${brl(metadeSegundo)}) = <strong>${brl(precoBaseVal(ids))}</strong></div>`;
+  }
+  painel.classList.add('show');
+}
+
 function validarItem(item) {
   if (!item || !Array.isArray(item.sabores) || !item.sabores.length || item.sabores.length > 2) return false;
   if (item.sabores.some(id => !acharSabor(id))) return false;
@@ -2104,7 +2198,63 @@ function atualizarBotoes() {
   });
 }
 
-function trocarModo(novo) { modo = novo; meioSelecionado = null; $('#btn-mode-inteira').setAttribute('aria-pressed', String(novo === 'inteira')); $('#btn-mode-meio').setAttribute('aria-pressed', String(novo === 'meio')); atualizarBanner(); atualizarBotoes(); }
+function abrirMontadorPizza() {
+  montagemPizza = [];
+  renderMontadorPizza();
+  abrirModal('pizza-montador-overlay');
+}
+
+function renderMontadorPizza() {
+  const preview = $('#pizza-montador-preview');
+  const picker = $('#pizza-flavor-picker');
+  const instrucao = $('#pizza-montador-instrucao');
+  const confirmar = $('#pizza-montador-confirmar');
+  if (!preview || !picker || !instrucao || !confirmar) return;
+  const primeiro = montagemPizza[0] ? acharSabor(montagemPizza[0]) : null;
+  const segundo = montagemPizza[1] ? acharSabor(montagemPizza[1]) : null;
+  const vazio = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,rgba(221,167,58,.06),rgba(221,167,58,.06) 10px,rgba(221,167,58,.12) 10px,rgba(221,167,58,.12) 20px);color:var(--text-muted);font-size:30px;">?</div>`;
+  const lado = (sabor, classe) => `<div class="pizza-preview-half ${classe}">${sabor ? `<img src="${esc(sabor.img)}" alt="">` : vazio}</div>`;
+  preview.innerHTML = `
+    <div class="pizza-preview-stage" aria-label="Montagem visual da pizza meio a meio">
+      <div class="pizza-preview-fill">${lado(primeiro, 'left')}${lado(segundo, 'right')}</div>
+      <div class="pizza-preview-crust"></div><div class="pizza-preview-divider"></div>
+    </div>
+    <div class="pizza-preview-legend">
+      <div class="pizza-preview-flavor"><small>1ª metade</small><strong>${primeiro ? esc(primeiro.nome) : 'Escolha um sabor'}</strong></div>
+      <div class="pizza-preview-flavor"><small>2ª metade</small><strong>${segundo ? esc(segundo.nome) : 'Escolha um sabor'}</strong></div>
+    </div>
+    ${primeiro && segundo ? `<div class="pizza-preview-price">½ ${esc(primeiro.nome)} (${brl(primeiro.preco / 2)}) + ½ ${esc(segundo.nome)} (${brl(segundo.preco / 2)}) = <strong>${brl(precoBaseVal(montagemPizza))}</strong></div>` : ''}`;
+  instrucao.textContent = !primeiro ? 'Escolha o sabor da primeira metade.' : !segundo ? 'Agora escolha o sabor da segunda metade.' : 'Sua pizza está pronta para personalizar.';
+  confirmar.disabled = montagemPizza.length !== 2;
+  const esgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
+  const pizzas = [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
+  picker.innerHTML = pizzas.map(sabor => {
+    const indisponivel = esgotados.has(sabor.id);
+    const selecionado = montagemPizza.includes(sabor.id);
+    return `<button type="button" class="pizza-flavor-option ${selecionado ? 'selected' : ''}" data-pizza-sabor="${sabor.id}" ${indisponivel ? 'disabled' : ''}>
+      <img src="${esc(sabor.img)}" alt=""><span><strong>${esc(sabor.nome)}</strong><small>${indisponivel ? 'Indisponível' : `Metade: ${brl(sabor.preco / 2)}`}</small></span>
+    </button>`;
+  }).join('');
+}
+
+function selecionarSaborMontador(id) {
+  if (!acharSabor(id) || (configLoja.itensEsgotados || []).includes(id)) return;
+  if (montagemPizza.includes(id)) {
+    showToast('Escolha dois sabores diferentes. Para um único sabor, use Pizza Inteira.', 'warning');
+    return;
+  }
+  if (montagemPizza.length >= 2) montagemPizza = [];
+  montagemPizza.push(id);
+  renderMontadorPizza();
+}
+
+function trocarModo(novo) {
+  modo = novo; meioSelecionado = null;
+  $('#btn-mode-inteira').setAttribute('aria-pressed', String(novo === 'inteira'));
+  $('#btn-mode-meio').setAttribute('aria-pressed', String(novo === 'meio'));
+  atualizarBanner(); atualizarBotoes();
+  if (novo === 'meio') abrirMontadorPizza();
+}
 
 function atualizarBanner() {
   const b = $('#meio-banner');
@@ -2143,6 +2293,7 @@ function abrirBuilder(ids) {
   const isEsfiha = ids[0].startsWith('esf_');
   
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
+  renderPreviaPizza(ids);
   const produtoBuilder = acharSabor(ids[0]);
   $('#builder-base-valor').innerHTML = precoPromocionalHTML(precoBaseVal(ids), produtoBuilder && produtoBuilder.naoAcumulaDescontos === true);
   
@@ -3058,6 +3209,11 @@ document.addEventListener('visibilitychange', () => {
 });
 
 document.addEventListener('click', e => { 
+  const pizzaBtn = e.target.closest('[data-pizza-sabor]');
+  if (pizzaBtn) {
+    selecionarSaborMontador(pizzaBtn.dataset.pizzaSabor);
+    return;
+  }
   const comboBtn = e.target.closest('[data-combo-sabor]');
   if (comboBtn) {
     alterarSaborCombo(comboBtn.dataset.comboSabor, comboBtn.dataset.comboCat, parseInt(comboBtn.dataset.comboDelta, 10));
@@ -3071,6 +3227,17 @@ document.addEventListener('click', e => {
     fecharModal('modal-promocoes'); 
     escolherSabor(b.dataset.escolher);
   }
+});
+
+$('#pizza-montador-limpar').addEventListener('click', () => { montagemPizza = []; renderMontadorPizza(); });
+$('#pizza-montador-confirmar').addEventListener('click', () => {
+  if (montagemPizza.length !== 2) return;
+  const saboresEscolhidos = [...montagemPizza];
+  fecharModal('pizza-montador-overlay');
+  modo = 'inteira';
+  $('#btn-mode-inteira').setAttribute('aria-pressed', 'true');
+  $('#btn-mode-meio').setAttribute('aria-pressed', 'false');
+  setTimeout(() => abrirBuilder(saboresEscolhidos), 320);
 });
 
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
