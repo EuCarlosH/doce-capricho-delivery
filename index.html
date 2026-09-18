@@ -100,10 +100,16 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .nav-logo-img { height: 34px; width: auto; display: block; }
 .nav-logo-fallback { color: var(--text-main); font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 1px; transition: color 0.3s ease;}
 :root[data-theme="dark"] .nav-logo-fallback { color: var(--gold); }
-.nav-links { display: flex; list-style: none; gap: 22px; align-items: center; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.2px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
+.nav-links { display: flex; list-style: none; gap: 22px; align-items: center; margin-left:auto; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.2px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
+.nav-actions { display:flex; gap:12px; align-items:center; margin-left:auto; }
+.mobile-menu-toggle { display:none; width:40px; height:40px; padding:0; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); color:var(--text-main); align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow-sm); }
+.mobile-menu-toggle svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; transition:transform .3s var(--smooth); }
+.mobile-menu-toggle[aria-expanded="true"] svg { transform:rotate(90deg); }
 
 .status-badge { border: 1px solid transparent; background: var(--olive); color: #FFF; padding: 6px 16px; border-radius: 30px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 :root[data-theme="dark"] .status-badge { color: var(--bg-main); } .status-badge.fechado { background: transparent; border-color: var(--terracotta); color: var(--terracotta); } .status-badge.pausado { background: transparent; border-color: var(--gold); color: var(--gold-dark); }
+:root[data-theme="dark"] .status-badge.fechado { color:#FF9A86; border-color:#C95E46; background:rgba(201,94,70,.12); }
+:root[data-theme="dark"] .status-badge.pausado { color:#F2C96D; border-color:#B88A32; background:rgba(184,138,50,.12); }
 .btn-install { display: none; background: rgba(221, 167, 58, 0.1); border: 1px solid var(--gold); color: var(--gold-dark); padding: 6px 12px; border-radius: 30px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
 .theme-toggle { background: transparent; border: 1px solid var(--border-light); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); transition: all 0.3s ease;}
 .theme-toggle:hover { background: var(--bg-card); box-shadow: var(--shadow-sm); }
@@ -121,7 +127,9 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(253,251,247,0) 40%, rgba(253,251,247,1) 100%), linear-gradient(to right, rgba(253,251,247,0.95) 0%, rgba(253,251,247,0.6) 60%, rgba(253,251,247,0.1) 100%); transition: background 0.4s ease; }
 :root[data-theme="dark"] .hero-overlay { background: linear-gradient(to bottom, rgba(13,10,8,0) 60%, rgba(13,10,8,1) 100%), linear-gradient(to right, rgba(13,10,8,0.95) 0%, rgba(13,10,8,0.7) 60%, rgba(13,10,8,0.1) 100%); }
 .hero-content { position: relative; z-index: 2; }
-.hero-eyebrow { display: block; color: var(--terracotta); font-size: 13px; font-weight: 600; letter-spacing: 0.4px; margin-bottom: 14px; }
+.hero-brand-line { display:flex; align-items:center; gap:13px; margin-bottom:14px; }
+.hero-brand-logo { width:54px; height:54px; flex:none; object-fit:cover; border-radius:14px; box-shadow:0 8px 24px rgba(86,42,20,.2); border:1px solid rgba(221,167,58,.28); }
+.hero-eyebrow { display: block; color: var(--terracotta); font-size: 13px; font-weight: 600; letter-spacing: 0.4px; margin:0; }
 .hero-title { font-size: clamp(28px, 4.5vw, 42px); color: var(--text-main); margin-bottom: 12px; letter-spacing: 1px; line-height: 1.15; max-width: 560px; }
 .hero-subtitle { font-size: clamp(13px, 2vw, 15px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; }
 .hero-cta { display: inline-block; margin-top: 30px; padding: 18px 34px; border-radius: 14px; font-size: 13px; text-decoration: none; }
@@ -577,8 +585,21 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .footer-copy { font-size: 11px; color: #A0AEC0; margin-top: 10px; font-weight: 500;} :root[data-theme="dark"] .footer-copy { color: #666; font-weight: 400; }
 
 @media (max-width: 768px) {
-  .nav-links { display: none; } .nav-container { justify-content: space-between; } .nav-logo-fallback { font-size: 16px; } .nav-logo-img { height: 28px; } 
+  nav.top-nav { overflow:visible; }
+  .nav-container { justify-content:space-between; position:relative; }
+  .mobile-menu-toggle { display:flex; }
+  .nav-actions { margin-left:0; gap:9px; }
+  .nav-links { position:absolute; top:calc(100% + 14px); left:12px; right:12px; display:flex; flex-direction:column; align-items:stretch; gap:4px; margin-left:0; padding:10px; border:1px solid var(--border-light); border-radius:18px; background:rgba(253,251,247,.97); box-shadow:0 18px 45px rgba(44,32,24,.16); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); opacity:0; visibility:hidden; transform:translateY(-10px) scale(.98); transform-origin:top; pointer-events:none; transition:.25s var(--smooth); }
+  :root[data-theme="dark"] .nav-links { background:rgba(23,18,15,.97); border-color:rgba(255,255,255,.08); box-shadow:0 20px 50px rgba(0,0,0,.45); }
+  .nav-links.mobile-open { opacity:1; visibility:visible; transform:translateY(0) scale(1); pointer-events:auto; }
+  .nav-links li { width:100%; }
+  .nav-links a, .nav-links button { display:flex; align-items:center; width:100%; min-height:44px; padding:11px 13px; border-radius:11px; font-size:12px; font-weight:700; text-align:left; }
+  .nav-links a:active, .nav-links button:active { background:rgba(221,167,58,.12); }
+  .btn-install { display:none !important; }
   #home { padding-top: 100px; text-align: center; align-items: center; border-radius: 0 0 30px 30px;} .hero-title { max-width: 100%; }
+  .hero-brand-line { justify-content:center; gap:11px; }
+  .hero-brand-logo { width:48px; height:48px; border-radius:13px; }
+  .hero-eyebrow { max-width:220px; text-align:left; line-height:1.45; }
   
   /* NAVEGAÇÃO PILL INFERIOR (GLASSMORPHISM) */
   .bottom-nav { display: flex; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 2000; justify-content: space-between; align-items: center; padding: 8px 15px; border-radius: 40px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 40px rgba(44, 32, 24, 0.1); transition: background-color 0.4s ease; }
@@ -733,18 +754,17 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
 <nav class="top-nav">
   <div class="nav-container">
-    <a href="#home" class="nav-logo-link" aria-label="Doce Capricho Atelier — Início">
-      <img src="/logo.png" alt="Doce Capricho Atelier" class="nav-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-      <span class="nav-logo-fallback brand-font" style="display:none;">Doce Capricho Atelier</span>
-    </a>
-    <ul class="nav-links">
+    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menu" aria-controls="nav-links" aria-expanded="false" onclick="toggleMobileMenu()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
       <li><a href="#home">Início</a></li>
       <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
       <li><a href="#cardapio">Cardápio</a></li>
       <li><button type="button" id="btn-nav-track" class="ripple" onclick="abrirRastreio()" style="color:var(--terracotta);">📍 Rastrear</button></li>
       <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
     </ul>
-    <div style="display: flex; gap: 12px; align-items: center;">
+    <div class="nav-actions">
       <button class="btn-install ripple" id="btn-install-app" aria-label="Instalar Aplicativo">Instalar App</button>
       <button class="theme-toggle ripple" id="theme-toggle" aria-label="Mudar Tema" onclick="toggleTheme()">
         <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -759,7 +779,10 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="hero-carousel" id="hero-carousel"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <span class="hero-eyebrow">Ateliê artesanal em São Miguel, RN</span>
+    <div class="hero-brand-line">
+      <img src="/logo.png" alt="Doce Capricho Atelier" class="hero-brand-logo">
+      <span class="hero-eyebrow">Ateliê artesanal em São Miguel, RN</span>
+    </div>
     <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
     <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
     <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
@@ -1580,6 +1603,26 @@ const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+function toggleMobileMenu(forcarEstado) {
+  const menu = document.getElementById('nav-links');
+  const botao = document.getElementById('mobile-menu-toggle');
+  if (!menu || !botao) return;
+  const abrir = typeof forcarEstado === 'boolean' ? forcarEstado : !menu.classList.contains('mobile-open');
+  menu.classList.toggle('mobile-open', abrir);
+  botao.setAttribute('aria-expanded', String(abrir));
+  botao.setAttribute('aria-label', abrir ? 'Fechar menu' : 'Abrir menu');
+}
+
+document.querySelectorAll('#nav-links a, #nav-links button').forEach(item => {
+  item.addEventListener('click', () => toggleMobileMenu(false));
+});
+document.addEventListener('click', event => {
+  if (window.innerWidth <= 768 && !event.target.closest('.top-nav')) toggleMobileMenu(false);
+});
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) toggleMobileMenu(false);
+});
 const soDigitos = s => String(s).replace(/\D/g, '');
 
 const CONFIG = { whatsapp: '5585921440055', pixChave: '69149841000161', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
