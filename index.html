@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-montador-pizza-8">
+<meta name="dca-app-version" content="2026.09.18-montador-pizza-9">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -390,7 +390,10 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-order-thumb .pizza-preview-fill { inset:7.4%; }
 .pizza-order-thumb .pizza-preview-crust { inset:0; }
 .esfiha-order-thumb { position:absolute; inset:3px; overflow:hidden; border-radius:50%; background:var(--img-bg); filter:drop-shadow(0 2px 2px rgba(55,28,8,.15)); }
-.esfiha-order-thumb img { width:100%; height:100%; display:block; object-fit:cover; }
+.esfiha-order-thumb img { width:100%; height:100%; display:block; object-fit:contain; }
+.product-image-placeholder { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; border-radius:inherit; color:var(--gold-dark); background:radial-gradient(circle at 35% 28%, rgba(227,181,99,.23), rgba(192,138,46,.08) 52%, rgba(185,80,47,.08)); }
+.product-image-placeholder svg { width:56%; height:56%; overflow:visible; filter:drop-shadow(0 2px 3px rgba(43,33,24,.12)); }
+:root[data-theme="dark"] .product-image-placeholder { color:var(--gold); background:radial-gradient(circle at 35% 28%, rgba(227,181,99,.18), rgba(227,181,99,.06) 56%, rgba(255,255,255,.025)); }
 .cart-item-info { flex: 1; }
 .cart-item-info strong { display: block; color: var(--text-main); font-weight: 800; font-size: 14px; margin-bottom: 6px; } :root[data-theme="dark"] .cart-item-info strong { color: var(--white); font-weight: 700; }
 .cart-item-info small { display: block; color: var(--text-muted); font-size: 12px; line-height: 1.5; font-weight: 500;} :root[data-theme="dark"] .cart-item-info small { font-weight: 400; }
@@ -2016,8 +2019,37 @@ const IMAGENS_MONTADOR = {
   peru: 'img/montador/peru.webp'
 };
 
+const IMAGENS_ESFIHAS_FRONTAIS = {
+  esf_mussarela: 'img/esfihas-frontal/esf_mussarela.webp',
+  esf_frango_mus: 'img/esfihas-frontal/esf_frango_mus.webp',
+  esf_calabresa_mus: 'img/esfihas-frontal/esf_calabresa_mus.webp',
+  esf_carnesol_mus: 'img/esfihas-frontal/esf_carnesol_mus.webp',
+  esf_frango_coalho: 'img/esfihas-frontal/esf_frango_coalho.webp',
+  esf_frango_catupiry: 'img/esfihas-frontal/esf_frango_catupiry.webp',
+  esf_frango_cream: 'img/esfihas-frontal/esf_frango_cream.webp',
+  esf_carnesol_coalho: 'img/esfihas-frontal/esf_carnesol_coalho.webp',
+  esf_carnesol_catupiry: 'img/esfihas-frontal/esf_carnesol_catupiry.webp',
+  esf_carnesol_cream: 'img/esfihas-frontal/esf_carnesol_cream.webp',
+  esf_calabresa_coalho: 'img/esfihas-frontal/esf_calabresa_coalho.webp',
+  esf_calabresa_catupiry: 'img/esfihas-frontal/esf_calabresa_catupiry.webp',
+  esf_calabresa_cream: 'img/esfihas-frontal/esf_calabresa_cream.webp',
+  esf_peru: 'img/esfihas-frontal/esf_peru.webp',
+  esf_bacon_mus: 'img/esfihas-frontal/esf_bacon.webp',
+  esf_choc_leite: 'img/esfihas-frontal/esf_choc.webp',
+  esf_choc_mm: 'img/esfihas-frontal/esf_choc_mm.webp',
+  esf_choc_morango: 'img/esfihas-frontal/esf_choc_morango.webp'
+};
+
 function imagemMontadorPizza(sabor) {
-  return IMAGENS_MONTADOR[sabor.id] || sabor.img;
+  return IMAGENS_MONTADOR[sabor.id] || '';
+}
+
+function placeholderProdutoHTML(rotulo) {
+  return `<div class="product-image-placeholder" role="img" aria-label="${esc(rotulo || 'Imagem em preparação')}">
+    <svg viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="32" cy="33" r="18"></circle><path d="M22 38c5-7 15-9 22-4"></path><path d="M25 27h.1M39 25h.1M42 40h.1"></path><path d="M48 11v8M44 15h8"></path><path d="M18 13l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z"></path>
+    </svg>
+  </div>`;
 }
 
 function ehPizzaMeioAMeio(item) {
@@ -2043,10 +2075,13 @@ function miniaturaPedidoHTML(item) {
   if (ehPizzaMeioAMeio(item)) {
     const primeiro = acharSabor(item.sabores[0]);
     const segundo = acharSabor(item.sabores[1]);
+    const imagemPrimeiro = imagemMontadorPizza(primeiro);
+    const imagemSegundo = imagemMontadorPizza(segundo);
+    if (!imagemPrimeiro || !imagemSegundo) return placeholderProdutoHTML('Imagem da pizza em preparação');
     return `<div class="pizza-order-thumb" aria-label="Pizza meio a meio de ${esc(primeiro.nome)} e ${esc(segundo.nome)}">
       <div class="pizza-preview-fill">
-        <div class="pizza-preview-half left"><img src="${esc(imagemMontadorPizza(primeiro))}" alt=""></div>
-        <div class="pizza-preview-half right"><img src="${esc(imagemMontadorPizza(segundo))}" alt=""></div>
+        <div class="pizza-preview-half left"><img src="${esc(imagemPrimeiro)}" alt=""></div>
+        <div class="pizza-preview-half right"><img src="${esc(imagemSegundo)}" alt=""></div>
       </div>
       <div class="pizza-preview-crust"></div>
     </div>`;
@@ -2054,15 +2089,19 @@ function miniaturaPedidoHTML(item) {
 
   if (ehPizzaInteira(item)) {
     const sabor = acharSabor(item.sabores[0]);
+    const imagem = imagemMontadorPizza(sabor);
+    if (!imagem) return placeholderProdutoHTML('Imagem da pizza em preparação');
     return `<div class="pizza-order-thumb" aria-label="Pizza de ${esc(sabor.nome)}">
-      <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(imagemMontadorPizza(sabor))}" alt=""></div>
+      <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(imagem)}" alt=""></div>
       <div class="pizza-preview-crust"></div>
     </div>`;
   }
 
   if (ehEsfiha(item)) {
     const sabor = acharSabor(item.sabores[0]);
-    return `<div class="esfiha-order-thumb" aria-label="${esc(sabor.nome)}"><img src="${esc(sabor.img)}" alt=""></div>`;
+    const imagem = IMAGENS_ESFIHAS_FRONTAIS[sabor.id];
+    if (!imagem) return placeholderProdutoHTML('Imagem da esfiha em preparação');
+    return `<div class="esfiha-order-thumb" aria-label="${esc(sabor.nome)}"><img src="${esc(imagem)}" alt=""></div>`;
   }
 
   const sabor = acharSabor(item.sabores[0]);
@@ -2083,9 +2122,10 @@ function renderPreviaPizza(ids) {
 
   if (sabores.length === 1) {
     const sabor = sabores[0];
+    const imagem = imagemMontadorPizza(sabor);
     painel.innerHTML = `
       <div class="pizza-preview-stage" aria-label="Prévia da pizza inteira de ${esc(sabor.nome)}">
-        <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(imagemMontadorPizza(sabor))}" alt=""></div>
+        <div class="pizza-preview-fill">${imagem ? `<img class="pizza-preview-whole" src="${esc(imagem)}" alt="">` : placeholderProdutoHTML('Imagem da pizza em preparação')}</div>
         <div class="pizza-preview-crust"></div>
       </div>
       <div class="pizza-preview-legend" style="grid-template-columns:1fr;">
@@ -2093,13 +2133,15 @@ function renderPreviaPizza(ids) {
       </div>`;
   } else {
     const [primeiro, segundo] = sabores;
+    const imagemPrimeiro = imagemMontadorPizza(primeiro);
+    const imagemSegundo = imagemMontadorPizza(segundo);
     const metadePrimeiro = primeiro.preco / 2;
     const metadeSegundo = segundo.preco / 2;
     painel.innerHTML = `
       <div class="pizza-preview-stage" aria-label="Prévia meio a meio: ${esc(primeiro.nome)} e ${esc(segundo.nome)}">
         <div class="pizza-preview-fill">
-          <div class="pizza-preview-half left"><img src="${esc(imagemMontadorPizza(primeiro))}" alt=""></div>
-          <div class="pizza-preview-half right"><img src="${esc(imagemMontadorPizza(segundo))}" alt=""></div>
+          <div class="pizza-preview-half left">${imagemPrimeiro ? `<img src="${esc(imagemPrimeiro)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}</div>
+          <div class="pizza-preview-half right">${imagemSegundo ? `<img src="${esc(imagemSegundo)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}</div>
         </div>
         <div class="pizza-preview-crust"></div><div class="pizza-preview-divider"></div>
       </div>
@@ -2285,7 +2327,11 @@ function renderMontadorPizza() {
   const primeiro = montagemPizza[0] ? acharSabor(montagemPizza[0]) : null;
   const segundo = montagemPizza[1] ? acharSabor(montagemPizza[1]) : null;
   const vazio = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,rgba(221,167,58,.06),rgba(221,167,58,.06) 10px,rgba(221,167,58,.12) 10px,rgba(221,167,58,.12) 20px);color:var(--text-muted);font-size:30px;">?</div>`;
-  const lado = (sabor, classe) => `<div class="pizza-preview-half ${classe}">${sabor ? `<img src="${esc(imagemMontadorPizza(sabor))}" alt="">` : vazio}</div>`;
+  const lado = (sabor, classe) => {
+    if (!sabor) return `<div class="pizza-preview-half ${classe}">${vazio}</div>`;
+    const imagem = imagemMontadorPizza(sabor);
+    return `<div class="pizza-preview-half ${classe}">${imagem ? `<img src="${esc(imagem)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}</div>`;
+  };
   preview.innerHTML = `
     <div class="pizza-preview-stage" aria-label="Montagem visual da pizza meio a meio">
       <div class="pizza-preview-fill">${lado(primeiro, 'left')}${lado(segundo, 'right')}</div>
