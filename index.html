@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.17-imagem-clicavel-1">
+<meta name="dca-app-version" content="2026.09.18-consolidado-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -641,7 +641,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <nav class="top-nav">
   <div class="nav-container">
     <a href="#home" class="nav-logo-link" aria-label="Doce Capricho Atelier — Início">
-      <img src="img/logo.png" alt="Doce Capricho Atelier" class="nav-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+      <img src="/logo.png" alt="Doce Capricho Atelier" class="nav-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
       <span class="nav-logo-fallback brand-font" style="display:none;">Doce Capricho Atelier</span>
     </a>
     <ul class="nav-links">
@@ -744,7 +744,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 </section>
 
 <footer>
-  <img src="img/logo.png" alt="Doce Capricho Atelier" class="footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+  <img src="/logo.png" alt="Doce Capricho Atelier" class="footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
   <h2 class="footer-logo brand-font" style="display:none;">Doce Capricho Atelier</h2>
   <div class="footer-socials">
     <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
@@ -1122,8 +1122,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="modal-box" id="promo-modal-box">
     <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
     <div class="promo-img-wrapper">
-      <img id="promo-banner-img" src="img/banner-promo.jpg" alt="Oferta Especial" onerror="this.style.display='none'; document.getElementById('promo-banner-emoj').style.display='block';">
-      <h1 class="brand-font" id="promo-banner-emoj" style="display: none; color: var(--gold-dark); font-size: 50px; z-index: 1;">🎉</h1>
+      <img id="promo-banner-img" src="" alt="" style="display:none;" onerror="this.style.display='none'; document.getElementById('promo-banner-emoj').style.display='block';">
+      <h1 class="brand-font" id="promo-banner-emoj" style="display: block; color: var(--gold-dark); font-size: 50px; z-index: 1;">🎉</h1>
     </div>
     <div class="promo-content">
       <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
@@ -1873,11 +1873,12 @@ function checkBannerPromo(titulo, desc, combosAtivos = []) {
   $('#promo-banner-title').textContent = comboUnico ? comboUnico.nome : titulo;
   $('#promo-banner-desc').textContent = comboUnico ? comboUnico.desc : desc;
   botao.textContent = comboUnico ? 'MONTAR MEU COMBO' : 'EU QUERO VER';
-  imagem.alt = comboUnico ? comboUnico.nome : 'Oferta Especial';
-  imagem.style.display = 'block';
-  emoji.style.display = 'none';
+  imagem.alt = comboUnico ? comboUnico.nome : '';
+  imagem.style.display = comboUnico ? 'block' : 'none';
+  emoji.style.display = comboUnico ? 'none' : 'block';
   imagem.onerror = () => { imagem.style.display = 'none'; emoji.style.display = 'block'; };
-  imagem.src = comboUnico ? comboUnico.img : 'img/banner-promo.jpg';
+  if (comboUnico) imagem.src = comboUnico.img;
+  else imagem.removeAttribute('src');
   
   if (promoTimer) clearTimeout(promoTimer);
   
