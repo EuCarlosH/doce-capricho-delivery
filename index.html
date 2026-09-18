@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-montador-pizza-7">
+<meta name="dca-app-version" content="2026.09.18-montador-pizza-8">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -389,6 +389,8 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-order-thumb { position:absolute; inset:3px; overflow:hidden; border-radius:50%; background:transparent; filter:drop-shadow(0 2px 2px rgba(55,28,8,.18)); }
 .pizza-order-thumb .pizza-preview-fill { inset:7.4%; }
 .pizza-order-thumb .pizza-preview-crust { inset:0; }
+.esfiha-order-thumb { position:absolute; inset:3px; overflow:hidden; border-radius:50%; background:var(--img-bg); filter:drop-shadow(0 2px 2px rgba(55,28,8,.15)); }
+.esfiha-order-thumb img { width:100%; height:100%; display:block; object-fit:cover; }
 .cart-item-info { flex: 1; }
 .cart-item-info strong { display: block; color: var(--text-main); font-weight: 800; font-size: 14px; margin-bottom: 6px; } :root[data-theme="dark"] .cart-item-info strong { color: var(--white); font-weight: 700; }
 .cart-item-info small { display: block; color: var(--text-muted); font-size: 12px; line-height: 1.5; font-weight: 500;} :root[data-theme="dark"] .cart-item-info small { font-weight: 400; }
@@ -2023,6 +2025,20 @@ function ehPizzaMeioAMeio(item) {
   return item.sabores.every(id => !id.startsWith('esf_') && !id.startsWith('combo_') && !!acharSabor(id));
 }
 
+function ehPizzaInteira(item) {
+  if (!item || !Array.isArray(item.sabores) || item.sabores.length !== 1) return false;
+  const id = item.sabores[0];
+  return !id.startsWith('esf_') && !id.startsWith('combo_') && !!acharSabor(id);
+}
+
+function ehEsfiha(item) {
+  return !!(item && Array.isArray(item.sabores) && item.sabores.length === 1 && item.sabores[0].startsWith('esf_') && acharSabor(item.sabores[0]));
+}
+
+function usaMiniaturaEspecial(item) {
+  return ehPizzaMeioAMeio(item) || ehPizzaInteira(item) || ehEsfiha(item);
+}
+
 function miniaturaPedidoHTML(item) {
   if (ehPizzaMeioAMeio(item)) {
     const primeiro = acharSabor(item.sabores[0]);
@@ -2034,6 +2050,19 @@ function miniaturaPedidoHTML(item) {
       </div>
       <div class="pizza-preview-crust"></div>
     </div>`;
+  }
+
+  if (ehPizzaInteira(item)) {
+    const sabor = acharSabor(item.sabores[0]);
+    return `<div class="pizza-order-thumb" aria-label="Pizza de ${esc(sabor.nome)}">
+      <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(imagemMontadorPizza(sabor))}" alt=""></div>
+      <div class="pizza-preview-crust"></div>
+    </div>`;
+  }
+
+  if (ehEsfiha(item)) {
+    const sabor = acharSabor(item.sabores[0]);
+    return `<div class="esfiha-order-thumb" aria-label="${esc(sabor.nome)}"><img src="${esc(sabor.img)}" alt=""></div>`;
   }
 
   const sabor = acharSabor(item.sabores[0]);
@@ -2669,7 +2698,7 @@ function atualizarUI() {
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join(' · ')); 
     if (i.obs) det.push('Obs: ' + esc(i.obs));
     
-    const miniaturaComposta = ehPizzaMeioAMeio(i);
+    const miniaturaComposta = usaMiniaturaEspecial(i);
 
     return `
       <li class="cart-item">
@@ -2860,7 +2889,7 @@ function montarRevisao() {
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
     if (i.obs) det.push(`Obs: ${esc(i.obs)}`);
     const detalhesHTML = det.length > 0 ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4;">${det.join('<br>')}</div>` : '';
-    const miniaturaComposta = ehPizzaMeioAMeio(i);
+    const miniaturaComposta = usaMiniaturaEspecial(i);
 
     return `
       <div class="review-item-line" style="display:flex; gap:15px; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border-light); padding-bottom:15px;">
