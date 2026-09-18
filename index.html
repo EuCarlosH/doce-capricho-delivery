@@ -1838,7 +1838,7 @@ function renderDestaques() {
       <div class="card-content">
         <h4 class="card-title">${esc(s.nome)}</h4>
         <div class="card-bottom">
-          <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true)}</span>
+          <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true, [s.id])}</span>
           <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? '—' : '+'}</button>
         </div>
       </div>
@@ -1885,16 +1885,49 @@ function promocaoGeralAtiva() {
   return promocao;
 }
 
-function valorComDesconto(valorCentavos) {
-  const promocao = promocaoGeralAtiva();
-  if (!promocao) return Math.round(valorCentavos);
-  return Math.max(0, Math.round(valorCentavos * (100 - promocao.percentual) / 100));
+function escoposPromocao(promocao) {
+  return Array.isArray(promocao && promocao.escopos) && promocao.escopos.length ? promocao.escopos : ['todos'];
 }
 
-function precoPromocionalHTML(valorCentavos, ignorarDesconto = false) {
+function categoriaPromocionalDoSabor(id) {
+  if (CARDAPIO.tradicionais.some(item => item.id === id)) return 'pizzas_tradicionais';
+  if (CARDAPIO.premium.some(item => item.id === id)) return 'pizzas_premium';
+  if (CARDAPIO.esfihas_tradicionais.some(item => item.id === id)) return 'esfihas_tradicionais';
+  if (CARDAPIO.esfihas_premium.some(item => item.id === id)) return 'esfihas_premium';
+  if (CARDAPIO.esfihas_doces.some(item => item.id === id)) return 'esfihas_doces';
+  if (String(id || '').startsWith('combo_')) return 'combos';
+  return '';
+}
+
+function escopoAceitaCategoria(escopos, categoria) {
+  if (escopos.includes('todos') || escopos.includes(categoria)) return true;
+  if (categoria.startsWith('pizzas_') && escopos.includes('pizzas')) return true;
+  if (categoria.startsWith('esfihas_') && escopos.includes('esfihas')) return true;
+  return false;
+}
+
+function fracaoPromocionalSabores(sabores, promocao = promocaoGeralAtiva()) {
+  if (!promocao || !Array.isArray(sabores) || !sabores.length) return 0;
+  const escopos = escoposPromocao(promocao);
+  const partes = sabores.map(id => ({ id, preco:Number(acharSabor(id)?.preco) || 0 }));
+  const totalBase = partes.reduce((soma, parte) => soma + parte.preco, 0);
+  if (totalBase <= 0) return 0;
+  const baseElegivel = partes.reduce((soma, parte) => soma + (escopoAceitaCategoria(escopos, categoriaPromocionalDoSabor(parte.id)) ? parte.preco : 0), 0);
+  return baseElegivel / totalBase;
+}
+
+function valorComDesconto(valorCentavos, sabores = []) {
   const promocao = promocaoGeralAtiva();
-  if (!promocao || ignorarDesconto) return brl(valorCentavos);
-  return `<span class="preco-promocional"><del>${brl(valorCentavos)}</del><strong>${brl(valorComDesconto(valorCentavos))}</strong></span>`;
+  const fracao = fracaoPromocionalSabores(sabores, promocao);
+  if (!promocao || fracao <= 0) return Math.round(valorCentavos);
+  const desconto = valorCentavos * (promocao.percentual / 100) * fracao;
+  return Math.max(0, Math.round(valorCentavos - desconto));
+}
+
+function precoPromocionalHTML(valorCentavos, ignorarDesconto = false, sabores = []) {
+  const promocao = promocaoGeralAtiva();
+  if (!promocao || ignorarDesconto || fracaoPromocionalSabores(sabores, promocao) <= 0) return brl(valorCentavos);
+  return `<span class="preco-promocional"><del>${brl(valorCentavos)}</del><strong>${brl(valorComDesconto(valorCentavos, sabores))}</strong></span>`;
 }
 
 function itemAceitaDescontos(item) {
@@ -1903,7 +1936,18 @@ function itemAceitaDescontos(item) {
 }
 
 function valorItemComPromocao(item) {
-  return itemAceitaDescontos(item) ? valorComDesconto(item.total) : item.total;
+  return itemAceitaDescontos(item) ? valorComDesconto(item.total, item.sabores) : item.total;
+}
+
+function rotuloEscoposPromocao(promocao) {
+  const escopos = escoposPromocao(promocao);
+  if (escopos.includes('todos')) return 'em todo o cardápio';
+  const nomes = {
+    pizzas:'em todas as pizzas', pizzas_tradicionais:'nas pizzas tradicionais', pizzas_premium:'nas pizzas premium',
+    esfihas:'em todas as esfihas', esfihas_tradicionais:'nas esfihas tradicionais', esfihas_premium:'nas esfihas premium',
+    esfihas_doces:'nas esfihas doces', combos:'nos combos e ofertas'
+  };
+  return escopos.map(escopo => nomes[escopo]).filter(Boolean).join(', ');
 }
 
 function atualizarBannerDesconto() {
@@ -1915,7 +1959,7 @@ function atualizarBannerDesconto() {
     banner.innerHTML = '';
     return;
   }
-  banner.innerHTML = `<strong>🏷️ ${esc(promocao.titulo || 'Oferta especial')}</strong><span>${promocao.percentual}% de desconto nos produtos</span>`;
+  banner.innerHTML = `<strong>🏷️ ${esc(promocao.titulo || 'Oferta especial')}</strong><span>${promocao.percentual}% de desconto ${esc(rotuloEscoposPromocao(promocao))}</span>`;
   banner.classList.add('show');
 }
 
@@ -1932,7 +1976,7 @@ function validarCupomLocal(cupom) {
   if (agora > fim) return { ok:false, mensagem:'Este cupom expirou.' };
   if (!['percentual', 'fixo'].includes(cupom.tipo) || !Number.isFinite(Number(cupom.valor)) || Number(cupom.valor) <= 0) return { ok:false, mensagem:'Este cupom está inválido.' };
   if (carrinho.some(item => !itemAceitaDescontos(item))) return { ok:false, mensagem:'Cupons não são acumuláveis com combos especiais.' };
-  if (promocaoGeralAtiva() && cupom.acumulaPromocao !== true) return { ok:false, mensagem:'Este cupom não pode ser usado junto com a promoção atual.' };
+  if (promocaoGeralAtiva() && carrinho.some(item => fracaoPromocionalSabores(item.sabores) > 0) && cupom.acumulaPromocao !== true) return { ok:false, mensagem:'Este cupom não pode ser usado junto com a promoção atual.' };
   const subtotal = subtotalDisponivelParaCupom();
   const minimo = Number(cupom.pedidoMinimoCentavos) || 0;
   if (subtotal < minimo) return { ok:false, mensagem:`Pedido mínimo de ${brl(minimo)} para usar este cupom.` };
@@ -2394,7 +2438,7 @@ const cardHTML = s => {
       <h4 class="card-title">${esc(s.nome)}</h4>
       <p class="card-desc">${esc(s.desc)}</p>
       <div class="card-bottom">
-        <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true)}</span>
+        <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true, [s.id])}</span>
         ${controleCompra}
       </div>
     </div>
@@ -2615,7 +2659,7 @@ function abrirBuilder(ids) {
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
   renderPreviaPizza(ids);
   const produtoBuilder = acharSabor(ids[0]);
-  $('#builder-base-valor').innerHTML = precoPromocionalHTML(precoBaseVal(ids), produtoBuilder && produtoBuilder.naoAcumulaDescontos === true);
+  $('#builder-base-valor').innerHTML = precoPromocionalHTML(precoBaseVal(ids), produtoBuilder && produtoBuilder.naoAcumulaDescontos === true, ids);
   
   if (isEsfiha || isCombo) {
      $('#builder-extras-container').style.display = 'none';
@@ -2798,7 +2842,7 @@ function atualizarBuilderTotal() {
   const extras = lerExtras().reduce((s, e) => s + e.preco, 0); 
   const totalBruto = (precoBaseVal(builder.sabores) + extras) * builder.qtd;
   const produtoBuilder = acharSabor(builder.sabores[0]);
-  $('#builder-subtotal').innerHTML = precoPromocionalHTML(totalBruto, produtoBuilder && produtoBuilder.naoAcumulaDescontos === true); 
+  $('#builder-subtotal').innerHTML = precoPromocionalHTML(totalBruto, produtoBuilder && produtoBuilder.naoAcumulaDescontos === true, builder.sabores); 
 }
 
 function popQtyVal() { const el = $('#qty-val'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
@@ -2988,7 +3032,7 @@ function totais() {
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
   const upsellPreco = document.getElementById('upsell-preco');
-  if (upsellPreco) upsellPreco.innerHTML = '+ ' + precoPromocionalHTML(1200);
+  if (upsellPreco) upsellPreco.innerHTML = '+ ' + precoPromocionalHTML(1200, false, ['esf_choc_morango']);
   
   let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc_morango') || s.startsWith('esf_choc')));
   if (carrinho.length > 0 && !temSobremesa) { $('#upsell-container').style.display = 'block'; } else { $('#upsell-container').style.display = 'none'; }
@@ -3019,7 +3063,7 @@ function atualizarUI() {
                 <button type="button" onclick="mudarQtd('${i.uid}', 1)" style="background:none; border:none; width:30px; height:30px; font-size:20px; cursor:pointer; color:var(--text-main); display:flex; align-items:center; justify-content:center;">+</button>
             </div>
             <div style="display:flex; align-items:center; gap:15px;">
-                <span class="cart-item-price">${precoPromocionalHTML(i.total, !itemAceitaDescontos(i))}</span>
+                <span class="cart-item-price">${precoPromocionalHTML(i.total, !itemAceitaDescontos(i), i.sabores)}</span>
                 <button type="button" class="remove-btn ripple" onclick="removerDoCarrinho('${i.uid}')">&times;</button>
             </div>
         </div>
@@ -3202,7 +3246,7 @@ function montarRevisao() {
         <div style="flex:1;">
           <div style="display:flex; justify-content:space-between; width:100%;">
             <strong style="font-size:14px; color:var(--text-main);">${i.qtd}x ${esc(nomeItem(i))}</strong>
-            <span style="color:var(--text-main); font-weight:800; font-size:14px;">${precoPromocionalHTML(i.total, !itemAceitaDescontos(i))}</span>
+            <span style="color:var(--text-main); font-weight:800; font-size:14px;">${precoPromocionalHTML(i.total, !itemAceitaDescontos(i), i.sabores)}</span>
           </div>
           ${detalhesHTML}
         </div>
@@ -3382,7 +3426,7 @@ function montarPedido() {
       extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
       obs: i.obs,
       unitario_original_centavos: i.unitario,
-      unitario_centavos: itemAceitaDescontos(i) ? valorComDesconto(i.unitario) : i.unitario,
+      unitario_centavos: itemAceitaDescontos(i) ? valorComDesconto(i.unitario, i.sabores) : i.unitario,
       total_original_centavos: i.total,
       total_centavos: valorItemComPromocao(i)
     })),
@@ -3393,6 +3437,7 @@ function montarPedido() {
     desconto_percentual: promocaoAtiva ? promocaoAtiva.percentual : 0,
     promocao_geral_id: promocaoAtiva ? promocaoAtiva.id : '',
     promocao_geral_titulo: promocaoAtiva ? (promocaoAtiva.titulo || 'Oferta especial') : '',
+    promocao_geral_escopos: promocaoAtiva ? escoposPromocao(promocaoAtiva) : [],
     cupom_codigo: cupomAplicado && t.descontoCupom > 0 ? cupomAplicado.codigo : '',
     cupom_id: cupomAplicado && t.descontoCupom > 0 ? cupomAplicado.id : '',
     subtotal_centavos: t.subtotal,
