@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-montador-pizza-5">
+<meta name="dca-app-version" content="2026.09.18-montador-pizza-6">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -345,7 +345,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-preview-half.right img { right:0; }
 .pizza-preview-whole { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:center; transform:scale(1.18); filter:saturate(1.03) contrast(1.01); }
 .pizza-preview-crust { position:absolute; inset:0; z-index:3; border:0; border-radius:50%; background:url('img/pizza-borda-montador.png') center/100% 100% no-repeat; filter:drop-shadow(0 5px 5px rgba(55,28,8,.28)); pointer-events:none; }
-.pizza-preview-divider { position:absolute; z-index:2; top:10.5%; bottom:10.5%; left:50%; width:1px; transform:translateX(-50%); background:linear-gradient(to bottom, transparent, rgba(255,255,255,.55) 12%, rgba(255,255,255,.55) 88%, transparent); box-shadow:0 0 3px rgba(0,0,0,.45); }
+.pizza-preview-divider { display:none; }
 .pizza-preview-legend { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .pizza-preview-flavor { min-width:0; padding:10px 11px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-light); text-align:center; }
 .pizza-preview-flavor small { display:block; margin-bottom:3px; color:var(--text-muted); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:1px; }
