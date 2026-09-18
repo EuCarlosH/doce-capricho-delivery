@@ -336,6 +336,9 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .pwa-install-close { border:0; background:transparent; color:rgba(255,255,255,.65); font-size:20px; cursor:pointer; padding:3px; }
 .offline-pill { position:fixed; top:76px; left:50%; transform:translateX(-50%); z-index:11900; background:#A72828; color:#fff; border-radius:999px; padding:8px 14px; font-size:9px; font-weight:800; letter-spacing:.8px; display:none; box-shadow:0 8px 24px rgba(90,15,15,.25); }
 .offline-pill.show { display:block; }
+.toggle-row { display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border-light); border-radius:8px; background:#FFF; color:var(--text-main); font-size:10px; font-weight:700; cursor:pointer; }
+.toggle-row input { width:17px; height:17px; flex:0 0 auto; accent-color:var(--gold-dark); cursor:pointer; }
+.toggle-row:has(input:checked) { border-color:var(--gold-dark); background:rgba(201,144,41,.09); color:var(--gold-dark); }
 </style>
 </head>
 <body>
@@ -597,6 +600,22 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 
           <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Desconto (%)</label>
           <input type="number" id="desconto-percentual" min="1" max="90" step="1" placeholder="Ex: 10" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <fieldset style="margin:2px 0 0; padding:13px; border:1px solid var(--border-light); border-radius:9px; background:#FFF;">
+            <legend style="padding:0 6px; font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Produtos participantes</legend>
+            <p style="font-size:9px; color:var(--text-muted); line-height:1.45; margin:0 0 10px;">Escolha um grupo completo ou combine categorias específicas.</p>
+            <div id="desconto-escopos" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px;">
+              <label class="toggle-row" style="padding:9px 10px;"><span>Todo o cardápio</span><input type="checkbox" value="todos" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Todas as pizzas</span><input type="checkbox" value="pizzas" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Pizzas tradicionais</span><input type="checkbox" value="pizzas_tradicionais" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Pizzas premium</span><input type="checkbox" value="pizzas_premium" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Todas as esfihas</span><input type="checkbox" value="esfihas" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Esfihas tradicionais</span><input type="checkbox" value="esfihas_tradicionais" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Esfihas premium</span><input type="checkbox" value="esfihas_premium" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Esfihas doces</span><input type="checkbox" value="esfihas_doces" onchange="sincronizarEscoposDesconto(this)"></label>
+              <label class="toggle-row" style="padding:9px 10px;"><span>Combos e ofertas</span><input type="checkbox" value="combos" onchange="sincronizarEscoposDesconto(this)"></label>
+            </div>
+          </fieldset>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div style="display:flex; flex-direction:column; gap:7px;">
@@ -1456,6 +1475,8 @@ function preencherFormularioDesconto(promocao) {
 
   if (!promocao) {
     status.textContent = 'Nenhum desconto programado.';
+    const todos = document.querySelector('#desconto-escopos input[value="todos"]');
+    if (todos) todos.checked = true;
     return;
   }
 
@@ -1463,6 +1484,10 @@ function preencherFormularioDesconto(promocao) {
   document.getElementById('desconto-percentual').value = promocao.percentual || '';
   document.getElementById('desconto-inicio').value = timestampParaInput(promocao.inicio);
   document.getElementById('desconto-fim').value = timestampParaInput(promocao.fim);
+  const escopos = Array.isArray(promocao.escopos) && promocao.escopos.length ? promocao.escopos : ['todos'];
+  document.querySelectorAll('#desconto-escopos input[type="checkbox"]').forEach(input => {
+    input.checked = escopos.includes(input.value);
+  });
 
   const agora = Date.now();
   const inicio = promocao.inicio && promocao.inicio.toMillis ? promocao.inicio.toMillis() : 0;
@@ -1470,7 +1495,45 @@ function preencherFormularioDesconto(promocao) {
   if (!promocao.ativo) status.textContent = '⚪ Desconto desativado.';
   else if (inicio && agora < inicio) status.textContent = '🕒 Desconto programado para iniciar automaticamente.';
   else if (fim && agora > fim) status.textContent = '⌛ Período encerrado.';
-  else status.textContent = `🟢 Desconto de ${promocao.percentual}% ativo no site.`;
+  else status.textContent = `🟢 Desconto de ${promocao.percentual}% ativo para: ${rotuloEscoposDesconto(escopos)}.`;
+}
+
+function escoposDescontoSelecionados() {
+  return Array.from(document.querySelectorAll('#desconto-escopos input[type="checkbox"]:checked')).map(input => input.value);
+}
+
+function rotuloEscoposDesconto(escopos) {
+  const nomes = {
+    todos:'todo o cardápio', pizzas:'todas as pizzas', pizzas_tradicionais:'pizzas tradicionais', pizzas_premium:'pizzas premium',
+    esfihas:'todas as esfihas', esfihas_tradicionais:'esfihas tradicionais', esfihas_premium:'esfihas premium',
+    esfihas_doces:'esfihas doces', combos:'combos e ofertas'
+  };
+  return (escopos || []).map(valor => nomes[valor]).filter(Boolean).join(', ') || 'nenhum produto';
+}
+
+function sincronizarEscoposDesconto(alterado) {
+  const inputs = Array.from(document.querySelectorAll('#desconto-escopos input[type="checkbox"]'));
+  if (!alterado || !alterado.checked) return;
+  if (alterado.value === 'todos') {
+    inputs.forEach(input => { if (input !== alterado) input.checked = false; });
+    return;
+  }
+  const todos = inputs.find(input => input.value === 'todos');
+  if (todos) todos.checked = false;
+  const grupos = {
+    pizzas:['pizzas_tradicionais','pizzas_premium'],
+    esfihas:['esfihas_tradicionais','esfihas_premium','esfihas_doces']
+  };
+  if (grupos[alterado.value]) {
+    inputs.forEach(input => { if (grupos[alterado.value].includes(input.value)) input.checked = false; });
+  } else {
+    Object.entries(grupos).forEach(([grupo, filhos]) => {
+      if (filhos.includes(alterado.value)) {
+        const amplo = inputs.find(input => input.value === grupo);
+        if (amplo) amplo.checked = false;
+      }
+    });
+  }
 }
 
 async function salvarPromocaoGeral(e) {
@@ -1479,10 +1542,12 @@ async function salvarPromocaoGeral(e) {
   const percentual = Number(document.getElementById('desconto-percentual').value);
   const inicioData = new Date(document.getElementById('desconto-inicio').value);
   const fimData = new Date(document.getElementById('desconto-fim').value);
+  const escopos = escoposDescontoSelecionados();
 
   if (!Number.isInteger(percentual) || percentual < 1 || percentual > 90) return alert('Informe um desconto inteiro entre 1% e 90%.');
   if (Number.isNaN(inicioData.getTime()) || Number.isNaN(fimData.getTime())) return alert('Informe o início e o término da promoção.');
   if (fimData <= inicioData) return alert('O término precisa ser posterior ao início.');
+  if (!escopos.length) return alert('Selecione pelo menos um grupo de produtos para receber o desconto.');
 
   btn.disabled = true;
   btn.textContent = 'SALVANDO...';
@@ -1491,6 +1556,7 @@ async function salvarPromocaoGeral(e) {
     ativo: true,
     titulo,
     percentual,
+    escopos,
     inicio: firebase.firestore.Timestamp.fromDate(inicioData),
     fim: firebase.firestore.Timestamp.fromDate(fimData),
     atualizadoEm: firebase.firestore.Timestamp.now()
