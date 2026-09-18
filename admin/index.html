@@ -591,8 +591,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 
     <div id="tab-descontos" class="tab-content">
       <div style="padding:16px; border:1px solid var(--border-light); border-radius:10px; background:#F8FAFC;">
-        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">🏷️ Desconto geral programado</strong>
-        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">O desconto será aplicado automaticamente aos produtos durante o período definido. A taxa de entrega não recebe desconto.</p>
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">🏷️ Promoções programadas</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">Crie descontos diferentes para grupos de produtos. Campanhas simultâneas não se somam no mesmo produto: prevalece o maior desconto.</p>
 
         <div style="display:flex; flex-direction:column; gap:10px;">
           <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Nome da promoção</label>
@@ -629,8 +629,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           </div>
 
           <div id="desconto-status-admin" style="font-size:10px; font-weight:700; color:var(--text-muted); min-height:14px;"></div>
-          <button type="button" onclick="salvarPromocaoGeral(event)" class="btn-gradient" style="padding:12px; width:100%;">Programar e ativar desconto</button>
-          <button type="button" onclick="desativarPromocaoGeral(event)" style="padding:11px; width:100%; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">Desativar desconto atual</button>
+          <button type="button" onclick="salvarPromocaoGeral(event)" class="btn-gradient" style="padding:12px; width:100%;">Adicionar promoção</button>
+          <div id="descontos-programados-lista" style="display:grid; gap:9px; margin-top:5px;"></div>
         </div>
       </div>
     </div>
@@ -858,7 +858,8 @@ function iniciarSistema() {
         document.getElementById('select-modo-promo').value = configuracoesGlobais.modoPromocoes;
         document.getElementById('input-texto-funcionamento').value = configuracoesGlobais.textoFuncionamento || "Quinta a Domingo, 18:30 às 23:00";
         preencherFormularioAviso(configuracoesGlobais.avisoPopup || null);
-        preencherFormularioDesconto(configuracoesGlobais.promocaoGeral || null);
+        preencherFormularioDesconto();
+        renderPromocoesProgramadas();
     }
     atualizarUIConfig();
   });
@@ -1469,33 +1470,24 @@ function timestampParaInput(valor) {
   return `${data.getFullYear()}-${pad(data.getMonth() + 1)}-${pad(data.getDate())}T${pad(data.getHours())}:${pad(data.getMinutes())}`;
 }
 
-function preencherFormularioDesconto(promocao) {
+function preencherFormularioDesconto() {
   const status = document.getElementById('desconto-status-admin');
   if (!status) return;
-
-  if (!promocao) {
-    status.textContent = 'Nenhum desconto programado.';
-    const todos = document.querySelector('#desconto-escopos input[value="todos"]');
-    if (todos) todos.checked = true;
-    return;
-  }
-
-  document.getElementById('desconto-titulo').value = promocao.titulo || '';
-  document.getElementById('desconto-percentual').value = promocao.percentual || '';
-  document.getElementById('desconto-inicio').value = timestampParaInput(promocao.inicio);
-  document.getElementById('desconto-fim').value = timestampParaInput(promocao.fim);
-  const escopos = Array.isArray(promocao.escopos) && promocao.escopos.length ? promocao.escopos : ['todos'];
+  document.getElementById('desconto-titulo').value = '';
+  document.getElementById('desconto-percentual').value = '';
+  document.getElementById('desconto-inicio').value = '';
+  document.getElementById('desconto-fim').value = '';
   document.querySelectorAll('#desconto-escopos input[type="checkbox"]').forEach(input => {
-    input.checked = escopos.includes(input.value);
+    input.checked = input.value === 'todos';
   });
+  status.textContent = 'Preencha os dados para adicionar uma nova promoção.';
+}
 
-  const agora = Date.now();
-  const inicio = promocao.inicio && promocao.inicio.toMillis ? promocao.inicio.toMillis() : 0;
-  const fim = promocao.fim && promocao.fim.toMillis ? promocao.fim.toMillis() : 0;
-  if (!promocao.ativo) status.textContent = '⚪ Desconto desativado.';
-  else if (inicio && agora < inicio) status.textContent = '🕒 Desconto programado para iniciar automaticamente.';
-  else if (fim && agora > fim) status.textContent = '⌛ Período encerrado.';
-  else status.textContent = `🟢 Desconto de ${promocao.percentual}% ativo para: ${rotuloEscoposDesconto(escopos)}.`;
+function promocoesConfiguradasAdmin() {
+  const lista = Array.isArray(configuracoesGlobais.promocoesProdutos) ? configuracoesGlobais.promocoesProdutos.filter(Boolean) : [];
+  if (lista.length) return lista;
+  const antiga = configuracoesGlobais.promocaoGeral;
+  return antiga && antiga.id ? [antiga] : [];
 }
 
 function escoposDescontoSelecionados() {
@@ -1509,6 +1501,43 @@ function rotuloEscoposDesconto(escopos) {
     esfihas_doces:'esfihas doces', combos:'combos e ofertas'
   };
   return (escopos || []).map(valor => nomes[valor]).filter(Boolean).join(', ') || 'nenhum produto';
+}
+
+function millisPromocaoAdmin(valor) {
+  if (!valor) return 0;
+  if (typeof valor.toMillis === 'function') return valor.toMillis();
+  const data = valor.toDate ? valor.toDate() : new Date(valor);
+  return Number.isNaN(data.getTime()) ? 0 : data.getTime();
+}
+
+function formatarPeriodoPromocao(valor) {
+  const ms = millisPromocaoAdmin(valor);
+  return ms ? new Date(ms).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : 'não informado';
+}
+
+function renderPromocoesProgramadas() {
+  const listaEl = document.getElementById('descontos-programados-lista');
+  if (!listaEl) return;
+  const promocoes = promocoesConfiguradasAdmin().slice().sort((a,b) => millisPromocaoAdmin(b.inicio) - millisPromocaoAdmin(a.inicio));
+  if (!promocoes.length) {
+    listaEl.innerHTML = '<div style="padding:13px; border:1px dashed var(--border-light); border-radius:8px; color:var(--text-muted); font-size:10px; text-align:center;">Nenhuma promoção cadastrada.</div>';
+    return;
+  }
+  const agora = Date.now();
+  listaEl.innerHTML = promocoes.map(promocao => {
+    const inicio = millisPromocaoAdmin(promocao.inicio);
+    const fim = millisPromocaoAdmin(promocao.fim);
+    const ativoAgora = promocao.ativo === true && inicio <= agora && fim >= agora;
+    const estado = promocao.ativo !== true ? 'Desativada' : (agora < inicio ? 'Programada' : (agora > fim ? 'Encerrada' : 'Ativa agora'));
+    const cor = ativoAgora ? '#15803D' : (promocao.ativo === true && agora < inicio ? '#A16207' : 'var(--text-muted)');
+    return `<article style="padding:12px; border:1px solid var(--border-light); border-radius:9px; background:#FFF;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+        <div style="min-width:0;"><strong style="display:block; color:var(--text-main); font-size:11px; margin-bottom:4px;">${esc(promocao.titulo || 'Oferta especial')} · ${Number(promocao.percentual) || 0}%</strong><small style="display:block; color:var(--text-muted); font-size:9px; line-height:1.5;">${esc(rotuloEscoposDesconto(Array.isArray(promocao.escopos) && promocao.escopos.length ? promocao.escopos : ['todos']))}<br>${formatarPeriodoPromocao(promocao.inicio)} até ${formatarPeriodoPromocao(promocao.fim)}</small></div>
+        <span style="flex:0 0 auto; color:${cor}; font-size:9px; font-weight:800;">${estado}</span>
+      </div>
+      ${promocao.ativo === true && agora <= fim ? `<button type="button" data-id="${esc(promocao.id)}" onclick="desativarPromocaoPorId(this.dataset.id,this)" style="width:100%; margin-top:9px; padding:8px; border:1px solid var(--danger); border-radius:7px; background:#FFF; color:var(--danger); font-family:inherit; font-size:9px; font-weight:800; cursor:pointer;">DESATIVAR ESTA PROMOÇÃO</button>` : ''}
+    </article>`;
+  }).join('');
 }
 
 function sincronizarEscoposDesconto(alterado) {
@@ -1551,7 +1580,7 @@ async function salvarPromocaoGeral(e) {
 
   btn.disabled = true;
   btn.textContent = 'SALVANDO...';
-  const promocaoGeral = {
+  const novaPromocao = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     ativo: true,
     titulo,
@@ -1563,28 +1592,30 @@ async function salvarPromocaoGeral(e) {
   };
 
   try {
-    await db.collection('configuracoes').doc('geral').set({ promocaoGeral }, { merge: true });
-    document.getElementById('desconto-status-admin').textContent = '🟢 Desconto programado com sucesso.';
+    const promocoesProdutos = [...promocoesConfiguradasAdmin(), novaPromocao];
+    const legado = configuracoesGlobais.promocaoGeral || {};
+    await db.collection('configuracoes').doc('geral').set({ promocoesProdutos, promocaoGeral: { ...legado, ativo:false } }, { merge: true });
+    document.getElementById('desconto-status-admin').textContent = '🟢 Promoção adicionada com sucesso.';
+    preencherFormularioDesconto();
     btn.textContent = 'SALVO!';
   } catch (erro) {
-    console.error('[DESCONTO GERAL]', erro);
-    alert('Não foi possível salvar o desconto.');
+    console.error('[PROMOÇÕES]', erro);
+    alert('Não foi possível salvar a promoção.');
   } finally {
-    setTimeout(() => { btn.disabled = false; btn.textContent = 'PROGRAMAR E ATIVAR DESCONTO'; }, 1800);
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'ADICIONAR PROMOÇÃO'; }, 1800);
   }
 }
 
-async function desativarPromocaoGeral(e) {
-  if (!confirm('Deseja desativar o desconto geral?')) return;
-  const btn = e.currentTarget;
+async function desativarPromocaoPorId(id, btn) {
+  if (!id || !confirm('Deseja desativar esta promoção?')) return;
   btn.disabled = true;
   try {
-    const atual = configuracoesGlobais.promocaoGeral || {};
-    await db.collection('configuracoes').doc('geral').set({ promocaoGeral: { ...atual, ativo: false } }, { merge: true });
-    document.getElementById('desconto-status-admin').textContent = '⚪ Desconto desativado.';
+    const promocoesProdutos = promocoesConfiguradasAdmin().map(promocao => promocao.id === id ? { ...promocao, ativo:false, atualizadoEm:firebase.firestore.Timestamp.now() } : promocao);
+    await db.collection('configuracoes').doc('geral').set({ promocoesProdutos }, { merge:true });
+    document.getElementById('desconto-status-admin').textContent = '⚪ Promoção desativada.';
   } catch (erro) {
-    console.error('[DESCONTO GERAL]', erro);
-    alert('Não foi possível desativar o desconto.');
+    console.error('[PROMOÇÕES]', erro);
+    alert('Não foi possível desativar a promoção.');
   } finally {
     btn.disabled = false;
   }
