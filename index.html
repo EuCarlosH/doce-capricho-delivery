@@ -293,12 +293,6 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .quick-order-list b { max-width:205px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-main); font-weight:700; }
 .cart-floating-btn.quick-hidden { opacity:0; visibility:hidden; pointer-events:none; transform:translateY(10px); }
 
-.extras-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); margin-top: 10px; } :root[data-theme="dark"] .extras-table { border-radius: 12px; border-color: transparent;}
-.extras-table th, .extras-table td { padding: 18px 20px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-light); }
-.extras-table th { color: var(--text-main); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; background: var(--bg-main);} :root[data-theme="dark"] .extras-table th { color: var(--gold); font-weight: 700; background: rgba(255,255,255,0.02); border-bottom-color: rgba(255,255,255,0.05); }
-.extras-table td { color: var(--text-main); font-weight: 500;} :root[data-theme="dark"] .extras-table td { font-weight: 400; border-bottom-color: rgba(255,255,255,0.05); }
-.extras-table td:last-child, .extras-table th:last-child { text-align: right; color: var(--gold-dark); font-weight: 700; } :root[data-theme="dark"] .extras-table td:last-child, :root[data-theme="dark"] .extras-table th:last-child { color: var(--gold); font-weight: 600; }
-.extras-hint { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px;}
 
 .btn-gradient { background: linear-gradient(135deg, var(--btn-grad-1) 0%, var(--btn-grad-2) 50%, var(--btn-grad-3) 100%); background-size: 200% auto; color: var(--btn-grad-text) !important; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: all 0.4s var(--smooth); cursor: pointer; box-shadow: 0 4px 15px var(--btn-grad-shadow);}
 :root[data-theme="dark"] .btn-gradient { font-weight: 700; }
@@ -816,7 +810,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
     <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
     <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
-    <a href="#wrap-extras" class="sticky-btn">Extras</a>
   </div>
   
   <div id="banner-pausado"></div>
@@ -848,14 +841,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <div class="grid-menu esfiha-grid" id="grid-esfihas-doces"></div>
     </div>
 
-    <div id="wrap-extras" style="order: 4; padding-top: 60px;">
-      <h3 class="category-title brand-font" id="cat-extras" style="margin-top: 0;">Toque Final</h3>
-      <p class="extras-hint">Você poderá escolher múltiplos adicionais no momento de montar sua pizza.</p>
-      <table class="extras-table">
-        <thead><tr><th>Extra</th><th>Aplicação</th><th>Preço</th></tr></thead>
-        <tbody id="extras-tbody"></tbody>
-      </table>
-    </div>
   </div>
 </section>
 
@@ -2348,12 +2333,6 @@ function renderCardapio() {
   $('#grid-esfihas-prem').innerHTML = CARDAPIO.esfihas_premium.map(cardHTML).join('');
   $('#grid-esfihas-doces').innerHTML = CARDAPIO.esfihas_doces.map(cardHTML).join('');
 
-  $('#extras-tbody').innerHTML = EXTRAS.map(e => {
-    const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(e.id);
-    if(isEsgotado) return `<tr style="opacity: 0.5;"><td><del>${esc(e.nome)}</del> <span style="color:var(--terracotta); font-size:10px; font-weight:bold;">(Esgotado)</span></td><td>-</td><td>-</td></tr>`;
-    return `<tr><td>${esc(e.nome)}</td><td>Metade da pizza</td><td>${brl(e.precos.metade)}</td></tr><tr><td>${esc(e.nome)}</td><td>Pizza toda</td><td>${brl(e.precos.toda)}</td></tr>`;
-  }).join('');
-  
   const hojeDia = new Date().getDay();
   let combosHoje = [];
   let tituloBanner = "Ofertas Liberadas!";
