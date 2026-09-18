@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.19-abertura-premium-1">
+<meta name="dca-app-version" content="2026.09.19-abertura-nativa-2">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -85,11 +85,16 @@
 </style>
 
 <script>
+  window.__dcaSplashAtivo = true;
   function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
+  window.__dcaAtualizarCorTema = function () {
+    var theme = document.documentElement.getAttribute('data-theme');
     var metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#0A0A0A' : '#F8F4EE');
+  };
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (!window.__dcaSplashAtivo) window.__dcaAtualizarCorTema();
   }
   var savedTheme = localStorage.getItem('dca_theme_override'); applyTheme(savedTheme || getSystemTheme());
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) { if (!localStorage.getItem('dca_theme_override')) applyTheme(e.matches ? 'dark' : 'light'); });
@@ -102,6 +107,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Doce Capricho">
 <link rel="apple-touch-icon" href="/icon-192.png">
+<!-- Telas de abertura nativas do iPhone: evitam o quadro branco antes do HTML. -->
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1290x2796.png">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1206x2622.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1260x2736.png" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="/img/startup/iphone-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3)">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
 
@@ -840,6 +858,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     encerrando = true;
     var espera = Math.max(0, 720 - (performance.now() - inicio));
     window.setTimeout(function () {
+      window.__dcaSplashAtivo = false;
+      if (typeof window.__dcaAtualizarCorTema === 'function') window.__dcaAtualizarCorTema();
       splash.classList.add('app-splash-hidden');
       window.setTimeout(function () {
         if (splash && splash.parentNode) splash.parentNode.removeChild(splash);

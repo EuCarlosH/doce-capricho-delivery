@@ -1,10 +1,22 @@
-const CACHE_NAME = 'doce-capricho-v8';
+const CACHE_NAME = 'doce-capricho-v9';
 
 const APP_SHELL = [
   '/',
   '/manifest.json',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
+  '/icon-maskable-512.png',
+  '/img/startup/iphone-640x1136.png',
+  '/img/startup/iphone-750x1334.png',
+  '/img/startup/iphone-828x1792.png',
+  '/img/startup/iphone-1125x2436.png',
+  '/img/startup/iphone-1170x2532.png',
+  '/img/startup/iphone-1179x2556.png',
+  '/img/startup/iphone-1206x2622.png',
+  '/img/startup/iphone-1260x2736.png',
+  '/img/startup/iphone-1284x2778.png',
+  '/img/startup/iphone-1290x2796.png',
+  '/img/startup/iphone-1320x2868.png'
 ];
 
 self.addEventListener('install', event => {
