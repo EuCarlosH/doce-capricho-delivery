@@ -687,8 +687,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 
     <div id="tab-divulgacao" class="tab-content">
       <div style="margin-bottom: 24px; padding: 16px; border: 1px solid var(--border-light); border-radius: 10px; background: #F8FAFC;">
-        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">📣 Pop-up de divulgação</strong>
-        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">Publique um aviso no site sem alterar o código. Uma nova publicação recebe um identificador diferente e volta a aparecer para todos os clientes.</p>
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:6px;">📣 Divulgação e notificações</strong>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">Use os mesmos dados para publicar o pop-up, enviar uma notificação aos clientes ou fazer as duas ações juntas.</p>
 
         <div style="display:flex; flex-direction:column; gap:10px;">
           <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Título *</label>
@@ -717,7 +717,11 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           </div>
 
           <div id="aviso-status-admin" style="font-size:10px; font-weight:700; color:var(--text-muted); min-height:14px;"></div>
-          <button type="button" onclick="publicarAvisoPopup(event)" class="btn-gradient" style="padding:12px; width:100%;">Publicar nova divulgação</button>
+          <div style="display:grid; grid-template-columns:1fr; gap:8px; padding-top:2px;">
+            <button type="button" onclick="executarDivulgacao(event, 'ambos')" class="btn-gradient" style="padding:12px; width:100%;">PUBLICAR POP-UP + ENVIAR NOTIFICAÇÃO</button>
+            <button type="button" onclick="executarDivulgacao(event, 'popup')" style="padding:11px; width:100%; border:1px solid var(--gold-dark); color:var(--gold-dark); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">PUBLICAR APENAS O POP-UP</button>
+            <button type="button" onclick="executarDivulgacao(event, 'notificacao')" style="padding:11px; width:100%; border:1px solid var(--terracotta); color:var(--terracotta); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">ENVIAR APENAS A NOTIFICAÇÃO</button>
+          </div>
           <button type="button" onclick="desativarAvisoPopup(event)" style="padding:11px; width:100%; border:1px solid var(--danger); color:var(--danger); background:#FFF; border-radius:8px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer;">Desativar pop-up atual</button>
         </div>
       </div>
@@ -1621,8 +1625,7 @@ async function desativarPromocaoPorId(id, btn) {
   }
 }
 
-async function publicarAvisoPopup(e) {
-  const btn = e.currentTarget;
+function lerDadosDivulgacao(modo) {
   const titulo = document.getElementById('aviso-titulo').value.trim();
   const descricao = document.getElementById('aviso-descricao').value.trim();
   const imagem = document.getElementById('aviso-imagem').value.trim();
@@ -1630,40 +1633,103 @@ async function publicarAvisoPopup(e) {
   const botaoTexto = document.getElementById('aviso-botao-texto').value.trim();
   const destino = document.getElementById('aviso-destino').value.trim();
 
-  if (!titulo && !imagem) return alert('Informe um título ou uma imagem para a divulgação.');
-  if (somenteImagem && !imagem) return alert('Para usar somente a imagem, informe a URL HTTPS da arte.');
-  if (imagem && !/^https:\/\//i.test(imagem)) return alert('A imagem precisa usar uma URL HTTPS.');
+  if (!titulo && !imagem) throw new Error('Informe um título ou uma imagem para a divulgação.');
+  if (somenteImagem && !imagem && modo !== 'notificacao') throw new Error('Para usar somente a imagem, informe a URL HTTPS da arte.');
+  if (imagem && !/^https:\/\//i.test(imagem)) throw new Error('A imagem precisa usar uma URL HTTPS.');
   if (destino && !destino.startsWith('#') && !/^https:\/\//i.test(destino)) {
-    return alert('O destino deve começar com # ou usar uma URL HTTPS.');
+    throw new Error('O destino deve começar com # ou usar uma URL HTTPS.');
+  }
+  if (modo !== 'popup' && (!titulo || !descricao)) {
+    throw new Error('Para enviar a notificação, informe o título e a descrição.');
   }
 
-  btn.disabled = true;
-  btn.textContent = 'PUBLICANDO...';
-
-  const avisoPopup = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    ativo: true,
+  return {
     titulo,
     descricao,
     imagem,
     somenteImagem,
     botaoTexto: somenteImagem ? '' : (botaoTexto || 'VER NOVIDADE'),
-    destino: destino || '#cardapio',
+    destino: destino || '#cardapio'
+  };
+}
+
+async function salvarAvisoPopup(dados) {
+  const avisoPopup = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    ativo: true,
+    ...dados,
     publicadoEm: firebase.firestore.Timestamp.now()
   };
 
+  await db.collection('configuracoes').doc('geral').set({ avisoPopup }, { merge: true });
+}
+
+async function enviarNotificacaoPush(dados) {
+  const usuario = auth.currentUser;
+  if (!usuario) throw new Error('Sua sessão administrativa expirou. Entre novamente.');
+
+  const token = await usuario.getIdToken();
+  const resposta = await fetch('/api/enviar-notificacao', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      titulo: dados.titulo,
+      mensagem: dados.descricao,
+      imagem: dados.imagem,
+      destino: dados.destino
+    })
+  });
+
+  const retorno = await resposta.json().catch(() => ({}));
+  if (!resposta.ok) throw new Error(retorno.error || 'Não foi possível enviar a notificação.');
+  return retorno;
+}
+
+async function executarDivulgacao(e, modo) {
+  const btn = e.currentTarget;
+  const textoOriginal = btn.textContent;
+  let dados;
+
   try {
-    await db.collection('configuracoes').doc('geral').set({ avisoPopup }, { merge: true });
-    document.getElementById('aviso-status-admin').textContent = '🟢 Divulgação publicada com sucesso.';
-    btn.textContent = 'PUBLICADO!';
+    dados = lerDadosDivulgacao(modo);
   } catch (erro) {
-    console.error('[AVISO POPUP]', erro);
-    alert('Não foi possível publicar. Confirme sua conexão e seu login.');
-    btn.textContent = 'PUBLICAR NOVA DIVULGAÇÃO';
+    return alert(erro.message);
+  }
+
+  if (modo !== 'popup') {
+    const acao = modo === 'ambos' ? 'publicar o pop-up e enviar a notificação' : 'enviar a notificação';
+    if (!confirm(`Confirma ${acao} para os clientes inscritos?`)) return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = modo === 'popup' ? 'PUBLICANDO...' : 'ENVIANDO...';
+
+  try {
+    if (modo === 'popup' || modo === 'ambos') await salvarAvisoPopup(dados);
+    const retornoPush = modo === 'notificacao' || modo === 'ambos'
+      ? await enviarNotificacaoPush(dados)
+      : null;
+
+    const status = document.getElementById('aviso-status-admin');
+    if (modo === 'ambos') {
+      status.textContent = `🟢 Pop-up publicado e notificação enviada${retornoPush?.recipients != null ? ` para ${retornoPush.recipients} inscrição(ões)` : ''}.`;
+    } else if (modo === 'popup') {
+      status.textContent = '🟢 Pop-up publicado com sucesso.';
+    } else {
+      status.textContent = `🔔 Notificação enviada${retornoPush?.recipients != null ? ` para ${retornoPush.recipients} inscrição(ões)` : ''}.`;
+    }
+    btn.textContent = 'CONCLUÍDO!';
+  } catch (erro) {
+    console.error('[DIVULGAÇÃO]', erro);
+    alert(erro.message || 'Não foi possível concluir a ação.');
+    btn.textContent = textoOriginal;
   } finally {
     setTimeout(() => {
       btn.disabled = false;
-      btn.textContent = 'PUBLICAR NOVA DIVULGAÇÃO';
+      btn.textContent = textoOriginal;
     }, 1800);
   }
 }
