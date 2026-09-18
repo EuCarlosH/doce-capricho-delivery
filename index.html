@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-montador-pizza-9">
+<meta name="dca-app-version" content="2026.09.18-esfihas-rapidas-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -263,6 +263,23 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
   margin-bottom: 16px;
 }
 .esfiha-grid .btn-add { width: 36px; height: 36px; border-radius: 10px; font-size: 18px; }
+.esfiha-quick-control { display:flex; align-items:center; gap:3px; padding:3px; border:1px solid var(--border-light); border-radius:11px; background:var(--bg-main); transition:border-color .25s ease, box-shadow .25s ease; }
+.esfiha-quick-control.active { border-color:var(--gold); box-shadow:0 0 0 2px rgba(192,138,46,.12); }
+.esfiha-quick-btn { width:29px; height:29px; border:0; border-radius:8px; display:grid; place-items:center; background:transparent; color:var(--text-main); font:700 18px/1 'Work Sans',sans-serif; cursor:pointer; transition:.2s ease; }
+.esfiha-quick-btn:hover:not(:disabled), .esfiha-quick-btn:active:not(:disabled) { background:var(--gold); color:#fff; }
+.esfiha-quick-btn:disabled { opacity:.25; cursor:default; }
+.esfiha-quick-qty { min-width:22px; color:var(--text-main); font-size:13px; font-weight:800; text-align:center; }
+.quick-order-summary { position:fixed; right:22px; bottom:96px; z-index:1900; width:min(300px,calc(100vw - 32px)); padding:14px; border:1px solid rgba(192,138,46,.28); border-radius:18px; background:var(--bg-card); background:color-mix(in srgb,var(--bg-card) 94%,transparent); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); box-shadow:0 16px 45px rgba(43,33,24,.18); opacity:0; visibility:hidden; transform:translateY(16px) scale(.97); pointer-events:none; transition:.3s var(--smooth); }
+.quick-order-summary.show { opacity:1; visibility:visible; transform:translateY(0) scale(1); pointer-events:auto; }
+.quick-order-head { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.quick-order-copy { min-width:0; }
+.quick-order-copy small { display:block; color:var(--text-muted); font-size:9px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; }
+.quick-order-copy strong { display:block; margin-top:3px; color:var(--text-main); font-size:14px; }
+.quick-order-open { flex:0 0 auto; border:0; border-radius:11px; padding:11px 13px; background:var(--gold); color:#302006; font:800 10px/1 'Work Sans',sans-serif; letter-spacing:.8px; text-transform:uppercase; cursor:pointer; }
+.quick-order-list { margin-top:10px; padding-top:9px; border-top:1px dashed var(--border-light); display:grid; gap:5px; }
+.quick-order-list span { display:flex; justify-content:space-between; gap:8px; color:var(--text-muted); font-size:10px; }
+.quick-order-list b { max-width:205px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-main); font-weight:700; }
+.cart-floating-btn.quick-hidden { opacity:0; visibility:hidden; pointer-events:none; transform:translateY(10px); }
 
 .extras-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); margin-top: 10px; } :root[data-theme="dark"] .extras-table { border-radius: 12px; border-color: transparent;}
 .extras-table th, .extras-table td { padding: 18px 20px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-light); }
@@ -596,8 +613,19 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   .esfiha-grid .card-desc { display: none; }
   .esfiha-grid .card-price-text { font-size: 14px; }
   .esfiha-grid .btn-add { width: 32px; height: 32px; border-radius: 9px; font-size: 17px; flex-shrink: 0; }
+  .esfiha-grid .card-bottom { gap:7px; }
+  .esfiha-grid .esfiha-quick-control { gap:1px; padding:2px; }
+  .esfiha-grid .esfiha-quick-btn { width:25px; height:27px; font-size:16px; }
+  .esfiha-grid .esfiha-quick-qty { min-width:17px; font-size:12px; }
   .esfiha-grid .badges-container { top: 7px; right: 7px; gap: 4px; }
   .esfiha-grid .badge-destaque { padding: 4px 6px; border-radius: 6px; font-size: 7px; letter-spacing: 0.5px; }
+}
+
+@media (max-width:768px) {
+  .quick-order-summary { left:50%; right:auto; bottom:calc(108px + env(safe-area-inset-bottom)); width:calc(100vw - 28px); max-width:430px; padding:11px 12px; transform:translate(-50%,16px) scale(.97); border-radius:16px; }
+  .quick-order-summary.show { transform:translate(-50%,0) scale(1); }
+  .quick-order-list { display:none; }
+  .quick-order-open { padding:11px 12px; }
 }
 
 @media (max-width: 450px) {
@@ -840,6 +868,17 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </svg>
   <span class="cart-count" id="cart-count">0</span>
 </button>
+
+<aside class="quick-order-summary" id="quick-order-summary" aria-live="polite" aria-label="Resumo do pedido">
+  <div class="quick-order-head">
+    <div class="quick-order-copy">
+      <small>Seu pedido</small>
+      <strong id="quick-order-total">0 itens · R$ 0,00</strong>
+    </div>
+    <button type="button" class="quick-order-open ripple" id="quick-order-open">Ver pedido</button>
+  </div>
+  <div class="quick-order-list" id="quick-order-list"></div>
+</aside>
 
 <div class="modal-overlay" id="tracking-overlay">
   <div class="modal-box" style="max-width: 400px;">
@@ -2168,6 +2207,25 @@ function validarItem(item) {
   return true;
 }
 
+function itemEsfihaRapida(id) {
+  return carrinho.find(item => item.sabores.length === 1 && item.sabores[0] === id && !(item.extras || []).length && !(item.obs || '').trim() && !(item.comboItens || []).length);
+}
+
+function qtdEsfihaRapida(id) {
+  const item = itemEsfihaRapida(id);
+  return item ? item.qtd : 0;
+}
+
+function controleEsfihaHTML(id, esgotado) {
+  if (esgotado) return '<button type="button" class="btn-add" disabled>Esgotado</button>';
+  const qtd = qtdEsfihaRapida(id);
+  return `<div class="esfiha-quick-control ${qtd ? 'active' : ''}" data-esfiha-control="${esc(id)}" aria-label="Quantidade no pedido">
+    <button type="button" class="esfiha-quick-btn" data-esfiha-id="${esc(id)}" data-esfiha-delta="-1" aria-label="Diminuir quantidade" ${qtd ? '' : 'disabled'}>−</button>
+    <span class="esfiha-quick-qty" data-esfiha-qty="${esc(id)}">${qtd}</span>
+    <button type="button" class="esfiha-quick-btn" data-esfiha-id="${esc(id)}" data-esfiha-delta="1" aria-label="Adicionar uma unidade">+</button>
+  </div>`;
+}
+
 const cardHTML = s => {
   const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
@@ -2175,6 +2233,9 @@ const cardHTML = s => {
   if (s.id === 'peru' || s.id === 'nordestina' || s.id === 'esf_peru') { badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura</span>`); }
   if (s.id === saborMaisPedido && !isEsgotado) { badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`); }
   let badgeHTML = badges.length ? `<div class="badges-container">${badges.join('')}</div>` : '';
+  const controleCompra = s.id.startsWith('esf_')
+    ? controleEsfihaHTML(s.id, isEsgotado)
+    : `<button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? 'Esgotado' : '+'}</button>`;
 
   return `
   <article class="${classeCard}" data-sabor="${s.id}">
@@ -2187,7 +2248,7 @@ const cardHTML = s => {
       <p class="card-desc">${esc(s.desc)}</p>
       <div class="card-bottom">
         <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true)}</span>
-        <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? 'Esgotado' : '+'}</button>
+        ${controleCompra}
       </div>
     </div>
   </article>`;
@@ -2663,6 +2724,59 @@ function adicionarUpsell(saborId) {
   if (navigator.vibrate) navigator.vibrate(50);
 }
 
+function alterarEsfihaRapida(id, delta) {
+  const sabor = acharSabor(id);
+  if (!sabor || !id.startsWith('esf_') || !Number.isInteger(delta) || delta === 0) return;
+  if ((configLoja.itensEsgotados || []).includes(id)) {
+    showToast('Este sabor está indisponível no momento.', 'warning');
+    return;
+  }
+
+  let item = itemEsfihaRapida(id);
+  if (!item && delta > 0) {
+    item = { uid:Date.now().toString(36) + Math.random().toString(36).slice(2,7), sabores:[id], extras:[], qtd:1, obs:'', comboItens:[] };
+    if (!validarItem(item)) return;
+    carrinho.push(item);
+  } else if (item) {
+    item.qtd = Math.max(0, Math.min(20, item.qtd + delta));
+    if (item.qtd === 0) carrinho = carrinho.filter(i => i.uid !== item.uid);
+    else item.total = item.unitario * item.qtd;
+  } else {
+    return;
+  }
+
+  salvar();
+  atualizarUI();
+  if (navigator.vibrate) navigator.vibrate(25);
+}
+
+function atualizarControlesEsfihas() {
+  $$('[data-esfiha-control]').forEach(controle => {
+    const id = controle.dataset.esfihaControl;
+    const qtd = qtdEsfihaRapida(id);
+    controle.classList.toggle('active', qtd > 0);
+    const numero = controle.querySelector('[data-esfiha-qty]');
+    const menos = controle.querySelector('[data-esfiha-delta="-1"]');
+    if (numero) numero.textContent = qtd;
+    if (menos) menos.disabled = qtd === 0;
+  });
+}
+
+function atualizarResumoRapido(qtdTotal, totaisPedido) {
+  const resumo = $('#quick-order-summary');
+  if (!resumo) return;
+  const mostrar = carrinho.length > 0;
+  resumo.classList.toggle('show', mostrar);
+  const botaoFlutuante = $('#btn-cart-float');
+  if (botaoFlutuante) botaoFlutuante.classList.toggle('quick-hidden', mostrar);
+  if (!mostrar) return;
+
+  $('#quick-order-total').textContent = `${qtdTotal} ${qtdTotal === 1 ? 'item' : 'itens'} · ${brl(totaisPedido.subtotal)}`;
+  const itensVisiveis = carrinho.slice(-3).reverse();
+  $('#quick-order-list').innerHTML = itensVisiveis.map(item => `<span><b>${item.qtd}× ${esc(nomeItem(item))}</b><em>${brl(valorItemComPromocao(item))}</em></span>`).join('')
+    + (carrinho.length > 3 ? `<span><b>+ ${carrinho.length - 3} ${carrinho.length - 3 === 1 ? 'produto' : 'produtos'}</b><em></em></span>` : '');
+}
+
 window.mudarQtd = function(uid, delta) {
     let item = carrinho.find(i => i.uid === uid);
     if(!item) return;
@@ -2806,6 +2920,8 @@ function atualizarUI() {
   const bairro = $('#cli-bairro'); if(bairro) bairro.required = entrega;
 
   const btnStep1Avancar = $('#btn-step1-avancar'); if(btnStep1Avancar) btnStep1Avancar.disabled = carrinho.length === 0;
+  atualizarControlesEsfihas();
+  atualizarResumoRapido(qtdTotal, t);
 }
 
 $('#cli-pagamento').addEventListener('change', e => {
@@ -3327,6 +3443,11 @@ document.addEventListener('visibilitychange', () => {
 });
 
 document.addEventListener('click', e => { 
+  const esfihaRapidaBtn = e.target.closest('[data-esfiha-id][data-esfiha-delta]');
+  if (esfihaRapidaBtn) {
+    alterarEsfihaRapida(esfihaRapidaBtn.dataset.esfihaId, parseInt(esfihaRapidaBtn.dataset.esfihaDelta, 10));
+    return;
+  }
   const pizzaBtn = e.target.closest('[data-pizza-sabor]');
   if (pizzaBtn) {
     selecionarSaborMontador(pizzaBtn.dataset.pizzaSabor);
@@ -3343,7 +3464,8 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-escolher]'); 
   if (b) {
     fecharModal('modal-promocoes'); 
-    escolherSabor(b.dataset.escolher);
+    if (b.dataset.escolher.startsWith('esf_')) alterarEsfihaRapida(b.dataset.escolher, 1);
+    else escolherSabor(b.dataset.escolher);
   }
 });
 
@@ -3382,6 +3504,7 @@ function abrirCarrinhoSeguro() {
 $('#btn-cart-float').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-nav-order').addEventListener('click', abrirCarrinhoSeguro);
 $('#btn-bottom-order').addEventListener('click', abrirCarrinhoSeguro);
+$('#quick-order-open').addEventListener('click', abrirCarrinhoSeguro);
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
