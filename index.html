@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-promocoes-multiplas-1">
+<meta name="dca-app-version" content="2026.09.19-abertura-premium-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
-<meta name="theme-color" content="#F8F4EE">
+<meta name="theme-color" content="#1D0F0A">
 
 <!-- PREVIEW DO LINK NO WHATSAPP / REDES SOCIAIS -->
 <meta property="og:type" content="website">
@@ -20,6 +20,69 @@
 <meta name="twitter:title" content="Doce Capricho Atelier — Pizzas Artesanais">
 <meta name="twitter:description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="twitter:image" content="https://docecaprichoatelier.vercel.app/img/social-preview.jpg">
+
+<style id="app-splash-critical">
+  html { background:#1D0F0A; }
+  body { min-height:100%; margin:0; background:#1D0F0A; }
+  #app-splash {
+    position:fixed; inset:0; z-index:10000; display:flex; align-items:center; justify-content:center;
+    min-height:100dvh; padding:calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+    overflow:hidden; color:#FFF4D4;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(224,157,51,.24) 0, rgba(224,157,51,.07) 28%, transparent 55%),
+      linear-gradient(155deg, #140A07 0%, #2B140B 54%, #160B08 100%);
+    opacity:1; visibility:visible; transition:opacity .48s ease, visibility .48s ease;
+  }
+  #app-splash::before, #app-splash::after {
+    content:""; position:absolute; left:50%; top:43%; border:1px solid rgba(234,185,98,.13);
+    border-radius:50%; transform:translate(-50%,-50%); pointer-events:none;
+  }
+  #app-splash::before { width:min(78vw,410px); aspect-ratio:1; }
+  #app-splash::after { width:min(96vw,510px); aspect-ratio:1; border-color:rgba(234,185,98,.07); }
+  #app-splash.app-splash-hidden { opacity:0; visibility:hidden; pointer-events:none; }
+  .app-splash-inner { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .app-splash-logo-shell {
+    position:relative; width:124px; height:124px; padding:5px; border-radius:31px;
+    background:linear-gradient(145deg, rgba(255,222,153,.8), rgba(155,86,27,.35));
+    box-shadow:0 22px 60px rgba(0,0,0,.48), 0 0 42px rgba(214,139,37,.14);
+    animation:app-splash-float 2.2s ease-in-out infinite;
+  }
+  .app-splash-logo {
+    width:100%; height:100%; display:block; object-fit:cover; border-radius:27px;
+    box-shadow:inset 0 0 0 1px rgba(255,240,203,.18);
+  }
+  .app-splash-brand {
+    margin:24px 0 0; font-family:Georgia, "Times New Roman", serif; font-size:26px; font-weight:600;
+    letter-spacing:.7px; color:#F6D995; text-shadow:0 4px 22px rgba(0,0,0,.42);
+  }
+  .app-splash-tagline {
+    margin:8px 0 0; font-family:Arial, sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:2.15px; text-transform:uppercase; color:rgba(255,239,207,.63);
+  }
+  .app-splash-progress {
+    width:116px; height:2px; margin-top:28px; overflow:hidden; border-radius:99px;
+    background:rgba(255,239,207,.12);
+  }
+  .app-splash-progress span {
+    display:block; width:48%; height:100%; border-radius:inherit;
+    background:linear-gradient(90deg, transparent, #E7B85E, #FFE6A7);
+    animation:app-splash-progress 1.35s ease-in-out infinite;
+  }
+  @keyframes app-splash-float {
+    0%,100% { transform:translateY(0) scale(1); }
+    50% { transform:translateY(-5px) scale(1.018); }
+  }
+  @keyframes app-splash-progress {
+    0% { transform:translateX(-115%); opacity:.2; }
+    45% { opacity:1; }
+    100% { transform:translateX(245%); opacity:.15; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .app-splash-logo-shell, .app-splash-progress span { animation:none; }
+    .app-splash-progress span { width:65%; margin:auto; }
+    #app-splash { transition-duration:.18s; }
+  }
+</style>
 
 <script>
   function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
@@ -36,7 +99,7 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Doce Capricho">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -755,6 +818,47 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 </style>
 </head>
 <body>
+
+<div id="app-splash" role="status" aria-label="Carregando Doce Capricho Ateliê">
+  <div class="app-splash-inner">
+    <div class="app-splash-logo-shell">
+      <img class="app-splash-logo" src="/icon-192.png" alt="" width="114" height="114" fetchpriority="high" decoding="async" draggable="false">
+    </div>
+    <p class="app-splash-brand">Doce Capricho</p>
+    <p class="app-splash-tagline">Feito com amor em cada detalhe</p>
+    <div class="app-splash-progress" aria-hidden="true"><span></span></div>
+  </div>
+</div>
+<script>
+(function () {
+  var splash = document.getElementById('app-splash');
+  var inicio = performance.now();
+  var encerrando = false;
+
+  function encerrarSplash() {
+    if (!splash || encerrando) return;
+    encerrando = true;
+    var espera = Math.max(0, 720 - (performance.now() - inicio));
+    window.setTimeout(function () {
+      splash.classList.add('app-splash-hidden');
+      window.setTimeout(function () {
+        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 520);
+    }, espera);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      requestAnimationFrame(function () { requestAnimationFrame(encerrarSplash); });
+    }, { once:true });
+  } else {
+    requestAnimationFrame(function () { requestAnimationFrame(encerrarSplash); });
+  }
+
+  window.setTimeout(encerrarSplash, 2400);
+})();
+</script>
+
 
 <div id="toast-container"></div>
 <div class="install-suggestion" id="install-suggestion" role="status" aria-live="polite">
