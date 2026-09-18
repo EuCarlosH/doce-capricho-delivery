@@ -102,6 +102,8 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .nav-logo-fallback { color: var(--gold); }
 .nav-links { display: flex; list-style: none; gap: 22px; align-items: center; margin-left:auto; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.2px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
 .nav-actions { display:flex; gap:12px; align-items:center; margin-left:auto; }
+.desktop-brand-name { color:var(--text-main); font-family:'Fraunces',serif; font-size:15px; font-weight:600; letter-spacing:.4px; text-decoration:none; white-space:nowrap; }
+:root[data-theme="dark"] .desktop-brand-name { color:var(--gold); }
 .mobile-menu-toggle { display:none; width:40px; height:40px; padding:0; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); color:var(--text-main); align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow-sm); }
 .mobile-menu-toggle svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; transition:transform .3s var(--smooth); }
 .mobile-menu-toggle[aria-expanded="true"] svg { transform:rotate(90deg); }
@@ -120,7 +122,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .theme-toggle .icon-sun { display:none; }
 .bottom-nav { display: none; }
 
-#home { min-height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 100px 20px 30px; margin: 0 auto; max-width: 1200px; position: relative; overflow: hidden; background: var(--bg-main); border-radius: 0 0 40px 40px; margin-bottom: 20px;}
+#home { min-height: 50vh; display:grid; grid-template-columns:minmax(0,.9fr) minmax(400px,1.1fr); align-items:center; gap:30px; text-align:left; padding:100px 20px 30px; margin:0 auto 20px; max-width:1200px; position:relative; overflow:hidden; background:var(--bg-main); border-radius:0 0 40px 40px; }
 .hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 .carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 10s ease-out; }
 .carousel-slide.active { opacity: 1; transform: scale(1.1); }
@@ -133,6 +135,26 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .hero-title { font-size: clamp(28px, 4.5vw, 42px); color: var(--text-main); margin-bottom: 12px; letter-spacing: 1px; line-height: 1.15; max-width: 560px; }
 .hero-subtitle { font-size: clamp(13px, 2vw, 15px); font-weight: 500; letter-spacing: 1px; color: var(--text-muted); max-width: 400px; line-height: 1.8; }
 .hero-cta { display: inline-block; margin-top: 30px; padding: 18px 34px; border-radius: 14px; font-size: 13px; text-decoration: none; }
+.hero-showcase { position:relative; z-index:2; width:100%; height:390px; justify-self:end; }
+.hero-showcase::before { content:""; position:absolute; width:330px; height:330px; right:55px; top:24px; border-radius:50%; background:radial-gradient(circle,rgba(221,167,58,.26),rgba(221,167,58,.07) 55%,transparent 72%); filter:blur(2px); }
+.hero-product { position:absolute; overflow:hidden; border-radius:50%; background:#090807; border:5px solid rgba(255,253,249,.92); box-shadow:0 22px 55px rgba(76,39,17,.22),0 0 0 1px rgba(221,167,58,.22); }
+.hero-product img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero-product-main { width:300px; height:300px; right:42px; top:38px; }
+.hero-product-small { width:138px; height:138px; }
+.hero-product-one { left:18px; top:30px; }
+.hero-product-two { left:42px; bottom:18px; }
+.hero-product-label { position:absolute; right:26px; bottom:30px; padding:10px 14px; border-radius:999px; color:#FFF8E9; background:rgba(72,35,16,.86); border:1px solid rgba(255,218,142,.25); backdrop-filter:blur(10px); font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 10px 28px rgba(50,24,10,.2); }
+:root[data-theme="dark"] .hero-product { border-color:rgba(223,174,76,.55); box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1px rgba(223,174,76,.18); }
+@media (min-width:769px) and (max-width:980px) {
+  #home { grid-template-columns:minmax(0,1fr) 330px; gap:18px; }
+  .hero-showcase { height:320px; }
+  .hero-showcase::before { width:270px; height:270px; right:20px; top:20px; }
+  .hero-product-main { width:235px; height:235px; right:10px; top:36px; }
+  .hero-product-small { width:102px; height:102px; }
+  .hero-product-one { left:0; top:28px; }
+  .hero-product-two { left:12px; bottom:24px; }
+  .hero-product-label { right:4px; bottom:14px; }
+}
 
 /* BALÃO DE DESTAQUES ROTATIVO (topo do cardápio) */
 .promo-banner-inline { border-radius: 20px; padding: 28px 26px; margin: 0 0 40px; background: linear-gradient(135deg, var(--terracotta) 0%, var(--gold-dark) 100%); color: #FFF; position: relative; overflow: hidden; min-height: 130px; display: flex; flex-direction: column; justify-content: center; }
@@ -143,7 +165,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .promo-banner-dots button.active { width: 18px; border-radius: 4px; background: #FFF; }
 
 /* TIRA "DESTAQUES" COM ADICIONAR RÁPIDO */
-.destaques-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+.destaques-header { display:flex; align-items:baseline; justify-content:flex-start; gap:14px; margin-bottom:4px; flex-wrap:wrap; }
 .destaques-header span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
 .destaques-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 4px 16px; scroll-snap-type: x mandatory; scrollbar-width: none; margin-bottom: 20px; }
 .destaques-strip::-webkit-scrollbar { display: none; }
@@ -591,6 +613,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 @media (max-width: 768px) {
   nav.top-nav { overflow:visible; }
   .nav-container { justify-content:space-between; position:relative; }
+  .desktop-brand-name { display:none; }
   .mobile-menu-toggle { display:flex; }
   .nav-actions { margin-left:0; gap:9px; }
   .nav-links { position:absolute; top:calc(100% + 14px); left:12px; right:12px; display:flex; flex-direction:column; align-items:stretch; gap:4px; margin-left:0; padding:10px; border:1px solid var(--border-light); border-radius:18px; background:rgba(253,251,247,.97); box-shadow:0 18px 45px rgba(44,32,24,.16); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); opacity:0; visibility:hidden; transform:translateY(-10px) scale(.98); transform-origin:top; pointer-events:none; transition:.25s var(--smooth); }
@@ -600,7 +623,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   .nav-links a, .nav-links button { display:flex; align-items:center; width:100%; min-height:44px; padding:11px 13px; border-radius:11px; font-size:12px; font-weight:700; text-align:left; }
   .nav-links a:active, .nav-links button:active { background:rgba(221,167,58,.12); }
   .btn-install { display:none !important; }
-  #home { padding-top: 100px; text-align: center; align-items: center; border-radius: 0 0 30px 30px;} .hero-title { max-width: 100%; }
+  #home { display:flex; padding-top:100px; text-align:center; align-items:center; border-radius:0 0 30px 30px; } .hero-title { max-width:100%; }
+  .hero-showcase { display:none; }
   .hero-brand-line { justify-content:center; gap:11px; }
   .hero-brand-logo { width:48px; height:48px; border-radius:13px; }
   .hero-eyebrow { max-width:220px; text-align:left; line-height:1.45; }
@@ -761,6 +785,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menu" aria-controls="nav-links" aria-expanded="false" onclick="toggleMobileMenu()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
     </button>
+    <a href="#home" class="desktop-brand-name">Doce Capricho Ateliê</a>
     <ul class="nav-links" id="nav-links">
       <li><a href="#home">Início</a></li>
       <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
@@ -790,6 +815,12 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
     <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
     <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
+  </div>
+  <div class="hero-showcase" aria-label="Destaques artesanais do cardápio">
+    <div class="hero-product hero-product-main"><img src="img/peitodeperu.jpg" alt="Pizza Peito de Peru"></div>
+    <div class="hero-product hero-product-small hero-product-one"><img src="img/nordestina.jpg" alt="Pizza Nordestina"></div>
+    <div class="hero-product hero-product-small hero-product-two"><img src="img/esf_peru.jpg" alt="Esfiha Peito de Peru"></div>
+    <span class="hero-product-label">Produção artesanal</span>
   </div>
 </header>
 
@@ -1989,6 +2020,32 @@ function showToast(msg, type='warning') {
   setTimeout(() => { toast.style.animation = 'toastOut 0.4s var(--smooth) forwards'; setTimeout(() => toast.remove(), 400); }, 3000);
 }
 
+function textoProximaAbertura() {
+  const agora = new Date();
+  const dias = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+  const horarios = configLoja.horarios || {};
+  for (let deslocamento = 0; deslocamento <= 7; deslocamento++) {
+    const data = new Date(agora);
+    data.setDate(agora.getDate() + deslocamento);
+    const dia = data.getDay();
+    const configurado = horarios[dia];
+    const padraoAtivo = dia === 0 || (dia >= 4 && dia <= 6);
+    const ativo = configurado ? configurado.ativo === true : padraoAtivo;
+    if (!ativo) continue;
+    const abre = (configurado && configurado.abre) || '18:30';
+    const [hora, minuto] = abre.split(':').map(Number);
+    if (deslocamento === 0) {
+      const aberturaHoje = new Date(agora);
+      aberturaHoje.setHours(hora || 18, Number.isFinite(minuto) ? minuto : 30, 0, 0);
+      if (agora < aberturaHoje) return `ABRE ÀS ${abre}`;
+      continue;
+    }
+    if (deslocamento === 1) return `ABRE AMANHÃ ÀS ${abre}`;
+    return `ABRE ${dias[dia]} ÀS ${abre}`;
+  }
+  return 'FECHADO';
+}
+
 function verificarHorario() {
   try {
     const parametrosUrl = new URLSearchParams(window.location.search);
@@ -2040,7 +2097,7 @@ function atualizarStatusLoja() {
                 bannerPausa.style.display = 'block';
             }
         } else {
-            badge.textContent = 'FECHADO'; badge.className = 'status-badge fechado';
+            badge.textContent = textoProximaAbertura(); badge.className = 'status-badge fechado';
             if(bannerPausa) bannerPausa.style.display = 'none';
         }
     }
