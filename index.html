@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-montador-pizza-3">
+<meta name="dca-app-version" content="2026.09.18-montador-pizza-4">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -340,10 +340,10 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-preview-half { position:absolute; top:0; bottom:0; width:50%; overflow:hidden; }
 .pizza-preview-half.left { left:0; }
 .pizza-preview-half.right { right:0; }
-.pizza-preview-half img { position:absolute; top:0; width:200%; height:100%; max-width:none; object-fit:cover; object-position:var(--pz-x, 50%) var(--pz-y, 68%); transform:scale(var(--pz-scale, 1.34)); filter:saturate(1.04) contrast(1.02); }
+.pizza-preview-half img { position:absolute; top:0; width:200%; height:100%; max-width:none; object-fit:contain; object-position:center; transform:scale(1.18); filter:saturate(1.03) contrast(1.01); }
 .pizza-preview-half.left img { left:0; }
 .pizza-preview-half.right img { right:0; }
-.pizza-preview-whole { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:var(--pz-x, 50%) var(--pz-y, 68%); transform:scale(var(--pz-scale, 1.34)); filter:saturate(1.04) contrast(1.02); }
+.pizza-preview-whole { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:center; transform:scale(1.18); filter:saturate(1.03) contrast(1.01); }
 .pizza-preview-crust { position:absolute; inset:0; z-index:3; border:0; border-radius:50%; background:url('img/pizza-borda-montador.png') center/100% 100% no-repeat; filter:drop-shadow(0 5px 5px rgba(55,28,8,.28)); pointer-events:none; }
 .pizza-preview-divider { position:absolute; z-index:2; top:10.5%; bottom:10.5%; left:50%; width:1px; transform:translateX(-50%); background:linear-gradient(to bottom, transparent, rgba(255,255,255,.55) 12%, rgba(255,255,255,.55) 88%, transparent); box-shadow:0 0 3px rgba(0,0,0,.45); }
 .pizza-preview-legend { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -1998,22 +1998,21 @@ function carregar() {
 }
 const precoBaseVal = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
 
-// Ajustes individuais das fotos no círculo do montador.
-// y move o foco verticalmente e scale aproxima apenas o recheio.
-const ENQUADRAMENTO_PIZZAS = {
-  mussarela: { scale:1.38, x:50, y:72 },
-  calabresa: { scale:1.43, x:50, y:74 },
-  carnesol: { scale:1.42, x:50, y:70 },
-  frangocat: { scale:1.43, x:50, y:73 },
-  nordestina: { scale:1.45, x:50, y:70 },
-  lombo: { scale:1.46, x:50, y:72 },
-  arretada: { scale:1.45, x:50, y:68 },
-  peru: { scale:1.44, x:50, y:67 }
+// Imagens frontais e padronizadas usadas somente na montagem visual.
+// As fotos originais continuam sendo exibidas nos cards do cardápio.
+const IMAGENS_MONTADOR = {
+  mussarela: 'img/montador/mussarela.png',
+  calabresa: 'img/montador/calabresa.png',
+  carnesol: 'img/montador/carnesol.png',
+  frangocat: 'img/montador/frangocat.png',
+  nordestina: 'img/montador/nordestina.png',
+  lombo: 'img/montador/lombo.png',
+  arretada: 'img/montador/arretada.png',
+  peru: 'img/montador/peru.png'
 };
 
-function estiloEnquadramentoPizza(id) {
-  const ajuste = ENQUADRAMENTO_PIZZAS[id] || { scale:1.4, x:50, y:70 };
-  return `--pz-scale:${ajuste.scale};--pz-x:${ajuste.x}%;--pz-y:${ajuste.y}%`;
+function imagemMontadorPizza(sabor) {
+  return IMAGENS_MONTADOR[sabor.id] || sabor.img;
 }
 
 function renderPreviaPizza(ids) {
@@ -2031,7 +2030,7 @@ function renderPreviaPizza(ids) {
     const sabor = sabores[0];
     painel.innerHTML = `
       <div class="pizza-preview-stage" aria-label="Prévia da pizza inteira de ${esc(sabor.nome)}">
-        <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(sabor.img)}" style="${estiloEnquadramentoPizza(sabor.id)}" alt=""></div>
+        <div class="pizza-preview-fill"><img class="pizza-preview-whole" src="${esc(imagemMontadorPizza(sabor))}" alt=""></div>
         <div class="pizza-preview-crust"></div>
       </div>
       <div class="pizza-preview-legend" style="grid-template-columns:1fr;">
@@ -2044,8 +2043,8 @@ function renderPreviaPizza(ids) {
     painel.innerHTML = `
       <div class="pizza-preview-stage" aria-label="Prévia meio a meio: ${esc(primeiro.nome)} e ${esc(segundo.nome)}">
         <div class="pizza-preview-fill">
-          <div class="pizza-preview-half left"><img src="${esc(primeiro.img)}" style="${estiloEnquadramentoPizza(primeiro.id)}" alt=""></div>
-          <div class="pizza-preview-half right"><img src="${esc(segundo.img)}" style="${estiloEnquadramentoPizza(segundo.id)}" alt=""></div>
+          <div class="pizza-preview-half left"><img src="${esc(imagemMontadorPizza(primeiro))}" alt=""></div>
+          <div class="pizza-preview-half right"><img src="${esc(imagemMontadorPizza(segundo))}" alt=""></div>
         </div>
         <div class="pizza-preview-crust"></div><div class="pizza-preview-divider"></div>
       </div>
@@ -2231,7 +2230,7 @@ function renderMontadorPizza() {
   const primeiro = montagemPizza[0] ? acharSabor(montagemPizza[0]) : null;
   const segundo = montagemPizza[1] ? acharSabor(montagemPizza[1]) : null;
   const vazio = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,rgba(221,167,58,.06),rgba(221,167,58,.06) 10px,rgba(221,167,58,.12) 10px,rgba(221,167,58,.12) 20px);color:var(--text-muted);font-size:30px;">?</div>`;
-  const lado = (sabor, classe) => `<div class="pizza-preview-half ${classe}">${sabor ? `<img src="${esc(sabor.img)}" style="${estiloEnquadramentoPizza(sabor.id)}" alt="">` : vazio}</div>`;
+  const lado = (sabor, classe) => `<div class="pizza-preview-half ${classe}">${sabor ? `<img src="${esc(imagemMontadorPizza(sabor))}" alt="">` : vazio}</div>`;
   preview.innerHTML = `
     <div class="pizza-preview-stage" aria-label="Montagem visual da pizza meio a meio">
       <div class="pizza-preview-fill">${lado(primeiro, 'left')}${lado(segundo, 'right')}</div>
