@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.17-crm-2">
+<meta name="dca-admin-version" content="2026.09.18-consolidado-1">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -322,7 +322,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
   <button class="btn-gradient btn-start" onclick="iniciarSistema()">Iniciar Operação</button>
 </div>
 
-<audio id="audio-alerta" src="alerta.mp3" loop preload="auto"></audio>
+<audio id="audio-alerta" src="../alerta.mp3" loop preload="auto"></audio>
 
 <div class="app-container">
   
@@ -638,6 +638,11 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 
           <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">URL HTTPS da imagem (opcional)</label>
           <input type="url" id="aviso-imagem" placeholder="https://.../imagem.jpg" style="padding:11px; border:1px solid var(--border-light); border-radius:6px; font-family:inherit; font-size:11px;">
+
+          <label style="display:flex; align-items:center; gap:9px; padding:11px; border:1px solid var(--border-light); border-radius:7px; background:#FFF; cursor:pointer;">
+            <input type="checkbox" id="aviso-somente-imagem" style="width:16px; height:16px; accent-color:var(--terracotta);">
+            <span style="font-size:10px; font-weight:800; color:var(--text-main);">Exibir somente a imagem clicável</span>
+          </label>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div style="display:flex; flex-direction:column; gap:7px;">
@@ -1359,6 +1364,7 @@ function preencherFormularioAviso(aviso) {
   document.getElementById('aviso-titulo').value = aviso.titulo || '';
   document.getElementById('aviso-descricao').value = aviso.descricao || '';
   document.getElementById('aviso-imagem').value = aviso.imagem || '';
+  document.getElementById('aviso-somente-imagem').checked = aviso.somenteImagem === true;
   document.getElementById('aviso-botao-texto').value = aviso.botaoTexto || 'VER NOVIDADE';
   document.getElementById('aviso-destino').value = aviso.destino || '#cardapio';
   status.textContent = aviso.ativo ? '🟢 Pop-up ativo no site.' : '⚪ Pop-up desativado.';
@@ -1451,10 +1457,12 @@ async function publicarAvisoPopup(e) {
   const titulo = document.getElementById('aviso-titulo').value.trim();
   const descricao = document.getElementById('aviso-descricao').value.trim();
   const imagem = document.getElementById('aviso-imagem').value.trim();
+  const somenteImagem = document.getElementById('aviso-somente-imagem').checked;
   const botaoTexto = document.getElementById('aviso-botao-texto').value.trim();
   const destino = document.getElementById('aviso-destino').value.trim();
 
-  if (!titulo) return alert('Informe o título da divulgação.');
+  if (!titulo && !imagem) return alert('Informe um título ou uma imagem para a divulgação.');
+  if (somenteImagem && !imagem) return alert('Para usar somente a imagem, informe a URL HTTPS da arte.');
   if (imagem && !/^https:\/\//i.test(imagem)) return alert('A imagem precisa usar uma URL HTTPS.');
   if (destino && !destino.startsWith('#') && !/^https:\/\//i.test(destino)) {
     return alert('O destino deve começar com # ou usar uma URL HTTPS.');
@@ -1469,7 +1477,8 @@ async function publicarAvisoPopup(e) {
     titulo,
     descricao,
     imagem,
-    botaoTexto: botaoTexto || 'VER NOVIDADE',
+    somenteImagem,
+    botaoTexto: somenteImagem ? '' : (botaoTexto || 'VER NOVIDADE'),
     destino: destino || '#cardapio',
     publicadoEm: firebase.firestore.Timestamp.now()
   };

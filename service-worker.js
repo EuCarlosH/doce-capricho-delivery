@@ -1,4 +1,4 @@
-const CACHE_NAME = 'doce-capricho-v4';
+const CACHE_NAME = 'doce-capricho-v5';
 
 const APP_SHELL = [
   '/',
@@ -20,7 +20,7 @@ self.addEventListener('activate', event => {
     caches.keys()
       .then(keys => Promise.all(
         keys
-          .filter(key => key !== CACHE_NAME)
+          .filter(key => key.startsWith('doce-capricho-v') && key !== CACHE_NAME)
           .map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())

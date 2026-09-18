@@ -1,4 +1,4 @@
-const ADMIN_CACHE = 'doce-capricho-admin-v2';
+const ADMIN_CACHE = 'doce-capricho-admin-v3';
 const ADMIN_SHELL = [
   './',
   './index.html',
@@ -7,7 +7,8 @@ const ADMIN_SHELL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  '../alerta.mp3'
 ];
 
 self.addEventListener('install', event => {
