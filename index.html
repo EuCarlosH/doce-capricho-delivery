@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-esfihas-rapidas-1">
+<meta name="dca-app-version" content="2026.09.18-promocoes-multiplas-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -1444,10 +1444,25 @@ function mostrarOrientacaoManualInstalacao() {
 // pode ficar semanas com o cardápio e os preços antigos em cache.
 // ------------------------------------------------------------------
 const APP_VERSION_ATUAL = document.querySelector('meta[name="dca-app-version"]')?.content || '';
+const UPDATE_ATTEMPT_KEY = 'dca_update_attempt';
+const UPDATE_ATTEMPT_TTL = 2 * 60 * 1000;
+let versaoAtualizacaoPendente = '';
 
-function mostrarAvisoAtualizacao() {
+try {
+  const tentativa = JSON.parse(sessionStorage.getItem(UPDATE_ATTEMPT_KEY) || 'null');
+  if (tentativa && tentativa.versao === APP_VERSION_ATUAL) sessionStorage.removeItem(UPDATE_ATTEMPT_KEY);
+} catch (_) {
+  sessionStorage.removeItem(UPDATE_ATTEMPT_KEY);
+}
+
+function mostrarAvisoAtualizacao(versaoPublicada) {
   const banner = document.getElementById('update-banner');
   if (!banner) return;
+  try {
+    const tentativa = JSON.parse(sessionStorage.getItem(UPDATE_ATTEMPT_KEY) || 'null');
+    if (tentativa && tentativa.versao === versaoPublicada && Date.now() - Number(tentativa.em || 0) < UPDATE_ATTEMPT_TTL) return;
+  } catch (_) {}
+  versaoAtualizacaoPendente = versaoPublicada || '';
   banner.style.display = 'flex';
   setTimeout(() => banner.classList.add('show'), 50);
 }
@@ -1464,6 +1479,9 @@ if (btnAplicarUpdate) {
   btnAplicarUpdate.addEventListener('click', function () {
     btnAplicarUpdate.textContent = 'ATUALIZANDO...';
     btnAplicarUpdate.disabled = true;
+    if (versaoAtualizacaoPendente) {
+      sessionStorage.setItem(UPDATE_ATTEMPT_KEY, JSON.stringify({ versao:versaoAtualizacaoPendente, em:Date.now() }));
+    }
     const urlAtualizada = new URL(window.location.href);
     urlAtualizada.searchParams.set('_atualizar', Date.now().toString());
     window.location.replace(urlAtualizada.toString());
@@ -1480,7 +1498,7 @@ async function verificarVersaoDoConteudo() {
     const htmlPublicado = await resposta.text();
     const versaoPublicada = htmlPublicado.match(/<meta\s+name=["']dca-app-version["']\s+content=["']([^"']+)["']/i)?.[1] || '';
     if (versaoPublicada && APP_VERSION_ATUAL && versaoPublicada !== APP_VERSION_ATUAL) {
-      mostrarAvisoAtualizacao();
+      mostrarAvisoAtualizacao(versaoPublicada);
     }
   } catch (erro) {
     // Sem conexão: mantém a versão disponível no cache sem incomodar o cliente.
