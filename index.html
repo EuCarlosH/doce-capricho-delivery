@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.18-consolidado-1">
+<meta name="dca-app-version" content="2026.09.18-onesignal-1">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#F8F4EE">
@@ -49,6 +49,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
 <style>
 /* PALETA E VARIÁVEIS PREMIUM */
@@ -588,9 +589,15 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .install-suggestion-copy strong { display:block; color:#FFF4D4; font-size:13px; margin-bottom:2px; }
 .install-suggestion-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:11px 13px; font-family:'Work Sans',sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
 .install-suggestion-close { border:0; background:transparent; color:rgba(255,255,255,.68); font-size:22px; cursor:pointer; padding:2px; }
+
+/* CONVITE DE NOTIFICAÇÕES — exibido somente antes da permissão nativa */
+.push-suggestion { position:fixed; left:50%; bottom:max(18px, env(safe-area-inset-bottom)); transform:translate(-50%,24px); width:min(92vw,540px); z-index:3450; padding:14px; border-radius:18px; color:#FFF8E9; background:linear-gradient(135deg,rgba(44,23,14,.98),rgba(139,58,43,.97)); border:1px solid rgba(255,218,142,.24); box-shadow:0 20px 55px rgba(20,9,4,.38); display:none; align-items:center; gap:12px; opacity:0; transition:opacity .3s ease, transform .35s var(--smooth); }
+.push-suggestion.show { display:flex; opacity:1; transform:translate(-50%,0); }
+.push-suggestion-icon { width:44px; height:44px; border-radius:13px; flex:none; display:grid; place-items:center; color:#2A160D; background:linear-gradient(135deg,#FFE3A1,var(--gold)); box-shadow:0 5px 18px rgba(0,0,0,.2); font-size:22px; }
+.push-suggestion .install-suggestion-action:disabled { opacity:.6; cursor:wait; }
 @media (max-width:600px) {
-  .install-suggestion { bottom:calc(76px + env(safe-area-inset-bottom)); width:calc(100vw - 22px); padding:12px; gap:10px; }
-  .install-suggestion-icon { width:40px; height:40px; }
+  .install-suggestion, .push-suggestion { bottom:calc(76px + env(safe-area-inset-bottom)); width:calc(100vw - 22px); padding:12px; gap:10px; }
+  .install-suggestion-icon, .push-suggestion-icon { width:40px; height:40px; }
   .install-suggestion-copy { font-size:10px; }
   .install-suggestion-copy strong { font-size:12px; }
   .install-suggestion-action { padding:10px; font-size:9px; }
@@ -608,6 +615,16 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   <div class="install-suggestion-copy"><strong id="install-suggestion-title">Instalar Doce Capricho</strong><span id="install-suggestion-text">Tenha nosso cardápio na sua tela inicial.</span></div>
   <button type="button" class="install-suggestion-action ripple" id="install-suggestion-action">Instalar</button>
   <button type="button" class="install-suggestion-close" id="install-suggestion-close" aria-label="Fechar sugestão">×</button>
+</div>
+
+<div class="push-suggestion" id="push-suggestion" role="dialog" aria-labelledby="push-suggestion-title" aria-describedby="push-suggestion-text">
+  <div class="push-suggestion-icon" aria-hidden="true">🔔</div>
+  <div class="install-suggestion-copy">
+    <strong id="push-suggestion-title">Ativar notificações?</strong>
+    <span id="push-suggestion-text">Receba ofertas e novidades da Doce Capricho neste aparelho.</span>
+  </div>
+  <button type="button" class="install-suggestion-action ripple" id="push-suggestion-action">Ativar</button>
+  <button type="button" class="install-suggestion-close" id="push-suggestion-close" aria-label="Agora não">×</button>
 </div>
 
 <div class="modal-overlay" id="map-confirm-overlay">
@@ -1349,6 +1366,113 @@ if (installSuggestionClose) {
 if (appEstaInstalado()) ocultarBotaoInstalacao();
 else if (PLATAFORMA_APP.iOS) setTimeout(() => tentarExibirSugestaoInstalacao('ios'), 2600);
 else if (PLATAFORMA_APP.mac && PLATAFORMA_APP.safari) setTimeout(() => tentarExibirSugestaoInstalacao('mac-safari'), 2600);
+
+// ------------------------------------------------------------------
+// ONESIGNAL: assinatura Web Push com worker isolado do PWA principal.
+// Em iPhone/iPad, o convite só aparece quando o site está instalado.
+// ------------------------------------------------------------------
+const ONESIGNAL_APP_ID = '50ed9f81-4fa2-41e7-b470-b235bcefe85d';
+const ONESIGNAL_ORIGIN = 'https://docecaprichoatelier.vercel.app';
+const PUSH_DISMISS_KEY = 'dca_push_prompt_dismissed_at';
+const PUSH_DISMISS_TTL = 7 * 24 * 60 * 60 * 1000;
+const pushSuggestion = document.getElementById('push-suggestion');
+const pushSuggestionAction = document.getElementById('push-suggestion-action');
+const pushSuggestionClose = document.getElementById('push-suggestion-close');
+let oneSignalClient = null;
+
+function pushFoiAdiadoRecentemente() {
+  const valor = Number(localStorage.getItem(PUSH_DISMISS_KEY) || 0);
+  return valor > 0 && Date.now() - valor < PUSH_DISMISS_TTL;
+}
+
+function fecharSugestaoPush(adiar = false) {
+  if (adiar) localStorage.setItem(PUSH_DISMISS_KEY, String(Date.now()));
+  if (pushSuggestion) pushSuggestion.classList.remove('show');
+}
+
+function tentarExibirSugestaoPush(tentativas = 30) {
+  if (!oneSignalClient || !pushSuggestion || !('Notification' in window)) return;
+  if (Notification.permission !== 'default' || pushFoiAdiadoRecentemente()) return;
+  if (PLATAFORMA_APP.iOS && !appEstaInstalado()) return;
+
+  const interfaceOcupada =
+    document.querySelector('.modal-overlay.open') ||
+    document.getElementById('update-banner')?.classList.contains('show') ||
+    installSuggestion?.classList.contains('show');
+
+  if (interfaceOcupada && tentativas > 0) {
+    setTimeout(() => tentarExibirSugestaoPush(tentativas - 1), 1000);
+    return;
+  }
+
+  pushSuggestion.classList.add('show');
+}
+
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+window.OneSignalDeferred.push(async function (OneSignal) {
+  // O OneSignal vincula a assinatura à origem cadastrada. A prévia da
+  // Vercel continua utilizável para testes visuais sem criar assinaturas.
+  if (window.location.origin !== ONESIGNAL_ORIGIN) {
+    console.info('[ONESIGNAL] Inicialização reservada ao domínio de produção.');
+    return;
+  }
+
+  try {
+    await OneSignal.init({
+      appId: ONESIGNAL_APP_ID,
+      serviceWorkerPath: '/push/onesignal/OneSignalSDKWorker.js',
+      serviceWorkerParam: { scope: '/push/onesignal/' },
+      autoResubscribe: true,
+      notificationClickHandlerMatch: 'origin',
+      notificationClickHandlerAction: 'navigate'
+    });
+
+    oneSignalClient = OneSignal;
+
+    OneSignal.Notifications.addEventListener('permissionChange', function (permission) {
+      if (permission) fecharSugestaoPush(false);
+    });
+
+    setTimeout(() => tentarExibirSugestaoPush(), 4200);
+  } catch (erro) {
+    console.error('[ONESIGNAL] Falha na inicialização:', erro);
+  }
+});
+
+if (pushSuggestionAction) {
+  pushSuggestionAction.addEventListener('click', async function () {
+    if (!oneSignalClient) return;
+    pushSuggestionAction.disabled = true;
+    pushSuggestionAction.textContent = 'ATIVANDO...';
+
+    try {
+      const permitido = await oneSignalClient.Notifications.requestPermission();
+      if (permitido) {
+        if (!oneSignalClient.User.PushSubscription.optedIn) {
+          await oneSignalClient.User.PushSubscription.optIn();
+        }
+        fecharSugestaoPush(false);
+        showToast('Notificações ativadas neste aparelho.', 'success');
+      } else {
+        fecharSugestaoPush(true);
+        showToast('As notificações não foram ativadas.', 'warning');
+      }
+    } catch (erro) {
+      console.error('[ONESIGNAL] Não foi possível ativar:', erro);
+      fecharSugestaoPush(true);
+      showToast('Não foi possível ativar as notificações agora.', 'error');
+    } finally {
+      pushSuggestionAction.disabled = false;
+      pushSuggestionAction.textContent = 'ATIVAR';
+    }
+  });
+}
+
+if (pushSuggestionClose) {
+  pushSuggestionClose.addEventListener('click', function () {
+    fecharSugestaoPush(true);
+  });
+}
 
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
