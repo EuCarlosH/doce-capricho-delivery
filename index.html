@@ -1873,16 +1873,24 @@ function millisConfig(valor) {
   return Number.isNaN(data.getTime()) ? 0 : data.getTime();
 }
 
-function promocaoGeralAtiva() {
-  const promocao = configLoja && configLoja.promocaoGeral;
-  if (!promocao || promocao.ativo !== true) return null;
+function promocaoValidaAgora(promocao) {
+  if (!promocao || promocao.ativo !== true) return false;
   const percentual = Number(promocao.percentual);
   const inicio = millisConfig(promocao.inicio);
   const fim = millisConfig(promocao.fim);
   const agora = Date.now();
-  if (!Number.isInteger(percentual) || percentual < 1 || percentual > 90) return null;
-  if (!inicio || !fim || agora < inicio || agora > fim) return null;
-  return promocao;
+  return Number.isInteger(percentual) && percentual >= 1 && percentual <= 90 && inicio > 0 && fim > 0 && agora >= inicio && agora <= fim;
+}
+
+function promocoesAtivas() {
+  const lista = Array.isArray(configLoja && configLoja.promocoesProdutos) ? configLoja.promocoesProdutos : [];
+  if (lista.length) return lista.filter(promocaoValidaAgora);
+  const antiga = configLoja && configLoja.promocaoGeral;
+  return promocaoValidaAgora(antiga) ? [antiga] : [];
+}
+
+function promocaoGeralAtiva() {
+  return promocoesAtivas().slice().sort((a,b) => Number(b.percentual) - Number(a.percentual))[0] || null;
 }
 
 function escoposPromocao(promocao) {
@@ -1906,7 +1914,7 @@ function escopoAceitaCategoria(escopos, categoria) {
   return false;
 }
 
-function fracaoPromocionalSabores(sabores, promocao = promocaoGeralAtiva()) {
+function fracaoPromocionalSabores(sabores, promocao) {
   if (!promocao || !Array.isArray(sabores) || !sabores.length) return 0;
   const escopos = escoposPromocao(promocao);
   const partes = sabores.map(id => ({ id, preco:Number(acharSabor(id)?.preco) || 0 }));
@@ -1916,17 +1924,29 @@ function fracaoPromocionalSabores(sabores, promocao = promocaoGeralAtiva()) {
   return baseElegivel / totalBase;
 }
 
+function percentualEfetivoPromocoes(sabores) {
+  const promocoes = promocoesAtivas();
+  if (!promocoes.length || !Array.isArray(sabores) || !sabores.length) return 0;
+  const partes = sabores.map(id => ({ id, preco:Number(acharSabor(id)?.preco) || 0 }));
+  const totalBase = partes.reduce((soma, parte) => soma + parte.preco, 0);
+  if (totalBase <= 0) return 0;
+  const descontoPonderado = partes.reduce((soma, parte) => {
+    const categoria = categoriaPromocionalDoSabor(parte.id);
+    const maiorPercentual = promocoes.reduce((maior, promocao) => escopoAceitaCategoria(escoposPromocao(promocao), categoria) ? Math.max(maior, Number(promocao.percentual) || 0) : maior, 0);
+    return soma + parte.preco * maiorPercentual;
+  }, 0);
+  return descontoPonderado / totalBase;
+}
+
 function valorComDesconto(valorCentavos, sabores = []) {
-  const promocao = promocaoGeralAtiva();
-  const fracao = fracaoPromocionalSabores(sabores, promocao);
-  if (!promocao || fracao <= 0) return Math.round(valorCentavos);
-  const desconto = valorCentavos * (promocao.percentual / 100) * fracao;
+  const percentual = percentualEfetivoPromocoes(sabores);
+  if (percentual <= 0) return Math.round(valorCentavos);
+  const desconto = valorCentavos * percentual / 100;
   return Math.max(0, Math.round(valorCentavos - desconto));
 }
 
 function precoPromocionalHTML(valorCentavos, ignorarDesconto = false, sabores = []) {
-  const promocao = promocaoGeralAtiva();
-  if (!promocao || ignorarDesconto || fracaoPromocionalSabores(sabores, promocao) <= 0) return brl(valorCentavos);
+  if (ignorarDesconto || percentualEfetivoPromocoes(sabores) <= 0) return brl(valorCentavos);
   return `<span class="preco-promocional"><del>${brl(valorCentavos)}</del><strong>${brl(valorComDesconto(valorCentavos, sabores))}</strong></span>`;
 }
 
@@ -1953,13 +1973,19 @@ function rotuloEscoposPromocao(promocao) {
 function atualizarBannerDesconto() {
   const banner = document.getElementById('desconto-geral-banner');
   if (!banner) return;
-  const promocao = promocaoGeralAtiva();
-  if (!promocao) {
+  const promocoes = promocoesAtivas();
+  if (!promocoes.length) {
     banner.classList.remove('show');
     banner.innerHTML = '';
     return;
   }
-  banner.innerHTML = `<strong>🏷️ ${esc(promocao.titulo || 'Oferta especial')}</strong><span>${promocao.percentual}% de desconto ${esc(rotuloEscoposPromocao(promocao))}</span>`;
+  if (promocoes.length === 1) {
+    const promocao = promocoes[0];
+    banner.innerHTML = `<strong>🏷️ ${esc(promocao.titulo || 'Oferta especial')}</strong><span>${promocao.percentual}% de desconto ${esc(rotuloEscoposPromocao(promocao))}</span>`;
+  } else {
+    const resumo = promocoes.map(promocao => `${promocao.percentual}% ${rotuloEscoposPromocao(promocao)}`).join(' · ');
+    banner.innerHTML = `<strong>🏷️ ${promocoes.length} promoções ativas</strong><span>${esc(resumo)}</span>`;
+  }
   banner.classList.add('show');
 }
 
@@ -1976,7 +2002,7 @@ function validarCupomLocal(cupom) {
   if (agora > fim) return { ok:false, mensagem:'Este cupom expirou.' };
   if (!['percentual', 'fixo'].includes(cupom.tipo) || !Number.isFinite(Number(cupom.valor)) || Number(cupom.valor) <= 0) return { ok:false, mensagem:'Este cupom está inválido.' };
   if (carrinho.some(item => !itemAceitaDescontos(item))) return { ok:false, mensagem:'Cupons não são acumuláveis com combos especiais.' };
-  if (promocaoGeralAtiva() && carrinho.some(item => fracaoPromocionalSabores(item.sabores) > 0) && cupom.acumulaPromocao !== true) return { ok:false, mensagem:'Este cupom não pode ser usado junto com a promoção atual.' };
+  if (promocoesAtivas().length && carrinho.some(item => percentualEfetivoPromocoes(item.sabores) > 0) && cupom.acumulaPromocao !== true) return { ok:false, mensagem:'Este cupom não pode ser usado junto com a promoção atual.' };
   const subtotal = subtotalDisponivelParaCupom();
   const minimo = Number(cupom.pedidoMinimoCentavos) || 0;
   if (subtotal < minimo) return { ok:false, mensagem:`Pedido mínimo de ${brl(minimo)} para usar este cupom.` };
@@ -3077,7 +3103,7 @@ function atualizarUI() {
   linhaDesconto.style.display = t.desconto > 0 ? 'flex' : 'none';
   $('#cart-desconto-value').textContent = `- ${brl(t.desconto)}`;
   const promocaoAtiva = promocaoGeralAtiva();
-  $('#cart-desconto-label').textContent = promocaoAtiva ? `Desconto (${promocaoAtiva.percentual}%)` : 'Desconto';
+  $('#cart-desconto-label').textContent = promocaoAtiva ? (promocoesAtivas().length > 1 ? 'Descontos promocionais' : `Desconto (${promocaoAtiva.percentual}%)`) : 'Desconto';
   const linhaCupom = $('#cart-cupom-line');
   linhaCupom.style.display = t.descontoCupom > 0 ? 'flex' : 'none';
   $('#cart-cupom-value').textContent = `- ${brl(t.descontoCupom)}`;
@@ -3275,7 +3301,7 @@ function montarRevisao() {
   revLinhaDesconto.style.display = t.desconto > 0 ? 'flex' : 'none';
   $('#rev-desconto-value').textContent = `- ${brl(t.desconto)}`;
   const promocaoAtiva = promocaoGeralAtiva();
-  $('#rev-desconto-label').textContent = promocaoAtiva ? `Desconto (${promocaoAtiva.percentual}%)` : 'Desconto';
+  $('#rev-desconto-label').textContent = promocaoAtiva ? (promocoesAtivas().length > 1 ? 'Descontos promocionais' : `Desconto (${promocaoAtiva.percentual}%)`) : 'Desconto';
   const revLinhaCupom = $('#rev-cupom-line');
   revLinhaCupom.style.display = t.descontoCupom > 0 ? 'flex' : 'none';
   $('#rev-cupom-value').textContent = `- ${brl(t.descontoCupom)}`;
@@ -3377,6 +3403,7 @@ function revalidarPedido() {
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
   const promocaoAtiva = promocaoGeralAtiva();
+  const promocoesAplicadas = promocoesAtivas().filter(promocao => carrinho.some(item => fracaoPromocionalSabores(item.sabores, promocao) > 0));
   const ehEntrega = (tipo === 'Entrega');
 
   const rua = ehEntrega ? $('#cli-rua').value.trim() : '';
@@ -3438,6 +3465,7 @@ function montarPedido() {
     promocao_geral_id: promocaoAtiva ? promocaoAtiva.id : '',
     promocao_geral_titulo: promocaoAtiva ? (promocaoAtiva.titulo || 'Oferta especial') : '',
     promocao_geral_escopos: promocaoAtiva ? escoposPromocao(promocaoAtiva) : [],
+    promocoes_aplicadas: promocoesAplicadas.map(promocao => ({ id:promocao.id || '', titulo:promocao.titulo || 'Oferta especial', percentual:Number(promocao.percentual) || 0, escopos:escoposPromocao(promocao) })),
     cupom_codigo: cupomAplicado && t.descontoCupom > 0 ? cupomAplicado.codigo : '',
     cupom_id: cupomAplicado && t.descontoCupom > 0 ? cupomAplicado.id : '',
     subtotal_centavos: t.subtotal,
