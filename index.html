@@ -499,7 +499,6 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-montador-actions button { flex:1; margin:0; }
 .pizza-half-choice { padding:0; border:0; color:inherit; cursor:pointer; background:#FFFFFF; }
 .pizza-half-choice .pizza-half-plus { position:absolute; left:50%; top:50%; z-index:2; display:flex; align-items:center; justify-content:center; width:52px; height:52px; transform:translate(-50%,-50%); background:transparent; color:#8C7A6B; border:0; box-shadow:none; font-size:32px; font-weight:300; line-height:1; }
-.pizza-half-choice.filled .pizza-half-plus { top:auto; bottom:12px; width:auto; height:auto; padding:6px 10px; border-radius:99px; transform:translateX(-50%); background:rgba(255,255,255,.9); color:var(--gold-dark); border:1px solid rgba(192,138,46,.32); box-shadow:0 8px 22px rgba(43,33,24,.16); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.92; }
 .pizza-half-choice:focus-visible { outline:3px solid var(--gold); outline-offset:-3px; }
 .pizza-step-overlay { z-index:3350; }
 .pizza-step-overlay .modal-box { max-width:560px; }
@@ -521,7 +520,6 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 :root[data-theme="dark"] .pizza-preview-price strong { color:var(--gold); }
 :root[data-theme="dark"] .pizza-half-choice { background:#FFFFFF; }
 :root[data-theme="dark"] .pizza-half-choice .pizza-half-plus { background:transparent; color:#8C7A6B; }
-:root[data-theme="dark"] .pizza-half-choice.filled .pizza-half-plus { background:rgba(22,18,15,.9); color:var(--gold); }
 :root[data-theme="dark"] .pizza-flavor-option .pizza-flavor-price,
 :root[data-theme="dark"] .borda-option small,
 :root[data-theme="dark"] .borda-builder-summary button { color:var(--gold); }
@@ -2816,7 +2814,7 @@ function renderMontadorPizza() {
   const lado = (sabor, classe, indice) => {
     const imagem = sabor ? imagemMontadorPizza(sabor) : '';
     const conteudo = sabor
-      ? `${imagem ? `<img src="${esc(imagem)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}<span class="pizza-half-plus">Trocar</span>`
+      ? `${imagem ? `<img src="${esc(imagem)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}`
       : '<span class="pizza-half-plus" aria-hidden="true">+</span>';
     const rotulo = sabor ? `Trocar ${indice + 1}ª metade, atualmente ${sabor.nome}` : `Escolher sabor da ${indice + 1}ª metade`;
     return `<button type="button" class="pizza-preview-half pizza-half-choice ${classe} ${sabor ? 'filled' : ''}" data-pizza-lado="${indice}" aria-label="${esc(rotulo)}">${conteudo}</button>`;
