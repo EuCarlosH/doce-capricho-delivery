@@ -497,9 +497,9 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-montador-instrucao { margin:-8px 0 14px; color:var(--text-muted); font-size:12px; line-height:1.5; text-align:center; }
 .pizza-montador-actions { display:flex; gap:10px; margin-top:16px; }
 .pizza-montador-actions button { flex:1; margin:0; }
-.pizza-half-choice { padding:0; border:0; color:inherit; cursor:pointer; background:repeating-linear-gradient(45deg,rgba(221,167,58,.05),rgba(221,167,58,.05) 10px,rgba(221,167,58,.11) 10px,rgba(221,167,58,.11) 20px); }
-.pizza-half-choice .pizza-half-plus { position:absolute; left:50%; top:50%; z-index:2; display:flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:50%; transform:translate(-50%,-50%); background:rgba(255,255,255,.88); color:var(--gold-dark); border:1px solid rgba(192,138,46,.32); box-shadow:0 8px 22px rgba(43,33,24,.16); font-size:32px; font-weight:300; line-height:1; }
-.pizza-half-choice.filled .pizza-half-plus { top:auto; bottom:12px; width:auto; height:auto; padding:6px 10px; border-radius:99px; transform:translateX(-50%); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.92; }
+.pizza-half-choice { padding:0; border:0; color:inherit; cursor:pointer; background:#FFFFFF; }
+.pizza-half-choice .pizza-half-plus { position:absolute; left:50%; top:50%; z-index:2; display:flex; align-items:center; justify-content:center; width:52px; height:52px; transform:translate(-50%,-50%); background:transparent; color:#8C7A6B; border:0; box-shadow:none; font-size:32px; font-weight:300; line-height:1; }
+.pizza-half-choice.filled .pizza-half-plus { top:auto; bottom:12px; width:auto; height:auto; padding:6px 10px; border-radius:99px; transform:translateX(-50%); background:rgba(255,255,255,.9); color:var(--gold-dark); border:1px solid rgba(192,138,46,.32); box-shadow:0 8px 22px rgba(43,33,24,.16); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.92; }
 .pizza-half-choice:focus-visible { outline:3px solid var(--gold); outline-offset:-3px; }
 .pizza-step-overlay { z-index:3350; }
 .pizza-step-overlay .modal-box { max-width:560px; }
@@ -519,7 +519,9 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .borda-builder-summary button { border:0; background:transparent; color:var(--gold-dark); font-family:inherit; font-size:10px; font-weight:900; text-transform:uppercase; cursor:pointer; }
 :root[data-theme="dark"] .pizza-preview-panel { background:linear-gradient(145deg, rgba(212,175,55,.10), rgba(255,255,255,.025)); }
 :root[data-theme="dark"] .pizza-preview-price strong { color:var(--gold); }
-:root[data-theme="dark"] .pizza-half-choice .pizza-half-plus { background:rgba(22,18,15,.9); color:var(--gold); }
+:root[data-theme="dark"] .pizza-half-choice { background:#FFFFFF; }
+:root[data-theme="dark"] .pizza-half-choice .pizza-half-plus { background:transparent; color:#8C7A6B; }
+:root[data-theme="dark"] .pizza-half-choice.filled .pizza-half-plus { background:rgba(22,18,15,.9); color:var(--gold); }
 :root[data-theme="dark"] .pizza-flavor-option .pizza-flavor-price,
 :root[data-theme="dark"] .borda-option small,
 :root[data-theme="dark"] .borda-builder-summary button { color:var(--gold); }
