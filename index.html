@@ -1,10 +1,13 @@
+Warning: truncated output (original token count: 72736)
+Total output lines: 4540
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.19-abertura-nativa-2">
+<meta name="dca-app-version" content="2026.09.23-montador-bordas">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -484,21 +487,46 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-preview-flavor strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-main); font-size:12px; }
 .pizza-preview-price { margin-top:11px; color:var(--text-muted); font-size:11px; line-height:1.5; text-align:center; }
 .pizza-preview-price strong { color:var(--gold-dark); }
-.pizza-flavor-picker { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-top:18px; }
-.pizza-flavor-option { display:flex; align-items:center; gap:9px; min-width:0; padding:9px; border:1px solid var(--border-light); border-radius:13px; background:var(--bg-card); color:var(--text-main); font-family:inherit; text-align:left; cursor:pointer; transition:.25s ease; }
-.pizza-flavor-option img { width:47px; height:47px; flex:0 0 47px; border-radius:10px; object-fit:cover; }
-.pizza-flavor-option span { min-width:0; }
-.pizza-flavor-option strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
-.pizza-flavor-option small { display:block; margin-top:3px; color:var(--text-muted); font-size:9.5px; }
+.pizza-flavor-picker { display:grid; grid-template-columns:1fr; gap:10px; margin-top:18px; }
+.pizza-flavor-option { display:flex; align-items:center; gap:12px; min-width:0; padding:10px; border:1px solid var(--border-light); border-radius:15px; background:var(--bg-card); color:var(--text-main); font-family:inherit; text-align:left; cursor:pointer; transition:.25s ease; }
+.pizza-flavor-option img { width:64px; height:64px; flex:0 0 64px; border-radius:12px; object-fit:cover; }
+.pizza-flavor-option span { min-width:0; flex:1; }
+.pizza-flavor-option strong { display:block; font-size:13px; }
+.pizza-flavor-option small { display:block; margin-top:4px; color:var(--text-muted); font-size:10.5px; line-height:1.35; }
+.pizza-flavor-option .pizza-flavor-price { color:var(--gold-dark); font-weight:800; }
+.pizza-flavor-option .pizza-flavor-radio { width:21px; height:21px; flex:0 0 21px; border:2px solid var(--border-light); border-radius:50%; }
 .pizza-flavor-option.selected { border-color:var(--gold); box-shadow:0 0 0 2px rgba(221,167,58,.18); }
 .pizza-flavor-option:disabled { opacity:.42; cursor:not-allowed; filter:grayscale(1); }
 .pizza-montador-instrucao { margin:-8px 0 14px; color:var(--text-muted); font-size:12px; line-height:1.5; text-align:center; }
 .pizza-montador-actions { display:flex; gap:10px; margin-top:16px; }
 .pizza-montador-actions button { flex:1; margin:0; }
+.pizza-half-choice { padding:0; border:0; color:inherit; cursor:pointer; background:repeating-linear-gradient(45deg,rgba(221,167,58,.05),rgba(221,167,58,.05) 10px,rgba(221,167,58,.11) 10px,rgba(221,167,58,.11) 20px); }
+.pizza-half-choice .pizza-half-plus { position:absolute; left:50%; top:50%; z-index:2; display:flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:50%; transform:translate(-50%,-50%); background:rgba(255,255,255,.88); color:var(--gold-dark); border:1px solid rgba(192,138,46,.32); box-shadow:0 8px 22px rgba(43,33,24,.16); font-size:32px; font-weight:300; line-height:1; }
+.pizza-half-choice.filled .pizza-half-plus { top:auto; bottom:12px; width:auto; height:auto; padding:6px 10px; border-radius:99px; transform:translateX(-50%); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; opacity:.92; }
+.pizza-half-choice:focus-visible { outline:3px solid var(--gold); outline-offset:-3px; }
+.pizza-step-overlay { z-index:3350; }
+.pizza-step-overlay .modal-box { max-width:560px; }
+.pizza-step-kicker { display:block; margin:-15px 0 3px; color:var(--gold-dark); font-size:9px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase; }
+.pizza-step-list { display:grid; gap:10px; }
+.borda-option { width:100%; display:flex; align-items:center; gap:12px; padding:15px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-card); color:var(--text-main); font-family:inherit; text-align:left; cursor:pointer; transition:.22s ease; }
+.borda-option strong { flex:1; font-size:13px; }
+.borda-option small { color:var(--gold-dark); font-size:12px; font-weight:800; }
+.borda-option::before { content:""; width:20px; height:20px; flex:0 0 20px; border:2px solid var(--border-light); border-radius:50%; box-shadow:inset 0 0 0 4px var(--bg-card); }
+.borda-option.selected { border-color:var(--gold); background:rgba(192,138,46,.07); box-shadow:0 0 0 2px rgba(221,167,58,.14); }
+.borda-option.selected::before { background:var(--gold); border-color:var(--gold); }
+.borda-builder-summary { display:none; align-items:center; gap:12px; margin:-4px 0 22px; padding:14px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-main); }
+.borda-builder-summary.show { display:flex; }
+.borda-builder-summary div { min-width:0; flex:1; }
+.borda-builder-summary small { display:block; margin-bottom:3px; color:var(--text-muted); font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+.borda-builder-summary strong { display:block; color:var(--text-main); font-size:13px; }
+.borda-builder-summary button { border:0; background:transparent; color:var(--gold-dark); font-family:inherit; font-size:10px; font-weight:900; text-transform:uppercase; cursor:pointer; }
 :root[data-theme="dark"] .pizza-preview-panel { background:linear-gradient(145deg, rgba(212,175,55,.10), rgba(255,255,255,.025)); }
 :root[data-theme="dark"] .pizza-preview-price strong { color:var(--gold); }
+:root[data-theme="dark"] .pizza-half-choice .pizza-half-plus { background:rgba(22,18,15,.9); color:var(--gold); }
+:root[data-theme="dark"] .pizza-flavor-option .pizza-flavor-price,
+:root[data-theme="dark"] .borda-option small,
+:root[data-theme="dark"] .borda-builder-summary button { color:var(--gold); }
 @media (max-width:480px) { .pizza-preview-panel { padding:15px 12px; } .pizza-preview-stage { width:min(220px, 70vw); } }
-@media (max-width:420px) { .pizza-flavor-picker { grid-template-columns:1fr; } }
 
 .tracking-header { text-align: center; margin-bottom: 25px; }
 .tracking-header h3 { font-size: 15px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: 800;} :root[data-theme="dark"] .tracking-header h3 { color: var(--gold); font-weight: 700;}
@@ -806,1661 +834,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .promo-img-wrapper { width: 100%; height: 350px; background: var(--img-bg); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .promo-img-wrapper img { width: 100%; height: 100%; object-fit: contain; object-position:center; display: block; transition: transform 0.5s ease; }
 .promo-content { background: var(--bg-card); padding: 35px; text-align: center; flex-shrink: 0; }
-.btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
-.btn-close-promo:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
-
-/* SUGESTÃO DE INSTALAÇÃO MULTIPLATAFORMA */
-.install-suggestion { position:fixed; left:50%; bottom:max(18px, env(safe-area-inset-bottom)); transform:translate(-50%,24px); width:min(92vw,540px); z-index:3400; padding:14px 14px; border-radius:18px; color:#FFF8E9; background:linear-gradient(135deg,rgba(44,23,14,.98),rgba(139,58,43,.97)); border:1px solid rgba(255,218,142,.24); box-shadow:0 20px 55px rgba(20,9,4,.38); display:none; align-items:center; gap:12px; opacity:0; transition:opacity .3s ease, transform .35s var(--smooth); }
-.install-suggestion.show { display:flex; opacity:1; transform:translate(-50%,0); }
-.install-suggestion-icon { width:44px; height:44px; border-radius:13px; flex:none; background:var(--bg-card) url('/icon-192.png') center/cover no-repeat; box-shadow:0 5px 18px rgba(0,0,0,.2); }
-.install-suggestion-copy { flex:1; min-width:0; font-size:11px; line-height:1.45; color:rgba(255,248,233,.78); }
-.install-suggestion-copy strong { display:block; color:#FFF4D4; font-size:13px; margin-bottom:2px; }
-.install-suggestion-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:11px 13px; font-family:'Work Sans',sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
-.install-suggestion-close { border:0; background:transparent; color:rgba(255,255,255,.68); font-size:22px; cursor:pointer; padding:2px; }
-
-/* CONVITE DE NOTIFICAÇÕES — exibido somente antes da permissão nativa */
-.push-suggestion { position:fixed; left:50%; bottom:max(18px, env(safe-area-inset-bottom)); transform:translate(-50%,24px); width:min(92vw,540px); z-index:3450; padding:14px; border-radius:18px; color:#FFF8E9; background:linear-gradient(135deg,rgba(44,23,14,.98),rgba(139,58,43,.97)); border:1px solid rgba(255,218,142,.24); box-shadow:0 20px 55px rgba(20,9,4,.38); display:none; align-items:center; gap:12px; opacity:0; transition:opacity .3s ease, transform .35s var(--smooth); }
-.push-suggestion.show { display:flex; opacity:1; transform:translate(-50%,0); }
-.push-suggestion-icon { width:44px; height:44px; border-radius:13px; flex:none; display:grid; place-items:center; color:#2A160D; background:linear-gradient(135deg,#FFE3A1,var(--gold)); box-shadow:0 5px 18px rgba(0,0,0,.2); font-size:22px; }
-.push-suggestion .install-suggestion-action:disabled { opacity:.6; cursor:wait; }
-@media (max-width:600px) {
-  .install-suggestion, .push-suggestion { bottom:calc(76px + env(safe-area-inset-bottom)); width:calc(100vw - 22px); padding:12px; gap:10px; }
-  .install-suggestion-icon, .push-suggestion-icon { width:40px; height:40px; }
-  .install-suggestion-copy { font-size:10px; }
-  .install-suggestion-copy strong { font-size:12px; }
-  .install-suggestion-action { padding:10px; font-size:9px; }
-}
-
-.modal-overlay#modal-promocoes { z-index: 3500; }
-#modal-promocoes .modal-box { max-width: 800px; }
-</style>
-</head>
-<body>
-
-<div id="app-splash" role="status" aria-label="Carregando Doce Capricho Ateliê">
-  <div class="app-splash-inner">
-    <div class="app-splash-logo-shell">
-      <img class="app-splash-logo" src="/icon-192.png" alt="" width="114" height="114" fetchpriority="high" decoding="async" draggable="false">
-    </div>
-    <p class="app-splash-brand">Doce Capricho</p>
-    <p class="app-splash-tagline">Feito com amor em cada detalhe</p>
-    <div class="app-splash-progress" aria-hidden="true"><span></span></div>
-  </div>
-</div>
-<script>
-(function () {
-  var splash = document.getElementById('app-splash');
-  var inicio = performance.now();
-  var encerrando = false;
-
-  function encerrarSplash() {
-    if (!splash || encerrando) return;
-    encerrando = true;
-    var espera = Math.max(0, 720 - (performance.now() - inicio));
-    window.setTimeout(function () {
-      window.__dcaSplashAtivo = false;
-      if (typeof window.__dcaAtualizarCorTema === 'function') window.__dcaAtualizarCorTema();
-      splash.classList.add('app-splash-hidden');
-      window.setTimeout(function () {
-        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
-      }, 520);
-    }, espera);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      requestAnimationFrame(function () { requestAnimationFrame(encerrarSplash); });
-    }, { once:true });
-  } else {
-    requestAnimationFrame(function () { requestAnimationFrame(encerrarSplash); });
-  }
-
-  window.setTimeout(encerrarSplash, 2400);
-})();
-</script>
-
-
-<div id="toast-container"></div>
-<div class="install-suggestion" id="install-suggestion" role="status" aria-live="polite">
-  <div class="install-suggestion-icon" aria-hidden="true"></div>
-  <div class="install-suggestion-copy"><strong id="install-suggestion-title">Instalar Doce Capricho</strong><span id="install-suggestion-text">Tenha nosso cardápio na sua tela inicial.</span></div>
-  <button type="button" class="install-suggestion-action ripple" id="install-suggestion-action">Instalar</button>
-  <button type="button" class="install-suggestion-close" id="install-suggestion-close" aria-label="Fechar sugestão">×</button>
-</div>
-
-<div class="push-suggestion" id="push-suggestion" role="dialog" aria-labelledby="push-suggestion-title" aria-describedby="push-suggestion-text">
-  <div class="push-suggestion-icon" aria-hidden="true">🔔</div>
-  <div class="install-suggestion-copy">
-    <strong id="push-suggestion-title">Ativar notificações?</strong>
-    <span id="push-suggestion-text">Receba ofertas e novidades da Doce Capricho neste aparelho.</span>
-  </div>
-  <button type="button" class="install-suggestion-action ripple" id="push-suggestion-action">Ativar</button>
-  <button type="button" class="install-suggestion-close" id="push-suggestion-close" aria-label="Agora não">×</button>
-</div>
-
-<div class="modal-overlay" id="map-confirm-overlay">
-  <div class="modal-box">
-    <div class="mapa-header">
-      <strong>É aqui que você está? 📍</strong>
-      <span>Confira o ponto vermelho no mapa antes de calcularmos automaticamente a taxa de entrega.</span>
-    </div>
-    <div class="mapa-img-wrap">
-      <div class="mapa-loading" id="mapa-confirm-loading">Carregando mapa...</div>
-      <img id="mapa-confirm-img" src="" alt="Mapa com sua localização" style="display:none;" onload="document.getElementById('mapa-confirm-loading').style.display='none'; this.style.display='block';" onerror="document.getElementById('mapa-confirm-loading').textContent='Não foi possível carregar o mapa, mas a coordenada foi capturada.';">
-      <span class="mapa-precisao-tag" id="mapa-confirm-precisao" style="display:none;"></span>
-      <div class="mapa-zoom-ctrl">
-        <button type="button" id="btn-mapa-zoom-mais" aria-label="Aproximar">+</button>
-        <button type="button" id="btn-mapa-zoom-menos" aria-label="Afastar">−</button>
-      </div>
-    </div>
-    <div class="mapa-acoes">
-      <button type="button" class="btn-mapa-tentar ripple" id="btn-mapa-tentar-novo">Tentar de novo</button>
-      <button type="button" class="btn-mapa-confirmar ripple" id="btn-mapa-confirmar">Sim, é aqui</button>
-    </div>
-  </div>
-</div>
-
-<div id="update-banner" role="status" aria-live="polite">
-  <div class="upd-txt">Nova versão do cardápio disponível<small>Atualize para ver os preços e sabores atuais.</small></div>
-  <button type="button" class="upd-btn ripple" id="btn-aplicar-update">ATUALIZAR</button>
-  <button type="button" class="upd-close" id="btn-fechar-update" aria-label="Fechar aviso">&times;</button>
-</div>
-
-<nav class="top-nav">
-  <div class="nav-container">
-    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menu" aria-controls="nav-links" aria-expanded="false" onclick="toggleMobileMenu()">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
-    </button>
-    <a href="#home" class="desktop-brand-name">Doce Capricho Ateliê</a>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="#home">Início</a></li>
-      <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
-      <li><a href="#cardapio">Cardápio</a></li>
-      <li><button type="button" id="btn-nav-track" class="ripple" onclick="abrirRastreio()" style="color:var(--terracotta);">📍 Rastrear</button></li>
-      <li><button type="button" id="btn-nav-order" class="ripple">Meus Pedidos</button></li>
-    </ul>
-    <div class="nav-actions">
-      <button class="btn-install ripple" id="btn-install-app" aria-label="Instalar Aplicativo">Instalar App</button>
-      <button class="theme-toggle ripple" id="theme-toggle" aria-label="Mudar Tema" onclick="toggleTheme()">
-        <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-      <div id="nav-status-badge" class="status-badge">FECHADO</div>
-    </div>
-  </div>
-</nav>
-
-<header id="home">
-  <div class="hero-carousel" id="hero-carousel"></div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <div class="hero-brand-line">
-      <img src="/logo.png" alt="Doce Capricho Atelier" class="hero-brand-logo">
-      <span class="hero-eyebrow">Ateliê artesanal em São Miguel, RN</span>
-    </div>
-    <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
-    <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
-    <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
-  </div>
-  <aside class="hero-company-panel" aria-label="Diferenciais da Doce Capricho Ateliê">
-    <span class="hero-panel-kicker">Doce Capricho Ateliê</span>
-    <h2 class="brand-font">Capricho presente em cada etapa do seu pedido.</h2>
-    <p class="hero-panel-intro">Produção local, preparo artesanal e uma experiência pensada para você pedir com tranquilidade.</p>
-    <div class="hero-trust-grid">
-      <div class="hero-trust-item">
-        <span class="hero-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M5.6 6.2l12.8 11.6M18.4 6.2 5.6 17.8M4 12h16"></path></svg></span>
-        <strong>Produção artesanal</strong>
-        <small>Preparado com cuidado em cada detalhe.</small>
-      </div>
-      <div class="hero-trust-item">
-        <span class="hero-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 10c0 6-9 11-9 11S3 16 3 10a9 9 0 1 1 18 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
-        <strong>Atendimento local</strong>
-        <small>Feito em São Miguel, RN.</small>
-      </div>
-      <div class="hero-trust-item">
-        <span class="hero-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="m8 12 2.5 2.5L16 9"></path></svg></span>
-        <strong>Pedido acompanhado</strong>
-        <small>Status atualizado em tempo real.</small>
-      </div>
-    </div>
-  </aside>
-</header>
-
-<section class="section-container" style="padding-top: 20px; padding-bottom: 0;">
-  <div class="promo-banner-inline" id="promo-banner-inline">
-    <span class="promo-banner-eyebrow" id="promo-banner-inline-eyebrow">Feito com carinho</span>
-    <h3 class="promo-banner-title brand-font" id="promo-banner-inline-title">Pizzas e esfihas artesanais para o seu momento</h3>
-    <div class="promo-banner-dots" id="promo-banner-inline-dots"></div>
-  </div>
-
-  <div class="destaques-header">
-    <h3 class="category-title brand-font" style="margin: 0 0 4px;">Destaques</h3>
-    <span>Escolhas do cardápio</span>
-  </div>
-  <div class="destaques-strip" id="destaques-strip"></div>
-
-  <div class="review-cta">
-    <div>
-      <strong>Gostou do pedido?</strong>
-      <p>Deixe sua avaliação no Google e ajude outras pessoas a conhecer o ateliê.</p>
-    </div>
-    <a href="https://g.page/r/CdZZy4ieQQE3ECE/review" id="link-avaliar-google" class="btn-gradient ripple" target="_blank" rel="noopener noreferrer">Avaliar no Google</a>
-  </div>
-</section>
-
-<section id="cardapio" class="section-container">
-  <div class="menu-intro">
-    <span>Feito do seu jeito</span>
-    <h2 class="brand-font">Escolha o que deseja pedir</h2>
-    <p>Encontre sua combinação favorita e personalize o pedido.</p>
-  </div>
-  <div class="sticky-menu-wrapper" id="sticky-menu">
-    <button class="sticky-btn sticky-btn-promo ripple" id="btn-scroll-combos" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button>
-    <a href="#wrap-pizzas" class="sticky-btn active">Pizzas</a>
-    <a href="#wrap-esfihas" class="sticky-btn">Esfihas</a>
-  </div>
-  
-  <div id="banner-pausado"></div>
-  <div id="desconto-geral-banner" class="desconto-geral-banner" role="status"></div>
-
-  <div id="menu-wrapper" style="display: flex; flex-direction: column;">
-    <div id="wrap-pizzas" style="order: 2;">
-      <div class="mode-toggle-area">
-        <div class="mode-buttons" role="group">
-          <button type="button" class="mode-btn ripple" id="btn-mode-inteira" aria-pressed="true" data-modo="inteira">Pizza Inteira</button>
-          <button type="button" class="mode-btn ripple" id="btn-mode-meio" aria-pressed="false" data-modo="meio">Meio a Meio</button>
-        </div>
-      </div>
-      <div id="meio-banner" class="meio-banner" role="status"></div>
-      <h3 class="category-title brand-font" id="cat-tradicionais">Pizzas Tradicionais</h3>
-      <div class="grid-menu" id="grid-tradicionais"></div>
-      <h3 class="category-title brand-font" id="cat-premium" style="margin-top: 60px;">Pizzas Premium</h3>
-      <div class="grid-menu" id="grid-premium"></div>
-    </div>
-
-    <div id="wrap-esfihas" style="order: 3; padding-top: 60px;">
-      <h3 class="category-title brand-font" id="cat-esfihas-trad" style="margin-top: 0;">Esfihas Tradicionais</h3>
-      <div class="grid-menu esfiha-grid" id="grid-esfihas-trad"></div>
-      
-      <h3 class="category-title brand-font" id="cat-esfihas-prem" style="margin-top: 60px;">Esfihas Premium</h3>
-      <div class="grid-menu esfiha-grid" id="grid-esfihas-prem"></div>
-
-      <h3 class="category-title brand-font" id="cat-esfihas-doces" style="margin-top: 60px;">Esfihas Doces</h3>
-      <div class="grid-menu esfiha-grid" id="grid-esfihas-doces"></div>
-    </div>
-
-  </div>
-</section>
-
-<footer>
-  <div class="footer-brand">
-    <img src="/logo.png" alt="Símbolo da Doce Capricho Ateliê" class="footer-logo-img">
-    <div class="footer-brand-copy">
-      <h2 class="footer-logo brand-font">Doce Capricho Ateliê</h2>
-      <p class="footer-tagline">Feito com amor em cada detalhe</p>
-    </div>
-  </div>
-  <div class="footer-socials">
-    <a href="https://www.instagram.com/docecapricho.atelier/" target="_blank" class="ripple" rel="noopener noreferrer" aria-label="Nosso Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-    <a href="#" id="footer-wa-link" target="_blank" class="ripple" aria-label="Fale Conosco no WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
-  </div>
-  <div class="footer-info">
-    <p>São Miguel / RN</p>
-    <p id="footer-funcionamento">Atendimento: Quinta a Domingo, 18:30 às 23:00</p>
-    <p>CNPJ 69.149.841/0001-61</p>
-  </div>
-  <button type="button" class="footer-company-btn ripple" id="btn-company-data">Dados da empresa</button>
-  <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
-</footer>
-
-<nav class="bottom-nav">
-  <a href="#home" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Início</span></a>
-  <a href="#cardapio" class="bottom-nav-item ripple"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Menu</span></a>
-  <button type="button" class="bottom-nav-item ripple" onclick="abrirRastreio()">
-    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Rastrear</span>
-  </button>
-  <button type="button" class="bottom-nav-item ripple" id="btn-bottom-order">
-    <div style="position: relative;"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span class="cart-count bottom-nav-count" id="bottom-cart-count">0</span></div>
-    <span>Pedidos</span>
-  </button>
-</nav>
-
-<button class="cart-floating-btn btn-gradient ripple" id="btn-cart-float" aria-label="Abrir carrinho" style="overflow: visible !important;">
-  <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <path d="M16 10a4 4 0 0 1-8 0"></path>
-  </svg>
-  <span class="cart-count" id="cart-count">0</span>
-</button>
-
-<aside class="quick-order-summary" id="quick-order-summary" aria-live="polite" aria-label="Resumo do pedido">
-  <div class="quick-order-head">
-    <div class="quick-order-copy">
-      <small>Seu pedido</small>
-      <strong id="quick-order-total">0 itens · R$ 0,00</strong>
-    </div>
-    <button type="button" class="quick-order-open ripple" id="quick-order-open">Ver pedido</button>
-  </div>
-  <div class="quick-order-list" id="quick-order-list"></div>
-</aside>
-
-<div class="modal-overlay" id="tracking-overlay">
-  <div class="modal-box" style="max-width: 400px;">
-    <button class="close-modal ripple" data-close="tracking-overlay">&times;</button>
-    <div class="tracking-header">
-      <h3 class="brand-font" id="track-id">Pedido #...</h3>
-      <p id="track-desc">Acompanhe o status em tempo real</p>
-    </div>
-    
-    <div class="timeline" id="tracking-timeline">
-      <div class="tl-step" id="step-novo">
-        <div class="tl-icon">1</div>
-        <div class="tl-content"><strong>Recebido</strong><span>Aguardando a loja confirmar.</span></div>
-      </div>
-      <div class="tl-step" id="step-preparando">
-        <div class="tl-icon">2</div>
-        <div class="tl-content"><strong>Na Cozinha 👨‍🍳</strong><span>Seu pedido está sendo preparado.</span></div>
-      </div>
-      <div class="tl-step" id="step-saiu">
-        <div class="tl-icon">3</div>
-        <div class="tl-content"><strong id="track-text-rota">Em Rota 🛵</strong><span>Saiu para entrega.</span></div>
-      </div>
-      <div class="tl-step" id="step-concluido">
-        <div class="tl-icon">4</div>
-        <div class="tl-content"><strong>Entregue ✨</strong><span>Aproveite o seu pedido!</span></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-promocoes">
-  <div class="modal-box">
-    <button class="close-modal ripple" data-close="modal-promocoes">&times;</button>
-    <h2 class="brand-font" style="color: var(--gold-dark); border-bottom: 1px dashed var(--gold);">🔥 Promoções Ativas</h2>
-    <div class="grid-menu" id="grid-promocoes-modal"></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-aviso-pausa">
-  <div class="modal-box" style="text-align: center; max-width: 400px;">
-    <button class="close-modal ripple" data-close="modal-aviso-pausa">&times;</button>
-    <h2 class="brand-font" style="color: var(--terracotta); border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Atenção 🛑</h2>
-    <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; font-weight: 500;">Pedimos sinceras desculpas, mas nossa loja não pode receber pedidos agora.</p>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">Pausamos temporariamente devido à alta demanda ou esgotamento. Volte mais tarde!</p>
-    <button type="button" class="btn-add-modal ripple" data-close="modal-aviso-pausa" style="margin-top: 30px; background: var(--bg-card); color: var(--terracotta); border: 1px solid var(--terracotta);">Compreendo</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="success-overlay">
-  <div class="modal-box" style="text-align: center; max-width: 380px;">
-    <button class="close-modal ripple" data-close="success-overlay">&times;</button>
-    <div style="color: var(--gold); margin-bottom: 15px;">
-      <svg viewBox="0 0 24 24" width="56" height="56" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkmark 0.6s var(--smooth) forwards;">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-      </svg>
-    </div>
-    <h2 class="brand-font" style="color: var(--text-main); border-bottom: none; padding-bottom: 0; margin-bottom: 10px;">Adicionado!</h2>
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; font-weight: 500;">Sua escolha foi para o carrinho. O que deseja fazer agora?</p>
-    <div style="display: flex; flex-direction: column; gap: 12px;">
-      <button type="button" class="btn-finish btn-gradient ripple" onclick="irParaCarrinho()" style="margin-top: 0;">Finalizar Pedido</button>
-      <button type="button" class="btn-continue ripple" data-close="success-overlay" style="margin-top: 0; border: 1px solid var(--border-light); border-radius: 12px;">Continuar Comprando</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="pizza-montador-overlay">
-  <div class="modal-box" style="max-width:620px;">
-    <button class="close-modal ripple" data-close="pizza-montador-overlay">&times;</button>
-    <h2 class="brand-font">Monte sua Pizza</h2>
-    <p class="pizza-montador-instrucao" id="pizza-montador-instrucao">Escolha o sabor da primeira metade.</p>
-    <div class="pizza-preview-panel show" id="pizza-montador-preview"></div>
-    <div class="pizza-flavor-picker" id="pizza-flavor-picker"></div>
-    <div class="pizza-montador-actions">
-      <button type="button" class="btn-continue ripple" id="pizza-montador-limpar">Recomeçar</button>
-      <button type="button" class="btn-add-modal btn-gradient ripple" id="pizza-montador-confirmar" disabled>Continuar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="builder-overlay">
-  <div class="modal-box">
-    <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
-    <h2 id="builder-title" class="brand-font">Montar</h2>
-    <div class="pizza-preview-panel" id="pizza-preview-panel" aria-live="polite"></div>
-    <form id="builder-form" novalidate>
-      <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
-      
-      <fieldset class="builder-group" id="builder-extras-container">
-        <span class="builder-label" style="margin-bottom: 15px;">Adicionais (Múltipla Escolha)</span>
-        <div id="builder-extras"></div>
-      </fieldset>
-
-      <div class="combo-builder" id="builder-combo-container"></div>
-
-      <div class="builder-group">
-        <label class="builder-label" id="label-obs" for="builder-obs">Observações</label>
-        <textarea id="builder-obs" maxlength="200" placeholder="Ex: sem cebola, massa bem assada..."></textarea>
-      </div>
-      <div class="builder-group" id="builder-qty-container" style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="builder-label" style="margin:0;">Quantidade</span>
-        <div class="qty-row">
-          <button type="button" class="qty-btn ripple" id="qty-minus">−</button>
-          <span class="qty-val" id="qty-val">1</span>
-          <button type="button" class="qty-btn ripple" id="qty-plus">+</button>
-        </div>
-      </div>
-      <div class="cart-total-line"><span>Subtotal</span><span id="builder-subtotal">R$ 0,00</span></div>
-      <button type="submit" class="btn-add-modal btn-gradient ripple">Adicionar ao Pedido</button>
-    </form>
-  </div>
-</div>
-
-<div class="modal-overlay" id="cart-overlay">
-  <div class="modal-box" style="max-width: 560px;">
-    <button class="close-modal ripple" data-close="cart-overlay">&times;</button>
-    <h2 id="cart-title" class="brand-font">Seu Pedido</h2>
-
-    <div class="stepper" id="pedido-stepper">
-      <div class="stepper-step" data-step="1">
-        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></div>
-        <span class="stepper-label">Itens</span>
-      </div>
-      <div class="stepper-line"></div>
-      <div class="stepper-step" data-step="2">
-        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-        <span class="stepper-label">Recebimento</span>
-      </div>
-      <div class="stepper-line"></div>
-      <div class="stepper-step" data-step="3">
-        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
-        <span class="stepper-label">Pagamento</span>
-      </div>
-      <div class="stepper-line"></div>
-      <div class="stepper-step" data-step="4">
-        <div class="stepper-icon"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-        <span class="stepper-label">Revisão</span>
-      </div>
-    </div>
-
-    <!-- STEP 1: ITENS -->
-    <div class="pedido-step-panel" id="step-panel-1" data-step="1">
-      <ul class="cart-items-list" id="cart-items-list"></ul>
-
-      <div class="cart-totals-area">
-        <div class="cart-sub-line"><span>Valor dos itens</span><span id="cart-bruto-value">R$ 0,00</span></div>
-        <div class="cart-sub-line" id="cart-desconto-line" style="display:none; color:var(--success);"><span id="cart-desconto-label">Desconto</span><span id="cart-desconto-value">- R$ 0,00</span></div>
-        <div class="cart-sub-line" id="cart-cupom-line" style="display:none; color:var(--success);"><span id="cart-cupom-label">Cupom</span><span id="cart-cupom-value">- R$ 0,00</span></div>
-        <div class="cart-sub-line"><span>Subtotal</span><span id="cart-subtotal-value">R$ 0,00</span></div>
-      </div>
-
-      <div class="cupom-box">
-        <strong>Tem um cupom?</strong>
-        <div class="cupom-input-row">
-          <input type="text" id="cupom-codigo" maxlength="24" autocomplete="off" placeholder="DIGITE O CÓDIGO" aria-label="Código do cupom">
-          <button type="button" id="btn-aplicar-cupom" onclick="aplicarCupomDigitado(event)">APLICAR</button>
-        </div>
-        <div class="cupom-feedback" id="cupom-feedback"></div>
-        <button type="button" class="cupom-remover" id="btn-remover-cupom" onclick="removerCupomAplicado()">Remover cupom</button>
-      </div>
-
-      <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 12px; padding: 15px; text-align: center; animation: fadeIn 0.5s ease;">
-        <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-          <img src="img/esf_choc_morango.jpg" alt="Esfiha Doce" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
-          <div style="text-align: left; flex: 1;">
-            <strong style="display: block; font-size: 14px; color: var(--text-main);">Esfiha Choc. c/ Morango</strong>
-            <span id="upsell-preco" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
-          </div>
-          <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_morango')" style="width: 36px; height: 36px; font-size: 20px;">+</button>
-        </div>
-      </div>
-
-      <button type="button" class="btn-finish btn-gradient ripple" id="btn-step1-avancar" style="margin-top:0;" onclick="irParaStep(2)">Avançar</button>
-      <button type="button" class="btn-continue ripple" style="margin-top:0;" data-close="cart-overlay">Continuar Comprando</button>
-    </div>
-
-    <form class="checkout-form" id="checkout-form" novalidate style="margin-top: 0;">
-      <!-- STEP 2: RECEBIMENTO -->
-      <div class="pedido-step-panel" id="step-panel-2" data-step="2" style="display:none;">
-        <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
-        <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
-
-        <div>
-          <label>Como deseja receber?</label>
-          <input type="hidden" id="cli-tipo-pedido" value="Entrega">
-          <div class="delivery-options">
-            <div class="delivery-card active ripple" data-tipo="Entrega" tabindex="0" role="button">
-              <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <strong>Entrega</strong>
-              <small id="text-taxa-card">Calculando...</small>
-            </div>
-            <div class="delivery-card ripple" data-tipo="Retirada" tabindex="0" role="button">
-              <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-              <strong>Retirada</strong>
-              <small>Grátis</small>
-            </div>
-          </div>
-        </div>
-
-        <div id="box-endereco">
-          <div id="box-taxas-entrega" style="margin-bottom: 25px;">
-            <input type="hidden" id="cli-taxa-id" value="">
-            <input type="hidden" id="cli-taxa-nome" value="">
-            <input type="hidden" id="cli-distancia-km" value="">
-            <div class="taxa-auto-card" id="taxa-auto-card">
-              <div>
-                <strong>Taxa calculada automaticamente</strong>
-                <small id="taxa-auto-descricao">Confirme sua localização ou escolha uma sugestão de endereço.</small>
-              </div>
-              <span class="taxa-auto-valor" id="taxa-auto-valor">—</span>
-            </div>
-            <div id="zona-distancia-hint"></div>
-          </div>
-
-          <button type="button" id="btn-gps-localizacao" class="btn-gps ripple">
-            <span class="gps-spinner"></span>
-            <span id="btn-gps-label">📍 USAR LOCALIZAÇÃO ATUAL</span>
-          </button>
-          <span style="display:block; font-size: 11px; color: var(--text-muted); margin: 6px 2px 14px; line-height: 1.5;">Toque aqui ou escolha uma sugestão ao digitar a rua. A taxa será calculada automaticamente pela distância aproximada até a loja.</span>
-
-          <div class="endereco-row">
-            <div style="flex: 2.5;" class="mb-autocomplete-wrap">
-              <label for="cli-rua">Rua / Sítio</label>
-              <input type="text" id="cli-rua" placeholder="Comece a digitar seu endereço..." autocomplete="off">
-              <div class="mb-suggestions" id="mb-suggestions"></div>
-            </div>
-            <div style="flex: 1;"><label for="cli-numero">Número</label><input type="text" id="cli-numero" placeholder="Ex: 123 ou S/N"></div>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label for="cli-bairro">Bairro</label>
-            <input type="text" id="cli-bairro" placeholder="Ex: Centro">
-          </div>
-          <input type="hidden" id="cli-lat" value="">
-          <input type="hidden" id="cli-lng" value="">
-          <input type="hidden" id="cli-gps-precisao" value="">
-          <input type="hidden" id="cli-geo-origem" value="">
-          <div>
-            <label for="cli-referencia">Ponto de referência</label>
-            <input type="text" id="cli-referencia" placeholder="Ex: casa azul, ao lado da igreja">
-            <span class="campo-hint">Ajuda muito o entregador a te encontrar rápido.</span>
-          </div>
-        </div>
-
-        <div id="box-retirada" style="display: none; opacity: 0; transition: all 0.4s var(--smooth);">
-          <div class="box-destaque" style="margin-top: 0; text-align: left; padding: 20px;">
-            <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 6px; letter-spacing: 1px;">📍 Endereço para Retirada</p>
-            <strong style="color: var(--text-main); font-size: 14px;" id="text-endereco-loja">Carregando...</strong>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Aguarde nossa confirmação no WhatsApp antes de sair.</p>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px;">
-          <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(1)">Voltar</button>
-          <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" onclick="tentarAvancarStep2()">Avançar</button>
-        </div>
-      </div>
-
-      <!-- STEP 3: PAGAMENTO -->
-      <div class="pedido-step-panel" id="step-panel-3" data-step="3" style="display:none;">
-        <div>
-          <label for="cli-pagamento">Pagamento</label>
-          <select id="cli-pagamento">
-            <option value="PIX">PIX (Rápido)</option>
-            <option value="Dinheiro">Dinheiro</option>
-            <option value="Cartão">Cartão na entrega/retirada</option>
-          </select>
-        </div>
-
-        <div id="box-troco" style="display: none; animation: slideDown 0.3s ease;">
-          <label for="cli-troco" style="color: var(--gold-dark);">Precisa de troco para quanto? (Opcional)</label>
-          <input type="text" id="cli-troco" inputmode="decimal" autocomplete="off" placeholder="Ex: 100,00 ou deixe em branco" aria-describedby="cli-troco-hint">
-          <span class="campo-hint" id="cli-troco-hint">Informe o valor da nota usada no pagamento. Ele precisa ser <strong>maior</strong> que o total do pedido. Se for pagar o valor exato, deixe em branco.</span>
-        </div>
-
-        <div style="display:flex; gap:10px;">
-          <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(2)">Voltar</button>
-          <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-avancar" onclick="tentarAvancarStep3()">Avançar para Revisão</button>
-        </div>
-      </div>
-    </form>
-
-    <!-- STEP 4: REVISÃO -->
-    <div class="pedido-step-panel" id="step-panel-4" data-step="4" style="display:none;">
-      <div class="review-card">
-        <div class="review-header">
-          <h4>🛍️ Itens do Pedido</h4>
-          <button type="button" class="btn-edit-review ripple" onclick="irParaStep(1)">Editar</button>
-        </div>
-        <div class="review-content" id="review-items"></div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <h4>🛵 Recebimento</h4>
-          <button type="button" class="btn-edit-review ripple" onclick="irParaStep(2)">Editar</button>
-        </div>
-        <div class="review-content" id="review-delivery"></div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <h4>💳 Pagamento</h4>
-          <button type="button" class="btn-edit-review ripple" onclick="irParaStep(3)">Editar</button>
-        </div>
-        <div class="review-content" id="review-payment"></div>
-      </div>
-
-      <div class="review-total-box">
-        <div class="cart-sub-line"><span>Valor dos itens</span><span id="rev-bruto-value">R$ 0,00</span></div>
-        <div class="cart-sub-line" id="rev-desconto-line" style="display:none; color:var(--success);"><span id="rev-desconto-label">Desconto</span><span id="rev-desconto-value">- R$ 0,00</span></div>
-        <div class="cart-sub-line" id="rev-cupom-line" style="display:none; color:var(--success);"><span id="rev-cupom-label">Cupom</span><span id="rev-cupom-value">- R$ 0,00</span></div>
-        <div class="cart-sub-line"><span>Subtotal</span><span id="rev-subtotal-value">R$ 0,00</span></div>
-        <div class="cart-sub-line" id="rev-linha-taxa"><span>Taxa de entrega</span><span id="rev-taxa-value">R$ 0,00</span></div>
-        <div class="cart-total-line" style="border-top-color: rgba(58,42,32,0.05);"><span>Total a Pagar</span><span id="rev-total-value">R$ 0,00</span></div>
-      </div>
-
-      <div class="box-destaque" id="rev-box-pix" style="display:none; margin-bottom: 0;">
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; font-weight: 700;">Transferência PIX:</p>
-        <strong style="color:var(--text-main); font-size:20px; display:block; margin-bottom: 12px;" id="rev-pix-valor">R$ 0,00</strong>
-        <button type="button" class="btn-copy-pix ripple" id="rev-btn-copy-pix">Copiar Código PIX</button>
-        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
-      </div>
-
-      <div id="aviso-simulacao-checkout">
-        <strong>Loja fechada no momento 🌙</strong>
-        <span>Você pode montar e revisar o pedido à vontade, mas o envio só será liberado quando reabrirmos.</span>
-      </div>
-
-      <div style="display:flex; gap:10px;">
-        <button type="button" class="btn-continue ripple" style="flex:1; margin-top:0; border: 1px solid var(--border-light); border-radius: 12px;" onclick="irParaStep(3)">Voltar</button>
-        <button type="button" class="btn-finish btn-gradient ripple" style="flex:2; margin-top:0;" id="btn-confirm-order" onclick="enviarPedidoFinal(event)">Confirmar e Enviar Pedido</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="company-data-overlay">
-  <div class="modal-box" style="max-width: 480px;">
-    <button class="close-modal ripple" data-close="company-data-overlay" aria-label="Fechar dados da empresa">&times;</button>
-    <h2 class="brand-font">Dados da Empresa</h2>
-    <div class="company-data">
-      <div class="company-data-row"><span>Nome fantasia</span><strong>Doce Capricho Ateliê</strong></div>
-      <div class="company-data-row"><span>Razão social</span><strong>69.149.841 Carlos Henrique Vitor Gomes</strong></div>
-      <div class="company-data-row"><span>CNPJ</span><strong>69.149.841/0001-61</strong></div>
-      <div class="company-data-row"><span>Endereço</span><strong>Rua Monsenhor José Aires, 188, Centro — São Miguel/RN</strong></div>
-    </div>
-    <p class="company-data-note">Informações cadastrais disponibilizadas para identificação e transparência do estabelecimento.</p>
-  </div>
-</div>
-
-<div class="modal-overlay" id="promo-banner-overlay">
-  <div class="modal-box" id="promo-modal-box">
-    <button class="btn-close-promo ripple" data-close="promo-banner-overlay">&times;</button>
-    <div class="promo-img-wrapper">
-      <img id="promo-banner-img" src="" alt="" style="display:none;" onerror="this.style.display='none'; document.getElementById('promo-banner-emoj').style.display='block';">
-      <h1 class="brand-font" id="promo-banner-emoj" style="display: block; color: var(--gold-dark); font-size: 50px; z-index: 1;">🎉</h1>
-    </div>
-    <div class="promo-content">
-      <h2 id="promo-banner-title" class="brand-font" style="margin-bottom: 10px; border:none; padding:0;">Ofertas Liberadas!</h2>
-      <p id="promo-banner-desc" style="font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">Separamos combos incríveis para o seu dia. Aproveite!</p>
-      <button id="promo-banner-btn" class="btn-gradient ripple" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 13px; font-weight: 800; letter-spacing: 2px;" onclick="irParaCombos()">EU QUERO VER</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="aviso-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="aviso-popup-title">
-  <div class="modal-box" id="aviso-popup-box">
-    <button class="btn-close-promo ripple" data-close="aviso-popup-overlay" aria-label="Fechar divulgação">&times;</button>
-    <div id="aviso-popup-img-wrap">
-      <img id="aviso-popup-img" src="" alt="">
-    </div>
-    <div class="aviso-popup-content">
-      <h2 id="aviso-popup-title" class="brand-font" style="margin-bottom:10px; border:none; padding:0;"></h2>
-      <p id="aviso-popup-desc" style="font-size:14px; color:var(--text-muted); margin-bottom:25px; line-height:1.6;"></p>
-      <button type="button" id="aviso-popup-btn" class="btn-gradient ripple" style="width:100%; padding:18px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1.5px;"></button>
-    </div>
-  </div>
-</div>
-
-<script>
-// PWA: registra o service worker e controla a instalação no Android.
-let deferredPrompt = null;
-const btnInstallApp = document.getElementById('btn-install-app');
-const installSuggestion = document.getElementById('install-suggestion');
-const installSuggestionTitle = document.getElementById('install-suggestion-title');
-const installSuggestionText = document.getElementById('install-suggestion-text');
-const installSuggestionAction = document.getElementById('install-suggestion-action');
-const installSuggestionClose = document.getElementById('install-suggestion-close');
-
-const PLATAFORMA_APP = (() => {
-  const ua = navigator.userAgent || '';
-  const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const android = /Android/i.test(ua);
-  const mac = /Macintosh|Mac OS X/i.test(ua) && !iOS;
-  const windows = /Windows/i.test(ua);
-  const chromeOS = /CrOS/i.test(ua);
-  const linux = /Linux/i.test(ua) && !android && !chromeOS;
-  const safari = /^((?!chrome|android|crios|fxios|edgios|edg).)*safari/i.test(ua);
-  const firefox = /Firefox|FxiOS/i.test(ua);
-  return { iOS, android, mac, windows, chromeOS, linux, safari, firefox };
-})();
-
-function appEstaInstalado() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-         window.navigator.standalone === true;
-}
-
-function ocultarBotaoInstalacao() {
-  if (btnInstallApp) btnInstallApp.style.display = 'none';
-  if (installSuggestion) installSuggestion.classList.remove('show');
-}
-
-function exibirBotaoInstalacao() {
-  if (btnInstallApp && !appEstaInstalado()) {
-    btnInstallApp.style.display = 'block';
-  }
-}
-
-function configurarSugestaoInstalacao(tipo) {
-  if (!installSuggestion || appEstaInstalado() || sessionStorage.getItem('dca_install_closed') === '1') return false;
-  if (tipo === 'ios') {
-    installSuggestionTitle.textContent = PLATAFORMA_APP.iOS ? 'Instalar no iPhone ou iPad' : 'Instalar no dispositivo Apple';
-    installSuggestionText.textContent = 'No Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.';
-    installSuggestionAction.textContent = 'Entendi';
-  } else if (tipo === 'mac-safari') {
-    installSuggestionTitle.textContent = 'Instalar no Mac';
-    installSuggestionText.textContent = 'No Safari, abra Compartilhar e escolha “Adicionar ao Dock”.';
-    installSuggestionAction.textContent = 'Entendi';
-  } else {
-    installSuggestionTitle.textContent = 'Instalar Doce Capricho';
-    installSuggestionText.textContent = PLATAFORMA_APP.android
-      ? 'Acesse o cardápio como aplicativo direto da tela inicial.'
-      : 'Abra o cardápio como aplicativo diretamente no computador.';
-    installSuggestionAction.textContent = 'Instalar';
-  }
-  return true;
-}
-
-function tentarExibirSugestaoInstalacao(tipo, tentativas = 30) {
-  if (!configurarSugestaoInstalacao(tipo)) return;
-  const modalAberto = document.querySelector('.modal-overlay.open');
-  const atualizacaoAberta = document.getElementById('update-banner')?.classList.contains('show');
-  if ((modalAberto || atualizacaoAberta) && tentativas > 0) {
-    setTimeout(() => tentarExibirSugestaoInstalacao(tipo, tentativas - 1), 1000);
-    return;
-  }
-  installSuggestion.classList.add('show');
-}
-
-function mostrarOrientacaoManualInstalacao() {
-  if (PLATAFORMA_APP.iOS) tentarExibirSugestaoInstalacao('ios');
-  else if (PLATAFORMA_APP.mac && PLATAFORMA_APP.safari) tentarExibirSugestaoInstalacao('mac-safari');
-  else if (!PLATAFORMA_APP.firefox) tentarExibirSugestaoInstalacao('automatico');
-}
-
-// ------------------------------------------------------------------
-// PWA: registro + detecção de nova versão. Sem isso, quem instalou o app
-// pode ficar semanas com o cardápio e os preços antigos em cache.
-// ------------------------------------------------------------------
-const APP_VERSION_ATUAL = document.querySelector('meta[name="dca-app-version"]')?.content || '';
-const UPDATE_ATTEMPT_KEY = 'dca_update_attempt';
-const UPDATE_ATTEMPT_TTL = 2 * 60 * 1000;
-let versaoAtualizacaoPendente = '';
-
-try {
-  const tentativa = JSON.parse(sessionStorage.getItem(UPDATE_ATTEMPT_KEY) || 'null');
-  if (tentativa && tentativa.versao === APP_VERSION_ATUAL) sessionStorage.removeItem(UPDATE_ATTEMPT_KEY);
-} catch (_) {
-  sessionStorage.removeItem(UPDATE_ATTEMPT_KEY);
-}
-
-function mostrarAvisoAtualizacao(versaoPublicada) {
-  const banner = document.getElementById('update-banner');
-  if (!banner) return;
-  try {
-    const tentativa = JSON.parse(sessionStorage.getItem(UPDATE_ATTEMPT_KEY) || 'null');
-    if (tentativa && tentativa.versao === versaoPublicada && Date.now() - Number(tentativa.em || 0) < UPDATE_ATTEMPT_TTL) return;
-  } catch (_) {}
-  versaoAtualizacaoPendente = versaoPublicada || '';
-  banner.style.display = 'flex';
-  setTimeout(() => banner.classList.add('show'), 50);
-}
-
-function esconderAvisoAtualizacao() {
-  const banner = document.getElementById('update-banner');
-  if (!banner) return;
-  banner.classList.remove('show');
-  setTimeout(() => { banner.style.display = 'none'; }, 450);
-}
-
-const btnAplicarUpdate = document.getElementById('btn-aplicar-update');
-if (btnAplicarUpdate) {
-  btnAplicarUpdate.addEventListener('click', function () {
-    btnAplicarUpdate.textContent = 'ATUALIZANDO...';
-    btnAplicarUpdate.disabled = true;
-    if (versaoAtualizacaoPendente) {
-      sessionStorage.setItem(UPDATE_ATTEMPT_KEY, JSON.stringify({ versao:versaoAtualizacaoPendente, em:Date.now() }));
-    }
-    const urlAtualizada = new URL(window.location.href);
-    urlAtualizada.searchParams.set('_atualizar', Date.now().toString());
-    window.location.replace(urlAtualizada.toString());
-  });
-}
-
-const btnFecharUpdate = document.getElementById('btn-fechar-update');
-if (btnFecharUpdate) btnFecharUpdate.addEventListener('click', esconderAvisoAtualizacao);
-
-async function verificarVersaoDoConteudo() {
-  try {
-    const resposta = await fetch(`/?_verificar_versao=${Date.now()}`, { cache:'no-store' });
-    if (!resposta.ok) return;
-    const htmlPublicado = await resposta.text();
-    const versaoPublicada = htmlPublicado.match(/<meta\s+name=["']dca-app-version["']\s+content=["']([^"']+)["']/i)?.[1] || '';
-    if (versaoPublicada && APP_VERSION_ATUAL && versaoPublicada !== APP_VERSION_ATUAL) {
-      mostrarAvisoAtualizacao(versaoPublicada);
-    }
-  } catch (erro) {
-    // Sem conexão: mantém a versão disponível no cache sem incomodar o cliente.
-  }
-}
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async function () {
-    try {
-      const reg = await navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
-
-      const checarAtualizacao = () => {
-        reg.update().catch(function () {});
-        verificarVersaoDoConteudo();
-      };
-
-      checarAtualizacao();
-      setInterval(checarAtualizacao, 10 * 60 * 1000);
-      document.addEventListener('visibilitychange', function () { if (!document.hidden) checarAtualizacao(); });
-    } catch (error) {
-      console.error('Falha ao registrar o service worker:', error);
-    }
-  });
-}
-
-window.addEventListener('beforeinstallprompt', function (event) {
-  event.preventDefault();
-  deferredPrompt = event;
-  exibirBotaoInstalacao();
-  setTimeout(() => tentarExibirSugestaoInstalacao('automatico'), 2200);
-});
-
-if (btnInstallApp) {
-  btnInstallApp.addEventListener('click', async function () {
-    if (appEstaInstalado()) {
-      ocultarBotaoInstalacao();
-      return;
-    }
-
-    if (!deferredPrompt) {
-      mostrarOrientacaoManualInstalacao();
-      return;
-    }
-
-    deferredPrompt.prompt();
-    const escolha = await deferredPrompt.userChoice;
-
-    if (escolha.outcome === 'accepted') {
-      ocultarBotaoInstalacao();
-    }
-
-    deferredPrompt = null;
-  });
-}
-
-window.addEventListener('appinstalled', function () {
-  deferredPrompt = null;
-  ocultarBotaoInstalacao();
-});
-
-if (installSuggestionAction) {
-  installSuggestionAction.addEventListener('click', async function () {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const escolha = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      if (escolha.outcome === 'accepted') ocultarBotaoInstalacao();
-      else installSuggestion.classList.remove('show');
-      return;
-    }
-    installSuggestion.classList.remove('show');
-  });
-}
-
-if (installSuggestionClose) {
-  installSuggestionClose.addEventListener('click', function () {
-    sessionStorage.setItem('dca_install_closed', '1');
-    installSuggestion.classList.remove('show');
-  });
-}
-
-if (appEstaInstalado()) ocultarBotaoInstalacao();
-else if (PLATAFORMA_APP.iOS) setTimeout(() => tentarExibirSugestaoInstalacao('ios'), 2600);
-else if (PLATAFORMA_APP.mac && PLATAFORMA_APP.safari) setTimeout(() => tentarExibirSugestaoInstalacao('mac-safari'), 2600);
-
-// ------------------------------------------------------------------
-// ONESIGNAL: assinatura Web Push com worker isolado do PWA principal.
-// Em iPhone/iPad, o convite só aparece quando o site está instalado.
-// ------------------------------------------------------------------
-const ONESIGNAL_APP_ID = '50ed9f81-4fa2-41e7-b470-b235bcefe85d';
-const ONESIGNAL_ORIGIN = 'https://docecaprichoatelier.vercel.app';
-const PUSH_DISMISS_KEY = 'dca_push_prompt_dismissed_at';
-const PUSH_DISMISS_TTL = 7 * 24 * 60 * 60 * 1000;
-const pushSuggestion = document.getElementById('push-suggestion');
-const pushSuggestionAction = document.getElementById('push-suggestion-action');
-const pushSuggestionClose = document.getElementById('push-suggestion-close');
-let oneSignalClient = null;
-
-function pushFoiAdiadoRecentemente() {
-  const valor = Number(localStorage.getItem(PUSH_DISMISS_KEY) || 0);
-  return valor > 0 && Date.now() - valor < PUSH_DISMISS_TTL;
-}
-
-function fecharSugestaoPush(adiar = false) {
-  if (adiar) localStorage.setItem(PUSH_DISMISS_KEY, String(Date.now()));
-  if (pushSuggestion) pushSuggestion.classList.remove('show');
-}
-
-function tentarExibirSugestaoPush(tentativas = 30) {
-  if (!oneSignalClient || !pushSuggestion || !('Notification' in window)) return;
-  if (Notification.permission !== 'default' || pushFoiAdiadoRecentemente()) return;
-  if (PLATAFORMA_APP.iOS && !appEstaInstalado()) return;
-
-  const interfaceOcupada =
-    document.querySelector('.modal-overlay.open') ||
-    document.getElementById('update-banner')?.classList.contains('show') ||
-    installSuggestion?.classList.contains('show');
-
-  if (interfaceOcupada && tentativas > 0) {
-    setTimeout(() => tentarExibirSugestaoPush(tentativas - 1), 1000);
-    return;
-  }
-
-  pushSuggestion.classList.add('show');
-}
-
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-window.OneSignalDeferred.push(async function (OneSignal) {
-  // O OneSignal vincula a assinatura à origem cadastrada. A prévia da
-  // Vercel continua utilizável para testes visuais sem criar assinaturas.
-  if (window.location.origin !== ONESIGNAL_ORIGIN) {
-    console.info('[ONESIGNAL] Inicialização reservada ao domínio de produção.');
-    return;
-  }
-
-  try {
-    await OneSignal.init({
-      appId: ONESIGNAL_APP_ID,
-      serviceWorkerPath: '/push/onesignal/OneSignalSDKWorker.js',
-      serviceWorkerParam: { scope: '/push/onesignal/' },
-      autoResubscribe: true,
-      notificationClickHandlerMatch: 'origin',
-      notificationClickHandlerAction: 'navigate'
-    });
-
-    oneSignalClient = OneSignal;
-
-    OneSignal.Notifications.addEventListener('permissionChange', function (permission) {
-      if (permission) fecharSugestaoPush(false);
-    });
-
-    setTimeout(() => tentarExibirSugestaoPush(), 4200);
-  } catch (erro) {
-    console.error('[ONESIGNAL] Falha na inicialização:', erro);
-  }
-});
-
-if (pushSuggestionAction) {
-  pushSuggestionAction.addEventListener('click', async function () {
-    if (!oneSignalClient) return;
-    pushSuggestionAction.disabled = true;
-    pushSuggestionAction.textContent = 'ATIVANDO...';
-
-    try {
-      const permitido = await oneSignalClient.Notifications.requestPermission();
-      if (permitido) {
-        if (!oneSignalClient.User.PushSubscription.optedIn) {
-          await oneSignalClient.User.PushSubscription.optIn();
-        }
-        fecharSugestaoPush(false);
-        showToast('Notificações ativadas neste aparelho.', 'success');
-      } else {
-        fecharSugestaoPush(true);
-        showToast('As notificações não foram ativadas.', 'warning');
-      }
-    } catch (erro) {
-      console.error('[ONESIGNAL] Não foi possível ativar:', erro);
-      fecharSugestaoPush(true);
-      showToast('Não foi possível ativar as notificações agora.', 'error');
-    } finally {
-      pushSuggestionAction.disabled = false;
-      pushSuggestionAction.textContent = 'ATIVAR';
-    }
-  });
-}
-
-if (pushSuggestionClose) {
-  pushSuggestionClose.addEventListener('click', function () {
-    fecharSugestaoPush(true);
-  });
-}
-
-const $  = (s, c = document) => c.querySelector(s);
-const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
-const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-
-function toggleMobileMenu(forcarEstado) {
-  const menu = document.getElementById('nav-links');
-  const botao = document.getElementById('mobile-menu-toggle');
-  if (!menu || !botao) return;
-  const abrir = typeof forcarEstado === 'boolean' ? forcarEstado : !menu.classList.contains('mobile-open');
-  menu.classList.toggle('mobile-open', abrir);
-  botao.setAttribute('aria-expanded', String(abrir));
-  botao.setAttribute('aria-label', abrir ? 'Fechar menu' : 'Abrir menu');
-}
-
-document.querySelectorAll('#nav-links a, #nav-links button').forEach(item => {
-  item.addEventListener('click', () => toggleMobileMenu(false));
-});
-document.addEventListener('click', event => {
-  if (window.innerWidth <= 768 && !event.target.closest('.top-nav')) toggleMobileMenu(false);
-});
-window.addEventListener('resize', () => {
-  if (window.innerWidth > 768) toggleMobileMenu(false);
-});
-const soDigitos = s => String(s).replace(/\D/g, '');
-
-const CONFIG = { whatsapp: '5585921440055', pixChave: '69149841000161', pixNome: 'Doce Capricho Atelier', enderecoLoja: 'Rua Monsenhor José Aires, 188 - Centro, São Miguel / RN', cidade: 'São Miguel', estado: 'RN', usarFirebase: true, lojaLat: -6.2129153815587745, lojaLng: -38.495351177382226 };
-
-document.getElementById('footer-wa-link').href = `https://wa.me/${CONFIG.whatsapp}`;
-const elEndLoja = document.getElementById('text-endereco-loja'); if (elEndLoja) elEndLoja.textContent = CONFIG.enderecoLoja;
-
-const FIREBASE_CONFIG = { apiKey: "AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA", authDomain: "sistema-doce-capricho.firebaseapp.com", projectId: "sistema-doce-capricho", storageBucket: "sistema-doce-capricho.firebasestorage.app", messagingSenderId: "203794333208", appId: "1:203794333208:web:4c4bc82f2ebb6032ab0d6d" };
-
-const CARDAPIO = {
-  tradicionais: [
-    { id:'mussarela', img:'img/mussarela.jpg', nome:'Mussarela', desc:'Molho, mussarela e tomate', preco:4500 },
-    { id:'mista', img:'img/mista.jpg', nome:'Mista', desc:'Molho, presunto e mussarela', preco:4500 },
-    { id:'frango', img:'img/frango.jpg', nome:'Frango', desc:'Molho, mussarela e frango', preco:4500 },
-    { id:'calabresa', img:'img/calabresa.jpg', nome:'Calabresa', desc:'Molho, mussarela, calabresa e cebola', preco:4500 },
-    { id:'carnesol', img:'img/carnedesol.jpg', nome:'Carne de Sol', desc:'Molho, mussarela, carne de sol e cebola roxa', preco:4500 },
-    { id:'frangocat', img:'img/frangocatupiry.jpg', nome:'Frango com Catupiry', desc:'Molho, mussarela, frango e catupiry', preco:5500 }
-  ],
-  premium: [
-    { id:'nordestina', img:'img/nordestina.jpg', nome:'Nordestina', desc:'Molho, mussarela, cream cheese, carne de sol e queijo coalho', preco:6000 },
-    { id:'lombo', img:'img/lombo.jpg', nome:'Lombo Canadense', desc:'Molho, mussarela, lombo canadense e catupiry', preco:7000 },
-    { id:'arretada', img:'img/arretada.jpg', nome:'Arretada', desc:'Molho, mussarela, calabresa, queijo coalho e bacon', preco:7000 },
-    { id:'peru', img:'img/peitodeperu.jpg', nome:'Peito de Peru', desc:'Molho, mussarela, cream cheese, peito de peru, bacon, alho poró e parmesão', preco:7400 }
-  ],
-  esfihas_tradicionais: [
-    { id:'esf_mussarela', img:'img/esf_mus.jpg', nome:'Esfiha Mussarela', desc:'Esfiha aberta com queijo mussarela derretido.', preco:500 },
-    { id:'esf_mista', img:'img/esf_mista.jpg', nome:'Esfiha Mista', desc:'Esfiha aberta com presunto e mussarela.', preco:500 },
-    { id:'esf_frango_mus', img:'img/esf_frango_mus.jpg', nome:'Esfiha Frango c/ Mussarela', desc:'Frango desfiado com mussarela.', preco:500 },
-    { id:'esf_calabresa_mus', img:'img/esf_calabresa_mus.jpg', nome:'Esfiha Calabresa c/ Mus.', desc:'Calabresa fatiada com mussarela.', preco:500 },
-    { id:'esf_carnesol_mus', img:'img/esf_carnesol_mus.jpg', nome:'Esfiha C. de Sol c/ Mus.', desc:'Carne de sol desfiada com mussarela.', preco:500 },
-    { id:'esf_carnemoida', img:'img/esf_carnemoida.jpg', nome:'Esfiha Carne Moída', desc:'Carne moída perfeitamente temperada.', preco:500 }
-  ],
-  esfihas_premium: [
-    { id:'esf_frango_coalho', img:'img/esf_frango_coalho.jpg', nome:'Esfiha Frango c/ Coalho', desc:'Frango com queijo coalho artesanal.', preco:700 },
-    { id:'esf_frango_catupiry', img:'img/esf_frango_cat.jpg', nome:'Esfiha Frango c/ Catupiry', desc:'Frango com verdadeiro Catupiry.', preco:800 },
-    { id:'esf_frango_cream', img:'img/esf_frango_cream.jpg', nome:'Esfiha Frango c/ Cream', desc:'Frango com cream cheese.', preco:800 },
-    { id:'esf_carnesol_coalho', img:'img/esf_carnesol_coalho.jpg', nome:'Esfiha C. Sol c/ Coalho', desc:'Carne de sol com queijo coalho.', preco:700 },
-    { id:'esf_carnesol_catupiry', img:'img/esf_carnesol_catupiry.jpg', nome:'Esfiha C. Sol c/ Catupiry', desc:'Carne de sol com Catupiry.', preco:800 },
-    { id:'esf_carnesol_cream', img:'img/esf_carnesol_cream.jpg', nome:'Esfiha C. Sol c/ Cream', desc:'Carne de sol com cream cheese.', preco:800 },
-    { id:'esf_calabresa_coalho', img:'img/esf_calabresa_coalho.jpg', nome:'Esfiha Cal. c/ Coalho', desc:'Calabresa com queijo coalho.', preco:700 },
-    { id:'esf_calabresa_catupiry', img:'img/esf_calabresa_catupiry.jpg', nome:'Esfiha Cal. c/ Catupiry', desc:'Calabresa com Catupiry.', preco:800 },
-    { id:'esf_calabresa_cream', img:'img/esf_calabresa_cream.jpg', nome:'Esfiha Cal. c/ Cream', desc:'Calabresa com cream cheese.', preco:800 },
-    { id:'esf_peru', img:'img/esf_peru.jpg', nome:'Esfiha Peito de Peru', desc:'Peito de peru defumado.', preco:1000 },
-    { id:'esf_bacon_mus', img:'img/esf_bacon.jpg', nome:'Esfiha Bacon c/ Mus.', desc:'Bacon em cubos com queijo mussarela derretido.', preco:1000 }
-  ],
-  esfihas_doces: [
-    { id:'esf_choc_leite', img:'img/esf_choc.jpg', nome:'Esfiha Chocolate ao Leite', desc:'Deliciosa esfiha com chocolate ao leite derretido.', preco:800 },
-    { id:'esf_choc_mm', img:'img/esf_choc_mm.jpg', nome:'Esfiha Chocolate c/ M&M\'s', desc:'Chocolate ao leite coberto com confetes coloridos.', preco:900 },
-    { id:'esf_choc_morango', img:'img/esf_choc_morango.jpg', nome:'Esfiha Choc. c/ Morango', desc:'Chocolate ao leite com pedaços frescos de morango.', preco:1200 }
-  ],
-  combos_especiais: [
-    {
-      id:'combo_aniversariante',
-      img:'img/combo-aniversariante.jpg',
-      nome:'Combo Festa do Aniversariante',
-      desc:'10 esfihas tradicionais + 2 premium de R$ 8 + 1 esfiha de chocolate ao leite. De R$ 74,00 por R$ 60,90.',
-      preco:6090,
-      tipo:'combo',
-      naoAcumulaDescontos:true
-    }
-  ],
-  combos_sexta: [
-    { id:'combo_sextou', img:'img/combo1.jpg', nome:'Combo Sextou (10 Esfihas)', desc:'10 Esfihas Tradicionais à sua escolha.', preco:4490, tipo:'combo' },
-    { id:'combo_casal_esf', img:'img/combo2.jpg', nome:'Combo Casal', desc:'5 Esfihas Premium (Exceto Peru) + 2 Esfihas Doces.', preco:4590, tipo:'combo' },
-    { id:'combo_mega_sexta', img:'img/combo3.jpg', nome:'Mega Sexta', desc:'10 Tradicionais + 5 Premium (Exceto Peru) + 3 Doces.', preco:9490, tipo:'combo' }
-  ],
-  combos_sabado: [
-    { id:'combo_sabado_dois', img:'img/combo1.jpg', nome:'Sábado a Dois', desc:'1 Pizza Tradicional + 2 Esfihas Doces.', preco:5490, tipo:'combo' },
-    { id:'combo_dupla', img:'img/combo2.jpg', nome:'Dupla Tradicional', desc:'2 Pizzas Tradicionais à sua escolha.', preco:7990, tipo:'combo' },
-    { id:'combo_sabadoprem', img:'img/combo3.jpg', nome:'Sabadão Premium', desc:'1 Pizza Premium (Exceto Peru) + 1 Tradicional.', preco:9990, tipo:'combo' }
-  ]
-};
-
-const EXTRAS = [
-  { id:'catupiry', nome:'Catupiry',     tipo:'metade_toda', precos:{ metade:800,  toda:1600 } },
-  { id:'cream',    nome:'Cream Cheese', tipo:'metade_toda', precos:{ metade:750,  toda:1500 } },
-  { id:'bacon',    nome:'Bacon',        tipo:'metade_toda', precos:{ metade:400,  toda:800  } },
-  { id:'alho',     nome:'Alho Poró',    tipo:'metade_toda', precos:{ metade:250,  toda:500  } }
-];
-
-const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium, ...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium, ...CARDAPIO.esfihas_doces, ...CARDAPIO.combos_especiais, ...CARDAPIO.combos_sexta, ...CARDAPIO.combos_sabado];
-const acharSabor = id => todosSabores().find(s => s.id === id);
-
-const rotuloAplicacao = (ap, sabores) => {
-  if (ap === 'toda') return 'pizza inteira';
-  if (ap === 'metade') return 'metade da pizza';
-  if (ap === 'metade1' && sabores && sabores.length === 2) return `só na metade: ${acharSabor(sabores[0]).nome}`;
-  if (ap === 'metade2' && sabores && sabores.length === 2) return `só na metade: ${acharSabor(sabores[1]).nome}`;
-  return 'metade da pizza';
-};
-
-let lojaAberta = false;
-let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
-let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
-
-// BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
-const DESTAQUES_SLIDES = [
-  { eyebrow: 'Feito com carinho', titulo: 'Pizzas e esfihas artesanais para o seu momento' },
-  { eyebrow: 'Sugestão da casa', titulo: 'Experimente a pizza mais pedida da semana' },
-  { eyebrow: 'Avalie-nos', titulo: 'Sua opinião ajuda o ateliê a crescer' }
-];
-let destaqueTimer = null;
-
-function renderPromoBannerInline() {
-  const dotsWrap = document.getElementById('promo-banner-inline-dots');
-  if (!dotsWrap) return;
-  dotsWrap.innerHTML = DESTAQUES_SLIDES.map((_, i) => `<button type="button" data-slide="${i}" aria-label="Ver destaque ${i + 1}"></button>`).join('');
-  dotsWrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => mostrarSlideDestaque(parseInt(btn.dataset.slide, 10))));
-  mostrarSlideDestaque(0);
-}
-
-function mostrarSlideDestaque(i) {
-  const slide = DESTAQUES_SLIDES[i]; if (!slide) return;
-  const eyebrowEl = document.getElementById('promo-banner-inline-eyebrow');
-  const tituloEl = document.getElementById('promo-banner-inline-title');
-  if (eyebrowEl) eyebrowEl.textContent = slide.eyebrow;
-  if (tituloEl) tituloEl.textContent = slide.titulo;
-  document.querySelectorAll('#promo-banner-inline-dots button').forEach((b, idx) => b.classList.toggle('active', idx === i));
-  if (destaqueTimer) clearTimeout(destaqueTimer);
-  destaqueTimer = setTimeout(() => mostrarSlideDestaque((i + 1) % DESTAQUES_SLIDES.length), 5000);
-}
-
-// TIRA "DESTAQUES": mostra o item mais pedido (calculado nas estatísticas) + assinaturas da casa
-function renderDestaques() {
-  const strip = document.getElementById('destaques-strip');
-  if (!strip) return;
-  const todos = todosSabores();
-  const idsDestaque = [];
-  if (saborMaisPedido) idsDestaque.push(saborMaisPedido);
-  ['peru', 'nordestina', 'esf_peru'].forEach(id => { if (!idsDestaque.includes(id)) idsDestaque.push(id); });
-  const itens = idsDestaque.map(id => todos.find(s => s.id === id)).filter(Boolean).slice(0, 6);
-  strip.innerHTML = itens.map(s => {
-    const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
-    return `
-    <article class="destaque-card">
-      <div class="card-img-wrap skeleton-bg">
-        <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
-      </div>
-      <div class="card-content">
-        <h4 class="card-title">${esc(s.nome)}</h4>
-        <div class="card-bottom">
-          <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true, [s.id])}</span>
-          <button type="button" class="btn-add ripple" ${isEsgotado ? 'disabled' : `data-escolher="${s.id}"`}>${isEsgotado ? '—' : '+'}</button>
-        </div>
-      </div>
-    </article>`;
-  }).join('');
-} 
-let modo = 'inteira', meioSelecionado = null, carrinho = [], builder = null;
-let montagemPizza = [];
-let pedidoStepAtual = 1;
-let bannerJaMostrado = false;
-let configsCarregadasDB = false;
-let promoTimer = null; 
-let promoComboDireto = null;
-const STORAGE_KEY = 'dca_carrinho_final';
-let cupomAplicado = null;
-
-function normalizarCodigoCupom(codigo) {
-  return String(codigo || '').trim().toUpperCase().replace(/\s+/g, '');
-}
-
-async function hashCodigoCupom(codigo) {
-  const bytes = new TextEncoder().encode(normalizarCodigoCupom(codigo));
-  const hash = await crypto.subtle.digest('SHA-256', bytes);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function millisConfig(valor) {
-  if (!valor) return 0;
-  if (typeof valor.toMillis === 'function') return valor.toMillis();
-  if (typeof valor.toDate === 'function') return valor.toDate().getTime();
-  const data = new Date(valor);
-  return Number.isNaN(data.getTime()) ? 0 : data.getTime();
-}
-
-function promocaoValidaAgora(promocao) {
-  if (!promocao || promocao.ativo !== true) return false;
-  const percentual = Number(promocao.percentual);
-  const inicio = millisConfig(promocao.inicio);
-  const fim = millisConfig(promocao.fim);
-  const agora = Date.now();
-  return Number.isInteger(percentual) && percentual >= 1 && percentual <= 90 && inicio > 0 && fim > 0 && agora >= inicio && agora <= fim;
-}
-
-function promocoesAtivas() {
-  const lista = Array.isArray(configLoja && configLoja.promocoesProdutos) ? configLoja.promocoesProdutos : [];
-  if (lista.length) return lista.filter(promocaoValidaAgora);
-  const antiga = configLoja && configLoja.promocaoGeral;
-  return promocaoValidaAgora(antiga) ? [antiga] : [];
-}
-
-function promocaoGeralAtiva() {
-  return promocoesAtivas().slice().sort((a,b) => Number(b.percentual) - Number(a.percentual))[0] || null;
-}
-
-function escoposPromocao(promocao) {
-  return Array.isArray(promocao && promocao.escopos) && promocao.escopos.length ? promocao.escopos : ['todos'];
-}
-
-function categoriaPromocionalDoSabor(id) {
-  if (CARDAPIO.tradicionais.some(item => item.id === id)) return 'pizzas_tradicionais';
-  if (CARDAPIO.premium.some(item => item.id === id)) return 'pizzas_premium';
-  if (CARDAPIO.esfihas_tradicionais.some(item => item.id === id)) return 'esfihas_tradicionais';
-  if (CARDAPIO.esfihas_premium.some(item => item.id === id)) return 'esfihas_premium';
-  if (CARDAPIO.esfihas_doces.some(item => item.id === id)) return 'esfihas_doces';
-  if (String(id || '').startsWith('combo_')) return 'combos';
-  return '';
-}
-
-function escopoAceitaCategoria(escopos, categoria) {
-  if (escopos.includes('todos') || escopos.includes(categoria)) return true;
-  if (categoria.startsWith('pizzas_') && escopos.includes('pizzas')) return true;
-  if (categoria.startsWith('esfihas_') && escopos.includes('esfihas')) return true;
-  return false;
-}
-
-function fracaoPromocionalSabores(sabores, promocao) {
-  if (!promocao || !Array.isArray(sabores) || !sabores.length) return 0;
-  const escopos = escoposPromocao(promocao);
-  const partes = sabores.map(id => ({ id, preco:Number(acharSabor(id)?.preco) || 0 }));
-  const totalBase = partes.reduce((soma, parte) => soma + parte.preco, 0);
-  if (totalBase <= 0) return 0;
-  const baseElegivel = partes.reduce((soma, parte) => soma + (escopoAceitaCategoria(escopos, categoriaPromocionalDoSabor(parte.id)) ? parte.preco : 0), 0);
-  return baseElegivel / totalBase;
-}
-
-function percentualEfetivoPromocoes(sabores) {
-  const promocoes = promocoesAtivas();
-  if (!promocoes.length || !Array.isArray(sabores) || !sabores.length) return 0;
-  const partes = sabores.map(id => ({ id, preco:Number(acharSabor(id)?.preco) || 0 }));
-  const totalBase = partes.reduce((soma, parte) => soma + parte.preco, 0);
-  if (totalBase <= 0) return 0;
-  const descontoPonderado = partes.reduce((soma, parte) => {
-    const categoria = categoriaPromocionalDoSabor(parte.id);
-    const maiorPercentual = promocoes.reduce((maior, promocao) => escopoAceitaCategoria(escoposPromocao(promocao), categoria) ? Math.max(maior, Number(promocao.percentual) || 0) : maior, 0);
-    return soma + parte.preco * maiorPercentual;
-  }, 0);
-  return descontoPonderado / totalBase;
-}
-
-function valorComDesconto(valorCentavos, sabores = []) {
-  const percentual = percentualEfetivoPromocoes(sabores);
-  if (percentual <= 0) return Math.round(valorCentavos);
-  const desconto = valorCentavos * percentual / 100;
-  return Math.max(0, Math.round(valorCentavos - desconto));
-}
-
-function precoPromocionalHTML(valorCentavos, ignorarDesconto = false, sabores = []) {
-  if (ignorarDesconto || percentualEfetivoPromocoes(sabores) <= 0) return brl(valorCentavos);
-  return `<span class="preco-promocional"><del>${brl(valorCentavos)}</del><strong>${brl(valorComDesconto(valorCentavos, sabores))}</strong></span>`;
-}
-
-function itemAceitaDescontos(item) {
-  const produto = item && item.sabores && item.sabores[0] ? acharSabor(item.sabores[0]) : null;
-  return !(produto && produto.naoAcumulaDescontos === true);
-}
-
-function valorItemComPromocao(item) {
-  return itemAceitaDescontos(item) ? valorComDesconto(item.total, item.sabores) : item.total;
-}
-
-function rotuloEscoposPromocao(promocao) {
-  const escopos = escoposPromocao(promocao);
-  if (escopos.includes('todos')) return 'em todo o cardápio';
-  const nomes = {
-    pizzas:'em todas as pizzas', pizzas_tradicionais:'nas pizzas tradicionais', pizzas_premium:'nas pizzas premium',
-    esfihas:'em todas as esfihas', esfihas_tradicionais:'nas esfihas tradicionais', esfihas_premium:'nas esfihas premium',
-    esfihas_doces:'nas esfihas doces', combos:'nos combos e ofertas'
-  };
-  return escopos.map(escopo => nomes[escopo]).filter(Boolean).join(', ');
-}
-
-function atualizarBannerDesconto() {
-  const banner = document.getElementById('desconto-geral-banner');
-  if (!banner) return;
-  const promocoes = promocoesAtivas();
-  if (!promocoes.length) {
-    banner.classList.remove('show');
-    banner.innerHTML = '';
-    return;
-  }
-  if (promocoes.length === 1) {
-    const promocao = promocoes[0];
-    banner.innerHTML = `<strong>🏷️ ${esc(promocao.titulo || 'Oferta especial')}</strong><span>${promocao.percentual}% de desconto ${esc(rotuloEscoposPromocao(promocao))}</span>`;
-  } else {
-    const resumo = promocoes.map(promocao => `${promocao.percentual}% ${rotuloEscoposPromocao(promocao)}`).join(' · ');
-    banner.innerHTML = `<strong>🏷️ ${promocoes.length} promoções ativas</strong><span>${esc(resumo)}</span>`;
-  }
-  banner.classList.add('show');
-}
-
-function subtotalDisponivelParaCupom() {
-  return carrinho.reduce((s, item) => s + valorItemComPromocao(item), 0);
-}
-
-function validarCupomLocal(cupom) {
-  if (!cupom || cupom.ativo !== true) return { ok:false, mensagem:'Este cupom está desativado.' };
-  const agora = Date.now();
-  const inicio = millisConfig(cupom.inicio);
-  const fim = millisConfig(cupom.fim);
-  if (!inicio || !fim || agora < inicio) return { ok:false, mensagem:'Este cupom ainda não está disponível.' };
-  if (agora > fim) return { ok:false, mensagem:'Este cupom expirou.' };
-  if (!['percentual', 'fixo'].includes(cupom.tipo) || !Number.isFinite(Number(cupom.valor)) || Number(cupom.valor) <= 0) return { ok:false, mensagem:'Este cupom está inválido.' };
-  if (carrinho.some(item => !itemAceitaDescontos(item))) return { ok:false, mensagem:'Cupons não são acumuláveis com combos especiais.' };
-  if (promocoesAtivas().length && carrinho.some(item => percentualEfetivoPromocoes(item.sabores) > 0) && cupom.acumulaPromocao !== true) return { ok:false, mensagem:'Este cupom não pode ser usado junto com a promoção atual.' };
-  const subtotal = subtotalDisponivelParaCupom();
-  const minimo = Number(cupom.pedidoMinimoCentavos) || 0;
-  if (subtotal < minimo) return { ok:false, mensagem:`Pedido mínimo de ${brl(minimo)} para usar este cupom.` };
-  return { ok:true, mensagem:'' };
-}
-
-function calcularDescontoCupom(subtotalBase) {
-  if (!cupomAplicado || !validarCupomLocal(cupomAplicado).ok) return 0;
-  if (cupomAplicado.tipo === 'percentual') {
-    return Math.min(subtotalBase, Math.round(subtotalBase * Number(cupomAplicado.valor) / 100));
-  }
-  return Math.min(subtotalBase, Math.round(Number(cupomAplicado.valor)));
-}
-
-function atualizarEstadoCupom() {
-  const feedback = document.getElementById('cupom-feedback');
-  const remover = document.getElementById('btn-remover-cupom');
-  const input = document.getElementById('cupom-codigo');
-  if (!feedback || !remover || !input) return;
-
-  feedback.className = 'cupom-feedback';
-  if (!cupomAplicado) {
-    feedback.textContent = '';
-    remover.style.display = 'none';
-    input.disabled = false;
-    return;
-  }
-
-  const validacao = validarCupomLocal(cupomAplicado);
-  input.value = cupomAplicado.codigo || '';
-  input.disabled = true;
-  remover.style.display = 'inline-block';
-  if (validacao.ok) {
-    feedback.textContent = `Cupom ${cupomAplicado.codigo} aplicado!`;
-    feedback.classList.add('success');
-  } else {
-    feedback.textContent = validacao.mensagem;
-    feedback.classList.add('error');
-  }
-}
-
-async function aplicarCupomDigitado(event) {
-  const btn = event.currentTarget;
-  const input = document.getElementById('cupom-codigo');
-  const feedback = document.getElementById('cupom-feedback');
-  const codigo = normalizarCodigoCupom(input.value);
-  feedback.className = 'cupom-feedback';
-
-  if (!carrinho.length) {
-    feedback.textContent = 'Adicione produtos ao carrinho antes de aplicar o cupom.';
-    feedback.classList.add('error');
-    return;
-  }
-  if (!/^[A-Z0-9_-]{3,24}$/.test(codigo)) {
-    feedback.textContent = 'Digite um código de cupom válido.';
-    feedback.classList.add('error');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = '...';
-  try {
-    const id = await hashCodigoCupom(codigo);
-    const doc = await db.collection('cupons').doc(id).get();
-    if (!doc.exists) throw new Error('CUPOM_NAO_ENCONTRADO');
-    const cupom = { id:doc.id, ...doc.data(), codigo };
-    const validacao = validarCupomLocal(cupom);
-    if (!validacao.ok) {
-      feedback.textContent = validacao.mensagem;
-      feedback.classList.add('error');
-      return;
-    }
-    cupomAplicado = cupom;
-    atualizarUI();
-    feedback.textContent = `Cupom ${codigo} aplicado!`;
-    feedback.classList.add('success');
-  } catch (erro) {
-    console.warn('[CUPOM]', erro);
-    feedback.textContent = erro.message === 'CUPOM_NAO_ENCONTRADO' ? 'Cupom não encontrado.' : 'Não foi possível consultar o cupom agora.';
-    feedback.classList.add('error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'APLICAR';
-  }
-}
-
-function removerCupomAplicado() {
-  cupomAplicado = null;
-  const input = document.getElementById('cupom-codigo');
-  if (input) { input.disabled = false; input.value = ''; }
-  atualizarUI();
-}
-
-async function revalidarCupomAplicado() {
-  if (!cupomAplicado) return true;
-  try {
-    const doc = await db.collection('cupons').doc(cupomAplicado.id).get();
-    if (!doc.exists) throw new Error('Cupom removido.');
-    const atualizado = { id:doc.id, ...doc.data(), codigo:cupomAplicado.codigo };
-    const validacao = validarCupomLocal(atualizado);
-    if (!validacao.ok) throw new Error(validacao.mensagem);
-    cupomAplicado = atualizado;
-    atualizarUI();
-    return true;
-  } catch (erro) {
-    removerCupomAplicado();
-    showToast(erro.message || 'O cupom não está mais disponível.', 'error');
-    irParaStep(1);
-    return false;
-  }
-}
-
-const inputCupomCliente = document.getElementById('cupom-codigo');
-if (inputCupomCliente) inputCupomCliente.addEventListener('keydown', event => {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    document.getElementById('btn-aplicar-cupom').click();
-  }
-});
-
-function showToast(msg, type='warning') {
-  const container = document.getElementById('toast-container'); if(!container) return;
-  const toast = document.createElement('div'); toast.className = `toast ${type}`;
-  const icon = type === 'error' ? '⚠️' : type === 'success' ? '✨' : '🛑';
-  toast.innerHTML = `<span style="font-size:20px;">${icon}</span> <span>${esc(msg)}</span>`;
-  container.appendChild(toast);
-  if (navigator.vibrate && type === 'error') navigator.vibrate([50, 50, 50]);
-  setTimeout(() => { toast.style.animation = 'toastOut 0.4s var(--smooth) forwards'; setTimeout(() => toast.remove(), 400); }, 3000);
-}
-
-function textoProximaAbertura() {
-  const agora = new Date();
-  const dias = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-  const horarios = configLoja.horarios || {};
-  for (let deslocamento = 0; deslocamento <= 7; deslocamento++) {
-    const data = new Date(agora);
-    data.setDate(agora.getDate() + deslocamento);
-    const dia = data.getDay();
-    const configurado = horarios[dia];
-    const padraoAtivo = dia === 0 || (dia >= 4 && dia <= 6);
-    const ativo = configurado ? configurado.ativo === true : padraoAtivo;
-    if (!ativo) continue;
-    const abre = (configurado && configurado.abre) || '18:30';
-    const [hora, minuto] = abre.split(':').map(Number);
-    if (deslocamento === 0) {
-      const aberturaHoje = new Date(agora);
-      aberturaHoje.setHours(hora || 18, Number.isFinite(minuto) ? minuto : 30, 0, 0);
-      if (agora < aberturaHoje) return `ABRE ÀS ${abre}`;
-      continue;
-    }
-    if (deslocamento === 1) return `ABRE AMANHÃ ÀS ${abre}`;
-    return `ABRE ${dias[dia]} ÀS ${abre}`;
-  }
-  return 'FECHADO';
-}
-
-function verificarHorario() {
-  try {
-    const parametrosUrl = new URLSearchParams(window.location.search);
-    const isTesteAdmin = (parametrosUrl.get('teste') === 'admin');
-    const agora = new Date(); const diaHoje = agora.getDay(); const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
-    let dentroDoHorario = false;
-    
-    if (configLoja.horarios && configLoja.horarios[diaHoje]) {
-       const configHoje = configLoja.horarios[diaHoje];
-       if (configHoje.ativo) {
-          const [abreH, abreM] = (configHoje.abre || '18:30').split(':').map(Number);
-          const [fechaH, fechaM] = (configHoje.fecha || '23:00').split(':').map(Number);
-          const tempoInicio = (abreH || 18) * 60 + (abreM || 30); const tempoFim = (fechaH || 23) * 60 + (fechaM || 0);
-          if (tempoFim < tempoInicio) { dentroDoHorario = (tempoAtual >= tempoInicio || tempoAtual <= tempoFim); } else { dentroDoHorario = (tempoAtual >= tempoInicio && tempoAtual <= tempoFim); }
-       }
-    } else { if (diaHoje === 0 || (diaHoje >= 4 && diaHoje <= 6)) { dentroDoHorario = (tempoAtual >= (18*60+30) && tempoAtual <= (23*60)); } }
-    
-    const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
-    
-    if (statusManual === 'pausado' || statusManual === 'esgotado') { lojaAberta = false; } 
-    else if (isTesteAdmin) { lojaAberta = true; } 
-    else { lojaAberta = dentroDoHorario; }
-    
-    atualizarStatusLoja();
-  } catch (error) { lojaAberta = false; atualizarStatusLoja(); }
-}
-
-function atualizarStatusLoja() {
-  const badge = document.getElementById('nav-status-badge'); 
-  const bannerPausa = document.getElementById('banner-pausado');
-  const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
-
-  const avisoSimulacao = document.getElementById('aviso-simulacao-checkout');
-
-  if (!lojaAberta) {
-    document.body.classList.add('loja-fechada');
-    if(avisoSimulacao) avisoSimulacao.style.display = 'block';
-    if(badge) {
-        if(statusManual === 'pausado') {
-            badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado';
-            if(bannerPausa) {
-                bannerPausa.innerHTML = '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>';
-                bannerPausa.style.display = 'block';
-            }
-        } else if (statusManual === 'esgotado') {
-            badge.textContent = 'ENCERRADO HOJE'; badge.className = 'status-badge fechado';
-            if(bannerPausa) {
-                bannerPausa.innerHTML = '<h4 class="brand-font">Fechamos por Hoje 🌙</h4><p>Uau! Devido ao enorme sucesso de vendas, nossos insumos esgotaram. Agradecemos muito a preferência e retornaremos amanhã com tudo novo e fresquinho!</p>';
-                bannerPausa.style.display = 'block';
-            }
-        } else {
-            badge.textContent = textoProximaAbertura(); badge.className = 'status-badge fechado';
-            if(bannerPausa) bannerPausa.style.display = 'none';
-        }
-    }
-  } else { 
-      document.body.classList.remove('loja-fechada'); 
-      if(avisoSimulacao) avisoSimulacao.style.display = 'none';
-      if(bannerPausa) bannerPausa.style.display = 'none'; 
-      if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } 
-  }
-}
-
-// Carrinho salvo com carimbo de data. Depois de CARRINHO_VALIDADE_MS sem
-// nenhuma alteração, ele é descartado para não enviar pedido antigo.
-const CARRINHO_VALIDADE_MS = 12 * 60 * 60 * 1000;
-
-const salvar = () => {
-  try {
-    if (!carrinho.length) { localStorage.removeItem(STORAGE_KEY); return; }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 2, ts: Date.now(), itens: carrinho }));
-  } catch (e) {}
-};
-
-function carregar() {
-  try {
-    const bruto = localStorage.getItem(STORAGE_KEY);
-    if (!bruto) { carrinho = []; return; }
-
-    const d = JSON.parse(bruto);
-
-    // Formato antigo (array puro, sem carimbo): aceita e passa a carimbar a partir de agora.
-    if (Array.isArray(d)) {
-      carrinho = d.filter(validarItem);
-      salvar();
-      return;
-    }
-
-    if (!d || !Array.isArray(d.itens)) { carrinho = []; localStorage.removeItem(STORAGE_KEY); return; }
-
-    const idade = Date.now() - (Number(d.ts) || 0);
-    if (idade > CARRINHO_VALIDADE_MS) {
-      carrinho = [];
-      localStorage.removeItem(STORAGE_KEY);
-      setTimeout(() => showToast('Seu carrinho anterior expirou. Monte o pedido novamente para garantir os valores de hoje.', 'warning'), 1200);
-      return;
-    }
-
-    carrinho = d.itens.filter(validarItem);
-  } catch (e) { carrinho = []; }
-}
-const precoBaseVal = ids => ids.length === 2 ? (acharSabor(ids[0]).preco / 2) + (acharSabor(ids[1]).preco / 2) : acharSabor(ids[0]).preco;
-
-// Imagens frontais e padronizadas usadas somente na montagem visual.
-// As fotos originais continuam sendo exibidas nos cards do cardápio.
-const IMAGENS_MONTADOR = {
-  mussarela: 'img/montador/mussarela.webp',
-  calabresa: 'img/montador/calabresa.webp',
-  frango: 'img/montador/frango.webp',
-  mista: 'img/montador/mista.webp',
-  carnesol: 'img/montador/carnesol.webp',
-  frangocat: 'img/montador/frangocat.webp',
-  nordestina: 'img/montador/nordestina.webp',
-  lombo: 'img/montador/lombo.webp',
-  arretada: 'img/montador/arretada.webp',
-  peru: 'img/montador/peru.webp'
-};
-
-const IMAGENS_ESFIHAS_FRONTAIS = {
-  esf_mussarela: 'img/esfihas-frontal/esf_mussarela.webp',
-  esf_frango_mus: 'img/esfihas-frontal/esf_frango_mus.webp',
-  esf_calabresa_mus: 'img/esfihas-frontal/esf_calabresa_mus.webp',
-  esf_carnesol_mus: 'img/esfihas-frontal/esf_carnesol_mus.webp',
-  esf_frango_coalho: 'img/esfihas-frontal/esf_frango_coalho.webp',
-  esf_frango_catupiry: 'img/esfihas-frontal/esf_frango_catupiry.webp',
-  esf_frango_cream: 'img/esfihas-frontal/esf_frango_cream.webp',
-  esf_carnesol_coalho: 'img/esfihas-frontal/esf_carnesol_coalho.webp',
-  esf_carnesol_catupiry: 'img/esfihas-frontal/esf_carnesol_catupiry.webp',
-  esf_carnesol_cream: 'img/esfihas-frontal/esf_carnesol_cream.webp',
-  esf_calabresa_coalho: 'img/esfihas-frontal/esf_calabresa_coalho.webp',
-  esf_calabresa_catupiry: 'img/esfihas-frontal/esf_calabresa_catupiry.webp',
-  esf_calabresa_cream: 'img/esfihas-frontal/esf_calabresa_cream.webp',
-  esf_peru: 'img/esfihas-frontal/esf_peru.webp',
-  esf_bacon_mus: 'img/esfihas-frontal/esf_bacon.webp',
-  esf_choc_leite: 'img/esfihas-frontal/esf_choc.webp',
-  esf_choc_mm: 'img/esfihas-frontal/esf_choc_mm.webp',
-  esf_choc_morango: 'img/esfihas-frontal/esf_choc_morango.webp'
-};
-
-function imagemMontadorPizza(sabor) {
-  return IMAGENS_MONTADOR[sabor.id] || '';
-}
-
-function placeholderProdutoHTML(rotulo) {
-  return `<div class="product-image-placeholder" role="img" aria-label="${esc(rotulo || 'Imagem em preparação')}">
-    <svg viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="32" cy="33" r="18"></circle><path d="M22 38c5-7 15-9 22-4"></path><path d="M25 27h.1M39 25h.1M42 40h.1"></path><path d="M48 11v8M44 15h8"></path><path d="M18 13l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z"></path>
-    </svg>
-  </div>`;
-}
-
-function ehPizzaMeioAMeio(item) {
-  if (!item || !Array.isArray(item.sabores) || item.sabores.length !== 2) return false;
-  return item.sabores.every(id => !id.startsWith('esf_') && !id.startsWith('combo_') && !!acharSabor(id));
-}
-
-function ehPizzaInteira(item) {
-  if (!item || !Array.isArray(item.sabores) || item.sabores.length !== 1) return false;
-  const id = item.sabores[0];
-  return !id.startsWith('esf_') && !id.startsWith('combo_') && !!acharSabor(id);
+.btn-close-promo { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 24px; disp…22736 tokens truncated…or(id);
 }
 
 function ehEsfiha(item) {
@@ -2563,7 +937,17 @@ function validarItem(item) {
     if (def.tipo === 'fixo') { ex.aplicacao = 'toda'; ex.preco = def.preco; } else { if (!['metade', 'metade1', 'metade2', 'toda'].includes(ex.aplicacao)) return false; const pk = ex.aplicacao.startsWith('metade') ? 'metade' : 'toda'; ex.preco = def.precos[pk]; }
     ex.nome = def.nome; return true;
   });
-  item.base = precoBaseVal(item.sabores); item.unitario = item.base + item.extras.reduce((s, e) => s + e.preco, 0); item.total = item.unitario * item.qtd; item.obs = String(item.obs || '').slice(0, 200);
+  const ehPizza = item.sabores.every(id => !id.startsWith('esf_') && !id.startsWith('combo_'));
+  if (ehPizza) {
+    const bordaDef = BORDAS.find(b => b.id === (item.borda && item.borda.id)) || BORDAS[0];
+    item.borda = { id:bordaDef.id, nome:bordaDef.nome, preco:bordaDef.preco };
+  } else {
+    item.borda = null;
+  }
+  item.base = precoBaseVal(item.sabores);
+  item.unitario = item.base + item.extras.reduce((s, e) => s + e.preco, 0) + (item.borda ? item.borda.preco : 0);
+  item.total = item.unitario * item.qtd;
+  item.obs = String(item.obs || '').slice(0, 200);
   if (item.sabores[0] === 'combo_aniversariante' && !validarComboAniversariante(item.comboItens)) return false;
   return true;
 }
@@ -2736,21 +1120,22 @@ function abrirMontadorPizza() {
 
 function renderMontadorPizza() {
   const preview = $('#pizza-montador-preview');
-  const picker = $('#pizza-flavor-picker');
   const instrucao = $('#pizza-montador-instrucao');
   const confirmar = $('#pizza-montador-confirmar');
-  if (!preview || !picker || !instrucao || !confirmar) return;
+  if (!preview || !instrucao || !confirmar) return;
   const primeiro = montagemPizza[0] ? acharSabor(montagemPizza[0]) : null;
   const segundo = montagemPizza[1] ? acharSabor(montagemPizza[1]) : null;
-  const vazio = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,rgba(221,167,58,.06),rgba(221,167,58,.06) 10px,rgba(221,167,58,.12) 10px,rgba(221,167,58,.12) 20px);color:var(--text-muted);font-size:30px;">?</div>`;
-  const lado = (sabor, classe) => {
-    if (!sabor) return `<div class="pizza-preview-half ${classe}">${vazio}</div>`;
-    const imagem = imagemMontadorPizza(sabor);
-    return `<div class="pizza-preview-half ${classe}">${imagem ? `<img src="${esc(imagem)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}</div>`;
+  const lado = (sabor, classe, indice) => {
+    const imagem = sabor ? imagemMontadorPizza(sabor) : '';
+    const conteudo = sabor
+      ? `${imagem ? `<img src="${esc(imagem)}" alt="">` : placeholderProdutoHTML('Imagem em preparação')}<span class="pizza-half-plus">Trocar</span>`
+      : '<span class="pizza-half-plus" aria-hidden="true">+</span>';
+    const rotulo = sabor ? `Trocar ${indice + 1}ª metade, atualmente ${sabor.nome}` : `Escolher sabor da ${indice + 1}ª metade`;
+    return `<button type="button" class="pizza-preview-half pizza-half-choice ${classe} ${sabor ? 'filled' : ''}" data-pizza-lado="${indice}" aria-label="${esc(rotulo)}">${conteudo}</button>`;
   };
   preview.innerHTML = `
     <div class="pizza-preview-stage" aria-label="Montagem visual da pizza meio a meio">
-      <div class="pizza-preview-fill">${lado(primeiro, 'left')}${lado(segundo, 'right')}</div>
+      <div class="pizza-preview-fill">${lado(primeiro, 'left', 0)}${lado(segundo, 'right', 1)}</div>
       <div class="pizza-preview-crust"></div><div class="pizza-preview-divider"></div>
     </div>
     <div class="pizza-preview-legend">
@@ -2758,28 +1143,80 @@ function renderMontadorPizza() {
       <div class="pizza-preview-flavor"><small>2ª metade</small><strong>${segundo ? esc(segundo.nome) : 'Escolha um sabor'}</strong></div>
     </div>
     ${primeiro && segundo ? `<div class="pizza-preview-price">½ ${esc(primeiro.nome)} (${brl(primeiro.preco / 2)}) + ½ ${esc(segundo.nome)} (${brl(segundo.preco / 2)}) = <strong>${brl(precoBaseVal(montagemPizza))}</strong></div>` : ''}`;
-  instrucao.textContent = !primeiro ? 'Escolha o sabor da primeira metade.' : !segundo ? 'Agora escolha o sabor da segunda metade.' : 'Sua pizza está pronta para personalizar.';
-  confirmar.disabled = montagemPizza.length !== 2;
+  instrucao.textContent = !primeiro ? 'Toque no + da primeira metade para escolher o sabor.' : !segundo ? 'Agora toque no + da segunda metade.' : 'Sabores escolhidos. Continue para selecionar a borda.';
+  confirmar.disabled = !(primeiro && segundo);
+}
+
+function abrirSeletorSabor(lado) {
+  ladoPizzaEmEdicao = Number(lado) === 1 ? 1 : 0;
+  const etapa = $('#pizza-sabor-etapa');
+  const instrucao = $('#pizza-sabor-instrucao');
+  if (etapa) etapa.textContent = `Sabor ${ladoPizzaEmEdicao + 1}`;
+  if (instrucao) instrucao.textContent = `Escolha o sabor da ${ladoPizzaEmEdicao + 1}ª metade.`;
   const esgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
   const pizzas = [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
-  picker.innerHTML = pizzas.map(sabor => {
+  $('#pizza-flavor-picker').innerHTML = pizzas.map(sabor => {
     const indisponivel = esgotados.has(sabor.id);
-    const selecionado = montagemPizza.includes(sabor.id);
+    const selecionado = montagemPizza[ladoPizzaEmEdicao] === sabor.id;
+    const categoria = CARDAPIO.premium.some(item => item.id === sabor.id) ? 'Premium' : 'Tradicional';
     return `<button type="button" class="pizza-flavor-option ${selecionado ? 'selected' : ''}" data-pizza-sabor="${sabor.id}" ${indisponivel ? 'disabled' : ''}>
-      <img src="${esc(sabor.img)}" alt=""><span><strong>${esc(sabor.nome)}</strong><small>${indisponivel ? 'Indisponível' : `Metade: ${brl(sabor.preco / 2)}`}</small></span>
+      <img src="${esc(sabor.img)}" alt=""><span><strong>${esc(sabor.nome)}</strong><small>${esc(sabor.desc)}</small><small>${esc(categoria)} · <span class="pizza-flavor-price">${indisponivel ? 'Indisponível' : `Metade: ${brl(sabor.preco / 2)}`}</span></small></span><i class="pizza-flavor-radio" aria-hidden="true"></i>
     </button>`;
   }).join('');
+  abrirModal('pizza-sabor-overlay');
 }
 
 function selecionarSaborMontador(id) {
   if (!acharSabor(id) || (configLoja.itensEsgotados || []).includes(id)) return;
-  if (montagemPizza.includes(id)) {
+  const outroLado = ladoPizzaEmEdicao === 0 ? 1 : 0;
+  if (montagemPizza[outroLado] === id) {
     showToast('Escolha dois sabores diferentes. Para um único sabor, use Pizza Inteira.', 'warning');
     return;
   }
-  if (montagemPizza.length >= 2) montagemPizza = [];
-  montagemPizza.push(id);
+  montagemPizza[ladoPizzaEmEdicao] = id;
+  fecharModal('pizza-sabor-overlay');
   renderMontadorPizza();
+  if (montagemPizza[0] && montagemPizza[1]) {
+    setTimeout(() => abrirFluxoBorda([...montagemPizza]), 320);
+  }
+}
+
+function renderSeletorBorda() {
+  const lista = $('#pizza-borda-list');
+  if (!lista) return;
+  lista.innerHTML = BORDAS.map(borda => `
+    <button type="button" class="borda-option ${borda.id === bordaSelecionadaFluxo ? 'selected' : ''}" data-borda-id="${borda.id}">
+      <strong>${esc(borda.nome)}</strong><small>${borda.preco ? `+ ${brl(borda.preco)}` : 'R$ 0,00'}</small>
+    </button>`).join('');
+}
+
+function abrirFluxoBorda(ids, bordaAtual = null, retornarAoBuilder = false) {
+  saboresParaBorda = [...ids];
+  bordaSelecionadaFluxo = bordaAtual && BORDAS.some(b => b.id === bordaAtual.id) ? bordaAtual.id : 'sem_borda';
+  bordaRetornoBuilder = retornarAoBuilder;
+  renderSeletorBorda();
+  abrirModal('pizza-borda-overlay');
+}
+
+function confirmarBordaPizza() {
+  const borda = BORDAS.find(b => b.id === bordaSelecionadaFluxo) || BORDAS[0];
+  fecharModal('pizza-borda-overlay');
+  if (bordaRetornoBuilder && builder) {
+    builder.borda = { ...borda };
+    bordaRetornoBuilder = false;
+    atualizarResumoBordaBuilder();
+    atualizarBuilderTotal();
+    return;
+  }
+  const saboresEscolhidos = [...saboresParaBorda];
+  if ($('#pizza-montador-overlay').classList.contains('open')) fecharModal('pizza-montador-overlay');
+  modo = 'inteira';
+  meioSelecionado = null;
+  $('#btn-mode-inteira').setAttribute('aria-pressed', 'true');
+  $('#btn-mode-meio').setAttribute('aria-pressed', 'false');
+  atualizarBanner();
+  atualizarBotoes();
+  setTimeout(() => abrirBuilder(saboresEscolhidos, borda), 320);
 }
 
 function trocarModo(novo) {
@@ -2808,13 +1245,23 @@ function escolherSabor(id) {
      return abrirBuilder([id]); 
   }
 
-  if (modo === 'inteira') return abrirBuilder([id]);
-  if (!meioSelecionado) { meioSelecionado = id; atualizarBanner(); atualizarBotoes(); return; }
-  if (meioSelecionado === id) { meioSelecionado = null; atualizarBanner(); atualizarBotoes(); return; }
-  const par = [meioSelecionado, id]; meioSelecionado = null; atualizarBanner(); atualizarBotoes(); abrirBuilder(par);
+  if (modo === 'inteira') return abrirFluxoBorda([id]);
+  abrirMontadorPizza();
 }
 
-function abrirBuilder(ids) {
+function atualizarResumoBordaBuilder() {
+  const resumo = $('#builder-borda-summary');
+  const texto = $('#builder-borda-texto');
+  if (!resumo || !texto || !builder) return;
+  if (!builder.borda) {
+    resumo.classList.remove('show');
+    return;
+  }
+  texto.textContent = `${builder.borda.nome}${builder.borda.preco ? ` (+ ${brl(builder.borda.preco)})` : ''}`;
+  resumo.classList.add('show');
+}
+
+function abrirBuilder(ids, borda = null) {
   if (ids[0] === 'combo_aniversariante') {
     const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
     if (esgotados.includes('esf_choc_leite')) {
@@ -2822,12 +1269,15 @@ function abrirBuilder(ids) {
       return;
     }
   }
-  builder = { sabores: ids, qtd: 1, comboItens: [] }; const nomes = ids.map(i => acharSabor(i).nome);
+  const ehPizza = !ids[0].startsWith('esf_') && !ids[0].startsWith('combo_');
+  const bordaDef = ehPizza ? (BORDAS.find(b => b.id === (borda && borda.id)) || BORDAS[0]) : null;
+  builder = { sabores: ids, qtd: 1, comboItens: [], borda: bordaDef ? { ...bordaDef } : null }; const nomes = ids.map(i => acharSabor(i).nome);
   const isCombo = ids[0].startsWith('combo_');
   const isEsfiha = ids[0].startsWith('esf_');
   
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
   renderPreviaPizza(ids);
+  atualizarResumoBordaBuilder();
   const produtoBuilder = acharSabor(ids[0]);
   $('#builder-base-valor').innerHTML = precoPromocionalHTML(precoBaseVal(ids), produtoBuilder && produtoBuilder.naoAcumulaDescontos === true, ids);
   
@@ -3010,7 +1460,8 @@ function lerExtras() {
 function atualizarBuilderTotal() { 
   if (!builder) return; builder.qtd = parseInt($('#qty-val').textContent, 10) || 1; 
   const extras = lerExtras().reduce((s, e) => s + e.preco, 0); 
-  const totalBruto = (precoBaseVal(builder.sabores) + extras) * builder.qtd;
+  const borda = builder.borda ? builder.borda.preco : 0;
+  const totalBruto = (precoBaseVal(builder.sabores) + extras + borda) * builder.qtd;
   const produtoBuilder = acharSabor(builder.sabores[0]);
   $('#builder-subtotal').innerHTML = precoPromocionalHTML(totalBruto, produtoBuilder && produtoBuilder.naoAcumulaDescontos === true, builder.sabores); 
 }
@@ -3023,12 +1474,14 @@ function saoItensIguais(itemA, itemB) {
     const strA = JSON.stringify({
         s: [...itemA.sabores].sort(),
         e: [...(itemA.extras || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => x.id + x.aplicacao),
+        b: itemA.borda ? itemA.borda.id : '',
         o: (itemA.obs || "").trim(),
         c: [...(itemA.comboItens || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => `${x.categoria}:${x.id}:${x.qtd}`)
     });
     const strB = JSON.stringify({
         s: [...itemB.sabores].sort(),
         e: [...(itemB.extras || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => x.id + x.aplicacao),
+        b: itemB.borda ? itemB.borda.id : '',
         o: (itemB.obs || "").trim(),
         c: [...(itemB.comboItens || [])].sort((a,b) => a.id.localeCompare(b.id)).map(x => `${x.categoria}:${x.id}:${x.qtd}`)
     });
@@ -3045,7 +1498,7 @@ function adicionar() {
       return;
   }
   
-  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim(), comboItens: builder.comboItens ? builder.comboItens.map(i => ({...i})) : [] };
+  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, borda: builder.borda ? { ...builder.borda } : null, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim(), comboItens: builder.comboItens ? builder.comboItens.map(i => ({...i})) : [] };
   if (!validarItem(novoItem)) return; 
   
   let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
@@ -3210,6 +1663,7 @@ function atualizarUI() {
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
     const det = []; 
     detalhesComboTexto(i).forEach(linha => det.push(esc(linha)));
+    if (i.borda) det.push(`${esc(i.borda.nome)}${i.borda.preco ? ` (+ ${brl(i.borda.preco)})` : ''}`);
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join(' · ')); 
     if (i.obs) det.push('Obs: ' + esc(i.obs));
     
@@ -3403,6 +1857,7 @@ function montarRevisao() {
   $('#review-items').innerHTML = carrinho.map(i => {
     const det = [];
     detalhesComboTexto(i).forEach(linha => det.push(esc(linha)));
+    if (i.borda) det.push(`${esc(i.borda.nome)}${i.borda.preco ? ` (+ ${brl(i.borda.preco)})` : ''}`);
     if (i.extras.length) det.push(i.extras.map(e => `+ ${esc(e.nome)} (${esc(rotuloAplicacao(e.aplicacao, i.sabores))})`).join('<br>'));
     if (i.obs) det.push(`Obs: ${esc(i.obs)}`);
     const detalhesHTML = det.length > 0 ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4;">${det.join('<br>')}</div>` : '';
@@ -3593,6 +2048,7 @@ function montarPedido() {
     forma_pagamento: pgtoStr,
     itens: carrinho.map(i => ({
       nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
+      borda: i.borda ? { id:i.borda.id, nome:i.borda.nome, preco_centavos:i.borda.preco } : null,
       combo_itens: (i.comboItens || []).map(ci => ({ id:ci.id, nome:acharSabor(ci.id)?.nome || ci.id, qtd:ci.qtd, categoria:ci.categoria })),
       extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
       obs: i.obs,
@@ -3643,6 +2099,7 @@ function montarMensagem(p) {
       const escolhas = (i.combo_itens || []).filter(ci => ci.categoria === categoria).map(ci => `${ci.qtd}× ${ci.nome}`);
       if (escolhas.length) L.push(`    • ${rotulo}: ${escolhas.join(', ')}`);
     });
+    if (i.borda) L.push(`    • ${i.borda.nome}${i.borda.preco_centavos ? ` — ${brl(i.borda.preco_centavos)}` : ''}`);
     i.extras.forEach(e => L.push(`    • ${e.nome} (${e.aplicacao}) — ${brl(e.preco_centavos)}`));
     if (i.obs) L.push(`    • Obs: ${i.obs}`);
   });
@@ -3806,9 +2263,20 @@ document.addEventListener('click', e => {
     alterarEsfihaRapida(esfihaRapidaBtn.dataset.esfihaId, parseInt(esfihaRapidaBtn.dataset.esfihaDelta, 10));
     return;
   }
+  const metadeBtn = e.target.closest('[data-pizza-lado]');
+  if (metadeBtn) {
+    abrirSeletorSabor(parseInt(metadeBtn.dataset.pizzaLado, 10));
+    return;
+  }
   const pizzaBtn = e.target.closest('[data-pizza-sabor]');
   if (pizzaBtn) {
     selecionarSaborMontador(pizzaBtn.dataset.pizzaSabor);
+    return;
+  }
+  const bordaBtn = e.target.closest('[data-borda-id]');
+  if (bordaBtn) {
+    bordaSelecionadaFluxo = bordaBtn.dataset.bordaId;
+    renderSeletorBorda();
     return;
   }
   const comboBtn = e.target.closest('[data-combo-sabor]');
@@ -3829,13 +2297,12 @@ document.addEventListener('click', e => {
 
 $('#pizza-montador-limpar').addEventListener('click', () => { montagemPizza = []; renderMontadorPizza(); });
 $('#pizza-montador-confirmar').addEventListener('click', () => {
-  if (montagemPizza.length !== 2) return;
-  const saboresEscolhidos = [...montagemPizza];
-  fecharModal('pizza-montador-overlay');
-  modo = 'inteira';
-  $('#btn-mode-inteira').setAttribute('aria-pressed', 'true');
-  $('#btn-mode-meio').setAttribute('aria-pressed', 'false');
-  setTimeout(() => abrirBuilder(saboresEscolhidos), 320);
+  if (!montagemPizza[0] || !montagemPizza[1]) return;
+  abrirFluxoBorda([...montagemPizza]);
+});
+$('#pizza-borda-confirmar').addEventListener('click', confirmarBordaPizza);
+$('#builder-borda-alterar').addEventListener('click', () => {
+  if (builder && builder.borda) abrirFluxoBorda(builder.sabores, builder.borda, true);
 });
 
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
