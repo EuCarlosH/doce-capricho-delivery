@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-fluxo-pedido-pronto">
+<meta name="dca-app-version" content="2026.09.24-recebimento-profissional">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -593,19 +593,41 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .delivery-card.active svg { stroke: var(--gold-dark); } :root[data-theme="dark"] .delivery-card.active svg { stroke: var(--gold); }
 .delivery-card.active strong { color: var(--gold-dark); } :root[data-theme="dark"] .delivery-card.active strong { color: var(--gold); }
 .delivery-card.active small { color: var(--text-main); font-weight: 600;} :root[data-theme="dark"] .delivery-card.active small { color: var(--gold-dark); font-weight: 400;}
-.schedule-choice { margin-top:4px; padding:16px; border:1px solid var(--border-light); border-radius:16px; background:var(--bg-main); }
-.schedule-choice > strong { display:block; margin-bottom:10px; color:var(--text-main); font-size:13px; }
-.schedule-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.schedule-option { padding:13px 10px; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); color:var(--text-main); font-family:inherit; cursor:pointer; text-align:center; transition:.25s ease; }
+.schedule-choice { margin-top:4px; padding:20px; border:1px solid var(--border-light); border-radius:20px; background:var(--bg-main); overflow:hidden; }
+.schedule-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.schedule-heading span { display:block; color:var(--text-main); font-size:15px; font-weight:850; }
+.schedule-heading small { display:block; margin-top:4px; color:var(--text-muted); font-size:10px; line-height:1.35; }
+.schedule-option { width:100%; padding:14px 16px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-card); color:var(--text-main); font-family:inherit; cursor:pointer; text-align:left; transition:.25s ease; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .schedule-option strong { display:block; font-size:12px; }
-.schedule-option small { display:block; margin-top:4px; color:var(--text-muted); font-size:9.5px; line-height:1.35; }
+.schedule-option small { display:block; margin-top:3px; color:var(--text-muted); font-size:9.5px; line-height:1.35; }
+.schedule-option .schedule-now-icon { width:34px; height:34px; flex:none; border-radius:50%; display:grid; place-items:center; color:var(--gold-dark); background:rgba(221,167,58,.12); font-size:16px; }
 .schedule-option.active { border-color:var(--gold); box-shadow:0 0 0 2px rgba(221,167,58,.16); color:var(--gold-dark); }
 .schedule-option:disabled { opacity:.42; cursor:not-allowed; }
-.schedule-time-wrap { display:none; margin-top:12px; }
+.schedule-separator { display:flex; align-items:center; gap:10px; margin:17px 0 12px; color:var(--text-muted); font-size:9px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
+.schedule-separator::before,.schedule-separator::after { content:''; flex:1; height:1px; background:var(--border-light); }
+.schedule-section-label { display:block; margin:14px 0 9px; color:var(--text-main); font-size:11px; font-weight:800; }
+.schedule-date-scroller { display:flex; gap:9px; overflow-x:auto; padding:2px 2px 8px; scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:rgba(221,167,58,.45) transparent; }
+.schedule-date { min-width:64px; padding:10px 8px 9px; border:1px solid var(--border-light); border-radius:16px; background:var(--bg-card); color:var(--text-main); font-family:inherit; text-align:center; cursor:pointer; scroll-snap-align:start; transition:.22s ease; }
+.schedule-date span,.schedule-date small { display:block; text-transform:uppercase; }
+.schedule-date span { color:var(--text-muted); font-size:8px; font-weight:850; letter-spacing:.45px; }
+.schedule-date strong { display:block; margin:3px 0 1px; font-size:18px; line-height:1; }
+.schedule-date small { color:var(--text-muted); font-size:8px; font-weight:750; }
+.schedule-date.active { background:var(--text-main); border-color:var(--text-main); color:var(--bg-card); box-shadow:0 7px 18px rgba(44,32,24,.16); }
+.schedule-date.active span,.schedule-date.active small { color:inherit; opacity:.76; }
+.schedule-date:disabled { opacity:.32; cursor:not-allowed; }
+.schedule-time-wrap { display:none; margin-top:4px; }
 .schedule-time-wrap.show { display:block; animation:fadeIn .25s ease; }
-.schedule-time-wrap select { width:100%; }
-.schedule-feedback { display:block; margin-top:8px; color:var(--text-muted); font-size:10px; line-height:1.45; }
+.schedule-time-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.schedule-time { min-height:40px; padding:9px 5px; border:1px solid var(--border-light); border-radius:999px; background:var(--bg-card); color:var(--text-main); font-family:inherit; font-size:11px; font-weight:800; cursor:pointer; transition:.22s ease; }
+.schedule-time.active { background:var(--text-main); border-color:var(--text-main); color:var(--bg-card); box-shadow:0 5px 14px rgba(44,32,24,.15); }
+.schedule-time:disabled { opacity:.35; cursor:not-allowed; }
+.schedule-summary { display:none; align-items:center; gap:8px; margin-top:13px; padding:11px 13px; border:1px solid rgba(221,167,58,.35); border-radius:12px; background:rgba(221,167,58,.08); color:var(--text-main); font-size:10.5px; line-height:1.4; }
+.schedule-summary.show { display:flex; }
+.schedule-summary svg { width:16px; height:16px; flex:none; stroke:var(--gold-dark); }
+.schedule-feedback { display:block; margin-top:9px; color:var(--text-muted); font-size:10px; line-height:1.45; }
 :root[data-theme="dark"] .schedule-option.active { color:var(--gold); }
+:root[data-theme="dark"] .schedule-date.active,:root[data-theme="dark"] .schedule-time.active { color:#211710; background:var(--gold); border-color:var(--gold); }
+@media(max-width:430px){.schedule-choice{padding:16px}.schedule-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.schedule-date{min-width:60px}}
 
 #zona-distancia-hint { display: none; font-size: 12px; font-weight: 600; color: var(--text-muted); background: rgba(47, 133, 90, 0.08); border: 1px dashed var(--success); border-radius: 10px; padding: 10px 14px; margin-top: 12px; line-height: 1.5; }
 #zona-distancia-hint strong { color: var(--success); }
@@ -1377,21 +1399,29 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <!-- STEP 2: RECEBIMENTO -->
       <div class="pedido-step-panel" id="step-panel-2" data-step="2" style="display:none;">
         <div class="schedule-choice" id="schedule-choice">
-          <strong>Quando deseja receber?</strong>
-          <input type="hidden" id="cli-momento-pedido" value="agora">
-          <div class="schedule-options">
-            <button type="button" class="schedule-option active" data-momento="agora" id="schedule-option-agora"><strong>O mais rápido possível</strong><small>Disponível enquanto a loja estiver aberta</small></button>
-            <button type="button" class="schedule-option" data-momento="agendado" id="schedule-option-agendado"><strong>Agendar para hoje</strong><small>Escolha um horário disponível</small></button>
+          <div class="schedule-heading">
+            <div><span>Quando você quer receber?</span><small>Escolha receber agora ou reserve o melhor horário.</small></div>
           </div>
+          <input type="hidden" id="cli-momento-pedido" value="agora">
+          <input type="hidden" id="cli-data-agendada" value="">
+          <input type="hidden" id="cli-horario-agendado" value="">
+          <button type="button" class="schedule-option active" data-momento="agora" id="schedule-option-agora">
+            <div><strong>O mais rápido possível</strong><small>Seu pedido entra na fila assim que for confirmado</small></div>
+            <span class="schedule-now-icon" aria-hidden="true">⚡</span>
+          </button>
+          <div class="schedule-separator">ou agende</div>
+          <span class="schedule-section-label">Escolha o dia</span>
+          <div class="schedule-date-scroller" id="schedule-date-scroller" aria-label="Datas disponíveis"></div>
           <div class="schedule-time-wrap" id="schedule-time-wrap">
-            <label for="cli-horario-agendado">Horário</label>
-            <select id="cli-horario-agendado"><option value="">Carregando horários...</option></select>
+            <span class="schedule-section-label">Escolha o horário</span>
+            <div class="schedule-time-grid" id="schedule-time-grid" aria-label="Horários disponíveis"></div>
             <span class="schedule-feedback" id="schedule-feedback"></span>
           </div>
+          <div class="schedule-summary" id="schedule-summary">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+            <span id="schedule-summary-text"></span>
+          </div>
         </div>
-
-        <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
-        <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
 
         <div>
           <label>Como deseja receber?</label>
@@ -1412,6 +1442,9 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
             </div>
           </div>
         </div>
+
+        <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
+        <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
 
         <div id="box-endereco">
           <div id="box-taxas-entrega" style="margin-bottom: 25px;">
@@ -2141,9 +2174,13 @@ const minutosHorario = horario => { const [h,m] = String(horario || '').split(':
 const horarioMinutos = minutos => `${String(Math.floor(minutos / 60)).padStart(2,'0')}:${String(minutos % 60).padStart(2,'0')}`;
 const arredondarIntervalo = (minutos, intervalo) => Math.ceil(minutos / intervalo) * intervalo;
 
-function expedienteHoje() {
-  const agora = new Date();
-  const dia = agora.getDay();
+const dataISOParaLocal = valor => {
+  const [ano, mes, dia] = String(valor || '').split('-').map(Number);
+  return ano && mes && dia ? new Date(ano, mes - 1, dia, 12, 0, 0, 0) : null;
+};
+
+function expedienteNaData(data) {
+  const dia = data.getDay();
   const definido = configLoja.horarios && configLoja.horarios[dia];
   const padraoAtivo = dia === 0 || (dia >= 4 && dia <= 6);
   const ativo = definido ? definido.ativo === true : padraoAtivo;
@@ -2155,27 +2192,31 @@ function expedienteHoje() {
   return { abre, fecha, inicio, fim };
 }
 
-function politicaPermiteAgendamento() {
+function expedienteHoje() { return expedienteNaData(new Date()); }
+
+function politicaPermiteAgendamento(data = new Date()) {
   const cfg = configAgendamento();
   const status = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
   if (!cfg.ativo || status === 'esgotado') return false;
   if (status === 'pausado' && !cfg.permitirDurantePausa) return false;
-  return !!expedienteHoje();
+  return !!expedienteNaData(data);
 }
 
-function gerarHorariosHoje(ocupacao = {}) {
-  if (!politicaPermiteAgendamento()) return [];
+function gerarHorariosParaData(dataISO, ocupacao = {}) {
+  const data = dataISOParaLocal(dataISO);
+  if (!data || !politicaPermiteAgendamento(data)) return [];
   const cfg = configAgendamento();
-  const expediente = expedienteHoje();
+  const expediente = expedienteNaData(data);
   const agora = new Date();
   const agoraMinutos = agora.getHours() * 60 + agora.getMinutes();
+  const hojeISO = dataLocalISO(agora);
   const intervalo = Math.max(5, Number(cfg.intervaloMinutos) || 30);
   const buffer = Number.isFinite(Number(cfg.bufferAberturaMinutos)) ? Math.max(0, Number(cfg.bufferAberturaMinutos)) : 30;
   const antecedencia = Number.isFinite(Number(cfg.antecedenciaMinutos)) ? Math.max(0, Number(cfg.antecedenciaMinutos)) : 60;
   const primeiroAposAbertura = expediente.inicio + buffer;
-  const limiteOperacional = agoraMinutos <= expediente.inicio
-    ? primeiroAposAbertura
-    : Math.max(primeiroAposAbertura, agoraMinutos + antecedencia);
+  const limiteOperacional = dataISO === hojeISO
+    ? (agoraMinutos <= expediente.inicio ? primeiroAposAbertura : Math.max(primeiroAposAbertura, agoraMinutos + antecedencia))
+    : primeiroAposAbertura;
   const primeiro = arredondarIntervalo(limiteOperacional, intervalo);
   const capacidade = Math.max(1, Number(cfg.capacidadePorHorario) || 3);
   const horarios = [];
@@ -2187,53 +2228,142 @@ function gerarHorariosHoje(ocupacao = {}) {
   return horarios;
 }
 
+function gerarHorariosHoje(ocupacao = {}) { return gerarHorariosParaData(dataLocalISO(new Date()), ocupacao); }
+
+function datasVisiveisAgenda() {
+  const datas = [];
+  const inicio = new Date();
+  inicio.setHours(12, 0, 0, 0);
+  for (let i = 0; i < 10; i++) {
+    const data = new Date(inicio);
+    data.setDate(inicio.getDate() + i);
+    datas.push(data);
+  }
+  return datas;
+}
+
+const nomeDiaCurto = data => data.toLocaleDateString('pt-BR', { weekday:'short' }).replace('.', '').toUpperCase();
+const nomeMesCurto = data => data.toLocaleDateString('pt-BR', { month:'short' }).replace('.', '').toUpperCase();
+function rotuloDataCurto(data) {
+  const diferenca = Math.round((data.setHours(12,0,0,0) - new Date().setHours(12,0,0,0)) / 86400000);
+  if (diferenca === 0) return 'HOJE';
+  if (diferenca === 1) return 'AMANHÃ';
+  return nomeDiaCurto(data);
+}
+function formatarDataAgenda(dataISO, comAno = false) {
+  const data = dataISOParaLocal(dataISO);
+  if (!data) return '';
+  const opcoes = { weekday:'long', day:'2-digit', month:'long' };
+  if (comAno) opcoes.year = 'numeric';
+  return data.toLocaleDateString('pt-BR', opcoes);
+}
+
+let ocupacaoAgendaAtual = {};
+
+function atualizarResumoAgendamento() {
+  const resumo = document.getElementById('schedule-summary');
+  const texto = document.getElementById('schedule-summary-text');
+  if (!resumo || !texto) return;
+  const momento = document.getElementById('cli-momento-pedido').value;
+  if (momento === 'agora') {
+    resumo.classList.toggle('show', lojaAberta);
+    texto.innerHTML = '<strong>Recebimento o mais rápido possível</strong>';
+    return;
+  }
+  const dataISO = document.getElementById('cli-data-agendada').value;
+  const hora = document.getElementById('cli-horario-agendado').value;
+  resumo.classList.toggle('show', !!(dataISO && hora));
+  texto.innerHTML = dataISO && hora ? `Agendado para <strong>${esc(formatarDataAgenda(dataISO))} às ${esc(hora)}</strong>` : '';
+}
+
+function renderizarHorariosDaData(dataISO) {
+  const wrap = document.getElementById('schedule-time-wrap');
+  const grid = document.getElementById('schedule-time-grid');
+  const feedback = document.getElementById('schedule-feedback');
+  const campoHora = document.getElementById('cli-horario-agendado');
+  const horarios = gerarHorariosParaData(dataISO, ocupacaoAgendaAtual[dataISO] || {});
+  const horaAtual = campoHora.value;
+  if (!horarios.some(slot => slot.hora === horaAtual)) campoHora.value = '';
+  grid.innerHTML = horarios.length
+    ? horarios.map(slot => `<button type="button" class="schedule-time${slot.hora === campoHora.value ? ' active' : ''}" data-hora="${slot.hora}">${slot.hora === campoHora.value ? '✓ ' : ''}${slot.hora}</button>`).join('')
+    : '<button type="button" class="schedule-time" disabled>Sem horários</button>';
+  wrap.classList.add('show');
+  feedback.textContent = horarios.length ? 'Os horários são reservados após a confirmação do pedido.' : 'Não há horários disponíveis nesta data.';
+  atualizarResumoAgendamento();
+}
+
+function selecionarDataAgendamento(dataISO) {
+  const data = dataISOParaLocal(dataISO);
+  if (!data || !gerarHorariosParaData(dataISO, ocupacaoAgendaAtual[dataISO] || {}).length) return;
+  document.getElementById('cli-momento-pedido').value = 'agendado';
+  document.getElementById('cli-data-agendada').value = dataISO;
+  document.getElementById('cli-horario-agendado').value = '';
+  document.querySelectorAll('.schedule-date').forEach(el => el.classList.toggle('active', el.dataset.data === dataISO));
+  document.getElementById('schedule-option-agora').classList.remove('active');
+  renderizarHorariosDaData(dataISO);
+  atualizarAvisoCheckout();
+}
+
+function renderizarDatasAgenda() {
+  const scroller = document.getElementById('schedule-date-scroller');
+  const selecionada = document.getElementById('cli-data-agendada').value;
+  scroller.innerHTML = datasVisiveisAgenda().map(data => {
+    const dataISO = dataLocalISO(data);
+    const disponivel = gerarHorariosParaData(dataISO, ocupacaoAgendaAtual[dataISO] || {}).length > 0;
+    return `<button type="button" class="schedule-date${selecionada === dataISO ? ' active' : ''}" data-data="${dataISO}" ${disponivel ? '' : 'disabled'} aria-label="${esc(formatarDataAgenda(dataISO))}"><span>${rotuloDataCurto(new Date(data))}</span><strong>${String(data.getDate()).padStart(2,'0')}</strong><small>${nomeMesCurto(data)}</small></button>`;
+  }).join('');
+}
+
 let atualizacaoAgendaSeq = 0;
 async function atualizarOpcoesAgendamento() {
   const seq = ++atualizacaoAgendaSeq;
   const btnAgora = document.getElementById('schedule-option-agora');
-  const btnAgendar = document.getElementById('schedule-option-agendado');
-  const select = document.getElementById('cli-horario-agendado');
+  const campoData = document.getElementById('cli-data-agendada');
+  const campoHora = document.getElementById('cli-horario-agendado');
   const feedback = document.getElementById('schedule-feedback');
-  if (!btnAgora || !btnAgendar || !select || !feedback) return;
-  const horarioSelecionado = select.value;
+  if (!btnAgora || !campoData || !campoHora || !feedback) return;
   btnAgora.disabled = !lojaAberta;
-  btnAgendar.disabled = true;
-  select.innerHTML = '<option value="">Consultando horários...</option>';
+  document.getElementById('schedule-date-scroller').innerHTML = '<span class="schedule-feedback">Consultando agenda...</span>';
+  document.getElementById('schedule-time-grid').innerHTML = '';
   feedback.textContent = '';
-  let ocupacao = {};
-  if (politicaPermiteAgendamento() && CONFIG.usarFirebase && window.firebase) {
+  ocupacaoAgendaAtual = {};
+  if (configAgendamento().ativo && CONFIG.usarFirebase && window.firebase) {
     try {
-      const hoje = dataLocalISO(new Date());
       const snap = await db.collection('configuracoes').doc('estatisticas').get();
       const agendaSlots = snap.exists && snap.data().agendaSlots ? snap.data().agendaSlots : {};
       Object.entries(agendaSlots).forEach(([chave, reservas]) => {
-        if (chave.startsWith(`${hoje}_`)) ocupacao[chave.slice(hoje.length + 1).replace('-', ':')] = Number(reservas) || 0;
+        const match = chave.match(/^(\d{4}-\d{2}-\d{2})_(\d{2})-(\d{2})$/);
+        if (!match) return;
+        const [, dataISO, hora, minuto] = match;
+        if (!ocupacaoAgendaAtual[dataISO]) ocupacaoAgendaAtual[dataISO] = {};
+        ocupacaoAgendaAtual[dataISO][`${hora}:${minuto}`] = Number(reservas) || 0;
       });
     } catch (erro) {
       console.warn('[AGENDA] Não foi possível consultar a ocupação:', erro.code || erro.message);
       if (seq !== atualizacaoAgendaSeq) return;
-      select.innerHTML = '<option value="">Horários indisponíveis</option>';
-      feedback.textContent = 'Não foi possível consultar a agenda. Tente novamente.';
-      btnAgendar.disabled = true;
+      document.getElementById('schedule-date-scroller').innerHTML = '';
+      feedback.textContent = 'Não foi possível consultar a agenda. Tente novamente em instantes.';
       if (lojaAberta) selecionarMomentoPedido('agora');
       return;
     }
   }
   if (seq !== atualizacaoAgendaSeq) return;
-  const horarios = gerarHorariosHoje(ocupacao);
-  btnAgendar.disabled = horarios.length === 0;
-  select.innerHTML = horarios.length
-    ? '<option value="">Escolha um horário</option>' + horarios.map(s => `<option value="${s.hora}">${s.hora}</option>`).join('')
-    : '<option value="">Nenhum horário disponível hoje</option>';
-  if (horarioSelecionado && horarios.some(slot => slot.hora === horarioSelecionado)) select.value = horarioSelecionado;
+  renderizarDatasAgenda();
   const atual = document.getElementById('cli-momento-pedido').value;
-  if (!lojaAberta && horarios.length) selecionarMomentoPedido('agendado');
-  else if (lojaAberta && (atual !== 'agendado' || !horarios.length)) selecionarMomentoPedido('agora');
-  else if (!lojaAberta && !horarios.length) {
-    document.getElementById('cli-momento-pedido').value = 'agendado';
-    document.querySelectorAll('[data-momento]').forEach(el => el.classList.remove('active'));
-    document.getElementById('schedule-time-wrap').classList.add('show');
-    feedback.textContent = 'A loja não recebe mais pedidos para hoje.';
+  const dataSelecionadaValida = campoData.value && gerarHorariosParaData(campoData.value, ocupacaoAgendaAtual[campoData.value] || {}).length;
+  if (atual === 'agendado' && dataSelecionadaValida) {
+    document.querySelectorAll('.schedule-date').forEach(el => el.classList.toggle('active', el.dataset.data === campoData.value));
+    renderizarHorariosDaData(campoData.value);
+  } else if (lojaAberta) {
+    selecionarMomentoPedido('agora');
+  } else {
+    const primeira = datasVisiveisAgenda().map(dataLocalISO).find(dataISO => gerarHorariosParaData(dataISO, ocupacaoAgendaAtual[dataISO] || {}).length);
+    if (primeira) selecionarDataAgendamento(primeira);
+    else {
+      document.getElementById('cli-momento-pedido').value = 'agendado';
+      document.getElementById('schedule-time-wrap').classList.add('show');
+      feedback.textContent = 'Não há horários disponíveis nos próximos dias.';
+    }
   }
 }
 
@@ -2243,25 +2373,42 @@ function selecionarMomentoPedido(momento) {
   const btn = document.getElementById(`schedule-option-${momento}`);
   if (!campo || !wrap || !btn || btn.disabled) return;
   campo.value = momento;
-  document.querySelectorAll('[data-momento]').forEach(el => el.classList.toggle('active', el.dataset.momento === momento));
-  wrap.classList.toggle('show', momento === 'agendado');
+  btn.classList.toggle('active', momento === 'agora');
+  document.querySelectorAll('.schedule-date').forEach(el => el.classList.remove('active'));
+  wrap.classList.toggle('show', momento !== 'agora');
+  atualizarResumoAgendamento();
   atualizarAvisoCheckout();
 }
 
 function validarEscolhaAgendamento(mostrarErro = true) {
   const momento = document.getElementById('cli-momento-pedido').value;
   if (momento === 'agendado') {
+    const dataISO = document.getElementById('cli-data-agendada').value;
     const hora = document.getElementById('cli-horario-agendado').value;
-    const valido = politicaPermiteAgendamento() && gerarHorariosHoje({}).some(slot => slot.hora === hora);
-    if (!valido && mostrarErro) showToast('Escolha um horário disponível para hoje.', 'error');
+    const valido = !!dataISO && gerarHorariosParaData(dataISO, ocupacaoAgendaAtual[dataISO] || {}).some(slot => slot.hora === hora);
+    if (!valido && mostrarErro) showToast('Escolha uma data e um horário disponíveis.', 'error');
     return valido;
   }
-  if (!lojaAberta && mostrarErro) showToast('A loja está fechada. Escolha um horário para hoje.', 'error');
+  if (!lojaAberta && mostrarErro) showToast('A loja está fechada. Escolha uma data e um horário.', 'error');
   return lojaAberta;
 }
 
 document.querySelectorAll('[data-momento]').forEach(btn => btn.addEventListener('click', () => selecionarMomentoPedido(btn.dataset.momento)));
-document.getElementById('cli-horario-agendado')?.addEventListener('change', atualizarAvisoCheckout);
+document.getElementById('schedule-date-scroller')?.addEventListener('click', event => {
+  const botao = event.target.closest('.schedule-date');
+  if (botao && !botao.disabled) selecionarDataAgendamento(botao.dataset.data);
+});
+document.getElementById('schedule-time-grid')?.addEventListener('click', event => {
+  const botao = event.target.closest('.schedule-time');
+  if (!botao || botao.disabled || !botao.dataset.hora) return;
+  document.getElementById('cli-horario-agendado').value = botao.dataset.hora;
+  document.querySelectorAll('.schedule-time').forEach(el => {
+    el.classList.toggle('active', el === botao);
+    el.textContent = `${el === botao ? '✓ ' : ''}${el.dataset.hora || el.textContent}`;
+  });
+  atualizarResumoAgendamento();
+  atualizarAvisoCheckout();
+});
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
 const DESTAQUES_SLIDES = [
@@ -2679,7 +2826,7 @@ function atualizarStatusLoja() {
             badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado';
             if(bannerPausa) {
                 bannerPausa.innerHTML = configAgendamento().permitirDurantePausa
-                  ? '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Os pedidos imediatos estão pausados, mas você ainda pode agendar um horário disponível para hoje.</p>'
+                  ? '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Os pedidos imediatos estão pausados, mas você ainda pode escolher uma data e um horário disponíveis.</p>'
                   : '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>';
                 bannerPausa.style.display = 'block';
             }
@@ -2708,8 +2855,10 @@ function atualizarAvisoCheckout() {
   if (!aviso || !momento) return;
   const agendado = momento.value === 'agendado';
   if (agendado) {
+    const dataISO = document.getElementById('cli-data-agendada')?.value || '';
     const horario = document.getElementById('cli-horario-agendado')?.value || '';
-    const titulo = horario ? `Agendamento para hoje às ${esc(horario)} 🗓️` : 'Agendamento para hoje 🗓️';
+    const dataTexto = dataISO ? formatarDataAgenda(dataISO) : 'a data escolhida';
+    const titulo = horario ? `Agendamento para ${esc(dataTexto)} às ${esc(horario)} 🗓️` : 'Escolha a data e o horário 🗓️';
     const pagamento = document.getElementById('cli-pagamento')?.value || 'PIX';
     const orientacao = pagamento === 'PIX'
       ? 'Após enviar o pedido, realize o pagamento e encaminhe o comprovante pelo WhatsApp. <strong style="display:inline; margin:0; font-size:inherit;">O agendamento será concluído somente após a confirmação do pagamento.</strong>'
@@ -3951,8 +4100,9 @@ function validarCheckout() {
 function montarRevisao() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value; let pgto = $('#cli-pagamento').value;
   const agendado = $('#cli-momento-pedido').value === 'agendado';
+  const dataPedido = agendado ? $('#cli-data-agendada').value : '';
   const horarioPedido = agendado ? $('#cli-horario-agendado').value : '';
-  const faixaHorario = `<div style="margin-bottom:12px; padding:11px 12px; border-radius:10px; background:${agendado ? 'rgba(221,167,58,.12)' : 'rgba(47,133,90,.08)'}; border:1px solid ${agendado ? 'rgba(221,167,58,.35)' : 'rgba(47,133,90,.2)'}; font-size:12px; font-weight:800; color:var(--text-main);">${agendado ? `🗓️ Agendado para hoje às ${esc(horarioPedido)}` : '⚡ Preparar o mais rápido possível'}</div>`;
+  const faixaHorario = `<div style="margin-bottom:12px; padding:11px 12px; border-radius:10px; background:${agendado ? 'rgba(221,167,58,.12)' : 'rgba(47,133,90,.08)'}; border:1px solid ${agendado ? 'rgba(221,167,58,.35)' : 'rgba(47,133,90,.2)'}; font-size:12px; font-weight:800; color:var(--text-main);">${agendado ? `🗓️ Agendado para ${esc(formatarDataAgenda(dataPedido))} às ${esc(horarioPedido)}` : '⚡ Preparar o mais rápido possível'}</div>`;
   if (pgto === 'Dinheiro' && $('#cli-troco').value.trim() !== '') {
     const valorTroco = parseValorReais($('#cli-troco').value);
     if (Number.isFinite(valorTroco)) pgto += ` (Troco para: ${brl(valorTroco)})`;
@@ -4187,7 +4337,7 @@ function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
   const agendado = $('#cli-momento-pedido').value === 'agendado';
   const agendamentoHora = agendado ? $('#cli-horario-agendado').value : '';
-  const agendamentoData = agendado ? dataLocalISO(new Date()) : '';
+  const agendamentoData = agendado ? $('#cli-data-agendada').value : '';
   const agendamentoPara = agendado ? new Date(`${agendamentoData}T${agendamentoHora}:00`) : null;
   const promocaoAtiva = promocaoGeralAtiva();
   const promocoesAplicadas = promocoesAtivas().filter(promocao => carrinho.some(item => fracaoPromocionalSabores(item.sabores, promocao) > 0));
@@ -4273,7 +4423,7 @@ function montarPedido() {
 
 function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
-  L.push(`*Horário:* ${p.agendado ? `Agendado para hoje às ${p.agendamento_hora}` : 'O mais rápido possível'}`);
+  L.push(`*Horário:* ${p.agendado ? `Agendado para ${formatarDataAgenda(p.agendamento_data)} às ${p.agendamento_hora}` : 'O mais rápido possível'}`);
   if (p.tipo_entrega === 'Entrega') {
     L.push('', '*ENDEREÇO CONFIRMADO PELO CLIENTE (este é o oficial)*');
     L.push(`*Rua/Sítio:* ${p.end_rua}`);
@@ -4328,7 +4478,8 @@ async function gravarFirestore(pedido) {
       await db.runTransaction(async transaction => {
         const estatisticasSnap = await transaction.get(estatisticasRef);
         const agendaSlots = estatisticasSnap.exists && estatisticasSnap.data().agendaSlots ? { ...estatisticasSnap.data().agendaSlots } : {};
-        Object.keys(agendaSlots).forEach(chave => { if (!chave.startsWith(`${pedido.agendamento_data}_`)) delete agendaSlots[chave]; });
+        const hojeISO = dataLocalISO(new Date());
+        Object.keys(agendaSlots).forEach(chave => { if (chave.slice(0, 10) < hojeISO) delete agendaSlots[chave]; });
         const reservas = Number(agendaSlots[pedido.agendamento_chave]) || 0;
         const capacidade = Math.max(1, Number(configAgendamento().capacidadePorHorario) || 3);
         if (reservas >= capacidade) {
@@ -4366,7 +4517,7 @@ async function enviarPedidoFinal(ev) {
   if(!pedidoAgendado && !lojaAberta) {
       const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
       if(statusManual === 'pausado' && configAgendamento().permitirDurantePausa) {
-        showToast('Os pedidos imediatos estão pausados. Escolha um horário para hoje.', 'warning');
+        showToast('Os pedidos imediatos estão pausados. Escolha uma data e um horário.', 'warning');
         irParaStep(2);
       } else if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa');
       else showToast("Nossa loja está fechada no momento.", "error"); 

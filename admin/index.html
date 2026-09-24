@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.24-fluxo-pedido-pronto">
+<meta name="dca-admin-version" content="2026.09.24-recebimento-profissional">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -573,8 +573,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
       </div>
 
       <div style="margin-bottom:20px; padding:15px; border:1px solid rgba(223,174,76,.28); border-radius:10px; background:#FFF9ED;">
-        <strong style="display:block; font-size:12px; color:var(--text-main); margin-bottom:6px;">🗓️ Agendamento para hoje</strong>
-        <p style="font-size:10px; color:var(--text-muted); line-height:1.5; margin:0 0 12px;">O primeiro horário será a abertura + tolerância. Durante o expediente, também será respeitada a antecedência mínima.</p>
+        <strong style="display:block; font-size:12px; color:var(--text-main); margin-bottom:6px;">🗓️ Agenda de pedidos</strong>
+        <p style="font-size:10px; color:var(--text-muted); line-height:1.5; margin:0 0 12px;">Os clientes podem escolher os próximos dias de funcionamento. O primeiro horário de cada dia será a abertura + tolerância.</p>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:10px;">
           <label class="toggle-row"><span>Permitir agendamentos</span><input type="checkbox" id="agenda-ativo"></label>
           <label class="toggle-row"><span>Permitir durante pausa</span><input type="checkbox" id="agenda-durante-pausa"></label>
@@ -839,6 +839,18 @@ function millisAgendamento(pedido) {
   return Number.isFinite(convertido) ? convertido : 0;
 }
 
+function textoDataAgendamento(pedido) {
+  const valor = String((pedido && pedido.agendamento_data) || '');
+  const partes = valor.split('-').map(Number);
+  if (partes.length !== 3 || partes.some(n => !Number.isFinite(n))) return 'DATA ESCOLHIDA';
+  const data = new Date(partes[0], partes[1] - 1, partes[2], 12);
+  const hoje = new Date(); hoje.setHours(12,0,0,0);
+  const diferenca = Math.round((data - hoje) / 86400000);
+  if (diferenca === 0) return 'HOJE';
+  if (diferenca === 1) return 'AMANHÃ';
+  return data.toLocaleDateString('pt-BR', { weekday:'short', day:'2-digit', month:'2-digit' }).replace('.', '').toUpperCase();
+}
+
 function pedidoExigeAtencao(pedido) {
   if (pedido.agendado === true && (pedido.status === 'Novo' || pedido.status === 'Agendado')) {
     const alvo = millisAgendamento(pedido);
@@ -925,8 +937,8 @@ function iniciarSistema() {
     atualizarUIConfig();
   });
 
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  db.collection('pedidos').where('data_pedido', '>=', hoje).orderBy('data_pedido', 'asc').onSnapshot(snapshot => {
+  const inicioConsulta = new Date(); inicioConsulta.setDate(inicioConsulta.getDate() - 30); inicioConsulta.setHours(0,0,0,0);
+  db.collection('pedidos').where('data_pedido', '>=', inicioConsulta).orderBy('data_pedido', 'asc').onSnapshot(snapshot => {
     let temNovo = false;
     snapshot.docChanges().forEach(change => {
       const dados = change.doc.data(); dados.id = change.doc.id;
@@ -1183,7 +1195,12 @@ function renderizarKanban() {
   };
   let fat = 0, qtd = 0;
   
-  Array.from(pedidosMap.values()).sort((a,b) => {
+  const inicioHoje = new Date(); inicioHoje.setHours(0,0,0,0);
+  Array.from(pedidosMap.values()).filter(p => {
+      if (p.status === 'Cancelado') return false;
+      if (p.status !== 'Concluído') return true;
+      return (p.data_pedido?.toMillis?.() || 0) >= inicioHoje.getTime();
+  }).sort((a,b) => {
       const aAg = a.agendado === true && (a.status === 'Novo' || a.status === 'Agendado');
       const bAg = b.agendado === true && (b.status === 'Novo' || b.status === 'Agendado');
       if (aAg !== bAg) return aAg ? 1 : -1;
@@ -1224,11 +1241,11 @@ function renderizarKanban() {
       const agendamentoMillis = millisAgendamento(p);
       if (aguardandoAgendamento) {
         const faltam = Math.ceil((agendamentoMillis - Date.now()) / 60000);
-        tText = faltam > 0 ? `em ${faltam} min` : 'Horário chegou';
+        tText = faltam > 1440 ? textoDataAgendamento(p) : faltam > 0 ? `em ${faltam} min` : 'Horário chegou';
         tCor = pedidoExigeAtencao(p) ? 'timer-atencao' : '';
         bCor = pedidoExigeAtencao(p) ? 'atencao' : '';
       }
-      const agendamentoHTML = ehAgendado ? `<div style="margin:8px 0; padding:10px; border-radius:8px; background:#FFF4D8; border:1px solid rgba(223,174,76,.45); color:#6B4617; font-size:12px; font-weight:900; text-align:center;">🗓️ AGENDADO PARA HOJE ÀS ${esc(p.agendamento_hora || '')}</div>` : '';
+      const agendamentoHTML = ehAgendado ? `<div style="margin:8px 0; padding:10px; border-radius:8px; background:#FFF4D8; border:1px solid rgba(223,174,76,.45); color:#6B4617; font-size:12px; font-weight:900; text-align:center;">🗓️ AGENDADO PARA ${esc(textoDataAgendamento(p))} ÀS ${esc(p.agendamento_hora || '')}</div>` : '';
       
       // ------------------------------------------------------------------
       // NOVO: ENDEREÇO DESTACADO NO KANBAN E MENSAGEM DE RETIRADA
@@ -1543,7 +1560,7 @@ function imprimirComanda(id) {
   const dataHora = p.data_pedido && p.data_pedido.toDate ? p.data_pedido.toDate().toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
   
   let html = `<html><head><style>body{font-family:'Courier New',Courier,monospace;width:80mm;margin:0;padding:10px;color:#000;font-size:14px;} h2,h3{text-align:center;margin:5px 0;} .linha{border-bottom:1px dashed #000;margin:10px 0;} .flex{display:flex;justify-content:space-between;} .bold{font-weight:bold;} .item-row{margin-bottom:5px;} .extras{font-size:12px;margin-left:10px;} .obs{font-size:12px;margin-left:10px;border:1px solid #000;padding:2px;margin-top:3px;display:inline-block;}</style></head><body><h2>DOCE CAPRICHO</h2><h3>Pedido #${id.slice(-5).toUpperCase()}</h3><p style="text-align:center; font-size:12px;">${dataHora}</p><div class="linha"></div><p class="bold">Cliente: ${p.cliente_nome}</p><p>Tel: ${p.cliente_telefone}</p>`;
-  if (p.agendado) html += `<div style="border:3px solid #000; padding:8px; margin:10px 0; font-size:20px; font-weight:bold; text-align:center;">AGENDADO<br>HOJE ÀS ${esc(p.agendamento_hora || '')}</div>`;
+  if (p.agendado) html += `<div style="border:3px solid #000; padding:8px; margin:10px 0; font-size:20px; font-weight:bold; text-align:center;">AGENDADO<br>${esc(textoDataAgendamento(p))} ÀS ${esc(p.agendamento_hora || '')}</div>`;
   
   // BLOCO DE ENDEREÇO GIGANTE NA IMPRESSÃO
   if (p.tipo_entrega === 'Entrega' && p.cliente_endereco) {
