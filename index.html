@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-notificacoes-status">
+<meta name="dca-app-version" content="2026.09.24-fluxo-pedido-pronto">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -1181,15 +1181,19 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       </div>
       <div class="tl-step" id="step-preparando">
         <div class="tl-icon">2</div>
-        <div class="tl-content"><strong>Na Cozinha 👨‍🍳</strong><span>Seu pedido está sendo preparado.</span></div>
+        <div class="tl-content"><strong>Preparando 👨‍🍳</strong><span>Seu pedido está sendo preparado.</span></div>
+      </div>
+      <div class="tl-step" id="step-pronto">
+        <div class="tl-icon">3</div>
+        <div class="tl-content"><strong id="track-text-pronto">Pedido Pronto 🍕</strong><span>Aguardando a saída para entrega.</span></div>
       </div>
       <div class="tl-step" id="step-saiu">
-        <div class="tl-icon">3</div>
-        <div class="tl-content"><strong id="track-text-rota">Em Rota 🛵</strong><span>Saiu para entrega.</span></div>
+        <div class="tl-icon">4</div>
+        <div class="tl-content"><strong>Em Rota 🛵</strong><span>Saiu para entrega.</span></div>
       </div>
       <div class="tl-step" id="step-concluido">
-        <div class="tl-icon">4</div>
-        <div class="tl-content"><strong>Entregue ✨</strong><span>Aproveite o seu pedido!</span></div>
+        <div class="tl-icon" id="track-icon-concluido">5</div>
+        <div class="tl-content"><strong id="track-text-concluido">Entregue ✨</strong><span>Aproveite o seu pedido!</span></div>
       </div>
     </div>
   </div>
@@ -4449,19 +4453,23 @@ function abrirRastreio() {
 }
 
 function atualizarTimeline(status, tipoEntrega) {
-  const txtRota = document.getElementById('track-text-rota');
-  const txtRotaSpan = document.querySelector('#step-saiu .tl-content span');
-  if (txtRota && txtRotaSpan) {
-    if (tipoEntrega === 'Retirada') {
-      txtRota.textContent = 'Pronto p/ Retirada 🛍️';
-      txtRotaSpan.textContent = 'Te aguardamos na loja.';
-    } else {
-      txtRota.textContent = 'Em Rota 🛵';
-      txtRotaSpan.textContent = 'Saiu para entrega.';
-    }
-  }
+  const retirada = tipoEntrega === 'Retirada';
+  const stepSaiu = document.getElementById('step-saiu');
+  const textoPronto = document.getElementById('track-text-pronto');
+  const textoProntoDesc = document.querySelector('#step-pronto .tl-content span');
+  const textoConcluido = document.getElementById('track-text-concluido');
+  const iconeConcluido = document.getElementById('track-icon-concluido');
 
-  const steps = ['step-novo', 'step-preparando', 'step-saiu', 'step-concluido'].map(id => document.getElementById(id));
+  if (stepSaiu) stepSaiu.style.display = retirada ? 'none' : 'flex';
+  if (textoPronto) textoPronto.textContent = retirada ? 'Pronto para Retirada 🛍️' : 'Pedido Pronto 🍕';
+  if (textoProntoDesc) textoProntoDesc.textContent = retirada ? 'Te aguardamos na loja.' : 'Aguardando a saída para entrega.';
+  if (textoConcluido) textoConcluido.textContent = retirada ? 'Retirado ✨' : 'Entregue ✨';
+  if (iconeConcluido) iconeConcluido.textContent = retirada ? '4' : '5';
+
+  const idsEtapas = retirada
+    ? ['step-novo', 'step-preparando', 'step-pronto', 'step-concluido']
+    : ['step-novo', 'step-preparando', 'step-pronto', 'step-saiu', 'step-concluido'];
+  const steps = idsEtapas.map(id => document.getElementById(id));
   steps.forEach(el => { if (el) el.className = 'tl-step'; });
 
   const s = normStatus(status);
@@ -4475,11 +4483,12 @@ function atualizarTimeline(status, tipoEntrega) {
 
   let etapa = 0;
   if (['preparando', 'em preparo', 'na cozinha'].includes(s)) etapa = 1;
-  else if (['saiu para entrega', 'em rota', 'pronto para retirada', 'pronto'].includes(s)) etapa = 2;
-  else if (['concluido', 'entregue', 'finalizado'].includes(s)) etapa = 3;
+  else if (['pronto para retirada', 'pronto'].includes(s)) etapa = 2;
+  else if (['saiu para entrega', 'em rota'].includes(s)) etapa = retirada ? 2 : 3;
+  else if (['concluido', 'entregue', 'finalizado'].includes(s)) etapa = steps.length - 1;
 
   for (let i = 0; i < etapa; i++) if (steps[i]) steps[i].className = 'tl-step done';
-  if (steps[etapa]) steps[etapa].className = (etapa === 3) ? 'tl-step done' : 'tl-step active';
+  if (steps[etapa]) steps[etapa].className = (etapa === steps.length - 1) ? 'tl-step done' : 'tl-step active';
 }
 
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') { irParaStep(1); atualizarUI(); } } }
