@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.24-agendamento-pedidos">
+<meta name="dca-admin-version" content="2026.09.24-notificacoes-status">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -958,9 +958,64 @@ function montarMensagemStatus(p, novoStatus) {
 // ------------------------------------------------------------------
 // BOTÕES DE AÇÃO: MOVER STATUS
 // ------------------------------------------------------------------
-function moverPedido(id, novoStatus) {
+const mudancasStatusEmAndamento = new Set();
+
+function mostrarFeedbackNotificacao(mensagem, tipo = 'sucesso') {
+  let area = document.getElementById('feedback-notificacao-status');
+  if (!area) {
+    area = document.createElement('div');
+    area.id = 'feedback-notificacao-status';
+    area.style.cssText = 'position:fixed;right:18px;bottom:22px;z-index:99999;display:flex;flex-direction:column;gap:8px;max-width:min(360px,calc(100vw - 36px));pointer-events:none;';
+    document.body.appendChild(area);
+  }
+
+  const aviso = document.createElement('div');
+  const cores = tipo === 'erro'
+    ? 'background:#7f1d1d;color:#fff;border-color:#fecaca;'
+    : tipo === 'aviso'
+      ? 'background:#fff7ed;color:#9a3412;border-color:#fed7aa;'
+      : 'background:#14532d;color:#fff;border-color:#bbf7d0;';
+  aviso.style.cssText = `padding:12px 14px;border:1px solid;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);font-size:11px;font-weight:800;line-height:1.45;${cores}`;
+  aviso.textContent = mensagem;
+  area.appendChild(aviso);
+  setTimeout(() => aviso.remove(), 4200);
+}
+
+async function notificarStatusPedido(id, novoStatus) {
+  if (!auth.currentUser) return { enviado:false, motivo:'sem_autenticacao' };
+
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const controle = new AbortController();
+    const limite = setTimeout(() => controle.abort(), 12000);
+    const resposta = await fetch('/api/notificar-status', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ pedidoId:id, status:novoStatus }),
+      signal: controle.signal
+    }).finally(() => clearTimeout(limite));
+    const resultado = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(resultado.error || `HTTP ${resposta.status}`);
+
+    if (resultado.sent) {
+      mostrarFeedbackNotificacao('🔔 Status atualizado e cliente notificado.');
+    } else if (resultado.reason === 'no_active_subscription' || resultado.reason === 'not_subscribed') {
+      mostrarFeedbackNotificacao('Status atualizado. Este cliente não ativou notificações neste aparelho.', 'aviso');
+    }
+    return { enviado:resultado.sent === true, motivo:resultado.reason || '' };
+  } catch (erro) {
+    console.error('[NOTIFICAÇÃO DE STATUS]', erro);
+    mostrarFeedbackNotificacao('Status atualizado, mas a notificação automática não pôde ser enviada.', 'erro');
+    return { enviado:false, motivo:'erro' };
+  }
+}
+
+async function moverPedido(id, novoStatus) {
     const p = pedidosMap.get(id);
-    if(!p) return;
+    if(!p || mudancasStatusEmAndamento.has(id)) return;
 
     if (novoStatus === 'Preparando') {
       const indisponiveis = ingredientesIndisponiveisPedido(p);
@@ -986,8 +1041,19 @@ function moverPedido(id, novoStatus) {
       crmCache.delete(telefoneNormalizado);
       crmConsultasPendentes.delete(telefoneNormalizado);
     }
-    document.getElementById(`card-${id}`).style.opacity = '0.5';
-    db.collection('pedidos').doc(id).update({ status: novoStatus }).catch(err => alert("Erro ao mover pedido. Verifique sua conexão."));
+    mudancasStatusEmAndamento.add(id);
+    const card = document.getElementById(`card-${id}`);
+    if (card) card.style.opacity = '0.5';
+    try {
+      await db.collection('pedidos').doc(id).update({ status: novoStatus });
+      await notificarStatusPedido(id, novoStatus);
+    } catch (erro) {
+      console.error('[STATUS] Falha ao mover pedido:', erro);
+      if (card) card.style.opacity = '1';
+      alert("Erro ao mover pedido. Verifique sua conexão.");
+    } finally {
+      mudancasStatusEmAndamento.delete(id);
+    }
 }
 
 let dragSourceId = null;
@@ -1223,7 +1289,10 @@ function renderizarKanban() {
 }
 
 async function cancelarPedido(id) {
+  const pedidoAtual = pedidosMap.get(id);
+  if (!pedidoAtual || pedidoAtual.status === 'Cancelado' || mudancasStatusEmAndamento.has(id)) return;
   if(!confirm("🛑 ATENÇÃO!\nTem certeza que deseja MARCAR ESTE PEDIDO COMO CANCELADO?")) return;
+  mudancasStatusEmAndamento.add(id);
   const pedidoRef = db.collection('pedidos').doc(id);
   try {
     await db.runTransaction(async transaction => {
@@ -1244,9 +1313,12 @@ async function cancelarPedido(id) {
         transaction.set(estatisticasRef, { agendaSlots }, { merge:true });
       }
     });
+    await notificarStatusPedido(id, 'Cancelado');
   } catch (erro) {
     console.error('[AGENDA] Erro ao cancelar:', erro);
     alert('Não foi possível cancelar o pedido. Verifique sua conexão.');
+  } finally {
+    mudancasStatusEmAndamento.delete(id);
   }
 }
 

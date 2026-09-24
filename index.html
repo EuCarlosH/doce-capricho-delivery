@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-pix-qr-contador">
+<meta name="dca-app-version" content="2026.09.24-notificacoes-status">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -1823,11 +1823,35 @@ else if (PLATAFORMA_APP.mac && PLATAFORMA_APP.safari) setTimeout(() => tentarExi
 const ONESIGNAL_APP_ID = '50ed9f81-4fa2-41e7-b470-b235bcefe85d';
 const ONESIGNAL_ORIGIN = 'https://docecaprichoatelier.vercel.app';
 const PUSH_DISMISS_KEY = 'dca_push_prompt_dismissed_at';
+const PUSH_EXTERNAL_ID_KEY = 'dca_push_external_id';
 const PUSH_DISMISS_TTL = 7 * 24 * 60 * 60 * 1000;
 const pushSuggestion = document.getElementById('push-suggestion');
 const pushSuggestionAction = document.getElementById('push-suggestion-action');
 const pushSuggestionClose = document.getElementById('push-suggestion-close');
 let oneSignalClient = null;
+
+function obterPushExternalId() {
+  let id = localStorage.getItem(PUSH_EXTERNAL_ID_KEY) || '';
+  if (/^dca_[a-zA-Z0-9-]{16,80}$/.test(id)) return id;
+
+  const aleatorio = window.crypto?.randomUUID
+    ? window.crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+  id = `dca_${aleatorio}`;
+  localStorage.setItem(PUSH_EXTERNAL_ID_KEY, id);
+  return id;
+}
+
+async function vincularDispositivoPush() {
+  if (!oneSignalClient) return false;
+  try {
+    await oneSignalClient.login(obterPushExternalId());
+    return true;
+  } catch (erro) {
+    console.warn('[ONESIGNAL] Não foi possível vincular o dispositivo:', erro);
+    return false;
+  }
+}
 
 function pushFoiAdiadoRecentemente() {
   const valor = Number(localStorage.getItem(PUSH_DISMISS_KEY) || 0);
@@ -1877,6 +1901,7 @@ window.OneSignalDeferred.push(async function (OneSignal) {
     });
 
     oneSignalClient = OneSignal;
+    await vincularDispositivoPush();
 
     OneSignal.Notifications.addEventListener('permissionChange', function (permission) {
       if (permission) fecharSugestaoPush(false);
@@ -1895,6 +1920,7 @@ if (pushSuggestionAction) {
     pushSuggestionAction.textContent = 'ATIVANDO...';
 
     try {
+      await vincularDispositivoPush();
       const permitido = await oneSignalClient.Notifications.requestPermission();
       if (permitido) {
         if (!oneSignalClient.User.PushSubscription.optedIn) {
@@ -4209,6 +4235,8 @@ function montarPedido() {
     end_distancia_km: distanciaKm ? Number(distanciaKm) : null,
     end_confirmado_pelo_cliente: ehEntrega,
     tipo_entrega: tipo,
+    push_external_id: obterPushExternalId(),
+    push_permissao: ('Notification' in window) ? Notification.permission : 'indisponivel',
     forma_pagamento: pgtoStr,
     itens: carrinho.map(i => ({
       nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
@@ -5085,6 +5113,15 @@ setInterval(() => {
   if (pedidoStepAtual === 4 && carrinho.length) montarRevisao();
 }, 60000);
 renderPromoBannerInline(); renderCardapio(); carregar(); carregarDadosCliente(); atualizarUI();
+
+const pedidoAbertoPorNotificacao = new URLSearchParams(window.location.search).get('pedido');
+if (/^[a-zA-Z0-9_-]{6,64}$/.test(pedidoAbertoPorNotificacao || '')) {
+  localStorage.setItem('dca_last_order', pedidoAbertoPorNotificacao);
+  const urlLimpa = new URL(window.location.href);
+  urlLimpa.searchParams.delete('pedido');
+  history.replaceState(null, '', `${urlLimpa.pathname}${urlLimpa.search}${urlLimpa.hash}`);
+  setTimeout(() => abrirRastreio(), 900);
+}
 </script>
 </body>
 </html>
