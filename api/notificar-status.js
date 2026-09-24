@@ -8,6 +8,10 @@ const MENSAGENS = {
     title: 'Seu pedido foi confirmado! 👩‍🍳',
     body: nome => `${nome}, seu pedido entrou em preparo com todo o capricho.`
   },
+  pronto: {
+    title: 'Seu pedido ficou pronto! 🍕',
+    body: nome => `${nome}, seu pedido está pronto e aguardando a saída para entrega.`
+  },
   'saiu para entrega': {
     title: 'Seu pedido está a caminho! 🛵',
     body: nome => `${nome}, seu pedido saiu para entrega e logo chegará até você.`

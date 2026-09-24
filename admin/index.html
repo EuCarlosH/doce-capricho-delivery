@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.24-notificacoes-status">
+<meta name="dca-admin-version" content="2026.09.24-fluxo-pedido-pronto">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -131,6 +131,8 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .btn-action-novo:hover { background: #226645; }
 .btn-action-prep { background: var(--gold-dark); color: white; box-shadow: 0 4px 10px rgba(221, 167, 58, 0.2); }
 .btn-action-prep:hover { background: #A87A24; }
+.btn-action-pronto { background: var(--terracotta); color: white; box-shadow: 0 4px 10px rgba(139, 58, 43, 0.2); }
+.btn-action-pronto:hover { background: #6F2D22; }
 .btn-action-saiu { background: var(--text-main); color: white; box-shadow: 0 4px 10px rgba(44, 32, 24, 0.2); }
 .btn-action-saiu:hover { background: #1C140F; }
 
@@ -147,6 +149,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .empty-state-title { color:var(--text-main); font-size:11px; font-weight:800; }
 .empty-state-copy { max-width:210px; font-size:9px; font-weight:600; line-height:1.5; color:var(--text-muted); }
 .empty-state--preparando .empty-state-icon { color:#A86B20; background:linear-gradient(145deg,#FFF8DE,#F7E6AE); }
+.empty-state--pronto .empty-state-icon { color:#9A4C28; background:linear-gradient(145deg,#FFF3E8,#F4D8C5); }
 .empty-state--saiu .empty-state-icon { color:#315F50; background:linear-gradient(145deg,#F1FAF6,#DCEFE6); }
 .empty-state--concluido .empty-state-icon { color:#775B83; background:linear-gradient(145deg,#F9F3FC,#EDE1F2); }
 
@@ -291,6 +294,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .btn-action-card { border-radius:11px; }
 .btn-action-novo { background:linear-gradient(135deg,#347A56,#245B40); }
 .btn-action-prep { background:linear-gradient(135deg,#D7A13C,#A86B20); }
+.btn-action-pronto { background:linear-gradient(135deg,#A95236,#713021); }
 .btn-action-saiu { background:linear-gradient(135deg,#4A2B1C,#24150E); }
 .empty-state { min-height:130px; justify-content:center; border:1px dashed rgba(91,52,29,.13); border-radius:13px; background:rgba(255,255,255,.26); }
 
@@ -440,7 +444,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           <div class="hero-metric"><span>Pedidos hoje</span><strong id="hero-qtd">0</strong></div>
           <div class="hero-metric"><span>Faturamento</span><strong id="hero-fat">R$ 0,00</strong></div>
           <div class="hero-metric"><span>Aguardando</span><strong id="hero-novos">0</strong></div>
-          <div class="hero-metric"><span>Na cozinha</span><strong id="hero-preparo">0</strong></div>
+          <div class="hero-metric"><span>Preparando</span><strong id="hero-preparo">0</strong></div>
         </div>
       </section>
       
@@ -451,12 +455,17 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         </div>
         
         <div class="kanban-col" data-status="Preparando" ondragover="dragOver(event)" ondrop="drop(event, 'Preparando')">
-          <div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div>
+          <div class="col-header">Preparando <span class="count" id="count-preparando">0</span></div>
           <div class="col-body" id="list-preparando"></div>
         </div>
         
+        <div class="kanban-col" data-status="Pronto" ondragover="dragOver(event)" ondrop="drop(event, 'Pronto')">
+          <div class="col-header">Prontos <span class="count" id="count-pronto">0</span></div>
+          <div class="col-body" id="list-pronto"></div>
+        </div>
+
         <div class="kanban-col" data-status="Saiu para Entrega" ondragover="dragOver(event)" ondrop="drop(event, 'Saiu para Entrega')">
-          <div class="col-header">Pronto / Em Rota <span class="count" id="count-saiu">0</span></div>
+          <div class="col-header">Em Rota <span class="count" id="count-saiu">0</span></div>
           <div class="col-body" id="list-saiu"></div>
         </div>
         
@@ -1067,8 +1076,9 @@ function drop(e, newStatus) {
   if (p && p.status === 'Agendado' && newStatus === 'Novo') return;
   if(p && p.status !== newStatus) {
      let finalStatus = newStatus;
+     if (newStatus === 'Pronto' && p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada';
      if (newStatus === 'Saiu para Entrega' && p.tipo_entrega === 'Retirada') finalStatus = 'Pronto para Retirada';
-     moverPedido(id, finalStatus);
+     if (p.status !== finalStatus) moverPedido(id, finalStatus);
   }
 }
 
@@ -1138,7 +1148,7 @@ async function fetchCRM(telefone, elementId, statusAtual) {
 }
 
 function renderizarKanban() {
-  const cols = { 'Novo': [], 'Preparando': [], 'Saiu para Entrega': [], 'Concluído': [] };
+  const cols = { 'Novo': [], 'Preparando': [], 'Pronto': [], 'Saiu para Entrega': [], 'Concluído': [] };
   const estadosVazios = {
     'Novo': {
       classe: 'novo',
@@ -1152,10 +1162,16 @@ function renderizarKanban() {
       texto: 'Nenhum pedido está em preparo neste momento.',
       icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11a7 7 0 0 1 14 0"/><path d="M3 11h18M5 15h14M8 19h8"/><path d="M12 4V2"/></svg>'
     },
+    'Pronto': {
+      classe: 'pronto',
+      titulo: 'Nenhum pedido pronto',
+      texto: 'Pedidos finalizados pela cozinha aparecerão aqui.',
+      icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11a7 7 0 0 1 14 0"/><path d="M3 11h18"/><path d="m8 16 2.5 2.5L16 13"/></svg>'
+    },
     'Saiu para Entrega': {
       classe: 'saiu',
       titulo: 'Nenhum pedido em rota',
-      texto: 'Pedidos prontos ou despachados aparecerão aqui.',
+      texto: 'Pedidos que saíram para entrega aparecerão aqui.',
       icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>'
     },
     'Concluído': {
@@ -1176,7 +1192,7 @@ function renderizarKanban() {
       if(p.status !== 'Cancelado') {
           let mapStatus = p.status;
           if(p.status === 'Agendado') mapStatus = 'Novo';
-          if(p.status === 'Pronto para Retirada') mapStatus = 'Saiu para Entrega';
+          if(p.status === 'Pronto para Retirada') mapStatus = 'Pronto';
           if(cols[mapStatus||'Novo']) cols[mapStatus||'Novo'].push(p); 
           qtd++; if(p.status === 'Concluído') { fat += p.total_centavos; }
       }
@@ -1189,7 +1205,8 @@ function renderizarKanban() {
   document.getElementById('hero-preparo').textContent = cols['Preparando'].length;
 
   Object.keys(cols).forEach(status => {
-    const cid = status === 'Novo' ? 'novo' : status === 'Preparando' ? 'preparando' : status === 'Saiu para Entrega' ? 'saiu' : 'concluido';
+    const idsColuna = { 'Novo':'novo', 'Preparando':'preparando', 'Pronto':'pronto', 'Saiu para Entrega':'saiu', 'Concluído':'concluido' };
+    const cid = idsColuna[status];
     document.getElementById(`count-${cid}`).textContent = cols[status].length;
     if (cols[status].length === 0) {
       const vazio = estadosVazios[status];
@@ -1249,9 +1266,15 @@ function renderizarKanban() {
       if (status === 'Novo') {
           btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Preparando')" class="btn-action-card btn-action-novo">✅ ACEITAR PEDIDO</button>`;
       } else if (status === 'Preparando') {
-          let txtDespacho = p.tipo_entrega === 'Retirada' ? '🛍️ PRONTO (RETIRADA)' : '🛵 DESPACHAR (ENTREGA)';
-          let proxStatus = p.tipo_entrega === 'Retirada' ? 'Pronto para Retirada' : 'Saiu para Entrega';
-          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', '${proxStatus}')" class="btn-action-card btn-action-prep">${txtDespacho}</button>`;
+          const txtPronto = p.tipo_entrega === 'Retirada' ? '🛍️ PRONTO PARA RETIRADA' : '🍕 MARCAR COMO PRONTO';
+          const proxStatus = p.tipo_entrega === 'Retirada' ? 'Pronto para Retirada' : 'Pronto';
+          btnAcaoStatus = `<button onclick="moverPedido('${p.id}', '${proxStatus}')" class="btn-action-card btn-action-prep">${txtPronto}</button>`;
+      } else if (status === 'Pronto') {
+          if (p.tipo_entrega === 'Retirada' || p.status === 'Pronto para Retirada') {
+            btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Concluído')" class="btn-action-card btn-action-pronto">✅ CONFIRMAR RETIRADA</button>`;
+          } else {
+            btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Saiu para Entrega')" class="btn-action-card btn-action-pronto">🛵 SAIU PARA ENTREGA</button>`;
+          }
       } else if (status === 'Saiu para Entrega') {
           btnAcaoStatus = `<button onclick="moverPedido('${p.id}', 'Concluído')" class="btn-action-card btn-action-saiu">🎉 FINALIZAR PEDIDO</button>`;
       }
