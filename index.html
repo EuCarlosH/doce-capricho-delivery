@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.23-montador-fundo-branco">
+<meta name="dca-app-version" content="2026.09.24-editar-item-carrinho">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -501,6 +501,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .pizza-half-choice .pizza-half-plus { position:absolute; left:50%; top:50%; z-index:2; display:flex; align-items:center; justify-content:center; width:52px; height:52px; transform:translate(-50%,-50%); background:transparent; color:#8C7A6B; border:0; box-shadow:none; font-size:32px; font-weight:300; line-height:1; }
 .pizza-half-choice:focus-visible { outline:3px solid var(--gold); outline-offset:-3px; }
 .pizza-step-overlay { z-index:3350; }
+#pizza-montador-overlay.editing-builder { z-index:3325; }
 .pizza-step-overlay .modal-box { max-width:560px; }
 .pizza-step-kicker { display:block; margin:-15px 0 3px; color:var(--gold-dark); font-size:9px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase; }
 .pizza-step-list { display:grid; gap:10px; }
@@ -516,6 +517,10 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .borda-builder-summary small { display:block; margin-bottom:3px; color:var(--text-muted); font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
 .borda-builder-summary strong { display:block; color:var(--text-main); font-size:13px; }
 .borda-builder-summary button { border:0; background:transparent; color:var(--gold-dark); font-family:inherit; font-size:10px; font-weight:900; text-transform:uppercase; cursor:pointer; }
+.builder-flavor-actions { display:none; justify-content:flex-end; margin:-10px 0 18px; }
+.builder-flavor-actions.show { display:flex; }
+.builder-flavor-actions button { border:1px solid var(--border-light); border-radius:10px; background:var(--bg-card); color:var(--gold-dark); padding:9px 12px; font-family:inherit; font-size:10px; font-weight:900; text-transform:uppercase; cursor:pointer; }
+:root[data-theme="dark"] .builder-flavor-actions button { color:var(--gold); }
 :root[data-theme="dark"] .pizza-preview-panel { background:linear-gradient(145deg, rgba(212,175,55,.10), rgba(255,255,255,.025)); }
 :root[data-theme="dark"] .pizza-preview-price strong { color:var(--gold); }
 :root[data-theme="dark"] .pizza-half-choice { background:#FFFFFF; }
@@ -556,6 +561,9 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .cart-item-info small { display: block; color: var(--text-muted); font-size: 12px; line-height: 1.5; font-weight: 500;} :root[data-theme="dark"] .cart-item-info small { font-weight: 400; }
 .cart-item-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-light); }
 .cart-item-price { font-weight: 800; color: var(--text-main); font-size: 16px; } :root[data-theme="dark"] .cart-item-price { color: var(--gold); font-weight: 700; }
+.edit-cart-btn { border:1px solid var(--border-light); background:var(--bg-card); color:var(--gold-dark); font-family:inherit; font-size:10px; font-weight:900; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; padding:9px 11px; border-radius:9px; transition:all .25s var(--smooth); }
+.edit-cart-btn:hover { border-color:var(--gold); background:rgba(221,167,58,.10); transform:translateY(-1px); }
+:root[data-theme="dark"] .edit-cart-btn { color:var(--gold); }
 .remove-btn { background: rgba(230, 57, 70, 0.08); border: none; color: var(--danger); font-size: 20px; cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: all 0.3s var(--smooth); line-height: 1;} .remove-btn:hover { transform: scale(1.05); background: var(--danger); color:#fff; }
 .cart-empty { color: var(--text-muted); font-size: 14px; text-align: center; padding: 40px 0; font-weight: 500; display: block; width: 100%;} :root[data-theme="dark"] .cart-empty { font-weight: 400; }
 
@@ -1234,6 +1242,9 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <button class="close-modal ripple" data-close="builder-overlay">&times;</button>
     <h2 id="builder-title" class="brand-font">Montar</h2>
     <div class="pizza-preview-panel" id="pizza-preview-panel" aria-live="polite"></div>
+    <div class="builder-flavor-actions" id="builder-flavor-actions">
+      <button type="button" id="builder-sabores-alterar">Alterar sabor</button>
+    </div>
     <form id="builder-form" novalidate>
       <div class="builder-base"><span id="builder-base-label">Valor base</span><strong id="builder-base-valor">R$ 0,00</strong></div>
       <div class="borda-builder-summary" id="builder-borda-summary">
@@ -1261,7 +1272,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         </div>
       </div>
       <div class="cart-total-line"><span>Subtotal</span><span id="builder-subtotal">R$ 0,00</span></div>
-      <button type="submit" class="btn-add-modal btn-gradient ripple">Adicionar ao Pedido</button>
+      <button type="submit" class="btn-add-modal btn-gradient ripple" id="builder-submit-btn">Adicionar ao Pedido</button>
     </form>
   </div>
 </div>
@@ -2049,6 +2060,8 @@ let ladoPizzaEmEdicao = 0;
 let saboresParaBorda = [];
 let bordaSelecionadaFluxo = 'sem_borda';
 let bordaRetornoBuilder = false;
+let montadorRetornoBuilder = false;
+let seletorPizzaInteiraBuilder = false;
 let pedidoStepAtual = 1;
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
@@ -2800,6 +2813,8 @@ function atualizarBotoes() {
 
 function abrirMontadorPizza() {
   montagemPizza = [];
+  montadorRetornoBuilder = false;
+  $('#pizza-montador-overlay').classList.remove('editing-builder');
   renderMontadorPizza();
   abrirModal('pizza-montador-overlay');
 }
@@ -2833,20 +2848,21 @@ function renderMontadorPizza() {
   confirmar.disabled = !(primeiro && segundo);
 }
 
-function abrirSeletorSabor(lado) {
+function abrirSeletorSabor(lado, pizzaInteiraBuilder = false) {
+  seletorPizzaInteiraBuilder = pizzaInteiraBuilder;
   ladoPizzaEmEdicao = Number(lado) === 1 ? 1 : 0;
   const etapa = $('#pizza-sabor-etapa');
   const instrucao = $('#pizza-sabor-instrucao');
-  if (etapa) etapa.textContent = `Sabor ${ladoPizzaEmEdicao + 1}`;
-  if (instrucao) instrucao.textContent = `Escolha o sabor da ${ladoPizzaEmEdicao + 1}ª metade.`;
+  if (etapa) etapa.textContent = pizzaInteiraBuilder ? 'Pizza inteira' : `Sabor ${ladoPizzaEmEdicao + 1}`;
+  if (instrucao) instrucao.textContent = pizzaInteiraBuilder ? 'Escolha o novo sabor da pizza.' : `Escolha o sabor da ${ladoPizzaEmEdicao + 1}ª metade.`;
   const esgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
   const pizzas = [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
   $('#pizza-flavor-picker').innerHTML = pizzas.map(sabor => {
     const indisponivel = esgotados.has(sabor.id);
-    const selecionado = montagemPizza[ladoPizzaEmEdicao] === sabor.id;
+    const selecionado = pizzaInteiraBuilder ? builder && builder.sabores[0] === sabor.id : montagemPizza[ladoPizzaEmEdicao] === sabor.id;
     const categoria = CARDAPIO.premium.some(item => item.id === sabor.id) ? 'Premium' : 'Tradicional';
     return `<button type="button" class="pizza-flavor-option ${selecionado ? 'selected' : ''}" data-pizza-sabor="${sabor.id}" ${indisponivel ? 'disabled' : ''}>
-      <img src="${esc(sabor.img)}" alt=""><span><strong>${esc(sabor.nome)}</strong><small>${esc(sabor.desc)}</small><small>${esc(categoria)} · <span class="pizza-flavor-price">${indisponivel ? 'Indisponível' : `Metade: ${brl(sabor.preco / 2)}`}</span></small></span><i class="pizza-flavor-radio" aria-hidden="true"></i>
+      <img src="${esc(sabor.img)}" alt=""><span><strong>${esc(sabor.nome)}</strong><small>${esc(sabor.desc)}</small><small>${esc(categoria)} · <span class="pizza-flavor-price">${indisponivel ? 'Indisponível' : pizzaInteiraBuilder ? brl(sabor.preco) : `Metade: ${brl(sabor.preco / 2)}`}</span></small></span><i class="pizza-flavor-radio" aria-hidden="true"></i>
     </button>`;
   }).join('');
   abrirModal('pizza-sabor-overlay');
@@ -2854,6 +2870,14 @@ function abrirSeletorSabor(lado) {
 
 function selecionarSaborMontador(id) {
   if (!acharSabor(id) || (configLoja.itensEsgotados || []).includes(id)) return;
+  if (seletorPizzaInteiraBuilder && builder) {
+    const extrasAtuais = lerExtras();
+    builder.sabores = [id];
+    seletorPizzaInteiraBuilder = false;
+    fecharModal('pizza-sabor-overlay');
+    atualizarConteudoPizzaBuilder(extrasAtuais);
+    return;
+  }
   const outroLado = ladoPizzaEmEdicao === 0 ? 1 : 0;
   if (montagemPizza[outroLado] === id) {
     showToast('Escolha dois sabores diferentes. Para um único sabor, use Pizza Inteira.', 'warning');
@@ -2863,7 +2887,8 @@ function selecionarSaborMontador(id) {
   fecharModal('pizza-sabor-overlay');
   renderMontadorPizza();
   if (montagemPizza[0] && montagemPizza[1]) {
-    setTimeout(() => abrirFluxoBorda([...montagemPizza]), 320);
+    const bordaAtual = montadorRetornoBuilder && builder ? builder.borda : null;
+    setTimeout(() => abrirFluxoBorda([...montagemPizza], bordaAtual, montadorRetornoBuilder), 320);
   }
 }
 
@@ -2888,10 +2913,14 @@ function confirmarBordaPizza() {
   const borda = BORDAS.find(b => b.id === bordaSelecionadaFluxo) || BORDAS[0];
   fecharModal('pizza-borda-overlay');
   if (bordaRetornoBuilder && builder) {
+    const extrasAtuais = lerExtras();
+    builder.sabores = [...saboresParaBorda];
     builder.borda = { ...borda };
     bordaRetornoBuilder = false;
-    atualizarResumoBordaBuilder();
-    atualizarBuilderTotal();
+    if (montadorRetornoBuilder && $('#pizza-montador-overlay').classList.contains('open')) fecharModal('pizza-montador-overlay');
+    montadorRetornoBuilder = false;
+    $('#pizza-montador-overlay').classList.remove('editing-builder');
+    atualizarConteudoPizzaBuilder(extrasAtuais);
     return;
   }
   const saboresEscolhidos = [...saboresParaBorda];
@@ -2947,7 +2976,49 @@ function atualizarResumoBordaBuilder() {
   resumo.classList.add('show');
 }
 
-function abrirBuilder(ids, borda = null) {
+function renderExtrasBuilder(ids) {
+  const nomes = ids.map(i => acharSabor(i).nome);
+  $('#builder-extras').innerHTML = EXTRAS.map(e => {
+    let cards = '';
+    if (ids.length === 2) {
+      cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
+    } else {
+      cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
+    }
+    return `<div class="extra-row" data-id="${e.id}"><label class="extra-row-header"><div class="extra-title-area"><input type="checkbox" class="extra-chk" value="${e.id}"> <span class="extra-name-text">${esc(e.nome)}</span></div><span class="extra-price">+ Variável</span></label>${cards}</div>`;
+  }).join('');
+}
+
+function aplicarExtrasNoBuilder(extras) {
+  (Array.isArray(extras) ? extras : []).forEach(extra => {
+    const row = $(`.extra-row[data-id="${extra.id}"]`);
+    if (!row) return;
+    const chk = row.querySelector('.extra-chk');
+    if (!chk || chk.disabled) return;
+    chk.checked = true;
+    row.classList.add('checked');
+    row.querySelectorAll('.extra-opt-card').forEach(card => card.classList.toggle('active', card.dataset.val === extra.aplicacao));
+    if (!row.querySelector('.extra-opt-card.active')) row.querySelector('.extra-opt-card')?.classList.add('active');
+  });
+}
+
+function atualizarConteudoPizzaBuilder(extrasPreservados = []) {
+  if (!builder) return;
+  const ids = builder.sabores;
+  const nomes = ids.map(i => acharSabor(i).nome);
+  $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
+  $('#builder-sabores-alterar').textContent = ids.length === 2 ? 'Alterar sabores' : 'Alterar sabor';
+  renderPreviaPizza(ids);
+  atualizarResumoBordaBuilder();
+  const produtoBuilder = acharSabor(ids[0]);
+  $('#builder-base-valor').innerHTML = precoPromocionalHTML(precoBaseVal(ids), produtoBuilder && produtoBuilder.naoAcumulaDescontos === true, ids);
+  renderExtrasBuilder(ids);
+  aplicarExtrasNoBuilder(extrasPreservados);
+  atualizarEstoqueNoBuilder();
+  atualizarBuilderTotal();
+}
+
+function abrirBuilder(ids, borda = null, itemEdicao = null) {
   if (ids[0] === 'combo_aniversariante') {
     const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
     if (esgotados.includes('esf_choc_leite')) {
@@ -2957,11 +3028,21 @@ function abrirBuilder(ids, borda = null) {
   }
   const ehPizza = !ids[0].startsWith('esf_') && !ids[0].startsWith('combo_');
   const bordaDef = ehPizza ? (BORDAS.find(b => b.id === (borda && borda.id)) || BORDAS[0]) : null;
-  builder = { sabores: ids, qtd: 1, comboItens: [], borda: bordaDef ? { ...bordaDef } : null }; const nomes = ids.map(i => acharSabor(i).nome);
+  builder = {
+    sabores: [...ids],
+    qtd: itemEdicao ? itemEdicao.qtd : 1,
+    comboItens: itemEdicao && Array.isArray(itemEdicao.comboItens) ? itemEdicao.comboItens.map(i => ({...i})) : [],
+    borda: bordaDef ? { ...bordaDef } : null,
+    editUid: itemEdicao ? itemEdicao.uid : null
+  };
+  const nomes = ids.map(i => acharSabor(i).nome);
   const isCombo = ids[0].startsWith('combo_');
   const isEsfiha = ids[0].startsWith('esf_');
   
   $('#builder-title').textContent = ids.length === 2 ? `Meio a Meio: ${nomes.join(' / ')}` : nomes[0];
+  $('#builder-submit-btn').textContent = itemEdicao ? 'Salvar alterações' : 'Adicionar ao Pedido';
+  $('#builder-flavor-actions').classList.toggle('show', ehPizza);
+  $('#builder-sabores-alterar').textContent = ids.length === 2 ? 'Alterar sabores' : 'Alterar sabor';
   renderPreviaPizza(ids);
   atualizarResumoBordaBuilder();
   const produtoBuilder = acharSabor(ids[0]);
@@ -2972,12 +3053,7 @@ function abrirBuilder(ids, borda = null) {
      $('#builder-extras').innerHTML = '';
   } else {
      $('#builder-extras-container').style.display = 'block';
-     $('#builder-extras').innerHTML = EXTRAS.map(e => {
-        let cards = '';
-        if (ids.length === 2) { cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade1"><span>Só na ${esc(nomes[0])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="metade2"><span>Só na ${esc(nomes[1])}</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card extra-opt-full" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`;
-        } else { cards = `<div class="extra-options-grid"><div class="extra-opt-card active" data-val="metade"><span>Em Metade</span><small>+ ${brl(e.precos.metade)}</small></div><div class="extra-opt-card" data-val="toda"><span>Na Pizza Inteira</span><small>+ ${brl(e.precos.toda)}</small></div></div>`; }
-        return `<div class="extra-row" data-id="${e.id}"><label class="extra-row-header"><div class="extra-title-area"><input type="checkbox" class="extra-chk" value="${e.id}"> <span class="extra-name-text">${esc(e.nome)}</span></div><span class="extra-price">+ Variável</span></label>${cards}</div>`;
-    }).join('');
+     renderExtrasBuilder(ids);
   }
 
   const comboContainer = $('#builder-combo-container');
@@ -2985,7 +3061,7 @@ function abrirBuilder(ids, borda = null) {
   if (ids[0] === 'combo_aniversariante') {
      comboContainer.style.display = 'block';
      qtyContainer.style.display = 'none';
-     builder.comboItens = [{ id:'esf_choc_leite', qtd:1, categoria:'incluso' }];
+     if (!itemEdicao) builder.comboItens = [{ id:'esf_choc_leite', qtd:1, categoria:'incluso' }];
      renderMontadorComboAniversariante();
   } else {
      comboContainer.style.display = 'none';
@@ -3007,10 +3083,12 @@ function abrirBuilder(ids, borda = null) {
      $('#builder-obs').placeholder = 'Ex: sem cebola, massa bem assada...';
   }
 
-  $('#builder-obs').value = ''; $('#qty-val').textContent = '1'; 
-  if(!isEsfiha && !isCombo) atualizarEstoqueNoBuilder(); 
+  $('#builder-obs').value = itemEdicao ? (itemEdicao.obs || '') : '';
+  $('#qty-val').textContent = String(itemEdicao ? itemEdicao.qtd : 1);
+  if (!isEsfiha && !isCombo) aplicarExtrasNoBuilder(itemEdicao ? itemEdicao.extras : []);
   atualizarBuilderTotal();
   abrirModal('builder-overlay');
+  if(!isEsfiha && !isCombo) setTimeout(atualizarEstoqueNoBuilder, 0);
 }
 
 function qtdComboCategoria(categoria) {
@@ -3184,13 +3262,23 @@ function adicionar() {
       return;
   }
   
-  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: builder.sabores, borda: builder.borda ? { ...builder.borda } : null, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim(), comboItens: builder.comboItens ? builder.comboItens.map(i => ({...i})) : [] };
+  const uidEdicao = builder.editUid;
+  const novoItem = { uid: uidEdicao || Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [...builder.sabores], borda: builder.borda ? { ...builder.borda } : null, extras: lerExtras(), qtd: builder.qtd, obs: $('#builder-obs').value.trim(), comboItens: builder.comboItens ? builder.comboItens.map(i => ({...i})) : [] };
   if (!validarItem(novoItem)) return; 
-  
-  let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
+
+  let itemExistente = carrinho.find(i => i.uid !== uidEdicao && saoItensIguais(i, novoItem));
   if (itemExistente) {
       itemExistente.qtd = Math.min(20, itemExistente.qtd + novoItem.qtd);
       itemExistente.total = itemExistente.unitario * itemExistente.qtd;
+      if (uidEdicao) carrinho = carrinho.filter(i => i.uid !== uidEdicao);
+  } else if (uidEdicao) {
+      const indice = carrinho.findIndex(i => i.uid === uidEdicao);
+      if (indice === -1) {
+        showToast('Este item não está mais no carrinho.', 'warning');
+        fecharModal('builder-overlay');
+        return;
+      }
+      carrinho[indice] = novoItem;
   } else {
       carrinho.push(novoItem);
   }
@@ -3198,7 +3286,13 @@ function adicionar() {
   salvar(); atualizarUI(); 
   if (navigator.vibrate) navigator.vibrate(50);
   const cartBtn = $('#btn-cart-float'); if(cartBtn) { cartBtn.classList.remove('bump-anim'); void cartBtn.offsetWidth; cartBtn.classList.add('bump-anim'); }
-  fecharModal('builder-overlay'); abrirModal('success-overlay');
+  fecharModal('builder-overlay');
+  if (uidEdicao) {
+    showToast('Item atualizado com sucesso!', 'success');
+    setTimeout(() => abrirModal('cart-overlay'), 320);
+  } else {
+    abrirModal('success-overlay');
+  }
 }
 
 function adicionarUpsell(saborId) {
@@ -3291,6 +3385,16 @@ window.removerDoCarrinho = function(uid) {
     atualizarUI();
 };
 
+window.editarItemCarrinho = function(uid) {
+    const item = carrinho.find(i => i.uid === uid);
+    if (!item) {
+      showToast('Este item não está mais no carrinho.', 'warning');
+      return;
+    }
+    fecharModal('cart-overlay');
+    setTimeout(() => abrirBuilder([...item.sabores], item.borda, item), 320);
+};
+
 // ------------------------------------------------------------------
 // WIZARD DE PEDIDO: navegação entre os 4 passos (Itens / Recebimento / Pagamento / Revisão)
 // ------------------------------------------------------------------
@@ -3374,6 +3478,7 @@ function atualizarUI() {
             </div>
             <div style="display:flex; align-items:center; gap:15px;">
                 <span class="cart-item-price">${precoPromocionalHTML(i.total, !itemAceitaDescontos(i), i.sabores)}</span>
+                <button type="button" class="edit-cart-btn ripple" onclick="editarItemCarrinho('${i.uid}')">Editar</button>
                 <button type="button" class="remove-btn ripple" onclick="removerDoCarrinho('${i.uid}')">&times;</button>
             </div>
         </div>
@@ -3932,6 +4037,11 @@ function atualizarTimeline(status, tipoEntrega) {
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') { irParaStep(1); atualizarUI(); } } }
 function fecharModal(id) { 
   if (id === 'tracking-overlay' && unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
+  if (id === 'pizza-sabor-overlay') seletorPizzaInteiraBuilder = false;
+  if (id === 'pizza-montador-overlay') {
+    montadorRetornoBuilder = false;
+    document.getElementById(id)?.classList.remove('editing-builder');
+  }
   const ov = document.getElementById(id); 
   if(ov){ ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); if (!$$('.modal-overlay.open').length) document.body.style.overflow = ''; } 
 }
@@ -3984,11 +4094,23 @@ document.addEventListener('click', e => {
 $('#pizza-montador-limpar').addEventListener('click', () => { montagemPizza = []; renderMontadorPizza(); });
 $('#pizza-montador-confirmar').addEventListener('click', () => {
   if (!montagemPizza[0] || !montagemPizza[1]) return;
-  abrirFluxoBorda([...montagemPizza]);
+  abrirFluxoBorda([...montagemPizza], montadorRetornoBuilder && builder ? builder.borda : null, montadorRetornoBuilder);
 });
 $('#pizza-borda-confirmar').addEventListener('click', confirmarBordaPizza);
 $('#builder-borda-alterar').addEventListener('click', () => {
   if (builder && builder.borda) abrirFluxoBorda(builder.sabores, builder.borda, true);
+});
+$('#builder-sabores-alterar').addEventListener('click', () => {
+  if (!builder) return;
+  if (builder.sabores.length === 1) {
+    abrirSeletorSabor(0, true);
+    return;
+  }
+  montagemPizza = [...builder.sabores];
+  montadorRetornoBuilder = true;
+  $('#pizza-montador-overlay').classList.add('editing-builder');
+  renderMontadorPizza();
+  abrirModal('pizza-montador-overlay');
 });
 
 $$('.mode-btn').forEach(b => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
