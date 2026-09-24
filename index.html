@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-agendamento-pedidos">
+<meta name="dca-app-version" content="2026.09.24-pix-qr-contador">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -130,6 +130,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="/vendor/qrcode.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
 <style>
@@ -715,6 +716,17 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 
 .btn-copy-pix { background: transparent; border: 1px solid var(--gold); color: var(--gold-dark); padding: 14px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; transition: all 0.3s var(--smooth); } :root[data-theme="dark"] .btn-copy-pix { color: var(--gold); font-weight: 700; }
 .btn-copy-pix:hover { background: var(--gold); color: #FFF; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(221,167,58,0.2);} :root[data-theme="dark"] .btn-copy-pix:hover { color: var(--bg-main); }
+.btn-copy-pix:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+.pix-qr-area { margin-top:14px; padding:16px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-card); text-align:center; }
+.pix-qr-canvas { position:relative; display:flex; align-items:center; justify-content:center; width:216px; min-height:216px; margin:0 auto; padding:8px; border-radius:12px; background:#FFF; overflow:hidden; }
+.pix-qr-canvas img, .pix-qr-canvas canvas, .pix-qr-canvas svg { display:block; width:200px !important; height:200px !important; }
+.pix-qr-area.expired .pix-qr-canvas::after { content:"Prazo encerrado"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(255,255,255,.94); color:#8E2E27; font-size:13px; font-weight:900; letter-spacing:.8px; text-transform:uppercase; }
+.pix-timer { display:flex; align-items:center; justify-content:center; gap:7px; margin-top:12px; color:var(--text-muted); font-size:12px; font-weight:700; }
+.pix-timer strong { color:var(--gold-dark); font-size:16px; font-variant-numeric:tabular-nums; letter-spacing:.5px; }
+.pix-qr-area.expired .pix-timer, .pix-qr-area.expired .pix-timer strong { color:var(--danger); }
+.pix-renew-btn { display:none; width:100%; margin-top:12px; padding:12px; border:0; border-radius:10px; background:var(--gold); color:#FFF; font-weight:800; cursor:pointer; }
+.pix-qr-area.expired .pix-renew-btn { display:block; }
+.pix-qr-help { margin-top:9px; color:var(--text-muted); font-size:11px; line-height:1.45; }
 
 .btn-finish { padding: 18px; border-radius: 12px; font-size: 13px; margin-top: 15px; box-shadow: 0 8px 25px var(--btn-grad-shadow);}
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 16px; font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; letter-spacing: 1.5px; transition: color 0.3s ease; margin-top: -5px; } :root[data-theme="dark"] .btn-continue { font-weight: 700; }
@@ -1517,8 +1529,14 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <div class="box-destaque" id="rev-box-pix" style="display:none; margin-bottom: 0;">
         <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; font-weight: 700;">Transferência PIX:</p>
         <strong style="color:var(--text-main); font-size:20px; display:block; margin-bottom: 12px;" id="rev-pix-valor">R$ 0,00</strong>
+        <div class="pix-qr-area" id="rev-pix-qr-area">
+          <div class="pix-qr-canvas" id="rev-pix-qrcode" aria-label="QR Code PIX"></div>
+          <div class="pix-timer"><span>Tempo para concluir:</span><strong id="rev-pix-timer">15:00</strong></div>
+          <button type="button" class="pix-renew-btn ripple" id="rev-btn-renovar-pix">Gerar novo QR Code</button>
+          <p class="pix-qr-help" id="rev-pix-qr-help">Abra o aplicativo do seu banco, escaneie o QR Code e envie o comprovante pelo WhatsApp.</p>
+        </div>
         <button type="button" class="btn-copy-pix ripple" id="rev-btn-copy-pix">Copiar Código PIX</button>
-        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">O código PIX também será enviado no WhatsApp para segurança.</p>
       </div>
 
       <div id="aviso-simulacao-checkout">
@@ -2277,6 +2295,9 @@ let bordaRetornoBuilder = false;
 let montadorRetornoBuilder = false;
 let seletorPizzaInteiraBuilder = false;
 let pedidoStepAtual = 1;
+let pixPrazoFinal = 0;
+let pixTimerInterval = null;
+let pixPayloadEmExibicao = '';
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
@@ -3946,7 +3967,14 @@ function montarRevisao() {
   }
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
-  if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total); } else { $('#rev-box-pix').style.display = 'none'; }
+  if ($('#cli-pagamento').value === 'PIX') {
+    $('#rev-box-pix').style.display = 'block';
+    $('#rev-pix-valor').textContent = brl(t.total);
+    iniciarContadorPix(gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, t.total));
+  } else {
+    $('#rev-box-pix').style.display = 'none';
+    pararContadorPix(true);
+  }
   $('#rev-bruto-value').textContent = brl(t.bruto);
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
   const revLinhaDesconto = $('#rev-desconto-line');
@@ -3988,6 +4016,71 @@ function carregarDadosCliente() {
 }
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value; const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key); let payload = formatField('00', '01') + merchantAccount + formatField('52', '0000') + formatField('53', '986') + formatField('54', strValor) + formatField('58', 'BR') + formatField('59', cleanNome) + formatField('60', cleanCidade) + formatField('62', formatField('05', '***')) + '6304'; let crc = 0xFFFF; for (let c = 0; c < payload.length; c++) { crc ^= payload.charCodeAt(c) << 8; for (let i = 0; i < 8; i++) { if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } } return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'); }
+
+const PIX_PRAZO_MS = 15 * 60 * 1000;
+
+function desenharQRCodePix(payload) {
+  const container = document.getElementById('rev-pix-qrcode');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!window.DCAPixQRCode || typeof window.DCAPixQRCode.render !== 'function') {
+    container.innerHTML = '<span style="padding:18px; color:#8E2E27; font-size:12px; font-weight:800; line-height:1.45;">QR Code indisponível.<br>Use o botão “Copiar Código PIX”.</span>';
+    return;
+  }
+  window.DCAPixQRCode.render(container, payload);
+}
+
+function atualizarContadorPix() {
+  const area = document.getElementById('rev-pix-qr-area');
+  const timer = document.getElementById('rev-pix-timer');
+  const ajuda = document.getElementById('rev-pix-qr-help');
+  const btnCopiar = document.getElementById('rev-btn-copy-pix');
+  const btnConfirmar = document.getElementById('btn-confirm-order');
+  if (!area || !timer) return;
+
+  const restanteMs = Math.max(0, pixPrazoFinal - Date.now());
+  const restanteSegundos = Math.ceil(restanteMs / 1000);
+  const minutos = Math.floor(restanteSegundos / 60);
+  const segundos = restanteSegundos % 60;
+  const expirado = restanteMs <= 0;
+
+  timer.textContent = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+  area.classList.toggle('expired', expirado);
+  if (btnCopiar) btnCopiar.disabled = expirado;
+  if (btnConfirmar && $('#cli-pagamento').value === 'PIX' && !pedidoEmEnvio) btnConfirmar.disabled = expirado;
+  if (ajuda) ajuda.textContent = expirado
+    ? 'O prazo desta tela terminou. Gere novamente para continuar com o pagamento.'
+    : 'Abra o aplicativo do seu banco, escaneie o QR Code e envie o comprovante pelo WhatsApp.';
+
+  if (expirado && pixTimerInterval) {
+    clearInterval(pixTimerInterval);
+    pixTimerInterval = null;
+  }
+}
+
+function iniciarContadorPix(payload, renovar = false) {
+  const mesmoPagamento = payload === pixPayloadEmExibicao && pixPrazoFinal > 0;
+  if (!mesmoPagamento || renovar) {
+    pixPayloadEmExibicao = payload;
+    pixPrazoFinal = Date.now() + PIX_PRAZO_MS;
+    desenharQRCodePix(payload);
+  } else if (!document.querySelector('#rev-pix-qrcode img, #rev-pix-qrcode canvas, #rev-pix-qrcode svg')) {
+    desenharQRCodePix(payload);
+  }
+
+  if (pixTimerInterval) clearInterval(pixTimerInterval);
+  atualizarContadorPix();
+  if (pixPrazoFinal > Date.now()) pixTimerInterval = setInterval(atualizarContadorPix, 1000);
+}
+
+function pararContadorPix(limpar = false) {
+  if (pixTimerInterval) clearInterval(pixTimerInterval);
+  pixTimerInterval = null;
+  if (limpar) {
+    pixPrazoFinal = 0;
+    pixPayloadEmExibicao = '';
+  }
+}
 
 // ------------------------------------------------------------------
 // TRAVA DE INTEGRIDADE: revalida o carrinho contra a configuração atual
@@ -4182,7 +4275,7 @@ function montarMensagem(p) {
     if (p.desconto_cupom_centavos > 0) L.push(`Cupom ${p.cupom_codigo}: - ${brl(p.desconto_cupom_centavos)}`);
   }
   L.push('', `Subtotal: ${brl(p.subtotal_centavos)}`); if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
-  if (p.forma_pagamento.includes('PIX')) { const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', p.total_centavos); L.push('', `*CHAVE PIX (Celular/Telefone):*`, CONFIG.pixChave, '', `*PIX COPIA E COLA:*`, payload, '', `Por favor, envie o comprovante respondendo a esta mensagem.`); }
+  if (p.forma_pagamento.includes('PIX')) { const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, p.total_centavos); L.push('', `*CHAVE PIX (CNPJ):*`, CONFIG.pixChave, '', `*PIX COPIA E COLA:*`, payload, '', `Por favor, envie o comprovante respondendo a esta mensagem.`); }
   return L.join('\n');
 }
 
@@ -4264,6 +4357,11 @@ async function enviarPedidoFinal(ev) {
       return;
     }
   }
+  if ($('#cli-pagamento').value === 'PIX' && (!pixPrazoFinal || Date.now() >= pixPrazoFinal)) {
+    showToast('O prazo do PIX terminou. Gere um novo QR Code para continuar.', 'warning');
+    atualizarContadorPix();
+    return;
+  }
   if (!navigator.onLine) { showToast('Você está sem internet. Reconecte e envie novamente.', 'error'); return; }
   pedidoEmEnvio = true;
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
@@ -4283,7 +4381,7 @@ async function enviarPedidoFinal(ev) {
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  carrinho = []; cupomAplicado = null; salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
+  carrinho = []; cupomAplicado = null; pararContadorPix(true); salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false;
   pedidoEmEnvio = false;
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
@@ -4358,6 +4456,7 @@ function atualizarTimeline(status, tipoEntrega) {
 
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') { irParaStep(1); atualizarUI(); } } }
 function fecharModal(id) { 
+  if (id === 'cart-overlay') pararContadorPix(true);
   if (id === 'tracking-overlay' && unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
   if (id === 'pizza-sabor-overlay') seletorPizzaInteiraBuilder = false;
   if (id === 'pizza-montador-overlay') {
@@ -4463,7 +4562,12 @@ $('#quick-order-open').addEventListener('click', abrirCarrinhoSeguro);
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
-$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
+$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; if (!pixPrazoFinal || Date.now() >= pixPrazoFinal) { showToast('O prazo terminou. Gere um novo QR Code.', 'warning'); atualizarContadorPix(); return; } const t = totais(); const payload = pixPayloadEmExibicao || gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
+$('#rev-btn-renovar-pix').addEventListener('click', () => {
+  const t = totais();
+  iniciarContadorPix(gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, t.total), true);
+  showToast('Novo prazo de 15 minutos iniciado.', 'success');
+});
 $('#ano').textContent = new Date().getFullYear();
 
 // ==========================================================
