@@ -1,4 +1,4 @@
-const ADMIN_CACHE = 'doce-capricho-admin-v8';
+const ADMIN_CACHE = 'doce-capricho-admin-v9';
 const ADMIN_SHELL = [
   './',
   './index.html',
