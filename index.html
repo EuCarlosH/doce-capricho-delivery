@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-recebimento-profissional">
+<meta name="dca-app-version" content="2026.09.24-categoria-disponivel">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -2445,7 +2445,14 @@ function renderDestaques() {
   const idsDestaque = [];
   if (saborMaisPedido) idsDestaque.push(saborMaisPedido);
   ['peru', 'nordestina', 'esf_peru'].forEach(id => { if (!idsDestaque.includes(id)) idsDestaque.push(id); });
-  const itens = idsDestaque.map(id => todos.find(s => s.id === id)).filter(Boolean).slice(0, 6);
+  // O destaque acompanha o estoque atual. Se as pizzas estiverem sem massa,
+  // por exemplo, mostramos opções de esfihas disponíveis em vez de produtos
+  // que o cliente não conseguirá adicionar ao pedido.
+  const candidatos = [...new Set([...idsDestaque, ...todos.map(item => item.id)])];
+  const itens = candidatos
+    .map(id => todos.find(s => s.id === id))
+    .filter(item => item && !itemIndisponivel(item.id))
+    .slice(0, 6);
   strip.innerHTML = itens.map(s => {
     const isEsgotado = itemIndisponivel(s.id);
     return `
@@ -3136,6 +3143,34 @@ const cardHTML = s => {
   </article>`;
 };
 
+function atualizarOrdemCategoriasDisponiveis() {
+  const pizzas = [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
+  const esfihas = [...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium, ...CARDAPIO.esfihas_doces];
+  const pizzasDisponiveis = pizzas.some(item => !itemIndisponivel(item.id));
+  const esfihasDisponiveis = esfihas.some(item => !itemIndisponivel(item.id));
+  const priorizarEsfihas = !pizzasDisponiveis && esfihasDisponiveis;
+  const wrapPizzas = document.getElementById('wrap-pizzas');
+  const wrapEsfihas = document.getElementById('wrap-esfihas');
+  const linkPizzas = document.querySelector('#sticky-menu a[href="#wrap-pizzas"]');
+  const linkEsfihas = document.querySelector('#sticky-menu a[href="#wrap-esfihas"]');
+
+  if (wrapPizzas) {
+    wrapPizzas.style.order = priorizarEsfihas ? '3' : '2';
+    wrapPizzas.style.paddingTop = priorizarEsfihas ? '60px' : '0';
+  }
+  if (wrapEsfihas) {
+    wrapEsfihas.style.order = priorizarEsfihas ? '2' : '3';
+    wrapEsfihas.style.paddingTop = priorizarEsfihas ? '0' : '60px';
+  }
+
+  [[linkPizzas, !priorizarEsfihas], [linkEsfihas, priorizarEsfihas]].forEach(([link, ativo]) => {
+    if (!link) return;
+    link.classList.toggle('active', ativo);
+    if (ativo) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  });
+}
+
 function checkBannerPromo(titulo, desc, combosAtivos = []) {
   if (bannerJaMostrado) return;
   bannerJaMostrado = true;
@@ -3182,6 +3217,7 @@ function renderCardapio() {
   $('#grid-esfihas-trad').innerHTML = CARDAPIO.esfihas_tradicionais.map(cardHTML).join('');
   $('#grid-esfihas-prem').innerHTML = CARDAPIO.esfihas_premium.map(cardHTML).join('');
   $('#grid-esfihas-doces').innerHTML = CARDAPIO.esfihas_doces.map(cardHTML).join('');
+  atualizarOrdemCategoriasDisponiveis();
 
   const hojeDia = new Date().getDay();
   let combosHoje = [];
