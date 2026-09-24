@@ -1,8 +1,9 @@
-const CACHE_NAME = 'doce-capricho-v13';
+const CACHE_NAME = 'doce-capricho-v15';
 
 const APP_SHELL = [
   '/',
   '/manifest.json',
+  '/vendor/qrcode.js',
   '/icon-192.png',
   '/icon-512.png',
   '/icon-maskable-512.png',

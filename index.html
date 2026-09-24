@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-estoque-ingredientes">
+<meta name="dca-app-version" content="2026.09.24-pix-qr-contador">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -130,6 +130,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="/vendor/qrcode.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
 <style>
@@ -336,6 +337,8 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #aviso-simulacao-checkout { display: none; background: rgba(230, 57, 70, 0.06); border: 1px dashed var(--terracotta); border-radius: 14px; padding: 16px; margin-bottom: 15px; text-align: center; }
 #aviso-simulacao-checkout strong { display: block; color: var(--terracotta); font-size: 14px; margin-bottom: 6px; letter-spacing: 0.5px; }
 #aviso-simulacao-checkout span { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+#aviso-simulacao-checkout.agendamento { background: rgba(221,167,58,.1); border-color: rgba(221,167,58,.55); }
+#aviso-simulacao-checkout.agendamento strong { color: var(--gold-dark); }
 :root[data-theme="dark"] #aviso-simulacao-checkout { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.4); }
 :root[data-theme="dark"] #aviso-simulacao-checkout strong { color: var(--warning); }
 
@@ -590,6 +593,19 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .delivery-card.active svg { stroke: var(--gold-dark); } :root[data-theme="dark"] .delivery-card.active svg { stroke: var(--gold); }
 .delivery-card.active strong { color: var(--gold-dark); } :root[data-theme="dark"] .delivery-card.active strong { color: var(--gold); }
 .delivery-card.active small { color: var(--text-main); font-weight: 600;} :root[data-theme="dark"] .delivery-card.active small { color: var(--gold-dark); font-weight: 400;}
+.schedule-choice { margin-top:4px; padding:16px; border:1px solid var(--border-light); border-radius:16px; background:var(--bg-main); }
+.schedule-choice > strong { display:block; margin-bottom:10px; color:var(--text-main); font-size:13px; }
+.schedule-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.schedule-option { padding:13px 10px; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); color:var(--text-main); font-family:inherit; cursor:pointer; text-align:center; transition:.25s ease; }
+.schedule-option strong { display:block; font-size:12px; }
+.schedule-option small { display:block; margin-top:4px; color:var(--text-muted); font-size:9.5px; line-height:1.35; }
+.schedule-option.active { border-color:var(--gold); box-shadow:0 0 0 2px rgba(221,167,58,.16); color:var(--gold-dark); }
+.schedule-option:disabled { opacity:.42; cursor:not-allowed; }
+.schedule-time-wrap { display:none; margin-top:12px; }
+.schedule-time-wrap.show { display:block; animation:fadeIn .25s ease; }
+.schedule-time-wrap select { width:100%; }
+.schedule-feedback { display:block; margin-top:8px; color:var(--text-muted); font-size:10px; line-height:1.45; }
+:root[data-theme="dark"] .schedule-option.active { color:var(--gold); }
 
 #zona-distancia-hint { display: none; font-size: 12px; font-weight: 600; color: var(--text-muted); background: rgba(47, 133, 90, 0.08); border: 1px dashed var(--success); border-radius: 10px; padding: 10px 14px; margin-top: 12px; line-height: 1.5; }
 #zona-distancia-hint strong { color: var(--success); }
@@ -700,6 +716,17 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 
 .btn-copy-pix { background: transparent; border: 1px solid var(--gold); color: var(--gold-dark); padding: 14px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; transition: all 0.3s var(--smooth); } :root[data-theme="dark"] .btn-copy-pix { color: var(--gold); font-weight: 700; }
 .btn-copy-pix:hover { background: var(--gold); color: #FFF; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(221,167,58,0.2);} :root[data-theme="dark"] .btn-copy-pix:hover { color: var(--bg-main); }
+.btn-copy-pix:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+.pix-qr-area { margin-top:14px; padding:16px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-card); text-align:center; }
+.pix-qr-canvas { position:relative; display:flex; align-items:center; justify-content:center; width:216px; min-height:216px; margin:0 auto; padding:8px; border-radius:12px; background:#FFF; overflow:hidden; }
+.pix-qr-canvas img, .pix-qr-canvas canvas, .pix-qr-canvas svg { display:block; width:200px !important; height:200px !important; }
+.pix-qr-area.expired .pix-qr-canvas::after { content:"Prazo encerrado"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(255,255,255,.94); color:#8E2E27; font-size:13px; font-weight:900; letter-spacing:.8px; text-transform:uppercase; }
+.pix-timer { display:flex; align-items:center; justify-content:center; gap:7px; margin-top:12px; color:var(--text-muted); font-size:12px; font-weight:700; }
+.pix-timer strong { color:var(--gold-dark); font-size:16px; font-variant-numeric:tabular-nums; letter-spacing:.5px; }
+.pix-qr-area.expired .pix-timer, .pix-qr-area.expired .pix-timer strong { color:var(--danger); }
+.pix-renew-btn { display:none; width:100%; margin-top:12px; padding:12px; border:0; border-radius:10px; background:var(--gold); color:#FFF; font-weight:800; cursor:pointer; }
+.pix-qr-area.expired .pix-renew-btn { display:block; }
+.pix-qr-help { margin-top:9px; color:var(--text-muted); font-size:11px; line-height:1.45; }
 
 .btn-finish { padding: 18px; border-radius: 12px; font-size: 13px; margin-top: 15px; box-shadow: 0 8px 25px var(--btn-grad-shadow);}
 .btn-continue { background: transparent; color: var(--text-muted); border: none; padding: 16px; font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; letter-spacing: 1.5px; transition: color 0.3s ease; margin-top: -5px; } :root[data-theme="dark"] .btn-continue { font-weight: 700; }
@@ -1345,6 +1372,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <form class="checkout-form" id="checkout-form" novalidate style="margin-top: 0;">
       <!-- STEP 2: RECEBIMENTO -->
       <div class="pedido-step-panel" id="step-panel-2" data-step="2" style="display:none;">
+        <div class="schedule-choice" id="schedule-choice">
+          <strong>Quando deseja receber?</strong>
+          <input type="hidden" id="cli-momento-pedido" value="agora">
+          <div class="schedule-options">
+            <button type="button" class="schedule-option active" data-momento="agora" id="schedule-option-agora"><strong>O mais rápido possível</strong><small>Disponível enquanto a loja estiver aberta</small></button>
+            <button type="button" class="schedule-option" data-momento="agendado" id="schedule-option-agendado"><strong>Agendar para hoje</strong><small>Escolha um horário disponível</small></button>
+          </div>
+          <div class="schedule-time-wrap" id="schedule-time-wrap">
+            <label for="cli-horario-agendado">Horário</label>
+            <select id="cli-horario-agendado"><option value="">Carregando horários...</option></select>
+            <span class="schedule-feedback" id="schedule-feedback"></span>
+          </div>
+        </div>
+
         <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
         <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
 
@@ -1488,8 +1529,14 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
       <div class="box-destaque" id="rev-box-pix" style="display:none; margin-bottom: 0;">
         <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; font-weight: 700;">Transferência PIX:</p>
         <strong style="color:var(--text-main); font-size:20px; display:block; margin-bottom: 12px;" id="rev-pix-valor">R$ 0,00</strong>
+        <div class="pix-qr-area" id="rev-pix-qr-area">
+          <div class="pix-qr-canvas" id="rev-pix-qrcode" aria-label="QR Code PIX"></div>
+          <div class="pix-timer"><span>Tempo para concluir:</span><strong id="rev-pix-timer">15:00</strong></div>
+          <button type="button" class="pix-renew-btn ripple" id="rev-btn-renovar-pix">Gerar novo QR Code</button>
+          <p class="pix-qr-help" id="rev-pix-qr-help">Abra o aplicativo do seu banco, escaneie o QR Code e envie o comprovante pelo WhatsApp.</p>
+        </div>
         <button type="button" class="btn-copy-pix ripple" id="rev-btn-copy-pix">Copiar Código PIX</button>
-        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">(A chave PIX também será enviada no WhatsApp para segurança)</p>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">O código PIX também será enviado no WhatsApp para segurança.</p>
       </div>
 
       <div id="aviso-simulacao-checkout">
@@ -2054,8 +2101,137 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], ingredientesEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
+const AGENDAMENTO_PADRAO = { ativo:true, intervaloMinutos:30, antecedenciaMinutos:60, bufferAberturaMinutos:30, capacidadePorHorario:3, permitirDurantePausa:false };
+let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], ingredientesEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto', agendamento: { ...AGENDAMENTO_PADRAO } };
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
+
+const configAgendamento = () => ({ ...AGENDAMENTO_PADRAO, ...(configLoja.agendamento || {}) });
+const dataLocalISO = data => `${data.getFullYear()}-${String(data.getMonth()+1).padStart(2,'0')}-${String(data.getDate()).padStart(2,'0')}`;
+const minutosHorario = horario => { const [h,m] = String(horario || '').split(':').map(Number); return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null; };
+const horarioMinutos = minutos => `${String(Math.floor(minutos / 60)).padStart(2,'0')}:${String(minutos % 60).padStart(2,'0')}`;
+const arredondarIntervalo = (minutos, intervalo) => Math.ceil(minutos / intervalo) * intervalo;
+
+function expedienteHoje() {
+  const agora = new Date();
+  const dia = agora.getDay();
+  const definido = configLoja.horarios && configLoja.horarios[dia];
+  const padraoAtivo = dia === 0 || (dia >= 4 && dia <= 6);
+  const ativo = definido ? definido.ativo === true : padraoAtivo;
+  if (!ativo) return null;
+  const abre = (definido && definido.abre) || '18:30';
+  const fecha = (definido && definido.fecha) || '23:00';
+  const inicio = minutosHorario(abre), fim = minutosHorario(fecha);
+  if (inicio == null || fim == null || fim <= inicio) return null;
+  return { abre, fecha, inicio, fim };
+}
+
+function politicaPermiteAgendamento() {
+  const cfg = configAgendamento();
+  const status = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
+  if (!cfg.ativo || status === 'esgotado') return false;
+  if (status === 'pausado' && !cfg.permitirDurantePausa) return false;
+  return !!expedienteHoje();
+}
+
+function gerarHorariosHoje(ocupacao = {}) {
+  if (!politicaPermiteAgendamento()) return [];
+  const cfg = configAgendamento();
+  const expediente = expedienteHoje();
+  const agora = new Date();
+  const agoraMinutos = agora.getHours() * 60 + agora.getMinutes();
+  const intervalo = Math.max(5, Number(cfg.intervaloMinutos) || 30);
+  const buffer = Number.isFinite(Number(cfg.bufferAberturaMinutos)) ? Math.max(0, Number(cfg.bufferAberturaMinutos)) : 30;
+  const antecedencia = Number.isFinite(Number(cfg.antecedenciaMinutos)) ? Math.max(0, Number(cfg.antecedenciaMinutos)) : 60;
+  const primeiroAposAbertura = expediente.inicio + buffer;
+  const limiteOperacional = agoraMinutos <= expediente.inicio
+    ? primeiroAposAbertura
+    : Math.max(primeiroAposAbertura, agoraMinutos + antecedencia);
+  const primeiro = arredondarIntervalo(limiteOperacional, intervalo);
+  const capacidade = Math.max(1, Number(cfg.capacidadePorHorario) || 3);
+  const horarios = [];
+  for (let minuto = primeiro; minuto <= expediente.fim; minuto += intervalo) {
+    const hora = horarioMinutos(minuto);
+    const reservas = Number(ocupacao[hora]) || 0;
+    if (reservas < capacidade) horarios.push({ hora, reservas, capacidade });
+  }
+  return horarios;
+}
+
+let atualizacaoAgendaSeq = 0;
+async function atualizarOpcoesAgendamento() {
+  const seq = ++atualizacaoAgendaSeq;
+  const btnAgora = document.getElementById('schedule-option-agora');
+  const btnAgendar = document.getElementById('schedule-option-agendado');
+  const select = document.getElementById('cli-horario-agendado');
+  const feedback = document.getElementById('schedule-feedback');
+  if (!btnAgora || !btnAgendar || !select || !feedback) return;
+  const horarioSelecionado = select.value;
+  btnAgora.disabled = !lojaAberta;
+  btnAgendar.disabled = true;
+  select.innerHTML = '<option value="">Consultando horários...</option>';
+  feedback.textContent = '';
+  let ocupacao = {};
+  if (politicaPermiteAgendamento() && CONFIG.usarFirebase && window.firebase) {
+    try {
+      const hoje = dataLocalISO(new Date());
+      const snap = await db.collection('configuracoes').doc('estatisticas').get();
+      const agendaSlots = snap.exists && snap.data().agendaSlots ? snap.data().agendaSlots : {};
+      Object.entries(agendaSlots).forEach(([chave, reservas]) => {
+        if (chave.startsWith(`${hoje}_`)) ocupacao[chave.slice(hoje.length + 1).replace('-', ':')] = Number(reservas) || 0;
+      });
+    } catch (erro) {
+      console.warn('[AGENDA] Não foi possível consultar a ocupação:', erro.code || erro.message);
+      if (seq !== atualizacaoAgendaSeq) return;
+      select.innerHTML = '<option value="">Horários indisponíveis</option>';
+      feedback.textContent = 'Não foi possível consultar a agenda. Tente novamente.';
+      btnAgendar.disabled = true;
+      if (lojaAberta) selecionarMomentoPedido('agora');
+      return;
+    }
+  }
+  if (seq !== atualizacaoAgendaSeq) return;
+  const horarios = gerarHorariosHoje(ocupacao);
+  btnAgendar.disabled = horarios.length === 0;
+  select.innerHTML = horarios.length
+    ? '<option value="">Escolha um horário</option>' + horarios.map(s => `<option value="${s.hora}">${s.hora}</option>`).join('')
+    : '<option value="">Nenhum horário disponível hoje</option>';
+  if (horarioSelecionado && horarios.some(slot => slot.hora === horarioSelecionado)) select.value = horarioSelecionado;
+  const atual = document.getElementById('cli-momento-pedido').value;
+  if (!lojaAberta && horarios.length) selecionarMomentoPedido('agendado');
+  else if (lojaAberta && (atual !== 'agendado' || !horarios.length)) selecionarMomentoPedido('agora');
+  else if (!lojaAberta && !horarios.length) {
+    document.getElementById('cli-momento-pedido').value = 'agendado';
+    document.querySelectorAll('[data-momento]').forEach(el => el.classList.remove('active'));
+    document.getElementById('schedule-time-wrap').classList.add('show');
+    feedback.textContent = 'A loja não recebe mais pedidos para hoje.';
+  }
+}
+
+function selecionarMomentoPedido(momento) {
+  const campo = document.getElementById('cli-momento-pedido');
+  const wrap = document.getElementById('schedule-time-wrap');
+  const btn = document.getElementById(`schedule-option-${momento}`);
+  if (!campo || !wrap || !btn || btn.disabled) return;
+  campo.value = momento;
+  document.querySelectorAll('[data-momento]').forEach(el => el.classList.toggle('active', el.dataset.momento === momento));
+  wrap.classList.toggle('show', momento === 'agendado');
+  atualizarAvisoCheckout();
+}
+
+function validarEscolhaAgendamento(mostrarErro = true) {
+  const momento = document.getElementById('cli-momento-pedido').value;
+  if (momento === 'agendado') {
+    const hora = document.getElementById('cli-horario-agendado').value;
+    const valido = politicaPermiteAgendamento() && gerarHorariosHoje({}).some(slot => slot.hora === hora);
+    if (!valido && mostrarErro) showToast('Escolha um horário disponível para hoje.', 'error');
+    return valido;
+  }
+  if (!lojaAberta && mostrarErro) showToast('A loja está fechada. Escolha um horário para hoje.', 'error');
+  return lojaAberta;
+}
+
+document.querySelectorAll('[data-momento]').forEach(btn => btn.addEventListener('click', () => selecionarMomentoPedido(btn.dataset.momento)));
+document.getElementById('cli-horario-agendado')?.addEventListener('change', atualizarAvisoCheckout);
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
 const DESTAQUES_SLIDES = [
@@ -2119,6 +2295,9 @@ let bordaRetornoBuilder = false;
 let montadorRetornoBuilder = false;
 let seletorPizzaInteiraBuilder = false;
 let pedidoStepAtual = 1;
+let pixPrazoFinal = 0;
+let pixTimerInterval = null;
+let pixPayloadEmExibicao = '';
 let bannerJaMostrado = false;
 let configsCarregadasDB = false;
 let promoTimer = null; 
@@ -2454,7 +2633,8 @@ function verificarHorario() {
     else { lojaAberta = dentroDoHorario; }
     
     atualizarStatusLoja();
-  } catch (error) { lojaAberta = false; atualizarStatusLoja(); }
+    atualizarOpcoesAgendamento();
+  } catch (error) { lojaAberta = false; atualizarStatusLoja(); atualizarOpcoesAgendamento(); }
 }
 
 function atualizarStatusLoja() {
@@ -2462,16 +2642,15 @@ function atualizarStatusLoja() {
   const bannerPausa = document.getElementById('banner-pausado');
   const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
 
-  const avisoSimulacao = document.getElementById('aviso-simulacao-checkout');
-
   if (!lojaAberta) {
     document.body.classList.add('loja-fechada');
-    if(avisoSimulacao) avisoSimulacao.style.display = 'block';
     if(badge) {
         if(statusManual === 'pausado') {
             badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado';
             if(bannerPausa) {
-                bannerPausa.innerHTML = '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>';
+                bannerPausa.innerHTML = configAgendamento().permitirDurantePausa
+                  ? '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Os pedidos imediatos estão pausados, mas você ainda pode agendar um horário disponível para hoje.</p>'
+                  : '<h4 class="brand-font">Pausa Temporária 🛑</h4><p>Nossa cozinha atingiu a capacidade máxima no momento. Para mantermos nosso padrão de qualidade, pausamos o recebimento de novos pedidos. Voltaremos em breve!</p>';
                 bannerPausa.style.display = 'block';
             }
         } else if (statusManual === 'esgotado') {
@@ -2487,10 +2666,32 @@ function atualizarStatusLoja() {
     }
   } else { 
       document.body.classList.remove('loja-fechada'); 
-      if(avisoSimulacao) avisoSimulacao.style.display = 'none';
       if(bannerPausa) bannerPausa.style.display = 'none'; 
       if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } 
   }
+  atualizarAvisoCheckout();
+}
+
+function atualizarAvisoCheckout() {
+  const aviso = document.getElementById('aviso-simulacao-checkout');
+  const momento = document.getElementById('cli-momento-pedido');
+  if (!aviso || !momento) return;
+  const agendado = momento.value === 'agendado';
+  if (agendado) {
+    const horario = document.getElementById('cli-horario-agendado')?.value || '';
+    const titulo = horario ? `Agendamento para hoje às ${esc(horario)} 🗓️` : 'Agendamento para hoje 🗓️';
+    const pagamento = document.getElementById('cli-pagamento')?.value || 'PIX';
+    const orientacao = pagamento === 'PIX'
+      ? 'Após enviar o pedido, realize o pagamento e encaminhe o comprovante pelo WhatsApp. <strong style="display:inline; margin:0; font-size:inherit;">O agendamento será concluído somente após a confirmação do pagamento.</strong>'
+      : 'Seu pedido seguirá normalmente no horário escolhido. Após o envio, acompanhe a confirmação pelo WhatsApp.';
+    aviso.classList.add('agendamento');
+    aviso.style.display = 'block';
+    aviso.innerHTML = `<strong>${titulo}</strong><span>${orientacao}</span>`;
+    return;
+  }
+  aviso.classList.remove('agendamento');
+  aviso.innerHTML = '<strong>Loja fechada no momento 🌙</strong><span>Você pode montar e revisar o pedido à vontade, mas o envio só será liberado quando reabrirmos.</span>';
+  aviso.style.display = lojaAberta ? 'none' : 'block';
 }
 
 // Carrinho salvo com carimbo de data. Depois de CARRINHO_VALIDADE_MS sem
@@ -3478,6 +3679,7 @@ function irParaStep(n) {
   pedidoStepAtual = n;
   $$('.pedido-step-panel').forEach(p => { p.style.display = (parseInt(p.dataset.step, 10) === n) ? 'flex' : 'none'; });
   atualizarStepperUI();
+  if (n === 2) atualizarOpcoesAgendamento();
   if (n === 4) montarRevisao();
   const box = document.querySelector('#cart-overlay .modal-box');
   if (box) box.scrollTop = 0;
@@ -3498,6 +3700,7 @@ function tentarAvancarStep2() {
   // Revalidação antecipada: avisa cedo se algo esgotou, em vez de só no envio.
   if (!revalidarPedido()) return;
   if (!validarCheckout()) return;
+  if (!validarEscolhaAgendamento()) return;
   irParaStep(3);
 }
 
@@ -3609,6 +3812,7 @@ $('#cli-pagamento').addEventListener('change', e => {
     campoTroco.value = '';
     campoTroco.classList.remove('field-error');
   }
+  atualizarAvisoCheckout();
 });
 
 function parseValorReais(valor) {
@@ -3709,12 +3913,16 @@ function validarCheckout() {
     if (bairro.value.trim().length < 2) { erros.push('Informe o seu bairro.'); bairro.classList.add('field-error'); }
   }
   if (!carrinho.length) { showToast('Adicione pelo menos um item ao carrinho.', 'error'); return false; }
+  if (!validarEscolhaAgendamento(false)) erros.push('Escolha quando deseja receber o pedido.');
   if (erros.length > 0) { showToast(erros[0], 'error'); }
   return erros.length === 0;
 }
 
 function montarRevisao() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value; let pgto = $('#cli-pagamento').value;
+  const agendado = $('#cli-momento-pedido').value === 'agendado';
+  const horarioPedido = agendado ? $('#cli-horario-agendado').value : '';
+  const faixaHorario = `<div style="margin-bottom:12px; padding:11px 12px; border-radius:10px; background:${agendado ? 'rgba(221,167,58,.12)' : 'rgba(47,133,90,.08)'}; border:1px solid ${agendado ? 'rgba(221,167,58,.35)' : 'rgba(47,133,90,.2)'}; font-size:12px; font-weight:800; color:var(--text-main);">${agendado ? `🗓️ Agendado para hoje às ${esc(horarioPedido)}` : '⚡ Preparar o mais rápido possível'}</div>`;
   if (pgto === 'Dinheiro' && $('#cli-troco').value.trim() !== '') {
     const valorTroco = parseValorReais($('#cli-troco').value);
     if (Number.isFinite(valorTroco)) pgto += ` (Troco para: ${brl(valorTroco)})`;
@@ -3749,17 +3957,24 @@ function montarRevisao() {
     const distanciaKm = $('#cli-distancia-km').value;
     const bairroStr = $('#cli-bairro').value.trim();
     const ref = $('#cli-referencia').value.trim();
-    $('#review-delivery').innerHTML = `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong><br><span style="font-size:13px; color:var(--text-main); font-weight:600;">Bairro: ${esc(bairroStr)}</span>`
+    $('#review-delivery').innerHTML = faixaHorario + `<strong>${esc($('#cli-rua').value.trim())}, ${esc($('#cli-numero').value.trim())}</strong><br><span style="font-size:13px; color:var(--text-main); font-weight:600;">Bairro: ${esc(bairroStr)}</span>`
       + (ref ? `<br><span class="review-item-detalhe">Referência: ${esc(ref)}</span>` : '')
       + `<br><span class="review-item-detalhe">${esc(nomeZona)}${distanciaKm ? ` &middot; ${esc(distanciaKm.replace('.', ','))} km` : ''} &middot; ${esc(CONFIG.cidade)} / ${esc(CONFIG.estado)}</span>`
       + ($('#cli-lat').value ? `<br><span class="review-item-detalhe">📍 Mapa anexado apenas como referência &mdash; vale o endereço digitado acima</span>` : '')
       + `<label id="rev-confirma-wrap" style="display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding:12px; border-radius:10px; background:rgba(221,167,58,0.08); font-size:12px; font-weight:700; line-height:1.45; color:var(--text-main); cursor:pointer;"><input type="checkbox" id="rev-confirma-endereco" style="margin-top:2px; width:17px; height:17px; flex:0 0 auto; accent-color:var(--gold);"><span>Confirmo que o <strong>número</strong> e o <strong>bairro</strong> acima estão corretos para a entrega.</span></label>`;
   } else {
-    $('#review-delivery').innerHTML = `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
+    $('#review-delivery').innerHTML = faixaHorario + `<strong>Retirada no Atelier</strong><span class="review-item-detalhe">${esc(CONFIG.enderecoLoja)}<br>Te avisaremos quando estiver pronto.</span>`;
   }
 
   $('#review-payment').innerHTML = `<strong>${esc(pgto)}</strong>`;
-  if ($('#cli-pagamento').value === 'PIX') { $('#rev-box-pix').style.display = 'block'; $('#rev-pix-valor').textContent = brl(t.total); } else { $('#rev-box-pix').style.display = 'none'; }
+  if ($('#cli-pagamento').value === 'PIX') {
+    $('#rev-box-pix').style.display = 'block';
+    $('#rev-pix-valor').textContent = brl(t.total);
+    iniciarContadorPix(gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, t.total));
+  } else {
+    $('#rev-box-pix').style.display = 'none';
+    pararContadorPix(true);
+  }
   $('#rev-bruto-value').textContent = brl(t.bruto);
   $('#rev-subtotal-value').textContent = brl(t.subtotal);
   const revLinhaDesconto = $('#rev-desconto-line');
@@ -3773,6 +3988,7 @@ function montarRevisao() {
   $('#rev-cupom-label').textContent = cupomAplicado ? `Cupom ${cupomAplicado.codigo}` : 'Cupom';
   if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega); } else { $('#rev-linha-taxa').style.display = 'none'; }
   $('#rev-total-value').textContent = brl(t.total);
+  atualizarAvisoCheckout();
 }
 
 function salvarDadosCliente() {
@@ -3800,6 +4016,71 @@ function carregarDadosCliente() {
 }
 
 function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = chave.replace(/[\s.-]/g, ''); const cleanNome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25).toUpperCase(); const cleanCidade = cidade.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15).toUpperCase(); const strValor = (valorCentavos / 100).toFixed(2); const formatField = (id, value) => id + String(value.length).padStart(2, '0') + value; const gui = formatField('00', 'br.gov.bcb.pix'); const key = formatField('01', cleanChave); const merchantAccount = formatField('26', gui + key); let payload = formatField('00', '01') + merchantAccount + formatField('52', '0000') + formatField('53', '986') + formatField('54', strValor) + formatField('58', 'BR') + formatField('59', cleanNome) + formatField('60', cleanCidade) + formatField('62', formatField('05', '***')) + '6304'; let crc = 0xFFFF; for (let c = 0; c < payload.length; c++) { crc ^= payload.charCodeAt(c) << 8; for (let i = 0; i < 8; i++) { if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } } return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'); }
+
+const PIX_PRAZO_MS = 15 * 60 * 1000;
+
+function desenharQRCodePix(payload) {
+  const container = document.getElementById('rev-pix-qrcode');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!window.DCAPixQRCode || typeof window.DCAPixQRCode.render !== 'function') {
+    container.innerHTML = '<span style="padding:18px; color:#8E2E27; font-size:12px; font-weight:800; line-height:1.45;">QR Code indisponível.<br>Use o botão “Copiar Código PIX”.</span>';
+    return;
+  }
+  window.DCAPixQRCode.render(container, payload);
+}
+
+function atualizarContadorPix() {
+  const area = document.getElementById('rev-pix-qr-area');
+  const timer = document.getElementById('rev-pix-timer');
+  const ajuda = document.getElementById('rev-pix-qr-help');
+  const btnCopiar = document.getElementById('rev-btn-copy-pix');
+  const btnConfirmar = document.getElementById('btn-confirm-order');
+  if (!area || !timer) return;
+
+  const restanteMs = Math.max(0, pixPrazoFinal - Date.now());
+  const restanteSegundos = Math.ceil(restanteMs / 1000);
+  const minutos = Math.floor(restanteSegundos / 60);
+  const segundos = restanteSegundos % 60;
+  const expirado = restanteMs <= 0;
+
+  timer.textContent = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+  area.classList.toggle('expired', expirado);
+  if (btnCopiar) btnCopiar.disabled = expirado;
+  if (btnConfirmar && $('#cli-pagamento').value === 'PIX' && !pedidoEmEnvio) btnConfirmar.disabled = expirado;
+  if (ajuda) ajuda.textContent = expirado
+    ? 'O prazo desta tela terminou. Gere novamente para continuar com o pagamento.'
+    : 'Abra o aplicativo do seu banco, escaneie o QR Code e envie o comprovante pelo WhatsApp.';
+
+  if (expirado && pixTimerInterval) {
+    clearInterval(pixTimerInterval);
+    pixTimerInterval = null;
+  }
+}
+
+function iniciarContadorPix(payload, renovar = false) {
+  const mesmoPagamento = payload === pixPayloadEmExibicao && pixPrazoFinal > 0;
+  if (!mesmoPagamento || renovar) {
+    pixPayloadEmExibicao = payload;
+    pixPrazoFinal = Date.now() + PIX_PRAZO_MS;
+    desenharQRCodePix(payload);
+  } else if (!document.querySelector('#rev-pix-qrcode img, #rev-pix-qrcode canvas, #rev-pix-qrcode svg')) {
+    desenharQRCodePix(payload);
+  }
+
+  if (pixTimerInterval) clearInterval(pixTimerInterval);
+  atualizarContadorPix();
+  if (pixPrazoFinal > Date.now()) pixTimerInterval = setInterval(atualizarContadorPix, 1000);
+}
+
+function pararContadorPix(limpar = false) {
+  if (pixTimerInterval) clearInterval(pixTimerInterval);
+  pixTimerInterval = null;
+  if (limpar) {
+    pixPrazoFinal = 0;
+    pixPayloadEmExibicao = '';
+  }
+}
 
 // ------------------------------------------------------------------
 // TRAVA DE INTEGRIDADE: revalida o carrinho contra a configuração atual
@@ -3874,6 +4155,10 @@ function revalidarPedido() {
 
 function montarPedido() {
   const t = totais(); const tipo = $('#cli-tipo-pedido').value;
+  const agendado = $('#cli-momento-pedido').value === 'agendado';
+  const agendamentoHora = agendado ? $('#cli-horario-agendado').value : '';
+  const agendamentoData = agendado ? dataLocalISO(new Date()) : '';
+  const agendamentoPara = agendado ? new Date(`${agendamentoData}T${agendamentoHora}:00`) : null;
   const promocaoAtiva = promocaoGeralAtiva();
   const promocoesAplicadas = promocoesAtivas().filter(promocao => carrinho.some(item => fracaoPromocionalSabores(item.sabores, promocao) > 0));
   const ehEntrega = (tipo === 'Entrega');
@@ -3901,6 +4186,12 @@ function montarPedido() {
 
   return {
     status: 'Novo',
+    status_operacional: agendado ? 'Agendado' : 'Novo',
+    agendado,
+    agendamento_data: agendamentoData,
+    agendamento_hora: agendamentoHora,
+    agendamento_chave: agendado ? `${agendamentoData}_${agendamentoHora.replace(':','-')}` : '',
+    agendamento_para: agendamentoPara,
     cliente_nome: $('#cli-nome').value.trim(),
     cliente_telefone: soDigitos($('#cli-telefone').value),
     cliente_endereco: endStr,
@@ -3950,6 +4241,7 @@ function montarPedido() {
 
 function montarMensagem(p) {
   const L = ['*PEDIDO — DOCE CAPRICHO ATELIER*', '', `*Cliente:* ${p.cliente_nome}`, `*WhatsApp:* ${p.cliente_telefone}`, `*Modalidade:* ${p.tipo_entrega}`];
+  L.push(`*Horário:* ${p.agendado ? `Agendado para hoje às ${p.agendamento_hora}` : 'O mais rápido possível'}`);
   if (p.tipo_entrega === 'Entrega') {
     L.push('', '*ENDEREÇO CONFIRMADO PELO CLIENTE (este é o oficial)*');
     L.push(`*Rua/Sítio:* ${p.end_rua}`);
@@ -3983,23 +4275,52 @@ function montarMensagem(p) {
     if (p.desconto_cupom_centavos > 0) L.push(`Cupom ${p.cupom_codigo}: - ${brl(p.desconto_cupom_centavos)}`);
   }
   L.push('', `Subtotal: ${brl(p.subtotal_centavos)}`); if (p.taxa_centavos) L.push(`Taxa de entrega: ${brl(p.taxa_centavos)}`); L.push(`*TOTAL: ${brl(p.total_centavos)}*`);
-  if (p.forma_pagamento.includes('PIX')) { const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', p.total_centavos); L.push('', `*CHAVE PIX (Celular/Telefone):*`, CONFIG.pixChave, '', `*PIX COPIA E COLA:*`, payload, '', `Por favor, envie o comprovante respondendo a esta mensagem.`); }
+  if (p.forma_pagamento.includes('PIX')) { const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, p.total_centavos); L.push('', `*CHAVE PIX (CNPJ):*`, CONFIG.pixChave, '', `*PIX COPIA E COLA:*`, payload, '', `Por favor, envie o comprovante respondendo a esta mensagem.`); }
   return L.join('\n');
+}
+
+async function registrarEstatisticasPedido(pedido) {
+  try {
+    const increment = firebase.firestore.FieldValue.increment(1); let updates = {};
+    pedido.itens.forEach(item => { if(item.sabores) item.sabores.forEach(saborId => { updates[`sabores.${saborId}`] = increment; }); });
+    if (Object.keys(updates).length > 0) await db.collection('configuracoes').doc('estatisticas').set(updates, { merge: true });
+  } catch(errStats) { console.warn('[STATS]', errStats.code); }
 }
 
 async function gravarFirestore(pedido) { 
   if (!CONFIG.usarFirebase || !window.firebase) return null; 
   try { 
-    const ref = await db.collection('pedidos').add({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() }); 
-    try { 
-      const increment = firebase.firestore.FieldValue.increment(1); let updates = {}; 
-      pedido.itens.forEach(item => { if(item.sabores) { item.sabores.forEach(saborId => { updates[`sabores.${saborId}`] = increment; }); } }); 
-      if (Object.keys(updates).length > 0) { await db.collection('configuracoes').doc('estatisticas').set(updates, { merge: true }); } 
-    } catch(errStats) { console.warn('[STATS]', errStats.code); }
+    const ref = db.collection('pedidos').doc();
+    if (pedido.agendado) {
+      const estatisticasRef = db.collection('configuracoes').doc('estatisticas');
+      await db.runTransaction(async transaction => {
+        const estatisticasSnap = await transaction.get(estatisticasRef);
+        const agendaSlots = estatisticasSnap.exists && estatisticasSnap.data().agendaSlots ? { ...estatisticasSnap.data().agendaSlots } : {};
+        Object.keys(agendaSlots).forEach(chave => { if (!chave.startsWith(`${pedido.agendamento_data}_`)) delete agendaSlots[chave]; });
+        const reservas = Number(agendaSlots[pedido.agendamento_chave]) || 0;
+        const capacidade = Math.max(1, Number(configAgendamento().capacidadePorHorario) || 3);
+        if (reservas >= capacidade) {
+          const erro = new Error('Este horário acabou de ficar lotado.');
+          erro.code = 'agenda/lotada';
+          throw erro;
+        }
+        agendaSlots[pedido.agendamento_chave] = reservas + 1;
+        transaction.set(ref, { ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() });
+        transaction.set(estatisticasRef, { agendaSlots }, { merge: true });
+      });
+    } else {
+      await ref.set({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+    await registrarEstatisticasPedido(pedido);
     return ref.id; 
   } catch (e) { 
     console.error('[PEDIDO] Falha ao gravar:', e.code, e.message);
-    showToast('Não conseguimos registrar o pedido no sistema. Envie pelo WhatsApp e confirme com a loja.', 'error');
+    if (pedido.agendado) {
+      showToast(e.code === 'agenda/lotada' ? 'Este horário acabou de lotar. Escolha outro horário.' : 'Não conseguimos reservar esse horário. Atualize a agenda e tente novamente.', 'error');
+      atualizarOpcoesAgendamento();
+    } else {
+      showToast('Não conseguimos registrar o pedido no sistema. Envie pelo WhatsApp e confirme com a loja.', 'error');
+    }
     return null; 
   } 
 }
@@ -4009,15 +4330,20 @@ let pedidoEmEnvio = false;
 async function enviarPedidoFinal(ev) {
   ev.preventDefault();
   if (pedidoEmEnvio) return;
-  if(!lojaAberta) { 
+  const pedidoAgendado = $('#cli-momento-pedido').value === 'agendado';
+  if(!pedidoAgendado && !lojaAberta) {
       const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
-      if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa'); 
+      if(statusManual === 'pausado' && configAgendamento().permitirDurantePausa) {
+        showToast('Os pedidos imediatos estão pausados. Escolha um horário para hoje.', 'warning');
+        irParaStep(2);
+      } else if(statusManual === 'pausado' || statusManual === 'esgotado') abrirModal('modal-aviso-pausa');
       else showToast("Nossa loja está fechada no momento.", "error"); 
       return; 
   } 
   if (!revalidarPedido()) return;
   if (!await revalidarCupomAplicado()) return;
   if (!validarCheckout()) return;
+  if (!validarEscolhaAgendamento()) return;
   if (!validarTroco()) {
     irParaStep(3);
     return;
@@ -4031,12 +4357,23 @@ async function enviarPedidoFinal(ev) {
       return;
     }
   }
+  if ($('#cli-pagamento').value === 'PIX' && (!pixPrazoFinal || Date.now() >= pixPrazoFinal)) {
+    showToast('O prazo do PIX terminou. Gere um novo QR Code para continuar.', 'warning');
+    atualizarContadorPix();
+    return;
+  }
   if (!navigator.onLine) { showToast('Você está sem internet. Reconecte e envie novamente.', 'error'); return; }
   pedidoEmEnvio = true;
   const btn = $('#btn-confirm-order'); btn.disabled = true; btn.textContent = 'Enviando...';
   salvarDadosCliente();
   const aba = window.open('about:blank', '_blank'); 
   const pedido = montarPedido(); const id = await gravarFirestore(pedido); 
+  if (pedido.agendado && !id) {
+    if (aba) aba.close();
+    btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false;
+    pedidoEmEnvio = false;
+    return;
+  }
   
   if(id) localStorage.setItem('dca_last_order', id);
 
@@ -4044,7 +4381,7 @@ async function enviarPedidoFinal(ev) {
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
-  carrinho = []; cupomAplicado = null; salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false; 
+  carrinho = []; cupomAplicado = null; pararContadorPix(true); salvar(); atualizarUI(); fecharModal('cart-overlay'); irParaStep(1); btn.textContent = 'Confirmar e Enviar Pedido'; btn.disabled = false;
   pedidoEmEnvio = false;
   setTimeout(() => { showToast("Pedido enviado com sucesso!", "success"); }, 500);
 }
@@ -4119,6 +4456,7 @@ function atualizarTimeline(status, tipoEntrega) {
 
 function abrirModal(id) { const ov = document.getElementById(id); if(ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); document.body.style.overflow = 'hidden'; if (id === 'cart-overlay') { irParaStep(1); atualizarUI(); } } }
 function fecharModal(id) { 
+  if (id === 'cart-overlay') pararContadorPix(true);
   if (id === 'tracking-overlay' && unsubscribeRastreio) { unsubscribeRastreio(); unsubscribeRastreio = null; }
   if (id === 'pizza-sabor-overlay') seletorPizzaInteiraBuilder = false;
   if (id === 'pizza-montador-overlay') {
@@ -4211,7 +4549,7 @@ $('#checkout-form').addEventListener('submit', e => {
     if (pedidoStepAtual === 2) tentarAvancarStep2();
 });
 
-$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
+$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); atualizarAvisoCheckout(); }); });
 
 function abrirCarrinhoSeguro() {
     // Carrinho sempre acessível, inclusive com a loja fechada (modo simulação).
@@ -4224,7 +4562,12 @@ $('#quick-order-open').addEventListener('click', abrirCarrinhoSeguro);
 
 $('#cli-telefone').addEventListener('input', e => { const d = soDigitos(e.target.value).slice(0, 11); e.target.value = d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.length > 6 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3') : d.length > 2 ? d.replace(/(\d{2})(\d{0,5})/, '($1) $2') : d; });
 
-$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; const t = totais(); const payload = gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, 'BRASIL', t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
+$('#rev-btn-copy-pix').addEventListener('click', async e => { const btn = e.currentTarget; if (!pixPrazoFinal || Date.now() >= pixPrazoFinal) { showToast('O prazo terminou. Gere um novo QR Code.', 'warning'); atualizarContadorPix(); return; } const t = totais(); const payload = pixPayloadEmExibicao || gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, t.total); try { await navigator.clipboard.writeText(payload); } catch (err) { const ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) {} ta.remove(); } btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = 'Copiar Código PIX'; }, 2000); });
+$('#rev-btn-renovar-pix').addEventListener('click', () => {
+  const t = totais();
+  iniciarContadorPix(gerarPixPayload(CONFIG.pixChave, CONFIG.pixNome, CONFIG.cidade, t.total), true);
+  showToast('Novo prazo de 15 minutos iniciado.', 'success');
+});
 $('#ano').textContent = new Date().getFullYear();
 
 // ==========================================================
@@ -4591,7 +4934,7 @@ const db = firebase.firestore();
 
 function processarConfig(doc) {
   if(doc.exists) {
-    configLoja = doc.data();
+    configLoja = { ...doc.data(), agendamento: { ...AGENDAMENTO_PADRAO, ...(doc.data().agendamento || {}) } };
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
     if(!configLoja.ingredientesEsgotados) configLoja.ingredientesEsgotados = [];
     if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
@@ -4602,11 +4945,12 @@ function processarConfig(doc) {
     
     const statusManual = configLoja.statusLoja || 'auto';
     
-    if (!primeiraCargaPausa && (statusManual === 'pausado' || statusManual === 'esgotado') && lojaEstavaPausada === false) { 
+    const bloqueioTotal = statusManual === 'esgotado' || (statusManual === 'pausado' && !configAgendamento().permitirDurantePausa);
+    if (!primeiraCargaPausa && bloqueioTotal && lojaEstavaPausada === false) {
         fecharModal('builder-overlay'); fecharModal('cart-overlay'); fecharModal('success-overlay'); 
         abrirModal('modal-aviso-pausa'); 
     }
-    lojaEstavaPausada = (statusManual === 'pausado' || statusManual === 'esgotado'); primeiraCargaPausa = false;
+    lojaEstavaPausada = bloqueioTotal; primeiraCargaPausa = false;
     processarAvisoPopup(configLoja.avisoPopup);
     
     configsCarregadasDB = true; 
