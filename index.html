@@ -336,6 +336,8 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 #aviso-simulacao-checkout { display: none; background: rgba(230, 57, 70, 0.06); border: 1px dashed var(--terracotta); border-radius: 14px; padding: 16px; margin-bottom: 15px; text-align: center; }
 #aviso-simulacao-checkout strong { display: block; color: var(--terracotta); font-size: 14px; margin-bottom: 6px; letter-spacing: 0.5px; }
 #aviso-simulacao-checkout span { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+#aviso-simulacao-checkout.agendamento { background: rgba(221,167,58,.1); border-color: rgba(221,167,58,.55); }
+#aviso-simulacao-checkout.agendamento strong { color: var(--gold-dark); }
 :root[data-theme="dark"] #aviso-simulacao-checkout { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.4); }
 :root[data-theme="dark"] #aviso-simulacao-checkout strong { color: var(--warning); }
 
@@ -2195,6 +2197,7 @@ function selecionarMomentoPedido(momento) {
   campo.value = momento;
   document.querySelectorAll('[data-momento]').forEach(el => el.classList.toggle('active', el.dataset.momento === momento));
   wrap.classList.toggle('show', momento === 'agendado');
+  atualizarAvisoCheckout();
 }
 
 function validarEscolhaAgendamento(mostrarErro = true) {
@@ -2210,6 +2213,7 @@ function validarEscolhaAgendamento(mostrarErro = true) {
 }
 
 document.querySelectorAll('[data-momento]').forEach(btn => btn.addEventListener('click', () => selecionarMomentoPedido(btn.dataset.momento)));
+document.getElementById('cli-horario-agendado')?.addEventListener('change', atualizarAvisoCheckout);
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
 const DESTAQUES_SLIDES = [
@@ -2617,11 +2621,8 @@ function atualizarStatusLoja() {
   const bannerPausa = document.getElementById('banner-pausado');
   const statusManual = configLoja.statusLoja || (configLoja.forcarFechamento ? 'pausado' : 'auto');
 
-  const avisoSimulacao = document.getElementById('aviso-simulacao-checkout');
-
   if (!lojaAberta) {
     document.body.classList.add('loja-fechada');
-    if(avisoSimulacao) avisoSimulacao.style.display = 'block';
     if(badge) {
         if(statusManual === 'pausado') {
             badge.textContent = 'PEDIDOS PAUSADOS'; badge.className = 'status-badge pausado';
@@ -2644,10 +2645,28 @@ function atualizarStatusLoja() {
     }
   } else { 
       document.body.classList.remove('loja-fechada'); 
-      if(avisoSimulacao) avisoSimulacao.style.display = 'none';
       if(bannerPausa) bannerPausa.style.display = 'none'; 
       if(badge) { badge.textContent = 'ABERTO'; badge.className = 'status-badge'; } 
   }
+  atualizarAvisoCheckout();
+}
+
+function atualizarAvisoCheckout() {
+  const aviso = document.getElementById('aviso-simulacao-checkout');
+  const momento = document.getElementById('cli-momento-pedido');
+  if (!aviso || !momento) return;
+  const agendado = momento.value === 'agendado';
+  if (agendado) {
+    const horario = document.getElementById('cli-horario-agendado')?.value || '';
+    const titulo = horario ? `Agendamento para hoje às ${esc(horario)} 🗓️` : 'Agendamento para hoje 🗓️';
+    aviso.classList.add('agendamento');
+    aviso.style.display = 'block';
+    aviso.innerHTML = `<strong>${titulo}</strong><span>Após enviar o pedido, realize o pagamento e encaminhe o comprovante pelo WhatsApp. <strong style="display:inline; margin:0; font-size:inherit;">O agendamento será concluído somente após a confirmação do pagamento.</strong></span>`;
+    return;
+  }
+  aviso.classList.remove('agendamento');
+  aviso.innerHTML = '<strong>Loja fechada no momento 🌙</strong><span>Você pode montar e revisar o pedido à vontade, mas o envio só será liberado quando reabrirmos.</span>';
+  aviso.style.display = lojaAberta ? 'none' : 'block';
 }
 
 // Carrinho salvo com carimbo de data. Depois de CARRINHO_VALIDADE_MS sem
@@ -3936,6 +3955,7 @@ function montarRevisao() {
   $('#rev-cupom-label').textContent = cupomAplicado ? `Cupom ${cupomAplicado.codigo}` : 'Cupom';
   if(tipo === 'Entrega' && t.entrega > 0) { $('#rev-linha-taxa').style.display = 'flex'; $('#rev-taxa-value').textContent = brl(t.entrega); } else { $('#rev-linha-taxa').style.display = 'none'; }
   $('#rev-total-value').textContent = brl(t.total);
+  atualizarAvisoCheckout();
 }
 
 function salvarDadosCliente() {
