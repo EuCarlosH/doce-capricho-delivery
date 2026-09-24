@@ -2659,9 +2659,13 @@ function atualizarAvisoCheckout() {
   if (agendado) {
     const horario = document.getElementById('cli-horario-agendado')?.value || '';
     const titulo = horario ? `Agendamento para hoje às ${esc(horario)} 🗓️` : 'Agendamento para hoje 🗓️';
+    const pagamento = document.getElementById('cli-pagamento')?.value || 'PIX';
+    const orientacao = pagamento === 'PIX'
+      ? 'Após enviar o pedido, realize o pagamento e encaminhe o comprovante pelo WhatsApp. <strong style="display:inline; margin:0; font-size:inherit;">O agendamento será concluído somente após a confirmação do pagamento.</strong>'
+      : 'Seu pedido seguirá normalmente no horário escolhido. Após o envio, acompanhe a confirmação pelo WhatsApp.';
     aviso.classList.add('agendamento');
     aviso.style.display = 'block';
-    aviso.innerHTML = `<strong>${titulo}</strong><span>Após enviar o pedido, realize o pagamento e encaminhe o comprovante pelo WhatsApp. <strong style="display:inline; margin:0; font-size:inherit;">O agendamento será concluído somente após a confirmação do pagamento.</strong></span>`;
+    aviso.innerHTML = `<strong>${titulo}</strong><span>${orientacao}</span>`;
     return;
   }
   aviso.classList.remove('agendamento');
@@ -3787,6 +3791,7 @@ $('#cli-pagamento').addEventListener('change', e => {
     campoTroco.value = '';
     campoTroco.classList.remove('field-error');
   }
+  atualizarAvisoCheckout();
 });
 
 function parseValorReais(valor) {
@@ -4445,7 +4450,7 @@ $('#checkout-form').addEventListener('submit', e => {
     if (pedidoStepAtual === 2) tentarAvancarStep2();
 });
 
-$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); }); });
+$$('.delivery-card').forEach(card => { card.addEventListener('click', () => { $$('.delivery-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); $('#cli-tipo-pedido').value = card.dataset.tipo; atualizarUI(); atualizarAvisoCheckout(); }); });
 
 function abrirCarrinhoSeguro() {
     // Carrinho sempre acessível, inclusive com a loja fechada (modo simulação).
