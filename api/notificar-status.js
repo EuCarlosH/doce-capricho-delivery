@@ -1,7 +1,10 @@
-const FIREBASE_API_KEY = process.env.FIREBASE_WEB_API_KEY || 'AIzaSyCU5CFz3cbrpyk3dsJBR46m-0km3kYkjJA';
+const crypto = require('crypto');
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'sistema-doce-capricho';
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID || '50ed9f81-4fa2-41e7-b470-b235bcefe85d';
 const APP_URL = process.env.PUBLIC_APP_URL || 'https://docecaprichoatelier.vercel.app';
+const FIREBASE_CERTS_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+let firebaseCertsCache = null;
+let firebaseCertsExpiramEm = 0;
 
 const MENSAGENS = {
   preparando: {
@@ -61,16 +64,47 @@ function lerCamposFirestore(fields) {
   return Object.fromEntries(Object.entries(fields || {}).map(([chave, valor]) => [chave, lerValorFirestore(valor)]));
 }
 
+function decodificarParteJwt(parte) {
+  try { return JSON.parse(Buffer.from(parte, 'base64url').toString('utf8')); }
+  catch (_) { return null; }
+}
+
+async function buscarCertificadosFirebase() {
+  if (firebaseCertsCache && Date.now() < firebaseCertsExpiramEm) return firebaseCertsCache;
+  const resposta = await fetch(FIREBASE_CERTS_URL, { headers:{ Accept:'application/json' } });
+  if (!resposta.ok) throw new Error(`firebase_certs_${resposta.status}`);
+  const certificados = await resposta.json();
+  const cacheControl = String(resposta.headers?.get?.('cache-control') || '');
+  const maxAge = Number((cacheControl.match(/max-age=(\d+)/i) || [])[1]) || 3600;
+  firebaseCertsCache = certificados;
+  firebaseCertsExpiramEm = Date.now() + Math.max(300, maxAge - 60) * 1000;
+  return certificados;
+}
+
 async function validarAdministrador(token) {
-  const resposta = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(FIREBASE_API_KEY)}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ idToken:token })
-  });
-  if (!resposta.ok) return null;
-  const dados = await resposta.json();
-  const usuario = dados.users && dados.users[0];
-  if (!usuario) return null;
+  const partes = String(token || '').split('.');
+  if (partes.length !== 3) return null;
+  const cabecalho = decodificarParteJwt(partes[0]);
+  const usuario = decodificarParteJwt(partes[1]);
+  if (!cabecalho || !usuario || cabecalho.alg !== 'RS256' || !cabecalho.kid) return null;
+
+  const certificados = await buscarCertificadosFirebase();
+  const certificado = certificados[cabecalho.kid];
+  if (!certificado) return null;
+  const assinaturaValida = crypto.verify(
+    'RSA-SHA256',
+    Buffer.from(`${partes[0]}.${partes[1]}`),
+    certificado,
+    Buffer.from(partes[2], 'base64url')
+  );
+  if (!assinaturaValida) return null;
+
+  const agora = Math.floor(Date.now() / 1000);
+  if (usuario.aud !== FIREBASE_PROJECT_ID) return null;
+  if (usuario.iss !== `https://securetoken.google.com/${FIREBASE_PROJECT_ID}`) return null;
+  if (!usuario.sub || String(usuario.sub).length > 128) return null;
+  if (!Number.isFinite(usuario.exp) || usuario.exp <= agora) return null;
+  if (!Number.isFinite(usuario.iat) || usuario.iat > agora + 300) return null;
 
   const permitidos = String(process.env.ADMIN_NOTIFICATION_EMAILS || process.env.ADMIN_EMAILS || '')
     .split(',')
@@ -115,7 +149,10 @@ module.exports = async function handler(req, res) {
 
   try {
     const administrador = await validarAdministrador(token);
-    if (!administrador) return responder(res, 401, { error:'Sessão administrativa inválida.' });
+    if (!administrador) {
+      console.warn('[AUTH NOTIFICAÇÃO] Token Firebase rejeitado.');
+      return responder(res, 401, { error:'Sessão administrativa inválida. Atualize o painel e entre novamente.' });
+    }
 
     const pedido = await buscarPedido(pedidoId, token);
     if (!pedido) return responder(res, 404, { error:'Pedido não encontrado.' });

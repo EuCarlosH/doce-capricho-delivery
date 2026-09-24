@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.24-recebimento-profissional">
+<meta name="dca-admin-version" content="2026.09.24-correcao-notificacoes">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1006,7 +1006,8 @@ async function notificarStatusPedido(id, novoStatus) {
   if (!auth.currentUser) return { enviado:false, motivo:'sem_autenticacao' };
 
   try {
-    const token = await auth.currentUser.getIdToken();
+    // Força a renovação para evitar que o PWA reutilize um token expirado.
+    const token = await auth.currentUser.getIdToken(true);
     const controle = new AbortController();
     const limite = setTimeout(() => controle.abort(), 12000);
     const resposta = await fetch('/api/notificar-status', {
