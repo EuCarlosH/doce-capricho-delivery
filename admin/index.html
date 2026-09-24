@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.24-notificacoes-status">
+<meta name="dca-admin-version" content="2026.09.24-status-preparando">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -440,7 +440,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           <div class="hero-metric"><span>Pedidos hoje</span><strong id="hero-qtd">0</strong></div>
           <div class="hero-metric"><span>Faturamento</span><strong id="hero-fat">R$ 0,00</strong></div>
           <div class="hero-metric"><span>Aguardando</span><strong id="hero-novos">0</strong></div>
-          <div class="hero-metric"><span>Na cozinha</span><strong id="hero-preparo">0</strong></div>
+          <div class="hero-metric"><span>Preparando</span><strong id="hero-preparo">0</strong></div>
         </div>
       </section>
       
@@ -451,7 +451,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         </div>
         
         <div class="kanban-col" data-status="Preparando" ondragover="dragOver(event)" ondrop="drop(event, 'Preparando')">
-          <div class="col-header">Na Cozinha <span class="count" id="count-preparando">0</span></div>
+          <div class="col-header">Preparando <span class="count" id="count-preparando">0</span></div>
           <div class="col-body" id="list-preparando"></div>
         </div>
         
