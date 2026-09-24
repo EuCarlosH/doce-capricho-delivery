@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.18-consolidado-1">
+<meta name="dca-admin-version" content="2026.09.24-estoque-ingredientes">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -162,7 +162,7 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 .tab-content { display: none; flex-grow: 1; overflow-y: auto; padding-right: 5px;}
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 #modal-catalogo .modal-box { width:min(1120px, calc(100vw - 40px)); max-width:none; max-height:min(92vh, 900px); padding:28px; }
-#modal-catalogo .tabs-header { display:grid; grid-template-columns:minmax(190px,1.45fr) repeat(6,minmax(100px,1fr)); overflow:visible; flex-shrink:0; }
+#modal-catalogo .tabs-header { display:grid; grid-template-columns:minmax(190px,1.45fr) repeat(7,minmax(100px,1fr)); overflow:visible; flex-shrink:0; }
 #modal-catalogo .tab-btn { width:100%; min-width:0; min-height:40px; line-height:1.25; white-space:normal; overflow-wrap:anywhere; display:flex; align-items:center; justify-content:center; text-align:center; }
 #modal-catalogo .tab-content { min-width:0; padding:4px 6px 8px 2px; }
 #modal-catalogo .tab-content input,
@@ -172,7 +172,8 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
 #modal-catalogo #catalog-list-pizzas,
 #modal-catalogo #catalog-list-extras,
 #modal-catalogo #catalog-list-esfihas,
-#modal-catalogo #catalog-list-combos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+#modal-catalogo #catalog-list-combos,
+#modal-catalogo #catalog-list-ingredientes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
 #modal-catalogo .catalog-item { margin-bottom:0; min-width:0; gap:14px; }
 #modal-catalogo .catalog-info { min-width:0; }
 #modal-catalogo .catalog-info strong { overflow-wrap:anywhere; }
@@ -187,7 +188,8 @@ h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
   #modal-catalogo #catalog-list-pizzas,
   #modal-catalogo #catalog-list-extras,
   #modal-catalogo #catalog-list-esfihas,
-  #modal-catalogo #catalog-list-combos { grid-template-columns:1fr; }
+  #modal-catalogo #catalog-list-combos,
+  #modal-catalogo #catalog-list-ingredientes { grid-template-columns:1fr; }
 }
 @media (max-width: 560px) {
   #modal-catalogo .tabs-header { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -520,6 +522,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
     
     <div class="tabs-header">
       <button class="tab-btn active" onclick="switchTab('tab-expediente', this)">Automação & Expediente</button>
+      <button class="tab-btn" onclick="switchTab('tab-ingredientes', this)">Ingredientes</button>
       <button class="tab-btn" onclick="switchTab('tab-pizzas', this)">Pizzas</button>
       <button class="tab-btn" onclick="switchTab('tab-esfihas', this)">Esfihas</button>
       <button class="tab-btn" onclick="switchTab('tab-ofertas', this)">Ofertas</button>
@@ -567,6 +570,14 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           <button onclick="salvarTextoFuncionamento(event)" class="btn-gradient btn-save" style="margin-top: 0; padding:10px;">Salvar Rodapé</button>
         </div>
       </div>
+    </div>
+
+    <div id="tab-ingredientes" class="tab-content">
+      <div style="padding:14px; margin-bottom:14px; border:1px solid rgba(223,174,76,.25); border-radius:10px; background:#FFF9ED;">
+        <strong style="display:block; font-size:13px; color:var(--text-main); margin-bottom:5px;">📦 Estoque por ingrediente</strong>
+        <p style="font-size:10px; color:var(--text-muted); line-height:1.55; margin:0;">Ao desligar um ingrediente, pizzas, esfihas, bordas e adicionais dependentes ficam indisponíveis automaticamente no cardápio.</p>
+      </div>
+      <div id="catalog-list-ingredientes"></div>
     </div>
 
     <div id="tab-pizzas" class="tab-content">
@@ -767,7 +778,7 @@ let auth = firebase.auth();
 let pedidosMap = new Map(); 
 let crmCache = new Map();
 let crmConsultasPendentes = new Map();
-let configuracoesGlobais = { statusLoja: 'auto', itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
+let configuracoesGlobais = { statusLoja: 'auto', itensEsgotados: [], ingredientesEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
 let somLigado = true; 
 let chartInstance = null;
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
@@ -848,6 +859,7 @@ function iniciarSistema() {
     if(doc.exists) {
         configuracoesGlobais = doc.data();
         if(!configuracoesGlobais.itensEsgotados) configuracoesGlobais.itensEsgotados = [];
+        if(!configuracoesGlobais.ingredientesEsgotados) configuracoesGlobais.ingredientesEsgotados = [];
         if(!configuracoesGlobais.horarios) configuracoesGlobais.horarios = {};
         if(!configuracoesGlobais.modoPromocoes) configuracoesGlobais.modoPromocoes = 'auto'; 
         if(!configuracoesGlobais.statusLoja) {
@@ -911,6 +923,19 @@ function montarMensagemStatus(p, novoStatus) {
 function moverPedido(id, novoStatus) {
     const p = pedidosMap.get(id);
     if(!p) return;
+
+    if (novoStatus === 'Preparando') {
+      const indisponiveis = ingredientesIndisponiveisPedido(p);
+      const produtosIndisponiveis = itensIndisponiveisPedido(p);
+      if (indisponiveis.length || produtosIndisponiveis.length) {
+        const detalhes = [
+          indisponiveis.length ? `Ingredientes:\n• ${indisponiveis.join('\n• ')}` : '',
+          produtosIndisponiveis.length ? `Itens:\n• ${produtosIndisponiveis.join('\n• ')}` : ''
+        ].filter(Boolean).join('\n\n');
+        alert(`Não é possível aceitar este pedido. Há itens indisponíveis:\n\n${detalhes}\n\nReative o estoque ou combine uma substituição com o cliente.`);
+        return;
+      }
+    }
 
     const statusComMensagem = ['Saiu para Entrega', 'Pronto para Retirada', 'Concluído'];
     if (statusComMensagem.includes(novoStatus)) {
@@ -1093,6 +1118,8 @@ function renderizarKanban() {
         let obsHtml = i.obs ? `<div class="p-obs">${esc(i.obs)}</div>` : '';
         return `<div style="margin-bottom:8px;"><strong>${i.qtd}x ${esc(i.nome)}</strong>${comboHtml}${extrasHtml}${obsHtml}</div>`;
       }).join('');
+      const ingredientesFaltando = ingredientesIndisponiveisPedido(p);
+      const estoqueHTML = ingredientesFaltando.length ? `<div style="margin:8px 0; padding:9px 10px; border-radius:8px; background:#FFF0F0; border:1px solid rgba(230,57,70,.28); color:#B4232D; font-size:10px; font-weight:800; line-height:1.5;">⚠️ Ingredientes indisponíveis: ${ingredientesFaltando.map(esc).join(', ')}</div>` : '';
       let btnCancel = status !== 'Concluído' ? `<button class="btn-icon-only" onclick="cancelarPedido('${p.id}')" title="Cancelar Pedido">${icons.cancel}</button>` : '';
 
       let crmId = `crm-${p.id}`; fetchCRM(p.cliente_telefone, crmId, status);
@@ -1122,6 +1149,7 @@ function renderizarKanban() {
           <span class="p-badge ${p.tipo_entrega==='Entrega'?'badge-entrega':'badge-retirada'}">${p.tipo_entrega}</span>
         </div>
         <div class="p-itens">${itensHTML}</div>
+        ${estoqueHTML}
         <div class="p-footer">
           <span class="p-total">${brl(p.total_centavos)}</span>
           <span class="badge-pgto">${p.forma_pagamento}</span>
@@ -1217,18 +1245,83 @@ const CARDAPIO = [
   { id:'combo_sabadoprem', nome:'Sabadão Premium', tipo:'combo' },
   { id:'catupiry', nome:'Catupiry', tipo: 'extra' }, { id:'cream', nome:'Cream Cheese', tipo: 'extra' }, { id:'bacon', nome:'Bacon', tipo: 'extra' }, { id:'alho', nome:'Alho Poró', tipo: 'extra' }
 ];
+const INGREDIENTES = [
+  { id:'massa_pizza', nome:'Massa de pizza', grupo:'Bases' }, { id:'massa_esfiha', nome:'Massa de esfiha', grupo:'Bases' }, { id:'molho_pizza', nome:'Molho de tomate', grupo:'Bases' },
+  { id:'mussarela', nome:'Mussarela', grupo:'Queijos' }, { id:'catupiry', nome:'Catupiry', grupo:'Queijos' }, { id:'cream_cheese', nome:'Cream cheese', grupo:'Queijos' },
+  { id:'queijo_coalho', nome:'Queijo coalho', grupo:'Queijos' }, { id:'parmesao', nome:'Parmesão', grupo:'Queijos' },
+  { id:'presunto', nome:'Presunto', grupo:'Carnes' }, { id:'frango', nome:'Frango', grupo:'Carnes' }, { id:'calabresa', nome:'Calabresa', grupo:'Carnes' },
+  { id:'carne_sol', nome:'Carne de sol', grupo:'Carnes' }, { id:'carne_moida', nome:'Carne moída', grupo:'Carnes' }, { id:'lombo_canadense', nome:'Lombo canadense', grupo:'Carnes' },
+  { id:'peito_peru', nome:'Peito de peru', grupo:'Carnes' }, { id:'bacon', nome:'Bacon', grupo:'Carnes' },
+  { id:'tomate', nome:'Tomate', grupo:'Vegetais' }, { id:'cebola', nome:'Cebola', grupo:'Vegetais' }, { id:'cebola_roxa', nome:'Cebola roxa', grupo:'Vegetais' },
+  { id:'alho_poro', nome:'Alho-poró', grupo:'Vegetais' }, { id:'morango', nome:'Morango', grupo:'Vegetais' },
+  { id:'chocolate_leite', nome:'Chocolate ao leite', grupo:'Doces' }, { id:'confeitos', nome:'M&M’s / confeitos', grupo:'Doces' }
+];
+const DEPENDENCIAS_INGREDIENTES = {
+  mussarela:['massa_pizza','molho_pizza','mussarela','tomate'], mista:['massa_pizza','molho_pizza','presunto','mussarela'],
+  frango:['massa_pizza','molho_pizza','mussarela','frango'], calabresa:['massa_pizza','molho_pizza','mussarela','calabresa','cebola'],
+  carnesol:['massa_pizza','molho_pizza','mussarela','carne_sol','cebola_roxa'], frangocat:['massa_pizza','molho_pizza','mussarela','frango','catupiry'],
+  nordestina:['massa_pizza','molho_pizza','mussarela','cream_cheese','carne_sol','queijo_coalho'],
+  lombo:['massa_pizza','molho_pizza','mussarela','lombo_canadense','catupiry'],
+  arretada:['massa_pizza','molho_pizza','mussarela','calabresa','queijo_coalho','bacon'],
+  peru:['massa_pizza','molho_pizza','mussarela','cream_cheese','peito_peru','bacon','alho_poro','parmesao'],
+  esf_mussarela:['massa_esfiha','mussarela'], esf_mista:['massa_esfiha','presunto','mussarela'],
+  esf_frango_mus:['massa_esfiha','frango','mussarela'], esf_calabresa_mus:['massa_esfiha','calabresa','mussarela'],
+  esf_carnesol_mus:['massa_esfiha','carne_sol','mussarela'], esf_carnemoida:['massa_esfiha','carne_moida'],
+  esf_frango_coalho:['massa_esfiha','frango','queijo_coalho'], esf_frango_catupiry:['massa_esfiha','frango','catupiry'],
+  esf_frango_cream:['massa_esfiha','frango','cream_cheese'], esf_carnesol_coalho:['massa_esfiha','carne_sol','queijo_coalho'],
+  esf_carnesol_catupiry:['massa_esfiha','carne_sol','catupiry'], esf_carnesol_cream:['massa_esfiha','carne_sol','cream_cheese'],
+  esf_calabresa_coalho:['massa_esfiha','calabresa','queijo_coalho'], esf_calabresa_catupiry:['massa_esfiha','calabresa','catupiry'],
+  esf_calabresa_cream:['massa_esfiha','calabresa','cream_cheese'], esf_peru:['massa_esfiha','peito_peru'],
+  esf_bacon_mus:['massa_esfiha','bacon','mussarela'], esf_choc_leite:['massa_esfiha','chocolate_leite'],
+  esf_choc_mm:['massa_esfiha','chocolate_leite','confeitos'], esf_choc_morango:['massa_esfiha','chocolate_leite','morango'],
+  catupiry:['catupiry'], cream:['cream_cheese'], bacon:['bacon'], alho:['alho_poro']
+};
+const INGREDIENTES_BORDAS = { borda_catupiry:'catupiry', borda_cream_cheese:'cream_cheese', borda_chocolate:'chocolate_leite' };
 const DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+function ingredientesIndisponiveisPedido(pedido) {
+  const esgotados = new Set(configuracoesGlobais.ingredientesEsgotados || []);
+  const ids = (pedido.itens || []).flatMap(item => {
+    const calculados = [...(item.sabores || []), ...(item.combo_itens || []).map(combo => combo.id), ...(item.extras || []).map(extra => extra.id)]
+      .flatMap(id => DEPENDENCIAS_INGREDIENTES[id] || []);
+    const ingredienteBorda = item.borda && INGREDIENTES_BORDAS[item.borda.id];
+    if (ingredienteBorda) calculados.push(ingredienteBorda);
+    return [...calculados, ...(Array.isArray(item.ingredientes) ? item.ingredientes : [])];
+  });
+  return [...new Set(ids.filter(id => esgotados.has(id)))].map(id => INGREDIENTES.find(i => i.id === id)?.nome || id);
+}
+
+function itensIndisponiveisPedido(pedido) {
+  const esgotados = new Set(configuracoesGlobais.itensEsgotados || []);
+  const ids = (pedido.itens || []).flatMap(item => [...(item.sabores || []), ...(item.combo_itens || []).map(combo => combo.id), ...(item.extras || []).map(extra => extra.id)]);
+  return [...new Set(ids.filter(id => esgotados.has(id)))].map(id => CARDAPIO.find(item => item.id === id)?.nome || id);
+}
+
+function toggleIngrediente(id, marcarComoAtivo) {
+  let esgotados = [...(configuracoesGlobais.ingredientesEsgotados || [])];
+  if (marcarComoAtivo) esgotados = esgotados.filter(item => item !== id);
+  else if (!esgotados.includes(id)) esgotados.push(id);
+  db.collection('configuracoes').doc('geral').set({ ingredientesEsgotados: esgotados }, { merge: true });
+}
 
 function renderizarModaisConfig() {
   const esgotados = configuracoesGlobais.itensEsgotados || [];
+  const ingredientesEsgotados = configuracoesGlobais.ingredientesEsgotados || [];
   const renderItem = (item) => {
-    const isAtivo = !esgotados.includes(item.id);
-    return `<div class="catalog-item"><div class="catalog-info"><strong>${item.nome}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}">${isAtivo ? 'Disponível' : 'Esgotado'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
+    const manualAtivo = !esgotados.includes(item.id);
+    const faltantes = (DEPENDENCIAS_INGREDIENTES[item.id] || []).filter(id => ingredientesEsgotados.includes(id));
+    const isAtivo = manualAtivo && faltantes.length === 0;
+    const status = faltantes.length ? `Bloqueado por: ${faltantes.map(id => INGREDIENTES.find(i => i.id === id)?.nome || id).join(', ')}` : isAtivo ? 'Disponível' : 'Esgotado manualmente';
+    return `<div class="catalog-item"><div class="catalog-info"><strong>${esc(item.nome)}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}">${esc(status)}</span></div><label class="toggle-switch"><input type="checkbox" ${manualAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
   };
   document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
   document.getElementById('catalog-list-esfihas').innerHTML = CARDAPIO.filter(i => i.tipo === 'esfiha').map(renderItem).join('');
   document.getElementById('catalog-list-combos').innerHTML = CARDAPIO.filter(i => i.tipo === 'combo').map(renderItem).join('');
   document.getElementById('catalog-list-extras').innerHTML = CARDAPIO.filter(i => i.tipo === 'extra').map(renderItem).join('');
+  document.getElementById('catalog-list-ingredientes').innerHTML = INGREDIENTES.map(ingrediente => {
+    const isAtivo = !ingredientesEsgotados.includes(ingrediente.id);
+    return `<div class="catalog-item"><div class="catalog-info"><strong>${esc(ingrediente.nome)}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}">${esc(ingrediente.grupo)} · ${isAtivo ? 'Disponível' : 'Esgotado'}</span></div><label class="toggle-switch"><input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleIngrediente('${ingrediente.id}', this.checked)"><span class="slider"></span></label></div>`;
+  }).join('');
 
   let htmlHorarios = '';
   for(let i=0; i<7; i++) {
