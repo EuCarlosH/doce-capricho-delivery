@@ -3,28 +3,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function capacidadeAgenda() {
-      let cfg = get(/databases/$(database)/documents/configuracoes/geral).data;
-      return ('agendamento' in cfg && 'capacidadePorHorario' in cfg.agendamento)
-        ? cfg.agendamento.capacidadePorHorario
-        : 3;
-    }
-
-    function pedidoAgendadoValido() {
-      return request.resource.data.status == 'Agendado'
-             && request.resource.data.agendado == true
-             && request.resource.data.agendamento_data is string
-             && request.resource.data.agendamento_hora is string
-             && request.resource.data.agendamento_chave is string
-             && request.resource.data.agendamento_para is timestamp
-             && getAfter(/databases/$(database)/documents/agenda_slots/$(request.resource.data.agendamento_chave)).data.data == request.resource.data.agendamento_data
-             && getAfter(/databases/$(database)/documents/agenda_slots/$(request.resource.data.agendamento_chave)).data.hora == request.resource.data.agendamento_hora;
-    }
-
     // Clientes criam pedidos e consultam um pedido pelo ID exato.
     // O painel autenticado pode listar, atualizar e excluir pedidos.
     match /pedidos/{pedido} {
-      allow create: if (request.resource.data.status == 'Novo' || pedidoAgendadoValido())
+      allow create: if request.resource.data.status == 'Novo'
                     && request.resource.data.total_centavos is int
                     && request.resource.data.total_centavos >= 0
                     && request.resource.data.cliente_nome is string
@@ -33,29 +15,6 @@ service cloud.firestore {
       allow get: if true;
       allow list: if request.auth != null;
       allow update, delete: if request.auth != null;
-    }
-
-    // Capacidade pública dos horários. O cliente só pode reservar uma vaga
-    // por transação; liberações e ajustes ficam restritos ao painel.
-    match /agenda_slots/{slot} {
-      allow read: if true;
-      allow create: if request.auth != null || (
-        request.resource.data.keys().hasOnly(['data', 'hora', 'reservas', 'capacidade', 'atualizado_em'])
-        && request.resource.data.data is string
-        && request.resource.data.hora is string
-        && request.resource.data.reservas == 1
-        && request.resource.data.capacidade == capacidadeAgenda()
-        && request.resource.data.reservas <= capacidadeAgenda()
-      );
-      allow update: if request.auth != null || (
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reservas', 'capacidade', 'atualizado_em'])
-        && request.resource.data.data == resource.data.data
-        && request.resource.data.hora == resource.data.hora
-        && request.resource.data.reservas == resource.data.reservas + 1
-        && request.resource.data.capacidade == capacidadeAgenda()
-        && request.resource.data.reservas <= capacidadeAgenda()
-      );
-      allow delete: if request.auth != null;
     }
 
     // Contadores utilizados pelo selo "Mais Pedida".

@@ -831,11 +831,12 @@ function millisAgendamento(pedido) {
 }
 
 function pedidoExigeAtencao(pedido) {
-  if (pedido.status === 'Novo') return true;
-  if (pedido.status !== 'Agendado') return false;
-  const alvo = millisAgendamento(pedido);
-  const antecedencia = Math.max(0, Number((configuracoesGlobais.agendamento || {}).antecedenciaMinutos) || 60) * 60000;
-  return alvo > 0 && alvo - Date.now() <= antecedencia;
+  if (pedido.agendado === true && (pedido.status === 'Novo' || pedido.status === 'Agendado')) {
+    const alvo = millisAgendamento(pedido);
+    const antecedencia = Math.max(0, Number((configuracoesGlobais.agendamento || {}).antecedenciaMinutos) || 60) * 60000;
+    return alvo > 0 && alvo - Date.now() <= antecedencia;
+  }
+  return pedido.status === 'Novo';
 }
 
 function atualizarSomPedidos() {
@@ -1101,7 +1102,8 @@ function renderizarKanban() {
   let fat = 0, qtd = 0;
   
   Array.from(pedidosMap.values()).sort((a,b) => {
-      const aAg = a.status === 'Agendado', bAg = b.status === 'Agendado';
+      const aAg = a.agendado === true && (a.status === 'Novo' || a.status === 'Agendado');
+      const bAg = b.agendado === true && (b.status === 'Novo' || b.status === 'Agendado');
       if (aAg !== bAg) return aAg ? 1 : -1;
       return aAg ? millisAgendamento(a) - millisAgendamento(b) : (a.data_pedido?.toMillis()||0) - (b.data_pedido?.toMillis()||0);
   }).forEach(p => {
@@ -1134,9 +1136,10 @@ function renderizarKanban() {
       let tText = dif<1?'Agora':dif<60?`${dif}m`:`${Math.floor(dif/60)}h ${dif%60}m`;
       let tCor = status!=='Concluído'?(dif>=40?'timer-atrasado':dif>=20?'timer-atencao':''):'';
       let bCor = status!=='Concluído'?(dif>=40?'atrasado':dif>=20?'atencao':''):'';
-      const ehAgendado = p.status === 'Agendado';
+      const ehAgendado = p.agendado === true || p.status === 'Agendado';
+      const aguardandoAgendamento = ehAgendado && (p.status === 'Novo' || p.status === 'Agendado');
       const agendamentoMillis = millisAgendamento(p);
-      if (ehAgendado) {
+      if (aguardandoAgendamento) {
         const faltam = Math.ceil((agendamentoMillis - Date.now()) / 60000);
         tText = faltam > 0 ? `em ${faltam} min` : 'Horário chegou';
         tCor = pedidoExigeAtencao(p) ? 'timer-atencao' : '';
@@ -1227,13 +1230,19 @@ async function cancelarPedido(id) {
       const pedidoSnap = await transaction.get(pedidoRef);
       if (!pedidoSnap.exists || pedidoSnap.data().status === 'Cancelado') return;
       const pedido = pedidoSnap.data();
-      let slotRef = null, slotSnap = null;
+      let estatisticasRef = null, estatisticasSnap = null;
       if (pedido.agendado && pedido.agendamento_chave) {
-        slotRef = db.collection('agenda_slots').doc(pedido.agendamento_chave);
-        slotSnap = await transaction.get(slotRef);
+        estatisticasRef = db.collection('configuracoes').doc('estatisticas');
+        estatisticasSnap = await transaction.get(estatisticasRef);
       }
       transaction.update(pedidoRef, { status:'Cancelado' });
-      if (slotSnap && slotSnap.exists) transaction.update(slotRef, { reservas:Math.max(0, (Number(slotSnap.data().reservas) || 0) - 1), atualizado_em:firebase.firestore.FieldValue.serverTimestamp() });
+      if (estatisticasSnap) {
+        const agendaSlots = estatisticasSnap.exists && estatisticasSnap.data().agendaSlots ? { ...estatisticasSnap.data().agendaSlots } : {};
+        const reservas = Math.max(0, (Number(agendaSlots[pedido.agendamento_chave]) || 0) - 1);
+        if (reservas > 0) agendaSlots[pedido.agendamento_chave] = reservas;
+        else delete agendaSlots[pedido.agendamento_chave];
+        transaction.set(estatisticasRef, { agendaSlots }, { merge:true });
+      }
     });
   } catch (erro) {
     console.error('[AGENDA] Erro ao cancelar:', erro);

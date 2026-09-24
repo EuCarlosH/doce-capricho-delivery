@@ -1358,6 +1358,20 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <form class="checkout-form" id="checkout-form" novalidate style="margin-top: 0;">
       <!-- STEP 2: RECEBIMENTO -->
       <div class="pedido-step-panel" id="step-panel-2" data-step="2" style="display:none;">
+        <div class="schedule-choice" id="schedule-choice">
+          <strong>Quando deseja receber?</strong>
+          <input type="hidden" id="cli-momento-pedido" value="agora">
+          <div class="schedule-options">
+            <button type="button" class="schedule-option active" data-momento="agora" id="schedule-option-agora"><strong>O mais rápido possível</strong><small>Disponível enquanto a loja estiver aberta</small></button>
+            <button type="button" class="schedule-option" data-momento="agendado" id="schedule-option-agendado"><strong>Agendar para hoje</strong><small>Escolha um horário disponível</small></button>
+          </div>
+          <div class="schedule-time-wrap" id="schedule-time-wrap">
+            <label for="cli-horario-agendado">Horário</label>
+            <select id="cli-horario-agendado"><option value="">Carregando horários...</option></select>
+            <span class="schedule-feedback" id="schedule-feedback"></span>
+          </div>
+        </div>
+
         <div><label for="cli-nome">Nome completo</label><input type="text" id="cli-nome" required></div>
         <div><label for="cli-telefone">WhatsApp (com DDD)</label><input type="tel" id="cli-telefone" required></div>
 
@@ -1378,20 +1392,6 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
               <strong>Retirada</strong>
               <small>Grátis</small>
             </div>
-          </div>
-        </div>
-
-        <div class="schedule-choice" id="schedule-choice">
-          <strong>Quando deseja receber?</strong>
-          <input type="hidden" id="cli-momento-pedido" value="agora">
-          <div class="schedule-options">
-            <button type="button" class="schedule-option active" data-momento="agora" id="schedule-option-agora"><strong>O mais rápido possível</strong><small>Disponível enquanto a loja estiver aberta</small></button>
-            <button type="button" class="schedule-option" data-momento="agendado" id="schedule-option-agendado"><strong>Agendar para hoje</strong><small>Escolha um horário disponível</small></button>
-          </div>
-          <div class="schedule-time-wrap" id="schedule-time-wrap">
-            <label for="cli-horario-agendado">Horário</label>
-            <select id="cli-horario-agendado"><option value="">Carregando horários...</option></select>
-            <span class="schedule-feedback" id="schedule-feedback"></span>
           </div>
         </div>
 
@@ -2123,7 +2123,7 @@ function gerarHorariosHoje(ocupacao = {}) {
   const buffer = Number.isFinite(Number(cfg.bufferAberturaMinutos)) ? Math.max(0, Number(cfg.bufferAberturaMinutos)) : 30;
   const antecedencia = Number.isFinite(Number(cfg.antecedenciaMinutos)) ? Math.max(0, Number(cfg.antecedenciaMinutos)) : 60;
   const primeiroAposAbertura = expediente.inicio + buffer;
-  const limiteOperacional = agoraMinutos < expediente.inicio
+  const limiteOperacional = agoraMinutos <= expediente.inicio
     ? primeiroAposAbertura
     : Math.max(primeiroAposAbertura, agoraMinutos + antecedencia);
   const primeiro = arredondarIntervalo(limiteOperacional, intervalo);
@@ -2154,8 +2154,11 @@ async function atualizarOpcoesAgendamento() {
   if (politicaPermiteAgendamento() && CONFIG.usarFirebase && window.firebase) {
     try {
       const hoje = dataLocalISO(new Date());
-      const snap = await db.collection('agenda_slots').where('data', '==', hoje).get();
-      snap.forEach(doc => { const slot = doc.data(); ocupacao[slot.hora] = Number(slot.reservas) || 0; });
+      const snap = await db.collection('configuracoes').doc('estatisticas').get();
+      const agendaSlots = snap.exists && snap.data().agendaSlots ? snap.data().agendaSlots : {};
+      Object.entries(agendaSlots).forEach(([chave, reservas]) => {
+        if (chave.startsWith(`${hoje}_`)) ocupacao[chave.slice(hoje.length + 1).replace('-', ':')] = Number(reservas) || 0;
+      });
     } catch (erro) {
       console.warn('[AGENDA] Não foi possível consultar a ocupação:', erro.code || erro.message);
       if (seq !== atualizacaoAgendaSeq) return;
@@ -4064,7 +4067,8 @@ function montarPedido() {
   }
 
   return {
-    status: agendado ? 'Agendado' : 'Novo',
+    status: 'Novo',
+    status_operacional: agendado ? 'Agendado' : 'Novo',
     agendado,
     agendamento_data: agendamentoData,
     agendamento_hora: agendamentoHora,
@@ -4170,24 +4174,21 @@ async function gravarFirestore(pedido) {
   try { 
     const ref = db.collection('pedidos').doc();
     if (pedido.agendado) {
-      const slotRef = db.collection('agenda_slots').doc(pedido.agendamento_chave);
+      const estatisticasRef = db.collection('configuracoes').doc('estatisticas');
       await db.runTransaction(async transaction => {
-        const slotSnap = await transaction.get(slotRef);
-        const reservas = slotSnap.exists ? Number(slotSnap.data().reservas) || 0 : 0;
+        const estatisticasSnap = await transaction.get(estatisticasRef);
+        const agendaSlots = estatisticasSnap.exists && estatisticasSnap.data().agendaSlots ? { ...estatisticasSnap.data().agendaSlots } : {};
+        Object.keys(agendaSlots).forEach(chave => { if (!chave.startsWith(`${pedido.agendamento_data}_`)) delete agendaSlots[chave]; });
+        const reservas = Number(agendaSlots[pedido.agendamento_chave]) || 0;
         const capacidade = Math.max(1, Number(configAgendamento().capacidadePorHorario) || 3);
         if (reservas >= capacidade) {
           const erro = new Error('Este horário acabou de ficar lotado.');
           erro.code = 'agenda/lotada';
           throw erro;
         }
+        agendaSlots[pedido.agendamento_chave] = reservas + 1;
         transaction.set(ref, { ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() });
-        transaction.set(slotRef, {
-          data: pedido.agendamento_data,
-          hora: pedido.agendamento_hora,
-          reservas: reservas + 1,
-          capacidade,
-          atualizado_em: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+        transaction.set(estatisticasRef, { agendaSlots }, { merge: true });
       });
     } else {
       await ref.set({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() });
