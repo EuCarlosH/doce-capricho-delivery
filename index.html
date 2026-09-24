@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-editar-item-carrinho">
+<meta name="dca-app-version" content="2026.09.24-estoque-ingredientes">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -511,6 +511,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .borda-option::before { content:""; width:20px; height:20px; flex:0 0 20px; border:2px solid var(--border-light); border-radius:50%; box-shadow:inset 0 0 0 4px var(--bg-card); }
 .borda-option.selected { border-color:var(--gold); background:rgba(192,138,46,.07); box-shadow:0 0 0 2px rgba(221,167,58,.14); }
 .borda-option.selected::before { background:var(--gold); border-color:var(--gold); }
+.borda-option:disabled { opacity:.48; cursor:not-allowed; filter:grayscale(.65); }
 .borda-builder-summary { display:none; align-items:center; gap:12px; margin:-4px 0 22px; padding:14px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-main); }
 .borda-builder-summary.show { display:flex; }
 .borda-builder-summary div { min-width:0; flex:1; }
@@ -1981,13 +1982,68 @@ const EXTRAS = [
 
 const BORDAS = [
   { id:'sem_borda', nome:'Sem borda', preco:0 },
-  { id:'borda_catupiry', nome:'Borda de Catupiry', preco:2500 },
-  { id:'borda_cream_cheese', nome:'Borda de Cream Cheese', preco:2600 },
-  { id:'borda_chocolate', nome:'Borda de Chocolate', preco:1500 }
+  { id:'borda_catupiry', nome:'Borda de Catupiry', preco:2500, ingrediente:'catupiry' },
+  { id:'borda_cream_cheese', nome:'Borda de Cream Cheese', preco:2600, ingrediente:'cream_cheese' },
+  { id:'borda_chocolate', nome:'Borda de Chocolate', preco:1500, ingrediente:'chocolate_leite' }
 ];
+
+const INGREDIENTES = [
+  { id:'massa_pizza', nome:'Massa de pizza' }, { id:'massa_esfiha', nome:'Massa de esfiha' }, { id:'molho_pizza', nome:'Molho de tomate' },
+  { id:'mussarela', nome:'Mussarela' }, { id:'presunto', nome:'Presunto' }, { id:'frango', nome:'Frango' },
+  { id:'calabresa', nome:'Calabresa' }, { id:'carne_sol', nome:'Carne de sol' }, { id:'carne_moida', nome:'Carne moída' },
+  { id:'lombo_canadense', nome:'Lombo canadense' }, { id:'peito_peru', nome:'Peito de peru' }, { id:'bacon', nome:'Bacon' },
+  { id:'catupiry', nome:'Catupiry' }, { id:'cream_cheese', nome:'Cream cheese' }, { id:'queijo_coalho', nome:'Queijo coalho' },
+  { id:'parmesao', nome:'Parmesão' }, { id:'tomate', nome:'Tomate' }, { id:'cebola', nome:'Cebola' },
+  { id:'cebola_roxa', nome:'Cebola roxa' }, { id:'alho_poro', nome:'Alho-poró' }, { id:'chocolate_leite', nome:'Chocolate ao leite' },
+  { id:'confeitos', nome:'M&M’s / confeitos' }, { id:'morango', nome:'Morango' }
+];
+
+const DEPENDENCIAS_INGREDIENTES = {
+  mussarela:['massa_pizza','molho_pizza','mussarela','tomate'], mista:['massa_pizza','molho_pizza','presunto','mussarela'],
+  frango:['massa_pizza','molho_pizza','mussarela','frango'], calabresa:['massa_pizza','molho_pizza','mussarela','calabresa','cebola'],
+  carnesol:['massa_pizza','molho_pizza','mussarela','carne_sol','cebola_roxa'], frangocat:['massa_pizza','molho_pizza','mussarela','frango','catupiry'],
+  nordestina:['massa_pizza','molho_pizza','mussarela','cream_cheese','carne_sol','queijo_coalho'],
+  lombo:['massa_pizza','molho_pizza','mussarela','lombo_canadense','catupiry'],
+  arretada:['massa_pizza','molho_pizza','mussarela','calabresa','queijo_coalho','bacon'],
+  peru:['massa_pizza','molho_pizza','mussarela','cream_cheese','peito_peru','bacon','alho_poro','parmesao'],
+  esf_mussarela:['massa_esfiha','mussarela'], esf_mista:['massa_esfiha','presunto','mussarela'],
+  esf_frango_mus:['massa_esfiha','frango','mussarela'], esf_calabresa_mus:['massa_esfiha','calabresa','mussarela'],
+  esf_carnesol_mus:['massa_esfiha','carne_sol','mussarela'], esf_carnemoida:['massa_esfiha','carne_moida'],
+  esf_frango_coalho:['massa_esfiha','frango','queijo_coalho'], esf_frango_catupiry:['massa_esfiha','frango','catupiry'],
+  esf_frango_cream:['massa_esfiha','frango','cream_cheese'], esf_carnesol_coalho:['massa_esfiha','carne_sol','queijo_coalho'],
+  esf_carnesol_catupiry:['massa_esfiha','carne_sol','catupiry'], esf_carnesol_cream:['massa_esfiha','carne_sol','cream_cheese'],
+  esf_calabresa_coalho:['massa_esfiha','calabresa','queijo_coalho'], esf_calabresa_catupiry:['massa_esfiha','calabresa','catupiry'],
+  esf_calabresa_cream:['massa_esfiha','calabresa','cream_cheese'], esf_peru:['massa_esfiha','peito_peru'],
+  esf_bacon_mus:['massa_esfiha','bacon','mussarela'], esf_choc_leite:['massa_esfiha','chocolate_leite'],
+  esf_choc_mm:['massa_esfiha','chocolate_leite','confeitos'], esf_choc_morango:['massa_esfiha','chocolate_leite','morango'],
+  catupiry:['catupiry'], cream:['cream_cheese'], bacon:['bacon'], alho:['alho_poro']
+};
 
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium, ...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium, ...CARDAPIO.esfihas_doces, ...CARDAPIO.combos_especiais, ...CARDAPIO.combos_sexta, ...CARDAPIO.combos_sabado];
 const acharSabor = id => todosSabores().find(s => s.id === id);
+const acharIngrediente = id => INGREDIENTES.find(i => i.id === id);
+const ingredientesEsgotadosSet = () => new Set(Array.isArray(configLoja.ingredientesEsgotados) ? configLoja.ingredientesEsgotados : []);
+const ingredientesDoItem = id => DEPENDENCIAS_INGREDIENTES[id] || [];
+function ingredientesIndisponiveisItem(id) {
+  const esgotados = ingredientesEsgotadosSet();
+  return ingredientesDoItem(id).filter(ingrediente => esgotados.has(ingrediente));
+}
+function itemIndisponivel(id) {
+  return (Array.isArray(configLoja.itensEsgotados) && configLoja.itensEsgotados.includes(id)) || ingredientesIndisponiveisItem(id).length > 0;
+}
+function nomesIngredientes(ids) {
+  return [...new Set(ids)].map(id => acharIngrediente(id)?.nome || id);
+}
+function ingredientesDoCarrinhoItem(item) {
+  const ids = [...(item.sabores || []), ...(item.comboItens || []).map(ci => ci.id)];
+  const ingredientes = ids.flatMap(ingredientesDoItem);
+  (item.extras || []).forEach(extra => ingredientes.push(...ingredientesDoItem(extra.id)));
+  if (item.borda && item.borda.id) {
+    const borda = BORDAS.find(b => b.id === item.borda.id);
+    if (borda && borda.ingrediente) ingredientes.push(borda.ingrediente);
+  }
+  return [...new Set(ingredientes)];
+}
 
 const rotuloAplicacao = (ap, sabores) => {
   if (ap === 'toda') return 'pizza inteira';
@@ -1998,7 +2054,7 @@ const rotuloAplicacao = (ap, sabores) => {
 };
 
 let lojaAberta = false;
-let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' }; 
+let configLoja = { statusLoja: 'auto', forcarFechamento: false, itensEsgotados: [], ingredientesEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto' };
 let lojaEstavaPausada = false; let primeiraCargaPausa = true; let saborMaisPedido = null;
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
@@ -2038,7 +2094,7 @@ function renderDestaques() {
   ['peru', 'nordestina', 'esf_peru'].forEach(id => { if (!idsDestaque.includes(id)) idsDestaque.push(id); });
   const itens = idsDestaque.map(id => todos.find(s => s.id === id)).filter(Boolean).slice(0, 6);
   strip.innerHTML = itens.map(s => {
-    const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
+    const isEsgotado = itemIndisponivel(s.id);
     return `
     <article class="destaque-card">
       <div class="card-img-wrap skeleton-bg">
@@ -2671,7 +2727,8 @@ function controleEsfihaHTML(id, esgotado) {
 }
 
 const cardHTML = s => {
-  const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(s.id);
+  const isEsgotado = itemIndisponivel(s.id);
+  const ingredientesFaltando = ingredientesIndisponiveisItem(s.id);
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
   let badges = [];
   if (s.id === 'peru' || s.id === 'nordestina' || s.id === 'esf_peru') { badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura</span>`); }
@@ -2690,6 +2747,7 @@ const cardHTML = s => {
     <div class="card-content">
       <h4 class="card-title">${esc(s.nome)}</h4>
       <p class="card-desc">${esc(s.desc)}</p>
+      ${ingredientesFaltando.length ? `<p style="margin-top:6px; color:var(--danger); font-size:10px; font-weight:800;">Indisponível: ${esc(nomesIngredientes(ingredientesFaltando).join(', '))}</p>` : ''}
       <div class="card-bottom">
         <span class="card-price-text">${precoPromocionalHTML(s.preco, s.naoAcumulaDescontos === true, [s.id])}</span>
         ${controleCompra}
@@ -2855,10 +2913,9 @@ function abrirSeletorSabor(lado, pizzaInteiraBuilder = false) {
   const instrucao = $('#pizza-sabor-instrucao');
   if (etapa) etapa.textContent = pizzaInteiraBuilder ? 'Pizza inteira' : `Sabor ${ladoPizzaEmEdicao + 1}`;
   if (instrucao) instrucao.textContent = pizzaInteiraBuilder ? 'Escolha o novo sabor da pizza.' : `Escolha o sabor da ${ladoPizzaEmEdicao + 1}ª metade.`;
-  const esgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
   const pizzas = [...CARDAPIO.tradicionais, ...CARDAPIO.premium];
   $('#pizza-flavor-picker').innerHTML = pizzas.map(sabor => {
-    const indisponivel = esgotados.has(sabor.id);
+    const indisponivel = itemIndisponivel(sabor.id);
     const selecionado = pizzaInteiraBuilder ? builder && builder.sabores[0] === sabor.id : montagemPizza[ladoPizzaEmEdicao] === sabor.id;
     const categoria = CARDAPIO.premium.some(item => item.id === sabor.id) ? 'Premium' : 'Tradicional';
     return `<button type="button" class="pizza-flavor-option ${selecionado ? 'selected' : ''}" data-pizza-sabor="${sabor.id}" ${indisponivel ? 'disabled' : ''}>
@@ -2869,7 +2926,7 @@ function abrirSeletorSabor(lado, pizzaInteiraBuilder = false) {
 }
 
 function selecionarSaborMontador(id) {
-  if (!acharSabor(id) || (configLoja.itensEsgotados || []).includes(id)) return;
+  if (!acharSabor(id) || itemIndisponivel(id)) return;
   if (seletorPizzaInteiraBuilder && builder) {
     const extrasAtuais = lerExtras();
     builder.sabores = [id];
@@ -2895,15 +2952,19 @@ function selecionarSaborMontador(id) {
 function renderSeletorBorda() {
   const lista = $('#pizza-borda-list');
   if (!lista) return;
-  lista.innerHTML = BORDAS.map(borda => `
-    <button type="button" class="borda-option ${borda.id === bordaSelecionadaFluxo ? 'selected' : ''}" data-borda-id="${borda.id}">
-      <strong>${esc(borda.nome)}</strong><small>${borda.preco ? `+ ${brl(borda.preco)}` : 'R$ 0,00'}</small>
-    </button>`).join('');
+  lista.innerHTML = BORDAS.map(borda => {
+    const indisponivel = borda.ingrediente && ingredientesEsgotadosSet().has(borda.ingrediente);
+    return `
+    <button type="button" class="borda-option ${borda.id === bordaSelecionadaFluxo ? 'selected' : ''}" data-borda-id="${borda.id}" ${indisponivel ? 'disabled' : ''}>
+      <strong>${esc(borda.nome)}</strong><small>${indisponivel ? 'Indisponível' : borda.preco ? `+ ${brl(borda.preco)}` : 'R$ 0,00'}</small>
+    </button>`;
+  }).join('');
 }
 
 function abrirFluxoBorda(ids, bordaAtual = null, retornarAoBuilder = false) {
   saboresParaBorda = [...ids];
-  bordaSelecionadaFluxo = bordaAtual && BORDAS.some(b => b.id === bordaAtual.id) ? bordaAtual.id : 'sem_borda';
+  const bordaValida = bordaAtual && BORDAS.find(b => b.id === bordaAtual.id);
+  bordaSelecionadaFluxo = bordaValida && (!bordaValida.ingrediente || !ingredientesEsgotadosSet().has(bordaValida.ingrediente)) ? bordaValida.id : 'sem_borda';
   bordaRetornoBuilder = retornarAoBuilder;
   renderSeletorBorda();
   abrirModal('pizza-borda-overlay');
@@ -2911,6 +2972,10 @@ function abrirFluxoBorda(ids, bordaAtual = null, retornarAoBuilder = false) {
 
 function confirmarBordaPizza() {
   const borda = BORDAS.find(b => b.id === bordaSelecionadaFluxo) || BORDAS[0];
+  if (borda.ingrediente && ingredientesEsgotadosSet().has(borda.ingrediente)) {
+    showToast(`${borda.nome} está indisponível no momento.`, 'warning');
+    return;
+  }
   fecharModal('pizza-borda-overlay');
   if (bordaRetornoBuilder && builder) {
     const extrasAtuais = lerExtras();
@@ -2951,7 +3016,7 @@ function atualizarBanner() {
 
 function escolherSabor(id) {
   // Loja fechada não impede a simulação: o cliente monta o pedido normalmente.
-  if(configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id)) return; 
+  if(itemIndisponivel(id)) return;
   
   const isEsfihaOuCombo = id.startsWith('esf_') || id.startsWith('combo_');
   if (isEsfihaOuCombo) {
@@ -3020,14 +3085,14 @@ function atualizarConteudoPizzaBuilder(extrasPreservados = []) {
 
 function abrirBuilder(ids, borda = null, itemEdicao = null) {
   if (ids[0] === 'combo_aniversariante') {
-    const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
-    if (esgotados.includes('esf_choc_leite')) {
+    if (itemIndisponivel('esf_choc_leite')) {
       showToast('O combo está temporariamente indisponível porque a esfiha de chocolate ao leite acabou.', 'warning');
       return;
     }
   }
   const ehPizza = !ids[0].startsWith('esf_') && !ids[0].startsWith('combo_');
-  const bordaDef = ehPizza ? (BORDAS.find(b => b.id === (borda && borda.id)) || BORDAS[0]) : null;
+  let bordaDef = ehPizza ? (BORDAS.find(b => b.id === (borda && borda.id)) || BORDAS[0]) : null;
+  if (bordaDef && bordaDef.ingrediente && ingredientesEsgotadosSet().has(bordaDef.ingrediente)) bordaDef = BORDAS[0];
   builder = {
     sabores: [...ids],
     qtd: itemEdicao ? itemEdicao.qtd : 1,
@@ -3097,8 +3162,7 @@ function qtdComboCategoria(categoria) {
 }
 
 function opcoesComboDisponiveis(lista) {
-  const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
-  return lista.filter(item => !esgotados.includes(item.id));
+  return lista.filter(item => !itemIndisponivel(item.id));
 }
 
 function linhasSaboresCombo(lista, categoria, limite) {
@@ -3119,9 +3183,8 @@ function linhasSaboresCombo(lista, categoria, limite) {
 
 function renderMontadorComboAniversariante() {
   if (!builder || builder.sabores[0] !== 'combo_aniversariante') return;
-  const esgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
-  builder.comboItens = builder.comboItens.filter(i => i.categoria === 'incluso' || !esgotados.has(i.id));
-  if (esgotados.has('esf_choc_leite')) {
+  builder.comboItens = builder.comboItens.filter(i => i.categoria === 'incluso' || !itemIndisponivel(i.id));
+  if (itemIndisponivel('esf_choc_leite')) {
     fecharModal('builder-overlay');
     showToast('O combo ficou indisponível porque a esfiha de chocolate ao leite acabou.', 'warning');
     return;
@@ -3144,7 +3207,7 @@ function renderMontadorComboAniversariante() {
 function alterarSaborCombo(id, categoria, delta) {
   if (!builder || builder.sabores[0] !== 'combo_aniversariante') return;
   const limite = categoria === 'tradicional' ? 10 : categoria === 'premium' ? 2 : 0;
-  if (!limite || !acharSabor(id)) return;
+  if (!limite || !acharSabor(id) || itemIndisponivel(id)) return;
   const total = qtdComboCategoria(categoria);
   let item = builder.comboItens.find(i => i.id === id && i.categoria === categoria);
   if (delta > 0 && total >= limite) return;
@@ -3193,11 +3256,23 @@ function detalhesComboTexto(item) {
 function atualizarEstoqueNoBuilder() {
   if (!$('#builder-overlay').classList.contains('open') || !builder) return;
   if (builder.sabores[0] === 'combo_aniversariante') { renderMontadorComboAniversariante(); return; }
+  const saborIndisponivel = builder.sabores.find(itemIndisponivel);
+  if (saborIndisponivel) {
+    const faltantes = ingredientesIndisponiveisItem(saborIndisponivel);
+    fecharModal('builder-overlay');
+    showToast(faltantes.length ? `Item indisponível: ${nomesIngredientes(faltantes).join(', ')} em falta.` : 'Este sabor ficou indisponível.', 'warning');
+    return;
+  }
   if (builder.sabores[0].startsWith('esf_') || builder.sabores[0].startsWith('combo_')) return;
+  if (builder.borda && builder.borda.ingrediente && ingredientesEsgotadosSet().has(builder.borda.ingrediente)) {
+    builder.borda = { ...BORDAS[0] };
+    atualizarResumoBordaBuilder();
+    showToast('A borda escolhida ficou indisponível e foi removida.', 'warning');
+  }
   
   $$('.extra-row').forEach(row => {
     const chk = row.querySelector('.extra-chk'); if (!chk) return;
-    const id = chk.value; const isEsgotado = configLoja.itensEsgotados && configLoja.itensEsgotados.includes(id);
+    const id = chk.value; const isEsgotado = itemIndisponivel(id);
     const nameText = row.querySelector('.extra-name-text');
     if (isEsgotado) {
        row.style.opacity = '0.5'; row.style.pointerEvents = 'none'; chk.disabled = true; chk.checked = false; row.classList.remove('checked');
@@ -3315,7 +3390,7 @@ function adicionarUpsell(saborId) {
 function alterarEsfihaRapida(id, delta) {
   const sabor = acharSabor(id);
   if (!sabor || !id.startsWith('esf_') || !Number.isInteger(delta) || delta === 0) return;
-  if ((configLoja.itensEsgotados || []).includes(id)) {
+  if (itemIndisponivel(id)) {
     showToast('Este sabor está indisponível no momento.', 'warning');
     return;
   }
@@ -3733,7 +3808,8 @@ function gerarPixPayload(chave, nome, cidade, valorCentavos) { let cleanChave = 
 // Retorna true apenas quando o pedido pode seguir sem alterações.
 // ------------------------------------------------------------------
 function revalidarPedido() {
-  const esgotados = Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : [];
+  const produtosEsgotados = new Set(Array.isArray(configLoja.itensEsgotados) ? configLoja.itensEsgotados : []);
+  const ingredientesEsgotados = ingredientesEsgotadosSet();
   const totalAntes = totais().total;
 
   const aprovados = [];
@@ -3743,11 +3819,17 @@ function revalidarPedido() {
     let rotulo = 'Um item do seu carrinho';
     try { rotulo = nomeItem(item); } catch (e) {}
 
-    const idsDoItem = [...(item.sabores || []), ...(item.comboItens || []).map(ci => ci.id)];
-    const saborProblema = idsDoItem.find(id => !acharSabor(id) || esgotados.includes(id));
-    if (saborProblema) {
-      const sab = acharSabor(saborProblema);
-      removidos.push(sab ? sab.nome : rotulo);
+    const idsDoItem = [...(item.sabores || []), ...(item.comboItens || []).map(ci => ci.id), ...(item.extras || []).map(extra => extra.id)];
+    const produtoProblema = idsDoItem.find(id => (!acharSabor(id) && !EXTRAS.some(extra => extra.id === id)) || produtosEsgotados.has(id));
+    if (produtoProblema) {
+      const produto = acharSabor(produtoProblema) || EXTRAS.find(extra => extra.id === produtoProblema);
+      removidos.push(produto ? produto.nome : rotulo);
+      return;
+    }
+
+    const ingredientesProblema = ingredientesDoCarrinhoItem(item).filter(id => ingredientesEsgotados.has(id));
+    if (ingredientesProblema.length) {
+      removidos.push(`${rotulo} — sem ${nomesIngredientes(ingredientesProblema).join(', ')}`);
       return;
     }
 
@@ -3765,10 +3847,10 @@ function revalidarPedido() {
     const plural = lista.length > 1;
 
     if (!carrinho.length) {
-      showToast(`${nomes} ${plural ? 'esgotaram' : 'esgotou'} e seu carrinho ficou vazio. Escolha outros sabores.`, 'error');
+      showToast(`${nomes} ${plural ? 'ficaram indisponíveis' : 'ficou indisponível'} e seu carrinho ficou vazio. Escolha outras opções.`, 'error');
       fecharModal('cart-overlay');
     } else {
-      showToast(`${nomes} ${plural ? 'acabaram' : 'acabou'} de esgotar e ${plural ? 'saíram' : 'saiu'} do carrinho. Confira o pedido antes de enviar.`, 'error');
+      showToast(`${nomes} ${plural ? 'ficaram indisponíveis e saíram' : 'ficou indisponível e saiu'} do carrinho. Confira o pedido antes de enviar.`, 'error');
       irParaStep(1);
     }
     return false;
@@ -3841,7 +3923,8 @@ function montarPedido() {
       nome: nomeItem(i), qtd: i.qtd, sabores: i.sabores,
       borda: i.borda ? { id:i.borda.id, nome:i.borda.nome, preco_centavos:i.borda.preco } : null,
       combo_itens: (i.comboItens || []).map(ci => ({ id:ci.id, nome:acharSabor(ci.id)?.nome || ci.id, qtd:ci.qtd, categoria:ci.categoria })),
-      extras: i.extras.map(e => ({ nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
+      extras: i.extras.map(e => ({ id:e.id, nome:e.nome, aplicacao:rotuloAplicacao(e.aplicacao, i.sabores), preco_centavos:e.preco })),
+      ingredientes: ingredientesDoCarrinhoItem(i),
       obs: i.obs,
       unitario_original_centavos: i.unitario,
       unitario_centavos: itemAceitaDescontos(i) ? valorComDesconto(i.unitario, i.sabores) : i.unitario,
@@ -4510,6 +4593,7 @@ function processarConfig(doc) {
   if(doc.exists) {
     configLoja = doc.data();
     if(!configLoja.itensEsgotados) configLoja.itensEsgotados = [];
+    if(!configLoja.ingredientesEsgotados) configLoja.ingredientesEsgotados = [];
     if(!configLoja.textoFuncionamento) configLoja.textoFuncionamento = "Quinta a Domingo, 18:30 às 23:00";
     if(!configLoja.statusLoja) { configLoja.statusLoja = configLoja.forcarFechamento ? 'pausado' : 'auto'; }
     
@@ -4551,7 +4635,7 @@ function executarDestinoAviso(destino) {
     if (alvo.startsWith('#combo_')) {
       const comboId = alvo.slice(1);
       const combo = acharSabor(comboId);
-      const indisponivel = Array.isArray(configLoja.itensEsgotados) && configLoja.itensEsgotados.includes(comboId);
+      const indisponivel = itemIndisponivel(comboId);
       if (indisponivel) {
         showToast('Esta oferta está indisponível no momento.', 'warning');
       } else if (combo) {
