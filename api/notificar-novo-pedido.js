@@ -25,6 +25,17 @@ function lerCamposFirestore(fields) {
   return Object.fromEntries(Object.entries(fields || {}).map(([chave, valor]) => [chave, lerValorFirestore(valor)]));
 }
 
+function numeroPedidoExibicao(pedido, id) {
+  const numeroSalvo = String(pedido?.numero_pedido || '').replace(/\D/g, '');
+  if (numeroSalvo) return numeroSalvo;
+  let hash = 2166136261;
+  for (const caractere of String(id || '')) {
+    hash ^= caractere.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return String(100000000 + ((hash >>> 0) % 900000000));
+}
+
 async function buscarPedido(pedidoId) {
   const caminho = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/pedidos/${encodeURIComponent(pedidoId)}`;
   const resposta = await fetch(caminho, { headers:{ Accept:'application/json' } });
@@ -71,8 +82,9 @@ module.exports = async function handler(req, res) {
     const cliente = String(pedido.cliente_nome || 'Cliente').trim().slice(0, 60);
     const tipo = String(pedido.tipo_entrega || 'Pedido').trim().slice(0, 30);
     const total = (Number(pedido.total_centavos) || 0) / 100;
+    const numeroPedido = numeroPedidoExibicao(pedido, pedidoId);
     const titulo = 'Novo pedido recebido! 🍕';
-    const texto = `${cliente} · ${tipo} · ${total.toLocaleString('pt-BR', { style:'currency', currency:'BRL' })}`;
+    const texto = `#${numeroPedido} · ${cliente} · ${tipo} · ${total.toLocaleString('pt-BR', { style:'currency', currency:'BRL' })}`;
     const payload = {
       app_id:ONESIGNAL_APP_ID,
       target_channel:'push',
@@ -86,7 +98,7 @@ module.exports = async function handler(req, res) {
       url:`${APP_URL}/admin/`,
       chrome_web_icon:`${APP_URL}/admin/icons/icon-192.png`,
       chrome_web_badge:`${APP_URL}/admin/icons/icon-192.png`,
-      data:{ tipo:'novo_pedido_admin', pedidoId },
+      data:{ tipo:'novo_pedido_admin', pedidoId, numeroPedido },
       idempotency_key:idempotencia
     };
 

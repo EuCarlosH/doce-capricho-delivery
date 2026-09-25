@@ -1338,6 +1338,24 @@ let historicoPromise = null;
 let sequenciaItemComanda = 0;
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+function gerarNumeroPedido() {
+  return String(Date.now()).slice(-9).padStart(9, '0');
+}
+
+function numeroPedidoLegado(id) {
+  let hash = 2166136261;
+  String(id || '').split('').forEach(caractere => {
+    hash ^= caractere.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  });
+  return String(100000000 + ((hash >>> 0) % 900000000));
+}
+
+function numeroPedidoExibicao(pedido, id = pedido?.id) {
+  const numeroSalvo = String(pedido?.numero_pedido || '').replace(/\D/g, '');
+  return numeroSalvo || numeroPedidoLegado(id);
+}
 const CATEGORIAS_CATALOGO_ADMIN = {
   tradicionais:'Pizzas tradicionais', premium:'Pizzas premium', esfihas_tradicionais:'Esfihas tradicionais',
   esfihas_premium:'Esfihas premium', esfihas_doces:'Esfihas doces', combos_especiais:'Combos especiais',
@@ -1562,7 +1580,7 @@ function renderizarHistorico() {
   const filtrados = historicoPedidos.filter(pedido => {
     const data = dataPedidoJS(pedido)?.getTime() || 0;
     const itens = (pedido.itens || []).map(item => item.nome || '').join(' ');
-    const texto = normalizarBuscaAdmin(`${pedido.id} ${pedido.cliente_nome} ${pedido.cliente_telefone} ${itens}`);
+    const texto = normalizarBuscaAdmin(`${pedido.id} ${numeroPedidoExibicao(pedido)} ${pedido.cliente_nome} ${pedido.cliente_telefone} ${itens}`);
     return (!busca || texto.includes(busca)) && (!status || pedido.status === status) && data >= inicio && data <= fim;
   });
   if (!filtrados.length) {
@@ -1573,7 +1591,7 @@ function renderizarHistorico() {
     const data = dataPedidoJS(pedido);
     const itens = (pedido.itens || []).map(item => `${Number(item.qtd)||1}× ${esc(item.nome || 'Item')}`).join(', ');
     return `<tr>
-      <td><strong>#${esc(pedido.id.slice(-5).toUpperCase())}</strong><br><small>${data ? data.toLocaleString('pt-BR') : 'Data indisponível'}</small></td>
+      <td><strong>#${esc(numeroPedidoExibicao(pedido))}</strong><br><small>${data ? data.toLocaleString('pt-BR') : 'Data indisponível'}</small></td>
       <td><strong>${esc(pedido.cliente_nome || 'Cliente')}</strong><br><small>${esc(pedido.cliente_telefone || '')}</small></td>
       <td style="max-width:280px">${itens || '—'}</td>
       <td>${esc(pedido.tipo_entrega || '—')}</td>
@@ -1695,6 +1713,7 @@ async function salvarComandaManual(evento) {
   try {
     const usuario = auth.currentUser;
     const pedido = {
+      numero_pedido:gerarNumeroPedido(),
       cliente_nome:document.getElementById('cmd-cliente').value.trim(),
       cliente_telefone:String(document.getElementById('cmd-telefone').value || '').replace(/\D/g,''),
       cliente_endereco:tipo === 'Entrega' ? document.getElementById('cmd-endereco').value.trim() : '',
@@ -1714,7 +1733,7 @@ async function salvarComandaManual(evento) {
       data_pedido:firebase.firestore.FieldValue.serverTimestamp()
     };
     const ref = await db.collection('pedidos').add(pedido);
-    alert(`Pedido #${ref.id.slice(-5).toUpperCase()} criado com sucesso.`);
+    alert(`Pedido #${numeroPedidoExibicao(pedido, ref.id)} criado com sucesso.`);
     limparComandaManual();
     historicoCarregado = false;
     alternarTela('kanban');
@@ -2362,7 +2381,7 @@ function renderizarKanban() {
       return `
       <div class="card-pedido ${bCor}" id="card-${p.id}" draggable="true" ondragstart="dragStart(event, '${p.id}')" ondragend="dragEnd(event)">
         <div class="card-header">
-          <span class="p-id">#${p.id.slice(-5).toUpperCase()}</span>
+          <span class="p-id">#${numeroPedidoExibicao(p)}</span>
           <span class="p-time ${tCor}">${icons.clock} <span>${tText}</span></span>
         </div>
         <div class="p-cliente-area">
@@ -2668,7 +2687,7 @@ async function salvarConfiguracaoImpressao(evento) {
 }
 
 function pedidoTesteImpressao() {
-  return { id:'TESTE01', cliente_nome:'Cliente de teste', cliente_telefone:'(84) 99999-9999', tipo_entrega:'Entrega', cliente_endereco:'Rua de Exemplo, 123 — Centro', forma_pagamento:'PIX', subtotal_centavos:7100, taxa_centavos:300, total_centavos:7400, itens:[{ qtd:1, nome:'Pizza Meio a Meio', total_centavos:6000, extras:[{ nome:'Borda de Catupiry', aplicacao:'Pizza inteira' }], obs:'Massa bem assada' },{ qtd:2, nome:'Esfiha de Chocolate', total_centavos:1100 }], observacao:'Entregar na recepção.' };
+  return { id:'pedido-teste', numero_pedido:'123456789', cliente_nome:'Cliente de teste', cliente_telefone:'(84) 99999-9999', tipo_entrega:'Entrega', cliente_endereco:'Rua de Exemplo, 123 — Centro', forma_pagamento:'PIX', subtotal_centavos:7100, taxa_centavos:300, total_centavos:7400, itens:[{ qtd:1, nome:'Pizza Meio a Meio', total_centavos:6000, extras:[{ nome:'Borda de Catupiry', aplicacao:'Pizza inteira' }], obs:'Massa bem assada' },{ qtd:2, nome:'Esfiha de Chocolate', total_centavos:1100 }], observacao:'Entregar na recepção.' };
 }
 
 function dataHoraPedidoImpressao(pedido) {
@@ -2678,7 +2697,7 @@ function dataHoraPedidoImpressao(pedido) {
 
 function corpoComandaTermica(pedido, id, config) {
   const preco = valor => config.mostrarValores ? `<span>${brl(Number(valor)||0)}</span>` : '';
-  let html = `<h2>${esc(config.titulo)}</h2>${config.subtitulo ? `<p class="center">${esc(config.subtitulo)}</p>` : ''}<h3>Pedido #${esc(String(id).slice(-5).toUpperCase())}</h3><p class="center small">${esc(dataHoraPedidoImpressao(pedido))}</p><div class="linha"></div><p class="bold">Cliente: ${esc(pedido.cliente_nome || 'Cliente')}</p>`;
+  let html = `<h2>${esc(config.titulo)}</h2>${config.subtitulo ? `<p class="center">${esc(config.subtitulo)}</p>` : ''}<h3>Pedido #${esc(numeroPedidoExibicao(pedido, id))}</h3><p class="center small">${esc(dataHoraPedidoImpressao(pedido))}</p><div class="linha"></div><p class="bold">Cliente: ${esc(pedido.cliente_nome || 'Cliente')}</p>`;
   if (config.mostrarTelefone && pedido.cliente_telefone) html += `<p>Tel: ${esc(pedido.cliente_telefone)}</p>`;
   if (pedido.agendado) html += `<div class="linha"></div><div class="agendado">AGENDADO — ${esc(textoDataAgendamento(pedido))} ÀS ${esc(pedido.agendamento_hora || '')}</div>`;
   if (pedido.tipo_entrega === 'Entrega' && pedido.cliente_endereco) html += `<div class="dados-destaque"><strong>ENTREGA</strong><span>${esc(pedido.cliente_endereco)}</span></div>`;
@@ -2710,7 +2729,7 @@ function documentoComandaTermica(pedido, id, config) {
   const recibo = corpoComandaTermica(pedido, id, config);
   const vias = Array.from({length:config.vias}, (_, indice) => `<section class="recibo">${config.vias > 1 ? `<p class="via">VIA ${indice + 1}/${config.vias}</p>` : ''}${recibo}</section>`).join('');
   const tamanhoFonte = config.largura === '58' ? '11px' : '13px';
-  return `<!doctype html><html><head><meta charset="utf-8"><title>Comanda #${esc(String(id).slice(-5).toUpperCase())}</title><style>@page{size:${config.largura}mm auto;margin:0}*{box-sizing:border-box}body{width:${config.largura}mm;margin:0;padding:0;color:#000;background:#fff;font:${tamanhoFonte}/1.35 'Courier New',monospace}.recibo{width:100%;padding:4mm 3mm;break-after:page;page-break-after:always}.recibo:last-child{break-after:auto;page-break-after:auto}h2,h3,p{margin:4px 0}h2,h3{text-align:center}.center{text-align:center}.left{text-align:left}.small{font-size:.88em}.linha{border-bottom:1px dashed #000;margin:8px 0}.flex,.item-row{display:flex;justify-content:space-between;gap:7px}.bold{font-weight:700}.extras{margin:3px 0 3px 8px;font-size:.9em}.obs{display:block;margin:4px 0 4px 8px;font-size:.9em}.obs.geral{margin:7px 0}.dados-destaque{margin:8px 0}.dados-destaque strong{display:block;margin-bottom:2px}.agendado{margin:8px 0;font-weight:700;text-align:center}.total{font-size:1.2em}.pagamento{margin-top:9px}.rodape{margin:8px 0 16px}.via{text-align:right;font-size:.78em;font-weight:700}</style></head><body>${vias}</body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Comanda #${esc(numeroPedidoExibicao(pedido, id))}</title><style>@page{size:${config.largura}mm auto;margin:0}*{box-sizing:border-box}body{width:${config.largura}mm;margin:0;padding:0;color:#000;background:#fff;font:${tamanhoFonte}/1.35 'Courier New',monospace}.recibo{width:100%;padding:4mm 3mm;break-after:page;page-break-after:always}.recibo:last-child{break-after:auto;page-break-after:auto}h2,h3,p{margin:4px 0}h2,h3{text-align:center}.center{text-align:center}.left{text-align:left}.small{font-size:.88em}.linha{border-bottom:1px dashed #000;margin:8px 0}.flex,.item-row{display:flex;justify-content:space-between;gap:7px}.bold{font-weight:700}.extras{margin:3px 0 3px 8px;font-size:.9em}.obs{display:block;margin:4px 0 4px 8px;font-size:.9em}.obs.geral{margin:7px 0}.dados-destaque{margin:8px 0}.dados-destaque strong{display:block;margin-bottom:2px}.agendado{margin:8px 0;font-weight:700;text-align:center}.total{font-size:1.2em}.pagamento{margin-top:9px}.rodape{margin:8px 0 16px}.via{text-align:right;font-size:.78em;font-weight:700}</style></head><body>${vias}</body></html>`;
 }
 
 function atualizarPreviaImpressao() {
@@ -2843,7 +2862,7 @@ function renderizarRelatorioFinanceiro() {
   const corpo = document.getElementById('finance-pedidos-lista');
   const ordenados = [...relatorioFiltrados].sort((a,b)=>(dataPedidoJS(b)?.getTime()||0)-(dataPedidoJS(a)?.getTime()||0));
   document.getElementById('finance-table-resumo').textContent = `${ordenados.length} movimentaç${ordenados.length === 1 ? 'ão' : 'ões'} exibida${ordenados.length === 1 ? '' : 's'}`;
-  corpo.innerHTML = ordenados.length ? ordenados.map(p => { const data=dataPedidoJS(p), v=valoresFinanceirosPedido(p); return `<tr><td><strong>${data ? data.toLocaleDateString('pt-BR') : '—'}</strong><br><small>#${esc(p.id.slice(-5).toUpperCase())}</small></td><td><strong>${esc(p.cliente_nome||'Cliente')}</strong><br><small>${esc(p.cliente_telefone||'')}</small></td><td>${esc(p.forma_pagamento||'Não informado')}</td><td>${esc(p.tipo_entrega||'—')}</td><td>${brl(v.bruto)}</td><td>${v.desconto ? `- ${brl(v.desconto)}` : '—'}</td><td>${v.taxa ? brl(v.taxa) : '—'}</td><td><strong>${brl(v.total)}</strong></td><td><span class="status-chip ${classeStatusAdmin(statusFinanceiro(p))}">${esc(statusFinanceiro(p))}</span></td></tr>`; }).join('') : '<tr><td colspan="9"><div class="empty-state">Nenhuma movimentação encontrada com estes filtros.</div></td></tr>';
+  corpo.innerHTML = ordenados.length ? ordenados.map(p => { const data=dataPedidoJS(p), v=valoresFinanceirosPedido(p); return `<tr><td><strong>${data ? data.toLocaleDateString('pt-BR') : '—'}</strong><br><small>#${esc(numeroPedidoExibicao(p))}</small></td><td><strong>${esc(p.cliente_nome||'Cliente')}</strong><br><small>${esc(p.cliente_telefone||'')}</small></td><td>${esc(p.forma_pagamento||'Não informado')}</td><td>${esc(p.tipo_entrega||'—')}</td><td>${brl(v.bruto)}</td><td>${v.desconto ? `- ${brl(v.desconto)}` : '—'}</td><td>${v.taxa ? brl(v.taxa) : '—'}</td><td><strong>${brl(v.total)}</strong></td><td><span class="status-chip ${classeStatusAdmin(statusFinanceiro(p))}">${esc(statusFinanceiro(p))}</span></td></tr>`; }).join('') : '<tr><td colspan="9"><div class="empty-state">Nenhuma movimentação encontrada com estes filtros.</div></td></tr>';
   document.getElementById('rel-exportar').disabled = !relatorioFiltrados.length;
 }
 
@@ -2877,7 +2896,7 @@ function exportarRelatorioXLSX() {
     [], ['Indicador','Valor'], ['Receita líquida recebida',r.recebido/100], ['Vendas brutas',r.bruto/100], ['Descontos concedidos',r.descontos/100], ['Taxas de entrega',r.taxas/100], ['Pedidos concluídos',r.concluidos], ['Ticket médio',r.ticket/100], ['Pedidos cancelados',r.cancelados], ['Vendas canceladas',r.canceladoValor/100]
   ];
   const pedidos = relatorioFiltrados.map(p => { const v=valoresFinanceirosPedido(p), data=dataPedidoJS(p); return {
-    'Data':data?data.toLocaleString('pt-BR'):'', 'Pedido':p.id, 'Cliente':p.cliente_nome||'', 'Telefone':p.cliente_telefone||'', 'Pagamento':p.forma_pagamento||'', 'Modalidade':p.tipo_entrega||'',
+    'Data':data?data.toLocaleString('pt-BR'):'', 'Pedido':numeroPedidoExibicao(p), 'Cliente':p.cliente_nome||'', 'Telefone':p.cliente_telefone||'', 'Pagamento':p.forma_pagamento||'', 'Modalidade':p.tipo_entrega||'',
     'Bruto (R$)':v.bruto/100, 'Descontos (R$)':v.desconto/100, 'Taxa (R$)':v.taxa/100, 'Total (R$)':v.total/100, 'Status':statusFinanceiro(p), 'Itens':(p.itens||[]).map(i=>`${Number(i.qtd)||1}x ${i.nome||'Item'}`).join('; ')
   }; });
   const produtos = (r.topItens||[]).map(([nome,qtd],indice)=>({ 'Posição':indice+1, 'Produto':nome, 'Quantidade':qtd }));

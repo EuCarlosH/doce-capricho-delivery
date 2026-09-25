@@ -64,6 +64,17 @@ function lerCamposFirestore(fields) {
   return Object.fromEntries(Object.entries(fields || {}).map(([chave, valor]) => [chave, lerValorFirestore(valor)]));
 }
 
+function numeroPedidoExibicao(pedido, id) {
+  const numeroSalvo = String(pedido?.numero_pedido || '').replace(/\D/g, '');
+  if (numeroSalvo) return numeroSalvo;
+  let hash = 2166136261;
+  for (const caractere of String(id || '')) {
+    hash ^= caractere.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return String(100000000 + ((hash >>> 0) % 900000000));
+}
+
 function decodificarParteJwt(parte) {
   try { return JSON.parse(Buffer.from(parte, 'base64url').toString('utf8')); }
   catch (_) { return null; }
@@ -170,8 +181,9 @@ module.exports = async function handler(req, res) {
 
     const primeiroNomeBruto = String(pedido.cliente_nome || 'Cliente').trim().split(/\s+/)[0] || 'Cliente';
     const primeiroNome = primeiroNomeBruto.slice(0, 40);
+    const numeroPedido = numeroPedidoExibicao(pedido, pedidoId);
     const titulo = mensagem.title;
-    const texto = mensagem.body(primeiroNome);
+    const texto = `Pedido #${numeroPedido} · ${mensagem.body(primeiroNome)}`;
     const urlPedido = `${APP_URL}/?pedido=${encodeURIComponent(pedidoId)}#acompanhar`;
     const payload = {
       app_id: ONESIGNAL_APP_ID,
@@ -182,7 +194,7 @@ module.exports = async function handler(req, res) {
       url: urlPedido,
       chrome_web_icon: `${APP_URL}/icon-192.png`,
       chrome_web_badge: `${APP_URL}/icon-192.png`,
-      data: { tipo:'status_pedido', pedidoId, status:statusInformado }
+      data: { tipo:'status_pedido', pedidoId, numeroPedido, status:statusInformado }
     };
 
     const respostaOneSignal = await fetch('https://api.onesignal.com/notifications', {
