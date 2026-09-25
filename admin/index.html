@@ -460,6 +460,15 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .campaign-chip.scheduled { background:#FFF3D7; color:#8A6115; }
 .campaign-chip.ended,.campaign-chip.inactive { background:#F1EEEE; color:#766E68; }
 .campaign-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.banner-admin-layout { display:grid; grid-template-columns:minmax(310px,.85fr) minmax(430px,1.35fr); gap:14px; align-items:start; }
+.banner-admin-list { display:grid; gap:10px; }
+.banner-admin-card { display:grid; grid-template-columns:150px minmax(0,1fr); gap:13px; padding:12px; border:1px solid var(--border-light); border-radius:14px; background:#FFFDFA; }
+.banner-admin-preview { min-height:105px; border-radius:11px; background:#EEE6DB center/cover no-repeat; overflow:hidden; }
+.banner-admin-preview img { width:100%; height:100%; min-height:105px; display:block; object-fit:cover; }
+.banner-admin-card h4 { margin:2px 0 5px; font-size:11px; }
+.banner-admin-card p { color:var(--text-muted); font-size:8px; line-height:1.45; }
+.banner-admin-order { display:flex; gap:5px; margin-left:auto; }
+.banner-admin-order button { width:28px; height:28px; border:1px solid var(--border-light); border-radius:8px; background:#fff; color:var(--bronze); cursor:pointer; }
 @media (max-width:760px) {
   .admin-view { padding:14px 10px; }
   .view-heading { flex-direction:column; }
@@ -473,6 +482,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
   .finance-grid { grid-template-columns:1fr; }
   .finance-panel { min-height:285px; }
   .marketing-layout { grid-template-columns:1fr; }
+  .banner-admin-layout { grid-template-columns:1fr; }
+  .banner-admin-card { grid-template-columns:105px minmax(0,1fr); }
   .marketing-two,.marketing-channels { grid-template-columns:1fr; }
   .marketing-tabs { margin-left:-2px; margin-right:-2px; }
 }
@@ -717,6 +728,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         </div>
         <nav class="marketing-tabs" aria-label="Seções de Marketing">
           <button type="button" class="marketing-tab-btn active" onclick="switchMarketingTab('marketing-tab-campanhas',this)">Campanhas</button>
+          <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-banners',this)">Banners</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-promocoes',this)">Promoções</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-cupons',this)">Cupons</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-combos',this)">Combos e ofertas</button>
@@ -749,6 +761,30 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
             <h3>Histórico de campanhas</h3><p>Consulte divulgações ativas, agendadas, encerradas e reutilize conteúdos anteriores.</p>
             <div class="campaign-list" id="campaign-list"><div class="empty-state">Nenhuma campanha cadastrada.</div></div>
           </div>
+          </div>
+        </div>
+        <div class="marketing-tab-content" id="marketing-tab-banners">
+          <div class="banner-admin-layout">
+            <div class="marketing-panel">
+              <h3 id="banner-form-title">Novo banner</h3><p>O banner aparecerá no topo do site e do aplicativo. Prefira uma arte horizontal, com aproximadamente 1600 × 700 px.</p>
+              <form class="marketing-form" id="banner-form" onsubmit="salvarBannerMarketing(event)">
+                <input type="hidden" id="banner-id">
+                <label class="catalog-label">Chamada curta<input class="admin-field" id="banner-eyebrow" maxlength="45" placeholder="Ex: Novidade da semana"></label>
+                <label class="catalog-label">Título<input class="admin-field" id="banner-title" maxlength="90" placeholder="Ex: Um novo sabor chegou" required></label>
+                <label class="catalog-label">Descrição<textarea class="admin-field" id="banner-description" maxlength="180" rows="3" placeholder="Conte o destaque em poucas palavras"></textarea></label>
+                <label class="catalog-label">Imagem HTTPS<input class="admin-field" type="url" id="banner-image" placeholder="https://.../img/divulgacao/banner.png" required></label>
+                <div class="marketing-two"><label class="catalog-label">Texto do botão<input class="admin-field" id="banner-button" maxlength="32" value="VER CARDÁPIO"></label><label class="catalog-label">Destino<input class="admin-field" id="banner-destination" value="#cardapio" placeholder="#cardapio ou https://..."></label></div>
+                <div class="marketing-two"><label class="catalog-label">Início<input class="admin-field" type="datetime-local" id="banner-start"></label><label class="catalog-label">Término<input class="admin-field" type="datetime-local" id="banner-end"></label></div>
+                <label class="toggle-row"><span>Banner ativo</span><input type="checkbox" id="banner-active" checked></label>
+                <button class="btn-gradient" id="banner-save" type="submit" style="width:100%;padding:13px;margin:0">Salvar banner</button>
+                <button class="btn-secondary" id="banner-cancel" type="button" onclick="limparFormularioBanner()" style="display:none">Cancelar edição</button>
+                <div id="banner-feedback" style="min-height:14px;font-size:9px;font-weight:700;color:var(--text-muted)"></div>
+              </form>
+            </div>
+            <div class="marketing-panel">
+              <h3>Banners cadastrados</h3><p>Altere a ordem com as setas. Somente banners ativos e dentro da vigência aparecem para os clientes.</p>
+              <div class="banner-admin-list" id="banner-admin-list"><div class="empty-state">Nenhum banner cadastrado.</div></div>
+            </div>
           </div>
         </div>
         <div class="marketing-tab-content marketing-section-shell" id="marketing-tab-promocoes"></div>
@@ -1754,6 +1790,7 @@ function iniciarSistema() {
         preencherFormularioDesconto();
         renderPromocoesProgramadas();
         renderizarCampanhasMarketing();
+        renderizarBannersMarketing();
     }
     atualizarUIConfig();
   });
@@ -2893,6 +2930,118 @@ async function desativarPromocaoPorId(id, btn) {
   } finally {
     btn.disabled = false;
   }
+}
+
+function bannersMarketingAdmin() {
+  return Array.isArray(configuracoesGlobais.bannersMarketing) ? configuracoesGlobais.bannersMarketing.filter(Boolean) : [];
+}
+
+function estadoBannerAdmin(banner) {
+  if (banner.ativo === false) return 'inactive';
+  const agora = Date.now(), inicio = dataCampanhaAdmin(banner.inicioEm)?.getTime() || 0, fim = dataCampanhaAdmin(banner.fimEm)?.getTime() || 0;
+  if (fim && fim <= agora) return 'ended';
+  if (inicio > agora) return 'scheduled';
+  return 'active';
+}
+
+function renderizarBannersMarketing() {
+  const lista = document.getElementById('banner-admin-list');
+  if (!lista) return;
+  const banners = bannersMarketingAdmin();
+  if (!banners.length) { lista.innerHTML = '<div class="empty-state">Nenhum banner cadastrado.</div>'; return; }
+  const rotulos = { active:'No ar', scheduled:'Agendado', ended:'Finalizado', inactive:'Inativo' };
+  lista.innerHTML = banners.map((banner, indice) => {
+    const estado = estadoBannerAdmin(banner);
+    const imagem = /^https:\/\//i.test(String(banner.imagem || '')) ? `<img src="${esc(banner.imagem)}" alt="">` : '';
+    return `<article class="banner-admin-card"><div class="banner-admin-preview" aria-label="Prévia de ${esc(banner.titulo || 'banner')}">${imagem}</div><div><div class="campaign-card-head"><div><h4>${esc(banner.titulo || 'Banner')}</h4><p>${esc(banner.descricao || 'Sem descrição')}</p></div><span class="campaign-chip ${estado}">${rotulos[estado]}</span></div><div class="campaign-card-meta"><span class="campaign-chip">Início: ${esc(formatarDataCampanha(banner.inicioEm,'imediato'))}</span><span class="campaign-chip">Fim: ${esc(formatarDataCampanha(banner.fimEm,'manual'))}</span></div><div class="campaign-actions"><button type="button" class="btn-secondary" onclick="editarBannerMarketing('${esc(banner.id)}')">Editar</button><button type="button" class="btn-secondary" onclick="alternarBannerMarketing('${esc(banner.id)}')">${banner.ativo === false ? 'Ativar' : 'Desativar'}</button><button type="button" class="btn-secondary" style="color:#B4232D" onclick="excluirBannerMarketing('${esc(banner.id)}')">Excluir</button><span class="banner-admin-order"><button type="button" onclick="moverBannerMarketing(${indice},-1)" ${indice === 0 ? 'disabled' : ''} aria-label="Mover para cima">↑</button><button type="button" onclick="moverBannerMarketing(${indice},1)" ${indice === banners.length - 1 ? 'disabled' : ''} aria-label="Mover para baixo">↓</button></span></div></div></article>`;
+  }).join('');
+}
+
+function limparFormularioBanner() {
+  const form = document.getElementById('banner-form');
+  if (!form) return;
+  form.reset();
+  document.getElementById('banner-id').value = '';
+  document.getElementById('banner-button').value = 'VER CARDÁPIO';
+  document.getElementById('banner-destination').value = '#cardapio';
+  document.getElementById('banner-active').checked = true;
+  document.getElementById('banner-form-title').textContent = 'Novo banner';
+  document.getElementById('banner-save').textContent = 'SALVAR BANNER';
+  document.getElementById('banner-cancel').style.display = 'none';
+  document.getElementById('banner-feedback').textContent = '';
+}
+
+function valorDataLocalAdmin(valor) {
+  const data = dataCampanhaAdmin(valor);
+  if (!data) return '';
+  const local = new Date(data.getTime() - data.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0,16);
+}
+
+function editarBannerMarketing(id) {
+  const banner = bannersMarketingAdmin().find(item => item.id === id);
+  if (!banner) return;
+  document.getElementById('banner-id').value = banner.id;
+  document.getElementById('banner-eyebrow').value = banner.chamada || '';
+  document.getElementById('banner-title').value = banner.titulo || '';
+  document.getElementById('banner-description').value = banner.descricao || '';
+  document.getElementById('banner-image').value = banner.imagem || '';
+  document.getElementById('banner-button').value = banner.botaoTexto || 'VER CARDÁPIO';
+  document.getElementById('banner-destination').value = banner.destino || '#cardapio';
+  document.getElementById('banner-start').value = valorDataLocalAdmin(banner.inicioEm);
+  document.getElementById('banner-end').value = valorDataLocalAdmin(banner.fimEm);
+  document.getElementById('banner-active').checked = banner.ativo !== false;
+  document.getElementById('banner-form-title').textContent = 'Editar banner';
+  document.getElementById('banner-save').textContent = 'SALVAR ALTERAÇÕES';
+  document.getElementById('banner-cancel').style.display = 'block';
+  document.getElementById('view-marketing').scrollTo({ top:0, behavior:'smooth' });
+}
+
+async function salvarBannerMarketing(evento) {
+  evento.preventDefault();
+  const idAtual = document.getElementById('banner-id').value;
+  const titulo = document.getElementById('banner-title').value.trim(), imagem = document.getElementById('banner-image').value.trim();
+  const destino = document.getElementById('banner-destination').value.trim(), inicioTexto = document.getElementById('banner-start').value, fimTexto = document.getElementById('banner-end').value;
+  if (!titulo || !imagem) return alert('Informe o título e a imagem do banner.');
+  if (!/^https:\/\//i.test(imagem)) return alert('A imagem precisa usar uma URL HTTPS.');
+  if (destino && !destino.startsWith('#') && !/^https:\/\//i.test(destino)) return alert('O destino deve começar com # ou usar uma URL HTTPS.');
+  const inicio = inicioTexto ? new Date(inicioTexto) : null, fim = fimTexto ? new Date(fimTexto) : null;
+  if ((inicio && Number.isNaN(inicio.getTime())) || (fim && Number.isNaN(fim.getTime()))) return alert('Confira as datas do banner.');
+  if (inicio && fim && fim <= inicio) return alert('O término precisa ser posterior ao início.');
+  const existentes = bannersMarketingAdmin();
+  const anterior = existentes.find(item => item.id === idAtual);
+  const id = idAtual || (window.crypto?.randomUUID ? window.crypto.randomUUID() : `banner-${Date.now()}`);
+  const banner = { id, ativo:document.getElementById('banner-active').checked, chamada:document.getElementById('banner-eyebrow').value.trim(), titulo, descricao:document.getElementById('banner-description').value.trim(), imagem, botaoTexto:document.getElementById('banner-button').value.trim() || 'VER CARDÁPIO', destino:destino || '#cardapio', inicioEm:inicio?firebase.firestore.Timestamp.fromDate(inicio):null, fimEm:fim?firebase.firestore.Timestamp.fromDate(fim):null, criadaEm:anterior?.criadaEm || firebase.firestore.Timestamp.now(), atualizadaEm:firebase.firestore.Timestamp.now() };
+  const bannersMarketing = anterior ? existentes.map(item => item.id === id ? banner : item) : [...existentes, banner];
+  const botao = document.getElementById('banner-save'), feedback = document.getElementById('banner-feedback');
+  botao.disabled = true; botao.textContent = 'SALVANDO...';
+  try { await db.collection('configuracoes').doc('geral').set({ bannersMarketing:bannersMarketing.slice(0,20) }, { merge:true }); limparFormularioBanner(); feedback.textContent = '🟢 Banner salvo com sucesso.'; }
+  catch (erro) { console.error('[BANNERS]', erro); alert('Não foi possível salvar o banner.'); }
+  finally { botao.disabled = false; if (!document.getElementById('banner-id').value) botao.textContent = 'SALVAR BANNER'; }
+}
+
+async function persistirBannersMarketing(banners) {
+  await db.collection('configuracoes').doc('geral').set({ bannersMarketing:banners.slice(0,20) }, { merge:true });
+}
+
+async function alternarBannerMarketing(id) {
+  try { await persistirBannersMarketing(bannersMarketingAdmin().map(item => item.id === id ? { ...item, ativo:item.ativo === false, atualizadaEm:firebase.firestore.Timestamp.now() } : item)); }
+  catch (erro) { console.error('[BANNERS]', erro); alert('Não foi possível alterar o banner.'); }
+}
+
+async function excluirBannerMarketing(id) {
+  const banner = bannersMarketingAdmin().find(item => item.id === id);
+  if (!banner || !confirm(`Excluir o banner “${banner.titulo || 'Banner'}”?`)) return;
+  try { await persistirBannersMarketing(bannersMarketingAdmin().filter(item => item.id !== id)); if (document.getElementById('banner-id').value === id) limparFormularioBanner(); }
+  catch (erro) { console.error('[BANNERS]', erro); alert('Não foi possível excluir o banner.'); }
+}
+
+async function moverBannerMarketing(indice, direcao) {
+  const banners = [...bannersMarketingAdmin()], destino = indice + direcao;
+  if (indice < 0 || destino < 0 || indice >= banners.length || destino >= banners.length) return;
+  [banners[indice], banners[destino]] = [banners[destino], banners[indice]];
+  try { await persistirBannersMarketing(banners); }
+  catch (erro) { console.error('[BANNERS]', erro); alert('Não foi possível alterar a ordem.'); }
 }
 
 function campanhasMarketingAdmin() {

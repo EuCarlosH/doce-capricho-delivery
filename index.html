@@ -209,6 +209,17 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 .carousel-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out, transform 10s ease-out; }
 .carousel-slide.active { opacity: 1; transform: scale(1.1); }
+.hero-carousel-controls { position:absolute; z-index:3; left:20px; bottom:18px; display:none; align-items:center; gap:8px; }
+.hero-carousel-controls.show { display:flex; }
+.hero-carousel-arrow { width:32px; height:32px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.3); border-radius:50%; color:#fff; background:rgba(41,22,12,.5); backdrop-filter:blur(8px); cursor:pointer; }
+.hero-carousel-dots { display:flex; gap:6px; padding:8px 10px; border-radius:999px; background:rgba(41,22,12,.42); backdrop-filter:blur(8px); }
+.hero-carousel-dot { width:7px; height:7px; padding:0; border:0; border-radius:99px; background:rgba(255,255,255,.45); cursor:pointer; transition:.25s ease; }
+.hero-carousel-dot.active { width:22px; background:#fff; }
+#home.has-marketing-banners .hero-overlay { background:linear-gradient(to bottom,rgba(28,12,5,.05) 45%,rgba(253,251,247,.96) 100%),linear-gradient(to right,rgba(28,12,5,.82) 0%,rgba(50,24,10,.55) 47%,rgba(34,15,7,.18) 100%); }
+#home.has-marketing-banners .hero-eyebrow,#home.has-marketing-banners .hero-title,#home.has-marketing-banners .hero-subtitle { color:#FFF8E9; text-shadow:0 3px 18px rgba(0,0,0,.7); }
+#home.has-marketing-banners .hero-content { transition:opacity .25s ease,transform .25s ease; }
+#home.has-marketing-banners .hero-content.changing { opacity:.25; transform:translateY(5px); }
+:root[data-theme="dark"] #home.has-marketing-banners .hero-overlay { background:linear-gradient(to bottom,rgba(10,5,2,.05) 45%,rgba(13,10,8,.98) 100%),linear-gradient(to right,rgba(10,5,2,.88),rgba(20,10,5,.54) 55%,rgba(10,5,2,.2)); }
 .hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(253,251,247,0) 40%, rgba(253,251,247,1) 100%), linear-gradient(to right, rgba(253,251,247,0.95) 0%, rgba(253,251,247,0.6) 60%, rgba(253,251,247,0.1) 100%); transition: background 0.4s ease; }
 :root[data-theme="dark"] .hero-overlay { background: linear-gradient(to bottom, rgba(13,10,8,0) 60%, rgba(13,10,8,1) 100%), linear-gradient(to right, rgba(13,10,8,0.95) 0%, rgba(13,10,8,0.7) 60%, rgba(13,10,8,0.1) 100%); }
 .hero-content { position: relative; z-index: 2; }
@@ -237,6 +248,9 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
   .hero-trust-item { display:grid; grid-template-columns:30px 1fr; column-gap:9px; padding:10px; }
   .hero-trust-icon { grid-row:1 / span 2; margin:0; }
   .hero-trust-item strong { align-self:end; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .carousel-slide,.carousel-slide.active { transform:none; transition:opacity .25s ease; }
 }
 
 /* BALÃO DE DESTAQUES ROTATIVO (topo do cardápio) */
@@ -807,6 +821,8 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   .nav-links a:active, .nav-links button:active { background:rgba(221,167,58,.12); }
   .btn-install { display:none !important; }
   #home { display:flex; flex-direction:column; padding-top:100px; text-align:center; align-items:center; border-radius:0 0 30px 30px; } .hero-title { max-width:100%; }
+  .hero-carousel-controls { left:auto; right:14px; top:82px; bottom:auto; }
+  .hero-carousel-arrow { width:29px; height:29px; }
   .hero-company-panel { width:100%; margin-top:26px; padding:22px 18px; border-radius:22px; text-align:left; }
   .hero-company-panel h2 { font-size:21px; }
   .hero-panel-intro { margin-bottom:16px; }
@@ -1040,14 +1056,19 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 <header id="home">
   <div class="hero-carousel" id="hero-carousel"></div>
   <div class="hero-overlay"></div>
+  <div class="hero-carousel-controls" id="hero-carousel-controls" aria-label="Controles dos banners">
+    <button type="button" class="hero-carousel-arrow" id="hero-carousel-prev" aria-label="Banner anterior">‹</button>
+    <div class="hero-carousel-dots" id="hero-carousel-dots"></div>
+    <button type="button" class="hero-carousel-arrow" id="hero-carousel-next" aria-label="Próximo banner">›</button>
+  </div>
   <div class="hero-content">
     <div class="hero-brand-line">
       <img src="/logo.png" alt="Doce Capricho Atelier" class="hero-brand-logo">
-      <span class="hero-eyebrow">Ateliê artesanal em São Miguel, RN</span>
+      <span class="hero-eyebrow" id="hero-eyebrow-client">Ateliê artesanal em São Miguel, RN</span>
     </div>
-    <h1 class="hero-title brand-font">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
-    <p class="hero-subtitle">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
-    <a href="#cardapio" class="btn-gradient ripple hero-cta">Ver Cardápio</a>
+    <h1 class="hero-title brand-font" id="hero-title-client">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
+    <p class="hero-subtitle" id="hero-subtitle-client">Agora em pizzas e esfihas irresistíveis.<br>Alta gastronomia, artesanal e exclusiva.</p>
+    <a href="#cardapio" class="btn-gradient ripple hero-cta" id="hero-cta-client">Ver Cardápio</a>
   </div>
   <aside class="hero-company-panel" aria-label="Diferenciais da Doce Capricho Ateliê">
     <span class="hero-panel-kicker">Doce Capricho Ateliê</span>
@@ -2480,6 +2501,108 @@ document.getElementById('schedule-time-grid')?.addEventListener('click', event =
   atualizarResumoAgendamento();
   atualizarAvisoCheckout();
 });
+
+const HERO_PADRAO = {
+  chamada: document.getElementById('hero-eyebrow-client')?.textContent || 'Ateliê artesanal em São Miguel, RN',
+  tituloHtml: document.getElementById('hero-title-client')?.innerHTML || 'O SABOR QUE VOCÊ JÁ CONHECE',
+  descricaoHtml: document.getElementById('hero-subtitle-client')?.innerHTML || 'Agora em pizzas e esfihas irresistíveis.',
+  botaoTexto: document.getElementById('hero-cta-client')?.textContent || 'Ver Cardápio',
+  destino: '#cardapio'
+};
+let bannersHeroAtivos = [], bannerHeroIndice = 0, bannerHeroTimer = null, bannerHeroVigenciaTimer = null, bannersHeroRecebidos = [];
+
+function millisBannerCliente(valor) {
+  if (!valor) return 0;
+  if (typeof valor.toMillis === 'function') return valor.toMillis();
+  if (valor.seconds != null) return Number(valor.seconds) * 1000 + Math.floor(Number(valor.nanoseconds || 0) / 1000000);
+  const data = new Date(valor).getTime();
+  return Number.isFinite(data) ? data : 0;
+}
+
+function bannerHeroVigente(banner, agora = Date.now()) {
+  if (!banner || banner.ativo === false || !/^https:\/\//i.test(String(banner.imagem || ''))) return false;
+  const inicio = millisBannerCliente(banner.inicioEm), fim = millisBannerCliente(banner.fimEm);
+  return (!inicio || inicio <= agora) && (!fim || fim > agora);
+}
+
+function aplicarDestinoHero(elemento, destino) {
+  const seguro = destinoAvisoSeguro(destino);
+  elemento.href = seguro;
+  elemento.onclick = evento => { evento.preventDefault(); executarDestinoAviso(seguro); };
+}
+
+function restaurarHeroPadrao() {
+  clearTimeout(bannerHeroTimer); bannerHeroTimer = null;
+  bannersHeroAtivos = []; bannerHeroIndice = 0;
+  document.getElementById('home')?.classList.remove('has-marketing-banners');
+  document.getElementById('hero-carousel').innerHTML = '';
+  document.getElementById('hero-carousel-dots').innerHTML = '';
+  document.getElementById('hero-carousel-controls').classList.remove('show');
+  document.getElementById('hero-eyebrow-client').textContent = HERO_PADRAO.chamada;
+  document.getElementById('hero-title-client').innerHTML = HERO_PADRAO.tituloHtml;
+  document.getElementById('hero-subtitle-client').innerHTML = HERO_PADRAO.descricaoHtml;
+  const cta = document.getElementById('hero-cta-client');
+  cta.textContent = HERO_PADRAO.botaoTexto; cta.href = HERO_PADRAO.destino; cta.onclick = null; cta.style.display = '';
+}
+
+function agendarTrocaBannerHero() {
+  clearTimeout(bannerHeroTimer); bannerHeroTimer = null;
+  if (bannersHeroAtivos.length < 2) return;
+  bannerHeroTimer = setTimeout(() => mostrarBannerHero((bannerHeroIndice + 1) % bannersHeroAtivos.length), 6500);
+}
+
+function mostrarBannerHero(indice) {
+  if (!bannersHeroAtivos.length) return restaurarHeroPadrao();
+  bannerHeroIndice = (indice + bannersHeroAtivos.length) % bannersHeroAtivos.length;
+  const banner = bannersHeroAtivos[bannerHeroIndice];
+  document.querySelectorAll('#hero-carousel .carousel-slide').forEach((slide, i) => slide.classList.toggle('active', i === bannerHeroIndice));
+  document.querySelectorAll('#hero-carousel-dots .hero-carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === bannerHeroIndice));
+  const conteudo = document.querySelector('#home .hero-content');
+  conteudo?.classList.add('changing');
+  setTimeout(() => {
+    document.getElementById('hero-eyebrow-client').textContent = banner.chamada || 'Doce Capricho Ateliê';
+    document.getElementById('hero-title-client').textContent = banner.titulo || '';
+    document.getElementById('hero-subtitle-client').textContent = banner.descricao || '';
+    const cta = document.getElementById('hero-cta-client');
+    cta.textContent = banner.botaoTexto || 'VER CARDÁPIO'; cta.style.display = banner.botaoTexto === '' ? 'none' : '';
+    aplicarDestinoHero(cta, banner.destino || '#cardapio');
+    conteudo?.classList.remove('changing');
+  }, 180);
+  agendarTrocaBannerHero();
+}
+
+function renderizarBannersHero(banners) {
+  bannersHeroAtivos = banners;
+  bannerHeroIndice = 0;
+  const carrossel = document.getElementById('hero-carousel'), dots = document.getElementById('hero-carousel-dots');
+  carrossel.innerHTML = ''; dots.innerHTML = '';
+  banners.forEach((banner, indice) => {
+    const imagem = document.createElement('img');
+    imagem.className = 'carousel-slide'; imagem.src = banner.imagem; imagem.alt = ''; imagem.decoding = 'async';
+    if (indice > 0) imagem.loading = 'lazy';
+    imagem.onerror = () => processarBannersMarketingCliente(bannersHeroRecebidos.filter(item => item !== banner));
+    carrossel.appendChild(imagem);
+    const dot = document.createElement('button');
+    dot.type = 'button'; dot.className = 'hero-carousel-dot'; dot.setAttribute('aria-label', `Ver banner ${indice + 1}`); dot.onclick = () => mostrarBannerHero(indice);
+    dots.appendChild(dot);
+  });
+  document.getElementById('home')?.classList.add('has-marketing-banners');
+  document.getElementById('hero-carousel-controls').classList.toggle('show', banners.length > 1);
+  mostrarBannerHero(0);
+}
+
+function processarBannersMarketingCliente(banners) {
+  bannersHeroRecebidos = Array.isArray(banners) ? banners.filter(Boolean) : [];
+  clearTimeout(bannerHeroVigenciaTimer); bannerHeroVigenciaTimer = null;
+  const agora = Date.now();
+  const transicoes = bannersHeroRecebidos.flatMap(banner => [millisBannerCliente(banner.inicioEm), millisBannerCliente(banner.fimEm)]).filter(valor => valor > agora).sort((a,b) => a-b);
+  if (transicoes.length) bannerHeroVigenciaTimer = setTimeout(() => processarBannersMarketingCliente(bannersHeroRecebidos), Math.min(transicoes[0] - agora + 500, 2147483000));
+  const ativos = bannersHeroRecebidos.filter(banner => bannerHeroVigente(banner, agora));
+  if (!ativos.length) restaurarHeroPadrao(); else renderizarBannersHero(ativos);
+}
+
+document.getElementById('hero-carousel-prev')?.addEventListener('click', () => mostrarBannerHero(bannerHeroIndice - 1));
+document.getElementById('hero-carousel-next')?.addEventListener('click', () => mostrarBannerHero(bannerHeroIndice + 1));
 
 // BALÃO ROTATIVO DE DESTAQUES — edite os textos abaixo à vontade
 const DESTAQUES_SLIDES = [
@@ -5272,6 +5395,7 @@ function processarConfig(doc) {
         abrirModal('modal-aviso-pausa'); 
     }
     lojaEstavaPausada = bloqueioTotal; primeiraCargaPausa = false;
+    processarBannersMarketingCliente(configLoja.bannersMarketing);
     const campanhaAtiva = processarCampanhasMarketing(configLoja.campanhasMarketing);
     if (!campanhaAtiva) processarAvisoPopup(configLoja.avisoPopup);
     
