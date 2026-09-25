@@ -494,11 +494,11 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .print-preview-paper .flex,.print-preview-paper .item-row { display:flex; justify-content:space-between; gap:8px; }
 .print-preview-paper .bold { font-weight:700; }
 .print-preview-paper .extras { margin:3px 0 3px 8px; font-size:.9em; }
-.print-preview-paper .endereco,.print-preview-paper .agendado { margin:9px 0; padding:7px; border:2px solid #111; font-weight:700; text-align:center; }
-.print-preview-paper .agendado { border-width:3px; font-size:1.2em; }
-.print-preview-paper .endereco-simples { margin:7px 0; font-weight:700; text-align:center; }
-.print-preview-paper .obs { display:inline-block; margin:5px 0 5px 8px; padding:4px; border:1px solid #111; font-size:.9em; }
-.print-preview-paper .obs.geral { display:block; margin:7px 0; }
+.print-preview-paper .dados-destaque { margin:8px 0; }
+.print-preview-paper .dados-destaque strong { display:block; margin-bottom:2px; }
+.print-preview-paper .agendado { margin:8px 0; font-weight:700; text-align:center; }
+.print-preview-paper .obs { display:block; margin:4px 0 4px 8px; font-size:.9em; }
+.print-preview-paper .obs.geral { margin:7px 0; }
 .print-preview-paper .total { font-size:1.16em; }
 .print-preview-paper .pagamento { margin-top:9px; }
 .print-preview-paper .rodape { margin-top:8px; }
@@ -964,7 +964,6 @@ Alta gastronomia, artesanal e exclusiva.</p><span class="identity-preview-button
                 <label class="toggle-row"><span>Mostrar telefone</span><input type="checkbox" id="print-phone" checked onchange="atualizarPreviaImpressao()"></label>
                 <label class="toggle-row"><span>Mostrar pagamento</span><input type="checkbox" id="print-payment" checked onchange="atualizarPreviaImpressao()"></label>
                 <label class="toggle-row"><span>Mostrar valores</span><input type="checkbox" id="print-prices" checked onchange="atualizarPreviaImpressao()"></label>
-                <label class="toggle-row"><span>Destacar endereço</span><input type="checkbox" id="print-address" checked onchange="atualizarPreviaImpressao()"></label>
               </div>
               <button class="btn-gradient" id="print-save" type="submit" style="width:100%;padding:13px;margin:0">Salvar configuração</button>
               <button class="btn-secondary" type="button" onclick="imprimirComandaTeste()">Imprimir comanda de teste</button>
@@ -2626,7 +2625,7 @@ function renderizarModaisConfig() {
 // ------------------------------------------------------------------
 // CENTRAL DE IMPRESSÃO TÉRMICA
 // ------------------------------------------------------------------
-const IMPRESSAO_PADRAO = { largura:'80', vias:1, titulo:'Doce Capricho Ateliê', subtitulo:'Comanda de produção', rodape:'Feito com amor em cada detalhe.', mostrarTelefone:true, mostrarPagamento:true, mostrarValores:true, destacarEndereco:true };
+const IMPRESSAO_PADRAO = { largura:'80', vias:1, titulo:'Doce Capricho Ateliê', subtitulo:'Comanda de produção', rodape:'Feito com amor em cada detalhe.', mostrarTelefone:true, mostrarPagamento:true, mostrarValores:true };
 
 function configuracaoImpressaoAdmin() {
   const dados = configuracoesGlobais.impressao || {};
@@ -2641,7 +2640,7 @@ function lerConfiguracaoImpressao() {
     titulo:document.getElementById('print-title').value.trim() || IMPRESSAO_PADRAO.titulo,
     subtitulo:document.getElementById('print-header').value.trim(), rodape:document.getElementById('print-footer').value.trim(),
     mostrarTelefone:document.getElementById('print-phone').checked, mostrarPagamento:document.getElementById('print-payment').checked,
-    mostrarValores:document.getElementById('print-prices').checked, destacarEndereco:document.getElementById('print-address').checked
+    mostrarValores:document.getElementById('print-prices').checked
   };
 }
 
@@ -2656,7 +2655,6 @@ function preencherConfiguracaoImpressao() {
   document.getElementById('print-phone').checked = config.mostrarTelefone !== false;
   document.getElementById('print-payment').checked = config.mostrarPagamento !== false;
   document.getElementById('print-prices').checked = config.mostrarValores !== false;
-  document.getElementById('print-address').checked = config.destacarEndereco !== false;
   atualizarPreviaImpressao();
 }
 
@@ -2682,9 +2680,9 @@ function corpoComandaTermica(pedido, id, config) {
   const preco = valor => config.mostrarValores ? `<span>${brl(Number(valor)||0)}</span>` : '';
   let html = `<h2>${esc(config.titulo)}</h2>${config.subtitulo ? `<p class="center">${esc(config.subtitulo)}</p>` : ''}<h3>Pedido #${esc(String(id).slice(-5).toUpperCase())}</h3><p class="center small">${esc(dataHoraPedidoImpressao(pedido))}</p><div class="linha"></div><p class="bold">Cliente: ${esc(pedido.cliente_nome || 'Cliente')}</p>`;
   if (config.mostrarTelefone && pedido.cliente_telefone) html += `<p>Tel: ${esc(pedido.cliente_telefone)}</p>`;
-  if (pedido.agendado) html += `<div class="agendado">AGENDADO<br>${esc(textoDataAgendamento(pedido))} ÀS ${esc(pedido.agendamento_hora || '')}</div>`;
-  if (pedido.tipo_entrega === 'Entrega' && pedido.cliente_endereco) html += `<div class="${config.destacarEndereco ? 'endereco' : 'endereco-simples'}">ENTREGA:<br>${esc(pedido.cliente_endereco)}</div>`;
-  else if (pedido.tipo_entrega === 'Retirada') html += `<div class="${config.destacarEndereco ? 'endereco' : 'endereco-simples'}">RETIRADA NO BALCÃO</div>`;
+  if (pedido.agendado) html += `<div class="linha"></div><div class="agendado">AGENDADO — ${esc(textoDataAgendamento(pedido))} ÀS ${esc(pedido.agendamento_hora || '')}</div>`;
+  if (pedido.tipo_entrega === 'Entrega' && pedido.cliente_endereco) html += `<div class="dados-destaque"><strong>ENTREGA</strong><span>${esc(pedido.cliente_endereco)}</span></div>`;
+  else if (pedido.tipo_entrega === 'Retirada') html += `<div class="dados-destaque"><strong>MODALIDADE</strong><span>Retirada no balcão</span></div>`;
   html += `<div class="linha"></div><h3 class="left">ITENS:</h3>`;
   (pedido.itens || []).forEach(item => {
     html += `<div class="item-row"><span class="bold">${Math.max(1,Number(item.qtd)||1)}x ${esc(item.nome || 'Item')}</span>${preco(item.total_centavos)}</div>`;
@@ -2712,7 +2710,7 @@ function documentoComandaTermica(pedido, id, config) {
   const recibo = corpoComandaTermica(pedido, id, config);
   const vias = Array.from({length:config.vias}, (_, indice) => `<section class="recibo">${config.vias > 1 ? `<p class="via">VIA ${indice + 1}/${config.vias}</p>` : ''}${recibo}</section>`).join('');
   const tamanhoFonte = config.largura === '58' ? '11px' : '13px';
-  return `<!doctype html><html><head><meta charset="utf-8"><title>Comanda #${esc(String(id).slice(-5).toUpperCase())}</title><style>@page{size:${config.largura}mm auto;margin:0}*{box-sizing:border-box}body{width:${config.largura}mm;margin:0;padding:0;color:#000;background:#fff;font:${tamanhoFonte}/1.35 'Courier New',monospace}.recibo{width:100%;padding:4mm 3mm;break-after:page;page-break-after:always}.recibo:last-child{break-after:auto;page-break-after:auto}h2,h3,p{margin:4px 0}h2,h3{text-align:center}.center{text-align:center}.left{text-align:left}.small{font-size:.88em}.linha{border-bottom:1px dashed #000;margin:8px 0}.flex,.item-row{display:flex;justify-content:space-between;gap:7px}.bold{font-weight:700}.extras{margin:3px 0 3px 8px;font-size:.9em}.obs{display:inline-block;margin:4px 0 5px 8px;padding:3px;border:1px solid #000;font-size:.9em}.obs.geral{display:block;margin:7px 0}.endereco,.agendado{margin:8px 0;padding:6px;border:2px solid #000;font-size:1.12em;font-weight:700;text-align:center}.agendado{border-width:3px;font-size:1.25em}.endereco-simples{margin:7px 0;font-weight:700;text-align:center}.total{font-size:1.2em}.pagamento{margin-top:9px}.rodape{margin:8px 0 16px}.via{text-align:right;font-size:.78em;font-weight:700}</style></head><body>${vias}</body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Comanda #${esc(String(id).slice(-5).toUpperCase())}</title><style>@page{size:${config.largura}mm auto;margin:0}*{box-sizing:border-box}body{width:${config.largura}mm;margin:0;padding:0;color:#000;background:#fff;font:${tamanhoFonte}/1.35 'Courier New',monospace}.recibo{width:100%;padding:4mm 3mm;break-after:page;page-break-after:always}.recibo:last-child{break-after:auto;page-break-after:auto}h2,h3,p{margin:4px 0}h2,h3{text-align:center}.center{text-align:center}.left{text-align:left}.small{font-size:.88em}.linha{border-bottom:1px dashed #000;margin:8px 0}.flex,.item-row{display:flex;justify-content:space-between;gap:7px}.bold{font-weight:700}.extras{margin:3px 0 3px 8px;font-size:.9em}.obs{display:block;margin:4px 0 4px 8px;font-size:.9em}.obs.geral{margin:7px 0}.dados-destaque{margin:8px 0}.dados-destaque strong{display:block;margin-bottom:2px}.agendado{margin:8px 0;font-weight:700;text-align:center}.total{font-size:1.2em}.pagamento{margin-top:9px}.rodape{margin:8px 0 16px}.via{text-align:right;font-size:.78em;font-weight:700}</style></head><body>${vias}</body></html>`;
 }
 
 function atualizarPreviaImpressao() {
