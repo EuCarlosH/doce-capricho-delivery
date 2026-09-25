@@ -21,6 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="../catalogo-padrao.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
@@ -403,6 +404,32 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .catalog-checks { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:7px; max-height:230px; overflow:auto; padding:10px; border:1px solid var(--border-light); border-radius:10px; }
 .catalog-check { display:flex; align-items:center; gap:7px; padding:7px; border-radius:8px; background:#FAF5ED; color:var(--text-main); font-size:9px; font-weight:700; text-transform:none; letter-spacing:0; }
 .catalog-init { padding:13px; margin-bottom:14px; border:1px solid rgba(223,174,76,.32); border-radius:12px; background:#FFF9ED; display:none; align-items:center; justify-content:space-between; gap:12px; font-size:9px; line-height:1.45; }
+.finance-head { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:16px; }
+.finance-head h2 { font-size:22px; margin-bottom:5px; }
+.finance-head p { color:var(--text-muted); font-size:10px; line-height:1.5; }
+.finance-presets { display:flex; flex-wrap:wrap; gap:6px; }
+.finance-preset { border:1px solid var(--border-light); border-radius:999px; background:#fff; color:var(--text-main); padding:7px 10px; font:800 8px 'Montserrat',sans-serif; cursor:pointer; }
+.finance-preset:hover,.finance-preset.active { color:#fff; border-color:var(--bronze); background:var(--bronze); }
+.finance-kpis { display:grid; grid-template-columns:repeat(4,minmax(155px,1fr)); gap:10px; margin-bottom:14px; }
+.finance-kpi { min-height:102px; padding:15px; border:1px solid var(--border-light); border-radius:15px; background:var(--bg-card); box-shadow:var(--shadow-sm); }
+.finance-kpi span { display:block; color:var(--text-muted); font-size:8px; font-weight:800; letter-spacing:.9px; text-transform:uppercase; }
+.finance-kpi strong { display:block; margin-top:7px; color:var(--text-main); font:700 20px 'Cinzel',serif; }
+.finance-kpi small { display:block; margin-top:5px; color:var(--text-muted); font-size:8px; line-height:1.35; }
+.finance-kpi.positive { border-left:4px solid var(--success); }
+.finance-kpi.warning { border-left:4px solid #D49A2D; }
+.finance-kpi.danger { border-left:4px solid var(--danger); }
+.finance-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(280px,.8fr); gap:12px; margin-bottom:14px; }
+.finance-panel { min-height:320px; padding:16px; border:1px solid var(--border-light); border-radius:15px; background:var(--bg-card); box-shadow:var(--shadow-sm); }
+.finance-panel h3 { margin-bottom:12px; color:var(--text-muted); font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+.finance-chart { position:relative; height:260px; }
+.finance-breakdown { display:grid; gap:8px; }
+.finance-breakdown-row { display:grid; grid-template-columns:minmax(90px,1fr) 2fr auto; align-items:center; gap:9px; font-size:9px; }
+.finance-breakdown-track { height:7px; overflow:hidden; border-radius:99px; background:#F1E9DE; }
+.finance-breakdown-fill { height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--bronze),var(--gold)); }
+.finance-table-title { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:18px 0 9px; }
+.finance-table-title h3 { font-size:13px; }
+.finance-table-title span { color:var(--text-muted); font-size:9px; }
+.finance-loading { opacity:.58; pointer-events:none; }
 @media (max-width:760px) {
   .admin-view { padding:14px 10px; }
   .view-heading { flex-direction:column; }
@@ -411,6 +438,10 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
   .catalog-kpis { grid-template-columns:repeat(2,1fr); }
   .catalog-editor-grid { grid-template-columns:1fr; }
   .catalog-editor-grid .full { grid-column:auto; }
+  .finance-head { flex-direction:column; }
+  .finance-kpis { grid-template-columns:repeat(2,1fr); }
+  .finance-grid { grid-template-columns:1fr; }
+  .finance-panel { min-height:285px; }
 }
 </style>
 </head>
@@ -643,47 +674,42 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
       </section>
 
       <div id="view-relatorios">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-          <h2 class="brand-font" style="color: var(--text-main); font-size: 20px; border:none; margin:0;">Dashboard Analytics</h2>
-          <div style="display: flex; gap: 10px; align-items: center; background: var(--bg-card); padding: 8px; border-radius: 10px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
-            <input type="date" id="rel-inicio" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 11px;">
-            <span style="color: var(--text-muted); font-size: 10px; font-weight: 700;">ATÉ</span>
-            <input type="date" id="rel-fim" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-light); font-family: inherit; font-size: 11px;">
-            <button class="btn-gradient" onclick="gerarRelatorio()" style="padding: 8px 15px; font-size: 10px; width: auto; margin:0;">Filtrar</button>
-          </div>
+        <div class="finance-head">
+          <div><span class="hero-kicker" style="color:var(--gold-dark)">Visão financeira</span><h2>Indicadores e resultados</h2><p>Acompanhe recebimentos, descontos, taxas, cancelamentos e produtos vendidos.</p></div>
+          <div class="finance-presets"><button class="finance-preset" onclick="definirPeriodoRelatorio('hoje',this)">Hoje</button><button class="finance-preset" onclick="definirPeriodoRelatorio('7',this)">7 dias</button><button class="finance-preset" onclick="definirPeriodoRelatorio('30',this)">30 dias</button><button class="finance-preset" onclick="definirPeriodoRelatorio('mes',this)">Este mês</button></div>
         </div>
 
-        <div class="kpi-grid">
-          <div class="kpi-card" style="border-left: 4px solid var(--success);">
-            <span class="kpi-title">Faturamento Bruto</span>
-            <strong class="kpi-value" id="kpi-fat" style="color: var(--success);">R$ 0,00</strong>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-title">Pedidos Entregues</span>
-            <strong class="kpi-value" id="kpi-qtd">0</strong>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-title">Ticket Médio</span>
-            <strong class="kpi-value" id="kpi-ticket">R$ 0,00</strong>
-          </div>
-          <div class="kpi-card" style="border-left: 4px solid var(--danger);">
-            <span class="kpi-title" style="color: var(--danger);">Perdas / Cancelados</span>
-            <strong class="kpi-value" id="kpi-falhas" style="color: var(--danger);">0</strong>
-          </div>
+        <div class="admin-toolbar" id="finance-toolbar">
+          <label class="catalog-label">De<input class="admin-field" type="date" id="rel-inicio"></label>
+          <label class="catalog-label">Até<input class="admin-field" type="date" id="rel-fim"></label>
+          <label class="catalog-label">Status<select class="admin-field" id="rel-status" onchange="renderizarRelatorioFinanceiro()"><option value="">Todos</option><option value="Concluído">Concluídos</option><option value="Cancelado">Cancelados</option><option value="Novo">Novos</option><option value="Preparando">Preparando</option><option value="Pronto">Prontos</option><option value="Saiu para Entrega">Em rota</option></select></label>
+          <label class="catalog-label">Pagamento<select class="admin-field" id="rel-pagamento" onchange="renderizarRelatorioFinanceiro()"><option value="">Todos</option></select></label>
+          <label class="catalog-label">Modalidade<select class="admin-field" id="rel-entrega" onchange="renderizarRelatorioFinanceiro()"><option value="">Todas</option><option value="Entrega">Entrega</option><option value="Retirada">Retirada</option></select></label>
+          <button class="btn-gradient" id="rel-atualizar" onclick="gerarRelatorio()" style="align-self:end;padding:11px 15px;font-size:9px;width:auto;margin:0">Atualizar</button>
+          <button class="btn-secondary" id="rel-exportar" onclick="exportarRelatorioXLSX()" style="align-self:end" disabled>Exportar XLSX</button>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; padding-bottom: 30px;">
-          <div style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-light); height: 300px;">
-            <h3 style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight:800;">Curva Diária</h3>
-            <canvas id="chart-fat"></canvas>
-          </div>
-          <div style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-light); height: 300px; overflow-y: auto;">
-            <h3 style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-weight:800;">Top 10 Produtos</h3>
-            <div id="lista-top-produtos" style="display: flex; flex-direction: column; gap: 6px;">
-               <div class="empty-state">Use o filtro acima para ver os dados.</div>
-            </div>
-          </div>
+        <div class="finance-kpis">
+          <div class="finance-kpi positive"><span>Receita líquida recebida</span><strong id="kpi-recebido">R$ 0,00</strong><small>Produtos após descontos + entregas</small></div>
+          <div class="finance-kpi"><span>Vendas brutas</span><strong id="kpi-bruto">R$ 0,00</strong><small>Valor dos produtos antes dos descontos</small></div>
+          <div class="finance-kpi warning"><span>Descontos concedidos</span><strong id="kpi-descontos">R$ 0,00</strong><small>Promoções e cupons aplicados</small></div>
+          <div class="finance-kpi"><span>Taxas de entrega</span><strong id="kpi-taxas">R$ 0,00</strong><small>Parte do total referente às entregas</small></div>
+          <div class="finance-kpi"><span>Pedidos concluídos</span><strong id="kpi-qtd">0</strong><small id="kpi-conversao">0% dos pedidos encerrados</small></div>
+          <div class="finance-kpi"><span>Ticket médio</span><strong id="kpi-ticket">R$ 0,00</strong><small>Média por pedido concluído</small></div>
+          <div class="finance-kpi danger"><span>Cancelados</span><strong id="kpi-falhas">0</strong><small>Pedidos cancelados no período</small></div>
+          <div class="finance-kpi danger"><span>Vendas canceladas</span><strong id="kpi-cancelado-valor">R$ 0,00</strong><small>Valor potencial não realizado</small></div>
         </div>
+
+        <div class="finance-grid">
+          <div class="finance-panel"><h3>Recebimentos por dia</h3><div class="finance-chart"><canvas id="chart-fat"></canvas></div></div>
+          <div class="finance-panel"><h3>Formas de pagamento</h3><div class="finance-chart" style="height:175px"><canvas id="chart-pagamentos"></canvas></div><div class="finance-breakdown" id="finance-pagamentos-lista"></div></div>
+        </div>
+        <div class="finance-grid">
+          <div class="finance-panel" style="min-height:260px"><h3>Top 10 produtos concluídos</h3><div id="lista-top-produtos" class="finance-breakdown"><div class="empty-state">Use os filtros para carregar os dados.</div></div></div>
+          <div class="finance-panel" style="min-height:260px"><h3>Entrega x retirada</h3><div id="finance-modalidades-lista" class="finance-breakdown"><div class="empty-state">Use os filtros para carregar os dados.</div></div></div>
+        </div>
+        <div class="finance-table-title"><div><h3>Movimentações do período</h3><span id="finance-table-resumo">Nenhum relatório carregado</span></div></div>
+        <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Data / Pedido</th><th>Cliente</th><th>Pagamento</th><th>Modalidade</th><th>Bruto</th><th>Descontos</th><th>Taxa</th><th>Total</th><th>Status</th></tr></thead><tbody id="finance-pedidos-lista"><tr><td colspan="9"><div class="empty-state">Selecione um período para consultar.</div></td></tr></tbody></table></div>
       </div>
 
     </main>
@@ -1002,6 +1028,10 @@ const AGENDAMENTO_PADRAO = { ativo:true, intervaloMinutos:30, antecedenciaMinuto
 let configuracoesGlobais = { statusLoja: 'auto', itensEsgotados: [], ingredientesEsgotados: [], textoFuncionamento: "Quinta a Domingo, 18:30 às 23:00", horarios: {}, modoPromocoes: 'auto', agendamento:{ ...AGENDAMENTO_PADRAO } };
 let somLigado = true; 
 let chartInstance = null;
+let chartPagamentoInstance = null;
+let relatorioPedidos = [];
+let relatorioFiltrados = [];
+let relatorioResumoAtual = null;
 let historicoPedidos = [];
 let historicoCarregado = false;
 let historicoPromise = null;
@@ -1147,10 +1177,7 @@ function alternarTela(tela) {
     document.getElementById('view-relatorios').style.display = 'flex';
     document.getElementById('btn-nav-relatorios').classList.add('active');
     if(!document.getElementById('rel-inicio').value) {
-       const hoje = new Date(); const inicio = new Date(hoje); inicio.setDate(hoje.getDate() - 7);
-       document.getElementById('rel-inicio').value = inicio.toISOString().split('T')[0];
-       document.getElementById('rel-fim').value = hoje.toISOString().split('T')[0];
-       gerarRelatorio();
+       definirPeriodoRelatorio('7', document.querySelector('.finance-preset:nth-child(2)'));
     }
   } else if (tela === 'historico') {
     document.getElementById('view-historico').classList.add('active');
@@ -2281,36 +2308,155 @@ function imprimirComanda(id) {
   setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
 }
 
+function dataInputLocal(data) {
+  const ano = data.getFullYear();
+  return `${ano}-${String(data.getMonth()+1).padStart(2,'0')}-${String(data.getDate()).padStart(2,'0')}`;
+}
+
+function definirPeriodoRelatorio(periodo, botao) {
+  const fim = new Date(); fim.setHours(12,0,0,0);
+  const inicio = new Date(fim);
+  if (periodo === '7') inicio.setDate(fim.getDate() - 6);
+  else if (periodo === '30') inicio.setDate(fim.getDate() - 29);
+  else if (periodo === 'mes') inicio.setDate(1);
+  document.getElementById('rel-inicio').value = dataInputLocal(inicio);
+  document.getElementById('rel-fim').value = dataInputLocal(fim);
+  document.querySelectorAll('.finance-preset').forEach(item => item.classList.toggle('active', item === botao));
+  gerarRelatorio();
+}
+
+function statusFinanceiro(pedido) {
+  const status = String(pedido?.status || pedido?.status_operacional || 'Novo');
+  if (normalizarBuscaAdmin(status) === 'agendado') return 'Novo';
+  if (normalizarBuscaAdmin(status) === 'pronto para retirada') return 'Pronto';
+  return status;
+}
+
+function valoresFinanceirosPedido(pedido) {
+  const descontoDetalhado = (Number(pedido.desconto_geral_centavos)||0) + (Number(pedido.desconto_cupom_centavos)||0);
+  const desconto = Math.max(0, Number.isFinite(Number(pedido.desconto_centavos)) ? Number(pedido.desconto_centavos) : descontoDetalhado);
+  const taxa = Math.max(0, Number(pedido.taxa_centavos)||0);
+  const total = Math.max(0, Number(pedido.total_centavos)||0);
+  const liquidoProdutos = Math.max(0, Number.isFinite(Number(pedido.subtotal_centavos)) ? Number(pedido.subtotal_centavos) : total - taxa);
+  const bruto = Math.max(0, Number.isFinite(Number(pedido.subtotal_bruto_centavos)) ? Number(pedido.subtotal_bruto_centavos) : liquidoProdutos + desconto);
+  return { bruto, desconto, liquidoProdutos, taxa, total:total || liquidoProdutos + taxa };
+}
+
+function preencherPagamentosRelatorio() {
+  const select = document.getElementById('rel-pagamento');
+  const atual = select.value;
+  const formas = [...new Set(relatorioPedidos.map(p => String(p.forma_pagamento || 'Não informado').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+  select.innerHTML = '<option value="">Todos</option>' + formas.map(forma => `<option value="${esc(forma)}">${esc(forma)}</option>`).join('');
+  if (formas.includes(atual)) select.value = atual;
+}
+
+function htmlQuebraFinanceira(dados, total, sufixo = '') {
+  const entradas = Object.entries(dados).sort((a,b) => b[1] - a[1]);
+  if (!entradas.length) return '<div class="empty-state">Sem dados concluídos para o período.</div>';
+  const maior = Math.max(...entradas.map(([,valor]) => valor), 1);
+  return entradas.map(([nome, valor]) => `<div class="finance-breakdown-row"><strong>${esc(nome)}</strong><div class="finance-breakdown-track"><div class="finance-breakdown-fill" style="width:${Math.max(3,valor/maior*100).toFixed(1)}%"></div></div><span>${sufixo ? `${valor} ${sufixo}` : brl(valor)}${!sufixo && total ? ` · ${Math.round(valor/total*100)}%` : ''}</span></div>`).join('');
+}
+
+function renderizarRelatorioFinanceiro() {
+  if (!relatorioPedidos.length && !relatorioResumoAtual) return;
+  const pagamento = document.getElementById('rel-pagamento').value;
+  const entrega = document.getElementById('rel-entrega').value;
+  const filtroStatus = document.getElementById('rel-status').value;
+  const base = relatorioPedidos.filter(p => (!pagamento || String(p.forma_pagamento || 'Não informado') === pagamento) && (!entrega || String(p.tipo_entrega || '') === entrega));
+  relatorioFiltrados = base.filter(p => !filtroStatus || statusFinanceiro(p) === filtroStatus);
+  const concluidos = base.filter(p => normalizarBuscaAdmin(statusFinanceiro(p)) === 'concluido');
+  const cancelados = base.filter(p => normalizarBuscaAdmin(statusFinanceiro(p)) === 'cancelado');
+  const resumo = concluidos.reduce((acc,p) => { const v=valoresFinanceirosPedido(p); acc.bruto+=v.bruto; acc.descontos+=v.desconto; acc.taxas+=v.taxa; acc.recebido+=v.total; return acc; }, { bruto:0, descontos:0, taxas:0, recebido:0 });
+  resumo.concluidos = concluidos.length;
+  resumo.cancelados = cancelados.length;
+  resumo.canceladoValor = cancelados.reduce((s,p) => s + valoresFinanceirosPedido(p).total, 0);
+  resumo.ticket = concluidos.length ? resumo.recebido / concluidos.length : 0;
+  resumo.conversao = concluidos.length + cancelados.length ? concluidos.length / (concluidos.length + cancelados.length) * 100 : 0;
+
+  document.getElementById('kpi-recebido').textContent = brl(resumo.recebido);
+  document.getElementById('kpi-bruto').textContent = brl(resumo.bruto);
+  document.getElementById('kpi-descontos').textContent = brl(resumo.descontos);
+  document.getElementById('kpi-taxas').textContent = brl(resumo.taxas);
+  document.getElementById('kpi-qtd').textContent = resumo.concluidos;
+  document.getElementById('kpi-ticket').textContent = brl(resumo.ticket);
+  document.getElementById('kpi-falhas').textContent = resumo.cancelados;
+  document.getElementById('kpi-cancelado-valor').textContent = brl(resumo.canceladoValor);
+  document.getElementById('kpi-conversao').textContent = `${resumo.conversao.toFixed(1).replace('.',',')}% dos pedidos encerrados`;
+
+  const dias = {}, pagamentos = {}, modalidades = {}, produtos = {};
+  concluidos.forEach(p => {
+    const data = dataPedidoJS(p); const chave = data ? dataInputLocal(data) : 'Sem data'; const v = valoresFinanceirosPedido(p);
+    dias[chave] = dias[chave] || { recebido:0, bruto:0 }; dias[chave].recebido += v.total; dias[chave].bruto += v.bruto;
+    const forma = String(p.forma_pagamento || 'Não informado'); pagamentos[forma] = (pagamentos[forma]||0) + v.total;
+    const modalidade = String(p.tipo_entrega || 'Não informado'); modalidades[modalidade] = (modalidades[modalidade]||0) + 1;
+    (p.itens || []).forEach(item => { const nome=String(item.nome||'Item'); produtos[nome]=(produtos[nome]||0)+(Number(item.qtd)||1); });
+  });
+  const topItens = Object.entries(produtos).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  resumo.pagamentos = pagamentos; resumo.modalidades = modalidades; resumo.topItens = topItens;
+  relatorioResumoAtual = resumo;
+  document.getElementById('finance-pagamentos-lista').innerHTML = htmlQuebraFinanceira(pagamentos, resumo.recebido);
+  document.getElementById('finance-modalidades-lista').innerHTML = htmlQuebraFinanceira(modalidades, 0, 'pedidos');
+  document.getElementById('lista-top-produtos').innerHTML = topItens.length ? htmlQuebraFinanceira(Object.fromEntries(topItens), 0, 'un.') : '<div class="empty-state">Nenhum produto concluído.</div>';
+
+  const labels = Object.keys(dias).sort();
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('chart-fat').getContext('2d');
+  chartInstance = new Chart(ctx, { type:'bar', data:{ labels:labels.map(valor => valor === 'Sem data' ? valor : valor.split('-').reverse().join('/')), datasets:[
+    { label:'Total recebido', data:labels.map(d => dias[d].recebido/100), backgroundColor:'rgba(125,52,29,.78)', borderRadius:6 },
+    { label:'Vendas brutas', data:labels.map(d => dias[d].bruto/100), backgroundColor:'rgba(223,174,76,.52)', borderRadius:6 }
+  ]}, options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${Number(ctx.raw||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}`}}}, scales:{y:{beginAtZero:true}} } });
+
+  if (chartPagamentoInstance) chartPagamentoInstance.destroy();
+  const entradasPagamento = Object.entries(pagamentos).sort((a,b)=>b[1]-a[1]);
+  chartPagamentoInstance = new Chart(document.getElementById('chart-pagamentos').getContext('2d'), { type:'doughnut', data:{ labels:entradasPagamento.map(([nome])=>nome), datasets:[{ data:entradasPagamento.map(([,valor])=>valor/100), backgroundColor:['#7D341D','#DFAE4C','#3D7654','#A85E3D','#5D4A78','#D48A36'] }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{display:false}} } });
+
+  const corpo = document.getElementById('finance-pedidos-lista');
+  const ordenados = [...relatorioFiltrados].sort((a,b)=>(dataPedidoJS(b)?.getTime()||0)-(dataPedidoJS(a)?.getTime()||0));
+  document.getElementById('finance-table-resumo').textContent = `${ordenados.length} movimentaç${ordenados.length === 1 ? 'ão' : 'ões'} exibida${ordenados.length === 1 ? '' : 's'}`;
+  corpo.innerHTML = ordenados.length ? ordenados.map(p => { const data=dataPedidoJS(p), v=valoresFinanceirosPedido(p); return `<tr><td><strong>${data ? data.toLocaleDateString('pt-BR') : '—'}</strong><br><small>#${esc(p.id.slice(-5).toUpperCase())}</small></td><td><strong>${esc(p.cliente_nome||'Cliente')}</strong><br><small>${esc(p.cliente_telefone||'')}</small></td><td>${esc(p.forma_pagamento||'Não informado')}</td><td>${esc(p.tipo_entrega||'—')}</td><td>${brl(v.bruto)}</td><td>${v.desconto ? `- ${brl(v.desconto)}` : '—'}</td><td>${v.taxa ? brl(v.taxa) : '—'}</td><td><strong>${brl(v.total)}</strong></td><td><span class="status-chip ${classeStatusAdmin(statusFinanceiro(p))}">${esc(statusFinanceiro(p))}</span></td></tr>`; }).join('') : '<tr><td colspan="9"><div class="empty-state">Nenhuma movimentação encontrada com estes filtros.</div></td></tr>';
+  document.getElementById('rel-exportar').disabled = !relatorioFiltrados.length;
+}
+
 async function gerarRelatorio() {
   const dI = document.getElementById('rel-inicio').value, dF = document.getElementById('rel-fim').value;
-  if(!dI || !dF) return alert("Selecione a data de início e fim.");
-  const dtInicio = new Date(dI + 'T00:00:00'), dtFim = new Date(dF + 'T23:59:59');
+  if (!dI || !dF) return alert('Selecione a data de início e fim.');
+  if (dI > dF) return alert('A data inicial não pode ser posterior à data final.');
+  const dtInicio = new Date(`${dI}T00:00:00`), dtFim = new Date(`${dF}T23:59:59.999`);
+  const painel = document.getElementById('view-relatorios'); const botao = document.getElementById('rel-atualizar');
+  painel.classList.add('finance-loading'); botao.textContent = 'Carregando...';
   try {
-    const snapshot = await db.collection('pedidos').where('data_pedido', '>=', dtInicio).where('data_pedido', '<=', dtFim).get();
-    let fat = 0, qConc = 0, qFalha = 0, fatDia = {}, itensCount = {};
-    snapshot.forEach(doc => {
-      const p = doc.data();
-      if (p.status === 'Cancelado') qFalha++;
-      else if (p.status === 'Concluído') {
-        qConc++; fat += (p.total_centavos || 0);
-        const dataStr = p.data_pedido.toDate().toLocaleDateString('pt-BR');
-        if (!fatDia[dataStr]) fatDia[dataStr] = 0; fatDia[dataStr] += (p.total_centavos || 0);
-        if(p.itens) { p.itens.forEach(item => { if(!itensCount[item.nome]) itensCount[item.nome] = 0; itensCount[item.nome] += item.qtd; }); }
-      }
-    });
-    document.getElementById('kpi-fat').textContent = brl(fat); document.getElementById('kpi-qtd').textContent = qConc;
-    document.getElementById('kpi-ticket').textContent = qConc > 0 ? brl(fat / qConc) : 'R$ 0,00'; document.getElementById('kpi-falhas').textContent = qFalha;
-    
-    const topItens = Object.entries(itensCount).sort((a,b) => b[1] - a[1]).slice(0, 10);
-    document.getElementById('lista-top-produtos').innerHTML = topItens.length === 0 ? `<div class="empty-state">Nenhum produto concluído.</div>` : topItens.map(([n, q], idx) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom: 1px solid var(--border-light);"><span style="font-size:11px; font-weight:700;"><span style="color:var(--gold-dark); margin-right:8px;">${idx+1}º</span>${n}</span><span style="font-size:10px; font-weight:800; background:#E2E8F0; padding:2px 8px; border-radius:12px;">${q} un</span></div>`).join('');
-    
-    const labels = Object.keys(fatDia).sort((a,b) => { const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/'); return new Date(`${ya}-${ma}-${da}`) - new Date(`${yb}-${mb}-${db}`); });
-    const dataVals = labels.map(l => fatDia[l] / 100);
-    if (chartInstance) chartInstance.destroy();
-    const ctx = document.getElementById('chart-fat').getContext('2d');
-    let grad = ctx.createLinearGradient(0, 0, 0, 400); grad.addColorStop(0, 'rgba(218, 165, 32, 0.8)'); grad.addColorStop(1, 'rgba(218, 165, 32, 0)');
-    chartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Faturamento Bruto (R$)', data: dataVals, backgroundColor: grad, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-  } catch(e) {}
+    const snapshot = await db.collection('pedidos').where('data_pedido','>=',dtInicio).where('data_pedido','<=',dtFim).get();
+    relatorioPedidos = snapshot.docs.map(doc => ({ id:doc.id, ...doc.data() }));
+    preencherPagamentosRelatorio();
+    relatorioResumoAtual = {};
+    renderizarRelatorioFinanceiro();
+  } catch (erro) {
+    console.error('[FINANCEIRO]', erro);
+    alert('Não foi possível carregar o relatório financeiro.');
+  } finally { painel.classList.remove('finance-loading'); botao.textContent = 'Atualizar'; }
+}
+
+function exportarRelatorioXLSX() {
+  if (!window.XLSX) return alert('O exportador ainda não foi carregado. Verifique sua conexão e tente novamente.');
+  if (!relatorioFiltrados.length || !relatorioResumoAtual) return alert('Carregue um relatório antes de exportar.');
+  const r = relatorioResumoAtual;
+  const resumo = [
+    ['RELATÓRIO FINANCEIRO — DOCE CAPRICHO ATELIÊ'],
+    ['Período', `${document.getElementById('rel-inicio').value} a ${document.getElementById('rel-fim').value}`],
+    ['Filtros', `Status: ${document.getElementById('rel-status').value||'Todos'} | Pagamento: ${document.getElementById('rel-pagamento').value||'Todos'} | Modalidade: ${document.getElementById('rel-entrega').value||'Todas'}`],
+    [], ['Indicador','Valor'], ['Receita líquida recebida',r.recebido/100], ['Vendas brutas',r.bruto/100], ['Descontos concedidos',r.descontos/100], ['Taxas de entrega',r.taxas/100], ['Pedidos concluídos',r.concluidos], ['Ticket médio',r.ticket/100], ['Pedidos cancelados',r.cancelados], ['Vendas canceladas',r.canceladoValor/100]
+  ];
+  const pedidos = relatorioFiltrados.map(p => { const v=valoresFinanceirosPedido(p), data=dataPedidoJS(p); return {
+    'Data':data?data.toLocaleString('pt-BR'):'', 'Pedido':p.id, 'Cliente':p.cliente_nome||'', 'Telefone':p.cliente_telefone||'', 'Pagamento':p.forma_pagamento||'', 'Modalidade':p.tipo_entrega||'',
+    'Bruto (R$)':v.bruto/100, 'Descontos (R$)':v.desconto/100, 'Taxa (R$)':v.taxa/100, 'Total (R$)':v.total/100, 'Status':statusFinanceiro(p), 'Itens':(p.itens||[]).map(i=>`${Number(i.qtd)||1}x ${i.nome||'Item'}`).join('; ')
+  }; });
+  const produtos = (r.topItens||[]).map(([nome,qtd],indice)=>({ 'Posição':indice+1, 'Produto':nome, 'Quantidade':qtd }));
+  const pagamentos = Object.entries(r.pagamentos||{}).sort((a,b)=>b[1]-a[1]).map(([forma,valor])=>({ 'Forma de pagamento':forma, 'Total (R$)':valor/100, 'Participação':r.recebido ? valor/r.recebido : 0 }));
+  const wb = XLSX.utils.book_new();
+  const wsResumo = XLSX.utils.aoa_to_sheet(resumo), wsPedidos = XLSX.utils.json_to_sheet(pedidos), wsProdutos = XLSX.utils.json_to_sheet(produtos), wsPagamentos = XLSX.utils.json_to_sheet(pagamentos);
+  wsResumo['!cols']=[{wch:30},{wch:55}]; wsPedidos['!cols']=[{wch:20},{wch:24},{wch:24},{wch:16},{wch:20},{wch:14},{wch:14},{wch:16},{wch:12},{wch:14},{wch:18},{wch:60}]; wsProdutos['!cols']=[{wch:10},{wch:42},{wch:14}]; wsPagamentos['!cols']=[{wch:28},{wch:18},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,wsResumo,'Resumo'); XLSX.utils.book_append_sheet(wb,wsPedidos,'Pedidos'); XLSX.utils.book_append_sheet(wb,wsProdutos,'Produtos'); XLSX.utils.book_append_sheet(wb,wsPagamentos,'Pagamentos');
+  XLSX.writeFile(wb,`relatorio-financeiro-${document.getElementById('rel-inicio').value}-a-${document.getElementById('rel-fim').value}.xlsx`,{compression:true});
 }
 
 let qrCodeObj = null;
