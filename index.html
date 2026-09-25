@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <!-- Altere este identificador sempre que publicar uma nova versão do index. -->
-<meta name="dca-app-version" content="2026.09.24-categoria-disponivel">
+<meta name="dca-app-version" content="2026.09.25-novas-pizzas">
 <title>Doce Capricho Atelier — Pizzas Artesanais</title>
 <meta name="description" content="O sabor que você já conhece, agora em pizzas irresistíveis. Alta gastronomia, artesanal e exclusiva.">
 <meta name="theme-color" content="#1D0F0A">
@@ -2026,13 +2026,16 @@ const CARDAPIO = {
     { id:'frango', img:'img/frango.jpg', nome:'Frango', desc:'Molho, mussarela e frango', preco:4500 },
     { id:'calabresa', img:'img/calabresa.jpg', nome:'Calabresa', desc:'Molho, mussarela, calabresa e cebola', preco:4500 },
     { id:'carnesol', img:'img/carnedesol.jpg', nome:'Carne de Sol', desc:'Molho, mussarela, carne de sol e cebola roxa', preco:4500 },
-    { id:'frangocat', img:'img/frangocatupiry.jpg', nome:'Frango com Catupiry', desc:'Molho, mussarela, frango e catupiry', preco:5500 }
+    { id:'frangocat', img:'img/frangocatupiry.jpg', nome:'Frango com Catupiry', desc:'Molho, mussarela, frango e catupiry', preco:5500 },
+    { id:'bolonhesa', img:'', nome:'Bolonhesa', desc:'Molho, mussarela, carne à bolonhesa, pimentão e orégano', preco:5500, novo:true }
   ],
   premium: [
     { id:'nordestina', img:'img/nordestina.jpg', nome:'Nordestina', desc:'Molho, mussarela, cream cheese, carne de sol e queijo coalho', preco:6000 },
     { id:'lombo', img:'img/lombo.jpg', nome:'Lombo Canadense', desc:'Molho, mussarela, lombo canadense e catupiry', preco:7000 },
     { id:'arretada', img:'img/arretada.jpg', nome:'Arretada', desc:'Molho, mussarela, calabresa, queijo coalho e bacon', preco:7000 },
-    { id:'peru', img:'img/peitodeperu.jpg', nome:'Peito de Peru', desc:'Molho, mussarela, cream cheese, peito de peru, bacon, alho poró e parmesão', preco:7400 }
+    { id:'peru', img:'img/peitodeperu.jpg', nome:'Peito de Peru', desc:'Molho, mussarela, cream cheese, peito de peru, bacon, alho poró e parmesão', preco:7400 },
+    { id:'camarao', img:'', nome:'Camarão', desc:'Molho, mussarela e camarão', preco:7800, novo:true },
+    { id:'camarao_philadelfia', img:'', nome:'Camarão Philadelfia', desc:'Molho, mussarela, camarão e cream cheese', preco:8600, novo:true }
   ],
   esfihas_tradicionais: [
     { id:'esf_mussarela', img:'img/esf_mus.jpg', nome:'Esfiha Mussarela', desc:'Esfiha aberta com queijo mussarela derretido.', preco:500 },
@@ -2105,7 +2108,9 @@ const INGREDIENTES = [
   { id:'catupiry', nome:'Catupiry' }, { id:'cream_cheese', nome:'Cream cheese' }, { id:'queijo_coalho', nome:'Queijo coalho' },
   { id:'parmesao', nome:'Parmesão' }, { id:'tomate', nome:'Tomate' }, { id:'cebola', nome:'Cebola' },
   { id:'cebola_roxa', nome:'Cebola roxa' }, { id:'alho_poro', nome:'Alho-poró' }, { id:'chocolate_leite', nome:'Chocolate ao leite' },
-  { id:'confeitos', nome:'M&M’s / confeitos' }, { id:'morango', nome:'Morango' }
+  { id:'confeitos', nome:'M&M’s / confeitos' }, { id:'morango', nome:'Morango' },
+  { id:'carne_bolonhesa', nome:'Carne à bolonhesa' }, { id:'pimentao', nome:'Pimentão' }, { id:'oregano', nome:'Orégano' },
+  { id:'camarao', nome:'Camarão' }
 ];
 
 const DEPENDENCIAS_INGREDIENTES = {
@@ -2116,6 +2121,9 @@ const DEPENDENCIAS_INGREDIENTES = {
   lombo:['massa_pizza','molho_pizza','mussarela','lombo_canadense','catupiry'],
   arretada:['massa_pizza','molho_pizza','mussarela','calabresa','queijo_coalho','bacon'],
   peru:['massa_pizza','molho_pizza','mussarela','cream_cheese','peito_peru','bacon','alho_poro','parmesao'],
+  bolonhesa:['massa_pizza','molho_pizza','mussarela','carne_bolonhesa','pimentao','oregano'],
+  camarao:['massa_pizza','molho_pizza','mussarela','camarao'],
+  camarao_philadelfia:['massa_pizza','molho_pizza','mussarela','camarao','cream_cheese'],
   esf_mussarela:['massa_esfiha','mussarela'], esf_mista:['massa_esfiha','presunto','mussarela'],
   esf_frango_mus:['massa_esfiha','frango','mussarela'], esf_calabresa_mus:['massa_esfiha','calabresa','mussarela'],
   esf_carnesol_mus:['massa_esfiha','carne_sol','mussarela'], esf_carnemoida:['massa_esfiha','carne_moida'],
@@ -2458,7 +2466,7 @@ function renderDestaques() {
     return `
     <article class="destaque-card">
       <div class="card-img-wrap skeleton-bg">
-        <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
+        ${imagemCardProdutoHTML(s)}
       </div>
       <div class="card-content">
         <h4 class="card-title">${esc(s.nome)}</h4>
@@ -2968,6 +2976,11 @@ function placeholderProdutoHTML(rotulo) {
   </div>`;
 }
 
+function imagemCardProdutoHTML(sabor) {
+  if (!sabor || !sabor.img) return placeholderProdutoHTML(`Foto de ${sabor?.nome || 'produto'} em preparação`);
+  return `<img src="${esc(sabor.img)}" alt="${esc(sabor.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">`;
+}
+
 function ehPizzaMeioAMeio(item) {
   if (!item || !Array.isArray(item.sabores) || item.sabores.length !== 2) return false;
   return item.sabores.every(id => !id.startsWith('esf_') && !id.startsWith('combo_') && !!acharSabor(id));
@@ -3119,6 +3132,7 @@ const cardHTML = s => {
   const classeCard = isEsgotado ? 'card esgotado' : 'card';
   let badges = [];
   if (s.id === 'peru' || s.id === 'nordestina' || s.id === 'esf_peru') { badges.push(`<span class="badge-destaque">👨‍🍳 Assinatura</span>`); }
+  if (s.novo === true) { badges.push(`<span class="badge-destaque">✨ Novo</span>`); }
   if (s.id === saborMaisPedido && !isEsgotado) { badges.push(`<span class="badge-destaque badge-top">✨ Mais Pedida</span>`); }
   let badgeHTML = badges.length ? `<div class="badges-container">${badges.join('')}</div>` : '';
   const controleCompra = s.id.startsWith('esf_')
@@ -3129,7 +3143,7 @@ const cardHTML = s => {
   <article class="${classeCard}" data-sabor="${s.id}">
     <div class="card-img-wrap skeleton-bg">
       ${badgeHTML}
-      <img src="${s.img}" alt="${esc(s.nome)}" class="card-img" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.style.display='none'; this.parentElement.classList.remove('skeleton-bg'); this.parentElement.classList.add('error-img');">
+      ${imagemCardProdutoHTML(s)}
     </div>
     <div class="card-content">
       <h4 class="card-title">${esc(s.nome)}</h4>

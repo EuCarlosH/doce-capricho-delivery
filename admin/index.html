@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="dca-admin-version" content="2026.09.24-correcao-notificacoes">
+<meta name="dca-admin-version" content="2026.09.25-novas-pizzas">
 <meta name="theme-color" content="#17100C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1445,6 +1445,7 @@ const CARDAPIO = [
   { id:'mussarela', nome:'Mussarela', tipo: 'pizza' }, { id:'mista', nome:'Mista', tipo: 'pizza' }, { id:'frango', nome:'Frango', tipo: 'pizza' },
   { id:'calabresa', nome:'Calabresa', tipo: 'pizza' }, { id:'carnesol', nome:'Carne de Sol', tipo: 'pizza' }, { id:'frangocat', nome:'Frango c/ Catupiry', tipo: 'pizza' },
   { id:'nordestina', nome:'Nordestina', tipo: 'pizza' }, { id:'lombo', nome:'Lombo Canadense', tipo: 'pizza' }, { id:'arretada', nome:'Arretada', tipo: 'pizza' }, { id:'peru', nome:'Peito de Peru', tipo: 'pizza' },
+  { id:'bolonhesa', nome:'Bolonhesa', tipo:'pizza' }, { id:'camarao', nome:'Camarão', tipo:'pizza' }, { id:'camarao_philadelfia', nome:'Camarão Philadelfia', tipo:'pizza' },
   { id:'esf_mussarela', nome:'Esf. Mussarela', tipo: 'esfiha' }, { id:'esf_mista', nome:'Esf. Mista', tipo: 'esfiha' }, { id:'esf_frango_mus', nome:'Esf. Frango c/ Mus.', tipo: 'esfiha' },
   { id:'esf_calabresa_mus', nome:'Esf. Calabresa c/ Mus.', tipo: 'esfiha' }, { id:'esf_carnesol_mus', nome:'Esf. C. de Sol c/ Mus.', tipo: 'esfiha' }, { id:'esf_carnemoida', nome:'Esf. Carne Moída', tipo: 'esfiha' },
   { id:'esf_frango_coalho', nome:'Esf. Frango c/ Coalho', tipo: 'esfiha' }, { id:'esf_frango_catupiry', nome:'Esf. Frango c/ Catupiry', tipo: 'esfiha' }, { id:'esf_frango_cream', nome:'Esf. Frango c/ Cream', tipo: 'esfiha' },
@@ -1469,7 +1470,9 @@ const INGREDIENTES = [
   { id:'peito_peru', nome:'Peito de peru', grupo:'Carnes' }, { id:'bacon', nome:'Bacon', grupo:'Carnes' },
   { id:'tomate', nome:'Tomate', grupo:'Vegetais' }, { id:'cebola', nome:'Cebola', grupo:'Vegetais' }, { id:'cebola_roxa', nome:'Cebola roxa', grupo:'Vegetais' },
   { id:'alho_poro', nome:'Alho-poró', grupo:'Vegetais' }, { id:'morango', nome:'Morango', grupo:'Vegetais' },
-  { id:'chocolate_leite', nome:'Chocolate ao leite', grupo:'Doces' }, { id:'confeitos', nome:'M&M’s / confeitos', grupo:'Doces' }
+  { id:'chocolate_leite', nome:'Chocolate ao leite', grupo:'Doces' }, { id:'confeitos', nome:'M&M’s / confeitos', grupo:'Doces' },
+  { id:'carne_bolonhesa', nome:'Carne à bolonhesa', grupo:'Carnes' }, { id:'camarao', nome:'Camarão', grupo:'Frutos do mar' },
+  { id:'pimentao', nome:'Pimentão', grupo:'Vegetais' }, { id:'oregano', nome:'Orégano', grupo:'Temperos' }
 ];
 const DEPENDENCIAS_INGREDIENTES = {
   mussarela:['massa_pizza','molho_pizza','mussarela','tomate'], mista:['massa_pizza','molho_pizza','presunto','mussarela'],
@@ -1479,6 +1482,9 @@ const DEPENDENCIAS_INGREDIENTES = {
   lombo:['massa_pizza','molho_pizza','mussarela','lombo_canadense','catupiry'],
   arretada:['massa_pizza','molho_pizza','mussarela','calabresa','queijo_coalho','bacon'],
   peru:['massa_pizza','molho_pizza','mussarela','cream_cheese','peito_peru','bacon','alho_poro','parmesao'],
+  bolonhesa:['massa_pizza','molho_pizza','mussarela','carne_bolonhesa','pimentao','oregano'],
+  camarao:['massa_pizza','molho_pizza','mussarela','camarao'],
+  camarao_philadelfia:['massa_pizza','molho_pizza','mussarela','camarao','cream_cheese'],
   esf_mussarela:['massa_esfiha','mussarela'], esf_mista:['massa_esfiha','presunto','mussarela'],
   esf_frango_mus:['massa_esfiha','frango','mussarela'], esf_calabresa_mus:['massa_esfiha','calabresa','mussarela'],
   esf_carnesol_mus:['massa_esfiha','carne_sol','mussarela'], esf_carnemoida:['massa_esfiha','carne_moida'],
