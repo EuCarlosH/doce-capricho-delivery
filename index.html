@@ -137,6 +137,7 @@
 <style>
 /* PALETA E VARIÁVEIS PREMIUM */
 :root {
+  --font-title: 'Fraunces', Georgia, serif; --font-body: 'Work Sans', Arial, sans-serif;
   --gold: #C08A2E; --gold-dark: #9C6F24; --terracotta: #B9502F; --olive: #6B7255;
   --bg-main: #FBF6EC; --bg-card: #FFFFFF; 
   --text-main: #2B2118; --text-muted: #8C7A6B; --white: #FFFFFF; 
@@ -167,8 +168,8 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
-body { background: var(--bg-main); color: var(--text-main); font-family: 'Work Sans', sans-serif; overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
-h1, h2, h3, h4, .brand-font { font-family: 'Fraunces', serif; font-weight: 600; } section, header { scroll-margin-top: 100px; }
+body { background: var(--bg-main); color: var(--text-main); font-family: var(--font-body); overflow-x: hidden; transition: background-color 0.4s ease, color 0.4s ease; -webkit-tap-highlight-color: transparent; }
+h1, h2, h3, h4, .brand-font { font-family: var(--font-title); font-weight: 600; } section, header { scroll-margin-top: 100px; }
 
 .ripple { position: relative; overflow: hidden; }
 .ripple::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .5s, opacity 1s; }
@@ -185,7 +186,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 :root[data-theme="dark"] .nav-logo-fallback { color: var(--gold); }
 .nav-links { display: flex; list-style: none; gap: 22px; align-items: center; margin-left:auto; } .nav-links a, .nav-links button { color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.2px; background: none; border: none; cursor: pointer; } .nav-links a:hover, .nav-links button:hover { color: var(--gold); }
 .nav-actions { display:flex; gap:12px; align-items:center; margin-left:auto; }
-.desktop-brand-name { color:var(--text-main); font-family:'Fraunces',serif; font-size:15px; font-weight:600; letter-spacing:.4px; text-decoration:none; white-space:nowrap; }
+.desktop-brand-name { color:var(--text-main); font-family:var(--font-title); font-size:15px; font-weight:600; letter-spacing:.4px; text-decoration:none; white-space:nowrap; }
 :root[data-theme="dark"] .desktop-brand-name { color:var(--gold); }
 .mobile-menu-toggle { display:none; width:40px; height:40px; padding:0; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); color:var(--text-main); align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow-sm); }
 .mobile-menu-toggle svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; transition:transform .3s var(--smooth); }
@@ -278,7 +279,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 
 /* CHAMADA PARA AVALIAÇÃO NO GOOGLE */
 .review-cta { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; background:var(--bg-card); border:1px dashed var(--border-light); border-radius:16px; padding:20px 24px; margin-bottom:22px; }
-.review-cta strong { display: block; font-family: 'Fraunces', serif; font-size: 16px; color: var(--text-main); margin-bottom: 4px; }
+.review-cta strong { display: block; font-family:var(--font-title); font-size: 16px; color: var(--text-main); margin-bottom: 4px; }
 .review-cta p { color: var(--text-muted); font-size: 13px; margin: 0; }
 .review-cta a.btn-gradient { padding: 12px 22px; border-radius: 10px; font-size: 12px; text-decoration: none; white-space: nowrap; }
 .faq-section { display:none; padding-top:20px; padding-bottom:70px; }
@@ -289,10 +290,10 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 .faq-heading p { color:var(--text-muted); font-size:12px; line-height:1.6; }
 .faq-list { display:grid; gap:10px; max-width:820px; margin:0 auto; }
 .faq-item { overflow:hidden; border:1px solid var(--border-light); border-radius:15px; background:var(--bg-card); box-shadow:var(--shadow-sm); }
-.faq-item summary { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; color:var(--text-main); font-family:'Fraunces',serif; font-size:15px; font-weight:600; line-height:1.4; cursor:pointer; list-style:none; }
+.faq-item summary { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; color:var(--text-main); font-family:var(--font-title); font-size:15px; font-weight:600; line-height:1.4; cursor:pointer; list-style:none; }
 .faq-item summary::-webkit-details-marker { display:none; }
 .faq-item summary:focus-visible { outline:2px solid var(--gold); outline-offset:-3px; }
-.faq-icon { flex:none; width:28px; height:28px; display:grid; place-items:center; border-radius:50%; color:var(--gold-dark); background:rgba(221,167,58,.12); font-family:'Work Sans',sans-serif; font-size:19px; font-weight:400; transition:transform .25s ease,background .25s ease; }
+.faq-icon { flex:none; width:28px; height:28px; display:grid; place-items:center; border-radius:50%; color:var(--gold-dark); background:rgba(221,167,58,.12); font-family:var(--font-body); font-size:19px; font-weight:400; transition:transform .25s ease,background .25s ease; }
 .faq-item[open] .faq-icon { transform:rotate(45deg); background:rgba(221,167,58,.22); }
 .faq-answer { padding:0 20px 19px; color:var(--text-muted); font-size:12px; line-height:1.75; white-space:pre-line; }
 :root[data-theme="dark"] .faq-item { border-color:rgba(255,255,255,.08); }
@@ -336,7 +337,7 @@ nav.top-nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px
 #banner-pausado p { color: var(--text-main); font-size: 14px; line-height: 1.6; }
 
 .category-title { display: flex; align-items: center; justify-content: flex-start; text-align: left; font-size: 21px; color: var(--text-main); margin: 60px 0 30px; letter-spacing: 0.3px; font-weight: 600; scroll-margin-top: 160px; } :root[data-theme="dark"] .category-title { color: var(--gold); }
-.category-title::before { content: var(--cat-ornament); color: var(--cat-ornament-color); font-size: var(--cat-ornament-size); margin-right: 16px; opacity: var(--cat-ornament-op); line-height: 0; font-family: 'Work Sans', sans-serif; }
+.category-title::before { content: var(--cat-ornament); color: var(--cat-ornament-color); font-size: var(--cat-ornament-size); margin-right: 16px; opacity: var(--cat-ornament-op); line-height: 0; font-family:var(--font-body); }
 
 .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 35px; }
 .card { background: var(--bg-card); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-light); display: flex; flex-direction: column; transition: transform 0.4s var(--smooth), box-shadow 0.4s ease, border-color 0.4s ease; box-shadow: var(--shadow-sm); } 
@@ -373,7 +374,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 :root[data-theme="dark"] #aviso-simulacao-checkout strong { color: var(--warning); }
 
 .card-content { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; position: relative;}
-.card-title { font-size: 16px; color: var(--text-main); font-weight: 500; letter-spacing: 0.1px; margin-bottom: 10px; font-family: 'Fraunces', serif; } :root[data-theme="dark"] .card-title { font-weight: 500; color: var(--white); }
+.card-title { font-size: 16px; color: var(--text-main); font-weight: 500; letter-spacing: 0.1px; margin-bottom: 10px; font-family:var(--font-title); } :root[data-theme="dark"] .card-title { font-weight: 500; color: var(--white); }
 .card-desc { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; } :root[data-theme="dark"] .card-desc { font-weight: 400; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .card-price-text { font-weight: 800; color: var(--text-main); font-size: 16px; } :root[data-theme="dark"] .card-price-text { color: var(--gold); font-weight: 700; }
@@ -606,7 +607,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .cart-recommendations { display:none; margin:16px 0 18px; padding:15px; border:1px solid rgba(221,167,58,.28); border-radius:15px; background:linear-gradient(145deg,rgba(221,167,58,.08),rgba(255,255,255,.35)); animation:fadeIn .35s ease; }
 .cart-recommendations.show { display:block; }
 .cart-recommendations-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:11px; }
-.cart-recommendations-head strong { color:var(--text-main); font-family:'Fraunces',serif; font-size:14px; }
+.cart-recommendations-head strong { color:var(--text-main); font-family:var(--font-title); font-size:14px; }
 .cart-recommendations-head span { color:var(--gold-dark); font-size:8px; font-weight:850; letter-spacing:1px; text-transform:uppercase; }
 .cart-recommendations-list { display:flex; gap:9px; overflow-x:auto; padding:1px 1px 7px; scroll-snap-type:x mandatory; scrollbar-width:thin; }
 .cart-recommendation-card { flex:0 0 178px; display:grid; grid-template-columns:48px minmax(0,1fr) 30px; align-items:center; gap:8px; padding:9px; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); scroll-snap-align:start; }
@@ -688,7 +689,7 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 .builder-label { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700; } :root[data-theme="dark"] .builder-label { font-weight: 600; }
 .builder-base { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-main); margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-light); font-weight: 600; } :root[data-theme="dark"] .builder-base { font-weight: 500; }
 .builder-base strong { color: var(--text-main); font-size: 16px; font-weight: 800; transition: color 0.3s; } :root[data-theme="dark"] .builder-base strong { color: var(--gold); font-weight: 700; }
-.builder-group textarea { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); color: var(--text-main); font-family: 'Work Sans', sans-serif; font-size: 14px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.builder-group textarea { width: 100%; padding: 16px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-main); color: var(--text-main); font-family:var(--font-body); font-size: 14px; margin-bottom: 10px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .builder-group textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 3px rgba(221, 167, 58, 0.15); background: var(--bg-card);} :root[data-theme="dark"] .builder-group textarea:focus { box-shadow: 0 0 0 3px rgba(212,175,55,0.15); background: var(--bg-card); }
 .combo-builder { display:none; margin-bottom:24px; }
 .combo-category { border:1px solid var(--border-light); border-radius:14px; padding:14px; margin-bottom:14px; background:var(--bg-main); }
@@ -871,7 +872,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   .bottom-nav { display: flex; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 2000; justify-content: space-between; align-items: center; padding: 8px 15px; border-radius: 40px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 40px rgba(44, 32, 24, 0.1); transition: background-color 0.4s ease; }
   :root[data-theme="dark"] .bottom-nav { background: rgba(30, 25, 22, 0.75); border-color: rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); }
   
-  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: transparent; border: none; font-family: 'Work Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 5px; padding: 10px 15px; border-radius: 30px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: visible; position: relative;} :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
+  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; background: transparent; border: none; font-family:var(--font-body); font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; gap: 5px; padding: 10px 15px; border-radius: 30px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: visible; position: relative;} :root[data-theme="dark"] .bottom-nav-item { font-weight: 600; }
   .bottom-nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--smooth); }
   .bottom-nav-item:hover, .bottom-nav-item:active { color: var(--gold-dark); background: rgba(221, 167, 58, 0.08);} :root[data-theme="dark"] .bottom-nav-item:hover, :root[data-theme="dark"] .bottom-nav-item:active { color: var(--gold); background: rgba(212, 175, 55, 0.15);}
   .bottom-nav-item:active svg { transform: scale(0.9); }
@@ -950,7 +951,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 .install-suggestion-icon { width:44px; height:44px; border-radius:13px; flex:none; background:var(--bg-card) url('/icon-192.png') center/cover no-repeat; box-shadow:0 5px 18px rgba(0,0,0,.2); }
 .install-suggestion-copy { flex:1; min-width:0; font-size:11px; line-height:1.45; color:rgba(255,248,233,.78); }
 .install-suggestion-copy strong { display:block; color:#FFF4D4; font-size:13px; margin-bottom:2px; }
-.install-suggestion-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:11px 13px; font-family:'Work Sans',sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
+.install-suggestion-action { border:0; border-radius:10px; background:var(--gold); color:#2A160D; padding:11px 13px; font-family:var(--font-body); font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
 .install-suggestion-close { border:0; background:transparent; color:rgba(255,255,255,.68); font-size:22px; cursor:pointer; padding:2px; }
 
 /* CONVITE DE NOTIFICAÇÕES — exibido somente antes da permissão nativa */
@@ -1066,7 +1067,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menu" aria-controls="nav-links" aria-expanded="false" onclick="toggleMobileMenu()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
     </button>
-    <a href="#home" class="desktop-brand-name">Doce Capricho Ateliê</a>
+    <a href="#home" class="desktop-brand-name" data-brand-name>Doce Capricho Ateliê</a>
     <ul class="nav-links" id="nav-links">
       <li><a href="#home">Início</a></li>
       <li><button type="button" id="btn-nav-promos" class="ripple" style="color:var(--gold-dark);" onclick="abrirModal('modal-promocoes')">🔥 Ofertas</button></li>
@@ -1095,7 +1096,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
   </div>
   <div class="hero-content">
     <div class="hero-brand-line">
-      <img src="/logo.png" alt="Doce Capricho Atelier" class="hero-brand-logo">
+      <img src="/logo.png" alt="Doce Capricho Atelier" class="hero-brand-logo" data-brand-logo>
       <span class="hero-eyebrow" id="hero-eyebrow-client">Ateliê artesanal em São Miguel, RN</span>
     </div>
     <h1 class="hero-title brand-font" id="hero-title-client">O SABOR QUE<br>VOCÊ JÁ<br>CONHECE</h1>
@@ -1103,7 +1104,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <a href="#cardapio" class="btn-gradient ripple hero-cta" id="hero-cta-client">Ver Cardápio</a>
   </div>
   <aside class="hero-company-panel" aria-label="Diferenciais da Doce Capricho Ateliê">
-    <span class="hero-panel-kicker">Doce Capricho Ateliê</span>
+    <span class="hero-panel-kicker" data-brand-name>Doce Capricho Ateliê</span>
     <h2 class="brand-font">Capricho presente em cada etapa do seu pedido.</h2>
     <p class="hero-panel-intro">Produção local, preparo artesanal e uma experiência pensada para você pedir com tranquilidade.</p>
     <div class="hero-trust-grid">
@@ -1203,10 +1204,10 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
 
 <footer>
   <div class="footer-brand">
-    <img src="/logo.png" alt="Símbolo da Doce Capricho Ateliê" class="footer-logo-img">
+    <img src="/logo.png" alt="Símbolo da Doce Capricho Ateliê" class="footer-logo-img" data-brand-logo>
     <div class="footer-brand-copy">
-      <h2 class="footer-logo brand-font">Doce Capricho Ateliê</h2>
-      <p class="footer-tagline">Feito com amor em cada detalhe</p>
+      <h2 class="footer-logo brand-font" data-brand-name>Doce Capricho Ateliê</h2>
+      <p class="footer-tagline" data-brand-tagline>Feito com amor em cada detalhe</p>
     </div>
   </div>
   <div class="footer-socials">
@@ -1219,7 +1220,7 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
     <p>CNPJ 69.149.841/0001-61</p>
   </div>
   <button type="button" class="footer-company-btn ripple" id="btn-company-data">Dados da empresa</button>
-  <p class="footer-copy">© <span id="ano"></span> DOCE CAPRICHO ATELIER. TODOS OS DIREITOS RESERVADOS.</p>
+  <p class="footer-copy">© <span id="ano"></span> <span data-brand-name>DOCE CAPRICHO ATELIER</span>. TODOS OS DIREITOS RESERVADOS.</p>
 </footer>
 
 <nav class="bottom-nav">
@@ -2536,7 +2537,7 @@ document.getElementById('schedule-time-grid')?.addEventListener('click', event =
   atualizarAvisoCheckout();
 });
 
-const HERO_PADRAO = {
+let HERO_PADRAO = {
   chamada: document.getElementById('hero-eyebrow-client')?.textContent || 'Ateliê artesanal em São Miguel, RN',
   tituloHtml: document.getElementById('hero-title-client')?.innerHTML || 'O SABOR QUE VOCÊ JÁ CONHECE',
   descricaoHtml: document.getElementById('hero-subtitle-client')?.innerHTML || 'Agora em pizzas e esfihas irresistíveis.',
@@ -2544,6 +2545,63 @@ const HERO_PADRAO = {
   destino: '#cardapio'
 };
 let bannersHeroAtivos = [], bannerHeroIndice = 0, bannerHeroTimer = null, bannerHeroVigenciaTimer = null, bannersHeroRecebidos = [];
+
+const IDENTIDADE_VISUAL_PADRAO = {
+  nomeMarca:'Doce Capricho Ateliê', logo:'/logo.png', assinatura:'Feito com amor em cada detalhe',
+  chamada:'Ateliê artesanal em São Miguel, RN', titulo:'O SABOR QUE\nVOCÊ JÁ\nCONHECE',
+  descricao:'Agora em pizzas e esfihas irresistíveis.\nAlta gastronomia, artesanal e exclusiva.', botaoTexto:'Ver Cardápio',
+  fonteTitulo:'fraunces', fonteTexto:'work-sans', corPrimaria:'#C08A2E', corPrimariaEscura:'#9C6F24', corDestaque:'#B9502F'
+};
+const FONTES_TITULO_CLIENTE = { fraunces:"'Fraunces', Georgia, serif", georgia:"Georgia, 'Times New Roman', serif", 'system-serif':"ui-serif, Georgia, serif" };
+const FONTES_TEXTO_CLIENTE = { 'work-sans':"'Work Sans', Arial, sans-serif", arial:"Arial, Helvetica, sans-serif", 'system-sans':"system-ui, -apple-system, sans-serif" };
+
+function textoSeguroComQuebras(valor) {
+  return esc(String(valor || '')).replace(/\n/g, '<br>');
+}
+
+function corIdentidadeSegura(valor, padrao) {
+  const cor = String(valor || '').toUpperCase();
+  return /^#[0-9A-F]{6}$/.test(cor) ? cor : padrao;
+}
+
+function logoIdentidadeSegura(valor) {
+  const logo = String(valor || '').trim();
+  return /^https:\/\//i.test(logo) || /^\/(?!\/)/.test(logo) ? logo : IDENTIDADE_VISUAL_PADRAO.logo;
+}
+
+function aplicarIdentidadeVisual(dados) {
+  const config = { ...IDENTIDADE_VISUAL_PADRAO, ...(dados || {}) };
+  config.logo = logoIdentidadeSegura(config.logo);
+  config.corPrimaria = corIdentidadeSegura(config.corPrimaria, IDENTIDADE_VISUAL_PADRAO.corPrimaria);
+  config.corPrimariaEscura = corIdentidadeSegura(config.corPrimariaEscura, IDENTIDADE_VISUAL_PADRAO.corPrimariaEscura);
+  config.corDestaque = corIdentidadeSegura(config.corDestaque, IDENTIDADE_VISUAL_PADRAO.corDestaque);
+  const raiz = document.documentElement;
+  raiz.style.setProperty('--gold', config.corPrimaria);
+  raiz.style.setProperty('--gold-dark', config.corPrimariaEscura);
+  raiz.style.setProperty('--terracotta', config.corDestaque);
+  raiz.style.setProperty('--btn-grad-1', config.corPrimaria);
+  raiz.style.setProperty('--btn-grad-2', config.corPrimaria);
+  raiz.style.setProperty('--btn-grad-3', config.corPrimaria);
+  raiz.style.setProperty('--font-title', FONTES_TITULO_CLIENTE[config.fonteTitulo] || FONTES_TITULO_CLIENTE.fraunces);
+  raiz.style.setProperty('--font-body', FONTES_TEXTO_CLIENTE[config.fonteTexto] || FONTES_TEXTO_CLIENTE['work-sans']);
+  document.querySelectorAll('[data-brand-name]').forEach(elemento => { elemento.textContent = config.nomeMarca || IDENTIDADE_VISUAL_PADRAO.nomeMarca; });
+  document.querySelectorAll('[data-brand-tagline]').forEach(elemento => { elemento.textContent = config.assinatura || IDENTIDADE_VISUAL_PADRAO.assinatura; });
+  document.querySelectorAll('[data-brand-logo]').forEach(imagem => {
+    imagem.onerror = () => { imagem.onerror = null; imagem.src = IDENTIDADE_VISUAL_PADRAO.logo; };
+    imagem.src = config.logo;
+    imagem.alt = config.nomeMarca || IDENTIDADE_VISUAL_PADRAO.nomeMarca;
+  });
+  document.title = `${config.nomeMarca || IDENTIDADE_VISUAL_PADRAO.nomeMarca} — Pizzas Artesanais`;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', config.corPrimariaEscura);
+  HERO_PADRAO = {
+    chamada:config.chamada || IDENTIDADE_VISUAL_PADRAO.chamada,
+    tituloHtml:textoSeguroComQuebras(config.titulo || IDENTIDADE_VISUAL_PADRAO.titulo),
+    descricaoHtml:textoSeguroComQuebras(config.descricao || IDENTIDADE_VISUAL_PADRAO.descricao),
+    botaoTexto:config.botaoTexto || IDENTIDADE_VISUAL_PADRAO.botaoTexto,
+    destino:'#cardapio'
+  };
+  if (!bannersHeroAtivos.length) restaurarHeroPadrao();
+}
 
 function millisBannerCliente(valor) {
   if (!valor) return 0;
@@ -5484,6 +5542,7 @@ function processarConfig(doc) {
     
     const rodape = document.getElementById('footer-funcionamento');
     if(rodape) rodape.textContent = 'Atendimento: ' + configLoja.textoFuncionamento;
+    aplicarIdentidadeVisual(configLoja.identidadeVisual);
     
     const statusManual = configLoja.statusLoja || 'auto';
     
