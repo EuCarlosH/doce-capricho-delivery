@@ -4521,9 +4521,29 @@ async function registrarEstatisticasPedido(pedido) {
   } catch(errStats) { console.warn('[STATS]', errStats.code); }
 }
 
+function criarIdempotenciaNotificacaoAdmin() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, caractere => {
+    const aleatorio = Math.random() * 16 | 0;
+    const valor = caractere === 'x' ? aleatorio : (aleatorio & 0x3 | 0x8);
+    return valor.toString(16);
+  });
+}
+
+function notificarNovoPedidoAdmin(pedidoId, idempotencia) {
+  if (!pedidoId || !idempotencia || !navigator.onLine) return;
+  fetch('/api/notificar-novo-pedido', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify({ pedidoId, idempotencia }),
+    keepalive:true
+  }).catch(erro => console.warn('[PUSH ADMIN] O pedido foi salvo, mas o alerta não pôde ser solicitado.', erro));
+}
+
 async function gravarFirestore(pedido) { 
   if (!CONFIG.usarFirebase || !window.firebase) return null; 
   try { 
+    pedido.admin_notification_idempotency_key = pedido.admin_notification_idempotency_key || criarIdempotenciaNotificacaoAdmin();
     const ref = db.collection('pedidos').doc();
     if (pedido.agendado) {
       const estatisticasRef = db.collection('configuracoes').doc('estatisticas');
@@ -4547,6 +4567,7 @@ async function gravarFirestore(pedido) {
       await ref.set({ ...pedido, data_pedido: firebase.firestore.FieldValue.serverTimestamp() });
     }
     await registrarEstatisticasPedido(pedido);
+    notificarNovoPedidoAdmin(ref.id, pedido.admin_notification_idempotency_key);
     return ref.id; 
   } catch (e) { 
     console.error('[PEDIDO] Falha ao gravar:', e.code, e.message);
