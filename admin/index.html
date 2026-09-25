@@ -451,6 +451,15 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .marketing-channel small { display:block; margin-top:3px; color:var(--text-muted); font-size:8px; line-height:1.35; }
 .identity-layout { display:grid; grid-template-columns:minmax(340px,.95fr) minmax(360px,1.05fr); gap:14px; align-items:start; }
 .identity-colors { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.identity-palettes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.identity-palette { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:10px; padding:10px; border:1px solid var(--border-light); border-radius:11px; background:#FFFDF9; color:var(--text-main); text-align:left; cursor:pointer; transition:.2s ease; }
+.identity-palette:hover { border-color:rgba(107,66,38,.35); transform:translateY(-1px); }
+.identity-palette.active { border-color:var(--bronze); box-shadow:0 0 0 2px rgba(107,66,38,.1); background:#FFF9F0; }
+.identity-palette-swatches { display:flex; align-items:center; }
+.identity-palette-swatches i { width:24px; height:24px; margin-left:-5px; border:2px solid #fff; border-radius:50%; box-shadow:0 2px 7px rgba(43,33,24,.16); }
+.identity-palette-swatches i:first-child { margin-left:0; }
+.identity-palette strong { display:block; font-size:9px; }
+.identity-palette small { display:block; margin-top:3px; color:var(--text-muted); font-size:7px; line-height:1.3; }
 .identity-color { display:grid; grid-template-columns:42px 1fr; align-items:center; gap:8px; padding:8px; border:1px solid var(--border-light); border-radius:10px; background:#FFFDF9; }
 .identity-color input[type="color"] { width:42px; height:36px; padding:2px; border:0; border-radius:8px; background:transparent; cursor:pointer; }
 .identity-color span { color:var(--text-muted); font-size:7px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
@@ -487,7 +496,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .banner-admin-card p { color:var(--text-muted); font-size:8px; line-height:1.45; }
 .banner-admin-order { display:flex; gap:5px; margin-left:auto; }
 @media(max-width:900px) { .identity-layout { grid-template-columns:1fr; } }
-@media(max-width:560px) { .identity-colors { grid-template-columns:1fr; } .identity-form-actions { grid-template-columns:1fr; } }
+@media(max-width:560px) { .identity-colors,.identity-palettes { grid-template-columns:1fr; } .identity-form-actions { grid-template-columns:1fr; } }
 .banner-admin-order button { width:28px; height:28px; border:1px solid var(--border-light); border-radius:8px; background:#fff; color:var(--bronze); cursor:pointer; }
 .faq-admin-list { display:grid; gap:9px; }
 .faq-admin-card { padding:13px; border:1px solid var(--border-light); border-radius:13px; background:#FFFDFA; }
@@ -856,6 +865,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
             <div class="marketing-panel">
               <h3>Identidade do site e aplicativo</h3><p>Atualize a apresentação da marca sem alterar o cardápio. A prévia muda enquanto você digita; o cliente só verá depois de salvar.</p>
               <form class="marketing-form" id="identity-form" onsubmit="salvarIdentidadeVisual(event)">
+                <label class="catalog-label">Identificador interno<input class="admin-field" id="identity-id" maxlength="40" value="doce-capricho-classica" placeholder="Ex.: natal-2026" oninput="atualizarPreviaIdentidade()"><small style="font-size:7px;font-weight:600;letter-spacing:0;text-transform:none">Use letras minúsculas, números e hífens. Não aparece para o cliente.</small></label>
                 <label class="catalog-label">Nome da marca<input class="admin-field" id="identity-brand" maxlength="50" value="Doce Capricho Ateliê" oninput="atualizarPreviaIdentidade()"></label>
                 <label class="catalog-label">URL HTTPS da logo<input class="admin-field" id="identity-logo" maxlength="500" value="/logo.png" placeholder="https://... ou /logo.png" oninput="atualizarPreviaIdentidade()"></label>
                 <label class="catalog-label">Frase de assinatura<input class="admin-field" id="identity-tagline" maxlength="80" value="Feito com amor em cada detalhe" oninput="atualizarPreviaIdentidade()"></label>
@@ -870,6 +880,8 @@ Alta gastronomia, artesanal e exclusiva.</textarea></label>
                   <label class="catalog-label">Fonte dos títulos<select class="admin-field" id="identity-title-font" onchange="atualizarPreviaIdentidade()"><option value="fraunces">Fraunces — elegante</option><option value="georgia">Georgia — clássica</option><option value="system-serif">Serif — editorial</option></select></label>
                   <label class="catalog-label">Fonte dos textos<select class="admin-field" id="identity-body-font" onchange="atualizarPreviaIdentidade()"><option value="work-sans">Work Sans — atual</option><option value="arial">Arial — direta</option><option value="system-sans">Sistema — nativa</option></select></label>
                 </div>
+                <span class="catalog-label">Sugestões de paleta</span>
+                <div class="identity-palettes" id="identity-palettes"></div>
                 <span class="catalog-label">Cores da marca</span>
                 <div class="identity-colors">
                   <label class="identity-color"><input type="color" id="identity-primary" value="#C08A2E" oninput="atualizarPreviaIdentidade()"><span>Dourado</span></label>
@@ -882,7 +894,7 @@ Alta gastronomia, artesanal e exclusiva.</textarea></label>
               </form>
             </div>
             <div class="marketing-panel">
-              <h3>Prévia ao vivo</h3><p>Representação compacta da abertura do site e do app.</p>
+              <h3>Prévia ao vivo</h3><p>Representação compacta da abertura do site e do app. <strong id="identity-preview-id">Identidade: doce-capricho-classica</strong></p>
               <div class="identity-preview" id="identity-preview">
                 <div class="identity-preview-nav"><div class="identity-preview-brand"><img id="identity-preview-logo" src="../logo.png" alt=""><strong id="identity-preview-brand">Doce Capricho Ateliê</strong></div><span class="identity-preview-chip" id="identity-preview-chip">Cardápio</span></div>
                 <div class="identity-preview-hero"><span class="identity-preview-eyebrow" id="identity-preview-eyebrow">Ateliê artesanal em São Miguel, RN</span><h2 class="identity-preview-title" id="identity-preview-title">O SABOR QUE
@@ -3092,11 +3104,18 @@ async function salvarRecomendacoesCarrinho(evento) {
 }
 
 const IDENTIDADE_PADRAO_ADMIN = {
+  identificador:'doce-capricho-classica', paletaId:'classica',
   nomeMarca:'Doce Capricho Ateliê', logo:'/logo.png', assinatura:'Feito com amor em cada detalhe',
   chamada:'Ateliê artesanal em São Miguel, RN', titulo:'O SABOR QUE\nVOCÊ JÁ\nCONHECE',
   descricao:'Agora em pizzas e esfihas irresistíveis.\nAlta gastronomia, artesanal e exclusiva.', botaoTexto:'Ver Cardápio',
   fonteTitulo:'fraunces', fonteTexto:'work-sans', corPrimaria:'#C08A2E', corPrimariaEscura:'#9C6F24', corDestaque:'#B9502F'
 };
+const PALETAS_IDENTIDADE = [
+  { id:'classica', nome:'Doce Capricho Clássica', descricao:'Dourado, caramelo e terracota', cores:['#C08A2E','#9C6F24','#B9502F'] },
+  { id:'champanhe', nome:'Champanhe Romântica', descricao:'Suave, delicada e acolhedora', cores:['#C9A66B','#8B6A3E','#A85E68'] },
+  { id:'cacau', nome:'Cacau Premium', descricao:'Quente, sofisticada e marcante', cores:['#B8893D','#70451F','#8B3A2B'] },
+  { id:'terracota', nome:'Terracota Artesanal', descricao:'Natural, autêntica e contemporânea', cores:['#C39345','#8A642B','#A64B32'] }
+];
 const FONTES_TITULO_IDENTIDADE = { fraunces:"'Fraunces', Georgia, serif", georgia:"Georgia, 'Times New Roman', serif", 'system-serif':"ui-serif, Georgia, serif" };
 const FONTES_TEXTO_IDENTIDADE = { 'work-sans':"'Work Sans', Arial, sans-serif", arial:"Arial, Helvetica, sans-serif", 'system-sans':"system-ui, -apple-system, sans-serif" };
 
@@ -3107,16 +3126,20 @@ function identidadeVisualAdmin() {
 
 function definirCamposIdentidade(config) {
   const valores = {
+    'identity-id':config.identificador,
     'identity-brand':config.nomeMarca, 'identity-logo':config.logo, 'identity-tagline':config.assinatura,
     'identity-eyebrow':config.chamada, 'identity-title':config.titulo, 'identity-subtitle':config.descricao,
     'identity-cta':config.botaoTexto, 'identity-title-font':config.fonteTitulo, 'identity-body-font':config.fonteTexto,
     'identity-primary':config.corPrimaria, 'identity-primary-dark':config.corPrimariaEscura, 'identity-accent':config.corDestaque
   };
   Object.entries(valores).forEach(([id, valor]) => { const campo = document.getElementById(id); if (campo) campo.value = valor; });
+  document.getElementById('identity-form').dataset.paletaId = config.paletaId || '';
+  renderizarPaletasIdentidade(config.paletaId);
 }
 
 function lerCamposIdentidade() {
   return {
+    identificador:document.getElementById('identity-id').value.trim().toLowerCase(),
     nomeMarca:document.getElementById('identity-brand').value.trim(), logo:document.getElementById('identity-logo').value.trim(),
     assinatura:document.getElementById('identity-tagline').value.trim(), chamada:document.getElementById('identity-eyebrow').value.trim(),
     titulo:document.getElementById('identity-title').value.trim(), descricao:document.getElementById('identity-subtitle').value.trim(),
@@ -3126,9 +3149,29 @@ function lerCamposIdentidade() {
   };
 }
 
+function renderizarPaletasIdentidade(paletaId) {
+  const lista = document.getElementById('identity-palettes');
+  if (!lista) return;
+  lista.innerHTML = PALETAS_IDENTIDADE.map(paleta => `<button type="button" class="identity-palette ${paleta.id === paletaId ? 'active' : ''}" data-identity-palette="${paleta.id}" onclick="aplicarPaletaIdentidade('${paleta.id}')" aria-pressed="${paleta.id === paletaId}"><span class="identity-palette-swatches">${paleta.cores.map(cor => `<i style="background:${cor}"></i>`).join('')}</span><span><strong>${paleta.nome}</strong><small>${paleta.descricao}</small></span></button>`).join('');
+}
+
+function aplicarPaletaIdentidade(id) {
+  const paleta = PALETAS_IDENTIDADE.find(item => item.id === id);
+  if (!paleta) return;
+  document.getElementById('identity-primary').value = paleta.cores[0];
+  document.getElementById('identity-primary-dark').value = paleta.cores[1];
+  document.getElementById('identity-accent').value = paleta.cores[2];
+  document.getElementById('identity-form').dataset.paletaId = id;
+  document.querySelectorAll('[data-identity-palette]').forEach(botao => { const ativa = botao.dataset.identityPalette === id; botao.classList.toggle('active', ativa); botao.setAttribute('aria-pressed', String(ativa)); });
+  atualizarPreviaIdentidade();
+}
+
 function atualizarPreviaIdentidade() {
   if (!document.getElementById('identity-form')) return;
   const config = lerCamposIdentidade();
+  const paletaCorrespondente = PALETAS_IDENTIDADE.find(paleta => paleta.cores.every((cor, indice) => cor === [config.corPrimaria, config.corPrimariaEscura, config.corDestaque][indice]));
+  document.getElementById('identity-form').dataset.paletaId = paletaCorrespondente?.id || '';
+  document.querySelectorAll('[data-identity-palette]').forEach(botao => { const ativa = botao.dataset.identityPalette === paletaCorrespondente?.id; botao.classList.toggle('active', ativa); botao.setAttribute('aria-pressed', String(ativa)); });
   const logo = document.getElementById('identity-preview-logo');
   logo.onerror = () => { logo.onerror = null; logo.src = '../logo.png'; };
   logo.src = config.logo || '../logo.png';
@@ -3138,6 +3181,7 @@ function atualizarPreviaIdentidade() {
   document.getElementById('identity-preview-title').textContent = config.titulo || IDENTIDADE_PADRAO_ADMIN.titulo;
   document.getElementById('identity-preview-subtitle').textContent = config.descricao || IDENTIDADE_PADRAO_ADMIN.descricao;
   document.getElementById('identity-preview-button').textContent = config.botaoTexto || IDENTIDADE_PADRAO_ADMIN.botaoTexto;
+  document.getElementById('identity-preview-id').textContent = `Identidade: ${config.identificador || 'sem-identificador'}`;
   const titulo = FONTES_TITULO_IDENTIDADE[config.fonteTitulo] || FONTES_TITULO_IDENTIDADE.fraunces;
   const texto = FONTES_TEXTO_IDENTIDADE[config.fonteTexto] || FONTES_TEXTO_IDENTIDADE['work-sans'];
   const preview = document.getElementById('identity-preview');
@@ -3166,6 +3210,8 @@ function restaurarIdentidadePadrao() {
 async function salvarIdentidadeVisual(evento) {
   evento.preventDefault();
   const identidadeVisual = lerCamposIdentidade();
+  identidadeVisual.paletaId = document.getElementById('identity-form').dataset.paletaId || '';
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(identidadeVisual.identificador)) return alert('Use um identificador com letras minúsculas, números e hífens, como doce-capricho-classica.');
   if (!identidadeVisual.nomeMarca || !identidadeVisual.titulo || !identidadeVisual.descricao || !identidadeVisual.botaoTexto) return alert('Preencha o nome da marca, o título, a descrição e o texto do botão.');
   if (!(/^https:\/\//i.test(identidadeVisual.logo) || /^\/(?!\/)/.test(identidadeVisual.logo))) return alert('Informe uma URL HTTPS ou um caminho local iniciado por /.');
   if (!FONTES_TITULO_IDENTIDADE[identidadeVisual.fonteTitulo] || !FONTES_TEXTO_IDENTIDADE[identidadeVisual.fonteTexto]) return alert('Escolha uma opção de fonte disponível.');
