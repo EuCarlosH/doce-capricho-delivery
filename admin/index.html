@@ -449,6 +449,24 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .marketing-channel input { width:17px; height:17px; accent-color:var(--bronze); }
 .marketing-channel strong { display:block; font-size:10px; }
 .marketing-channel small { display:block; margin-top:3px; color:var(--text-muted); font-size:8px; line-height:1.35; }
+.identity-layout { display:grid; grid-template-columns:minmax(340px,.95fr) minmax(360px,1.05fr); gap:14px; align-items:start; }
+.identity-colors { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.identity-color { display:grid; grid-template-columns:42px 1fr; align-items:center; gap:8px; padding:8px; border:1px solid var(--border-light); border-radius:10px; background:#FFFDF9; }
+.identity-color input[type="color"] { width:42px; height:36px; padding:2px; border:0; border-radius:8px; background:transparent; cursor:pointer; }
+.identity-color span { color:var(--text-muted); font-size:7px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
+.identity-preview { overflow:hidden; min-height:430px; border:1px solid rgba(221,167,58,.3); border-radius:19px; background:#FBF6EC; box-shadow:var(--shadow-md); }
+.identity-preview-nav { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 15px; border-bottom:1px solid rgba(43,33,24,.08); background:rgba(255,255,255,.86); }
+.identity-preview-brand { display:flex; align-items:center; gap:9px; min-width:0; }
+.identity-preview-brand img { width:38px; height:38px; object-fit:cover; border-radius:10px; border:1px solid rgba(221,167,58,.28); }
+.identity-preview-brand strong { overflow:hidden; color:#2B2118; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+.identity-preview-chip { padding:6px 8px; border-radius:999px; color:#fff; font-size:7px; font-weight:900; letter-spacing:.7px; text-transform:uppercase; }
+.identity-preview-hero { min-height:300px; padding:34px 28px; background:linear-gradient(140deg,rgba(255,255,255,.94),rgba(251,246,236,.75)),url('../hero-bg.jpg') center/cover; }
+.identity-preview-eyebrow { display:block; margin-bottom:10px; font-size:9px; font-weight:700; }
+.identity-preview-title { max-width:390px; margin:0 0 10px; color:#2B2118; font-size:29px; line-height:1.08; white-space:pre-line; }
+.identity-preview-subtitle { max-width:370px; margin:0 0 20px; color:#745F4E; font-size:10px; line-height:1.6; white-space:pre-line; }
+.identity-preview-button { display:inline-block; padding:11px 17px; border-radius:10px; font-size:8px; font-weight:900; letter-spacing:.5px; text-transform:uppercase; }
+.identity-preview-footer { padding:14px 18px; color:#7B6858; font-size:8px; font-weight:700; letter-spacing:.6px; text-align:center; text-transform:uppercase; }
+.identity-form-actions { display:grid; grid-template-columns:1fr auto; gap:8px; }
 .campaign-list { display:grid; gap:9px; max-height:720px; overflow:auto; padding-right:3px; }
 .campaign-card { padding:13px; border:1px solid var(--border-light); border-radius:13px; background:#FFFDFA; }
 .campaign-card-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
@@ -468,6 +486,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .banner-admin-card h4 { margin:2px 0 5px; font-size:11px; }
 .banner-admin-card p { color:var(--text-muted); font-size:8px; line-height:1.45; }
 .banner-admin-order { display:flex; gap:5px; margin-left:auto; }
+@media(max-width:900px) { .identity-layout { grid-template-columns:1fr; } }
+@media(max-width:560px) { .identity-colors { grid-template-columns:1fr; } .identity-form-actions { grid-template-columns:1fr; } }
 .banner-admin-order button { width:28px; height:28px; border:1px solid var(--border-light); border-radius:8px; background:#fff; color:var(--bronze); cursor:pointer; }
 .faq-admin-list { display:grid; gap:9px; }
 .faq-admin-card { padding:13px; border:1px solid var(--border-light); border-radius:13px; background:#FFFDFA; }
@@ -735,6 +755,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-banners',this)">Banners</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-faq',this)">FAQ</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-recomendacoes',this)">Recomendações</button>
+          <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-identidade',this)">Identidade</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-promocoes',this)">Promoções</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-cupons',this)">Cupons</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-combos',this)">Combos e ofertas</button>
@@ -828,6 +849,49 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
               <button class="btn-gradient" id="recommendation-save" type="submit" style="width:100%;padding:13px;margin:0">Salvar recomendações</button>
               <div id="recommendation-feedback" style="min-height:14px;font-size:9px;font-weight:700;color:var(--text-muted)"></div>
             </form>
+          </div>
+        </div>
+        <div class="marketing-tab-content" id="marketing-tab-identidade">
+          <div class="identity-layout">
+            <div class="marketing-panel">
+              <h3>Identidade do site e aplicativo</h3><p>Atualize a apresentação da marca sem alterar o cardápio. A prévia muda enquanto você digita; o cliente só verá depois de salvar.</p>
+              <form class="marketing-form" id="identity-form" onsubmit="salvarIdentidadeVisual(event)">
+                <label class="catalog-label">Nome da marca<input class="admin-field" id="identity-brand" maxlength="50" value="Doce Capricho Ateliê" oninput="atualizarPreviaIdentidade()"></label>
+                <label class="catalog-label">URL HTTPS da logo<input class="admin-field" id="identity-logo" maxlength="500" value="/logo.png" placeholder="https://... ou /logo.png" oninput="atualizarPreviaIdentidade()"></label>
+                <label class="catalog-label">Frase de assinatura<input class="admin-field" id="identity-tagline" maxlength="80" value="Feito com amor em cada detalhe" oninput="atualizarPreviaIdentidade()"></label>
+                <label class="catalog-label">Chamada acima do título<input class="admin-field" id="identity-eyebrow" maxlength="80" value="Ateliê artesanal em São Miguel, RN" oninput="atualizarPreviaIdentidade()"></label>
+                <label class="catalog-label">Título principal<textarea class="admin-field" id="identity-title" maxlength="120" rows="3" oninput="atualizarPreviaIdentidade()">O SABOR QUE
+VOCÊ JÁ
+CONHECE</textarea></label>
+                <label class="catalog-label">Descrição principal<textarea class="admin-field" id="identity-subtitle" maxlength="180" rows="3" oninput="atualizarPreviaIdentidade()">Agora em pizzas e esfihas irresistíveis.
+Alta gastronomia, artesanal e exclusiva.</textarea></label>
+                <label class="catalog-label">Texto do botão<input class="admin-field" id="identity-cta" maxlength="35" value="Ver Cardápio" oninput="atualizarPreviaIdentidade()"></label>
+                <div class="marketing-two">
+                  <label class="catalog-label">Fonte dos títulos<select class="admin-field" id="identity-title-font" onchange="atualizarPreviaIdentidade()"><option value="fraunces">Fraunces — elegante</option><option value="georgia">Georgia — clássica</option><option value="system-serif">Serif — editorial</option></select></label>
+                  <label class="catalog-label">Fonte dos textos<select class="admin-field" id="identity-body-font" onchange="atualizarPreviaIdentidade()"><option value="work-sans">Work Sans — atual</option><option value="arial">Arial — direta</option><option value="system-sans">Sistema — nativa</option></select></label>
+                </div>
+                <span class="catalog-label">Cores da marca</span>
+                <div class="identity-colors">
+                  <label class="identity-color"><input type="color" id="identity-primary" value="#C08A2E" oninput="atualizarPreviaIdentidade()"><span>Dourado</span></label>
+                  <label class="identity-color"><input type="color" id="identity-primary-dark" value="#9C6F24" oninput="atualizarPreviaIdentidade()"><span>Dourado escuro</span></label>
+                  <label class="identity-color"><input type="color" id="identity-accent" value="#B9502F" oninput="atualizarPreviaIdentidade()"><span>Destaque</span></label>
+                </div>
+                <p style="margin:0;color:var(--text-muted);font-size:8px;line-height:1.45">As opções de fonte são seguras para o aplicativo e as cores mantêm os fundos claros e escuros atuais.</p>
+                <div class="identity-form-actions"><button class="btn-gradient" id="identity-save" type="submit" style="width:100%;padding:13px;margin:0">Salvar identidade</button><button class="btn-secondary" type="button" onclick="restaurarIdentidadePadrao()">Restaurar padrão</button></div>
+                <div id="identity-feedback" style="min-height:14px;font-size:9px;font-weight:700;color:var(--text-muted)"></div>
+              </form>
+            </div>
+            <div class="marketing-panel">
+              <h3>Prévia ao vivo</h3><p>Representação compacta da abertura do site e do app.</p>
+              <div class="identity-preview" id="identity-preview">
+                <div class="identity-preview-nav"><div class="identity-preview-brand"><img id="identity-preview-logo" src="../logo.png" alt=""><strong id="identity-preview-brand">Doce Capricho Ateliê</strong></div><span class="identity-preview-chip" id="identity-preview-chip">Cardápio</span></div>
+                <div class="identity-preview-hero"><span class="identity-preview-eyebrow" id="identity-preview-eyebrow">Ateliê artesanal em São Miguel, RN</span><h2 class="identity-preview-title" id="identity-preview-title">O SABOR QUE
+VOCÊ JÁ
+CONHECE</h2><p class="identity-preview-subtitle" id="identity-preview-subtitle">Agora em pizzas e esfihas irresistíveis.
+Alta gastronomia, artesanal e exclusiva.</p><span class="identity-preview-button" id="identity-preview-button">Ver Cardápio</span></div>
+                <div class="identity-preview-footer" id="identity-preview-tagline">Feito com amor em cada detalhe</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="marketing-tab-content marketing-section-shell" id="marketing-tab-promocoes"></div>
@@ -1837,6 +1901,7 @@ function iniciarSistema() {
         renderizarBannersMarketing();
         renderizarFaqMarketing();
         preencherConfiguracaoRecomendacoes();
+        preencherIdentidadeVisual();
     }
     atualizarUIConfig();
   });
@@ -3024,6 +3089,98 @@ async function salvarRecomendacoesCarrinho(evento) {
   try { await db.collection('configuracoes').doc('geral').set({ recomendacoesCarrinho }, { merge:true }); feedback.textContent = '🟢 Recomendações atualizadas com sucesso.'; }
   catch (erro) { console.error('[RECOMENDAÇÕES]', erro); alert('Não foi possível salvar as recomendações.'); }
   finally { botao.disabled = false; botao.textContent = 'SALVAR RECOMENDAÇÕES'; }
+}
+
+const IDENTIDADE_PADRAO_ADMIN = {
+  nomeMarca:'Doce Capricho Ateliê', logo:'/logo.png', assinatura:'Feito com amor em cada detalhe',
+  chamada:'Ateliê artesanal em São Miguel, RN', titulo:'O SABOR QUE\nVOCÊ JÁ\nCONHECE',
+  descricao:'Agora em pizzas e esfihas irresistíveis.\nAlta gastronomia, artesanal e exclusiva.', botaoTexto:'Ver Cardápio',
+  fonteTitulo:'fraunces', fonteTexto:'work-sans', corPrimaria:'#C08A2E', corPrimariaEscura:'#9C6F24', corDestaque:'#B9502F'
+};
+const FONTES_TITULO_IDENTIDADE = { fraunces:"'Fraunces', Georgia, serif", georgia:"Georgia, 'Times New Roman', serif", 'system-serif':"ui-serif, Georgia, serif" };
+const FONTES_TEXTO_IDENTIDADE = { 'work-sans':"'Work Sans', Arial, sans-serif", arial:"Arial, Helvetica, sans-serif", 'system-sans':"system-ui, -apple-system, sans-serif" };
+
+function identidadeVisualAdmin() {
+  const dados = configuracoesGlobais.identidadeVisual || {};
+  return { ...IDENTIDADE_PADRAO_ADMIN, ...dados };
+}
+
+function definirCamposIdentidade(config) {
+  const valores = {
+    'identity-brand':config.nomeMarca, 'identity-logo':config.logo, 'identity-tagline':config.assinatura,
+    'identity-eyebrow':config.chamada, 'identity-title':config.titulo, 'identity-subtitle':config.descricao,
+    'identity-cta':config.botaoTexto, 'identity-title-font':config.fonteTitulo, 'identity-body-font':config.fonteTexto,
+    'identity-primary':config.corPrimaria, 'identity-primary-dark':config.corPrimariaEscura, 'identity-accent':config.corDestaque
+  };
+  Object.entries(valores).forEach(([id, valor]) => { const campo = document.getElementById(id); if (campo) campo.value = valor; });
+}
+
+function lerCamposIdentidade() {
+  return {
+    nomeMarca:document.getElementById('identity-brand').value.trim(), logo:document.getElementById('identity-logo').value.trim(),
+    assinatura:document.getElementById('identity-tagline').value.trim(), chamada:document.getElementById('identity-eyebrow').value.trim(),
+    titulo:document.getElementById('identity-title').value.trim(), descricao:document.getElementById('identity-subtitle').value.trim(),
+    botaoTexto:document.getElementById('identity-cta').value.trim(), fonteTitulo:document.getElementById('identity-title-font').value,
+    fonteTexto:document.getElementById('identity-body-font').value, corPrimaria:document.getElementById('identity-primary').value.toUpperCase(),
+    corPrimariaEscura:document.getElementById('identity-primary-dark').value.toUpperCase(), corDestaque:document.getElementById('identity-accent').value.toUpperCase()
+  };
+}
+
+function atualizarPreviaIdentidade() {
+  if (!document.getElementById('identity-form')) return;
+  const config = lerCamposIdentidade();
+  const logo = document.getElementById('identity-preview-logo');
+  logo.onerror = () => { logo.onerror = null; logo.src = '../logo.png'; };
+  logo.src = config.logo || '../logo.png';
+  document.getElementById('identity-preview-brand').textContent = config.nomeMarca || IDENTIDADE_PADRAO_ADMIN.nomeMarca;
+  document.getElementById('identity-preview-tagline').textContent = config.assinatura || IDENTIDADE_PADRAO_ADMIN.assinatura;
+  document.getElementById('identity-preview-eyebrow').textContent = config.chamada || IDENTIDADE_PADRAO_ADMIN.chamada;
+  document.getElementById('identity-preview-title').textContent = config.titulo || IDENTIDADE_PADRAO_ADMIN.titulo;
+  document.getElementById('identity-preview-subtitle').textContent = config.descricao || IDENTIDADE_PADRAO_ADMIN.descricao;
+  document.getElementById('identity-preview-button').textContent = config.botaoTexto || IDENTIDADE_PADRAO_ADMIN.botaoTexto;
+  const titulo = FONTES_TITULO_IDENTIDADE[config.fonteTitulo] || FONTES_TITULO_IDENTIDADE.fraunces;
+  const texto = FONTES_TEXTO_IDENTIDADE[config.fonteTexto] || FONTES_TEXTO_IDENTIDADE['work-sans'];
+  const preview = document.getElementById('identity-preview');
+  preview.style.fontFamily = texto;
+  document.getElementById('identity-preview-title').style.fontFamily = titulo;
+  document.getElementById('identity-preview-brand').style.fontFamily = titulo;
+  document.getElementById('identity-preview-eyebrow').style.color = config.corDestaque;
+  document.getElementById('identity-preview-chip').style.background = config.corDestaque;
+  document.getElementById('identity-preview-button').style.background = config.corPrimaria;
+  document.getElementById('identity-preview-button').style.color = '#2B2118';
+  preview.style.borderColor = config.corPrimaria + '66';
+}
+
+function preencherIdentidadeVisual() {
+  if (!document.getElementById('identity-form')) return;
+  definirCamposIdentidade(identidadeVisualAdmin());
+  atualizarPreviaIdentidade();
+}
+
+function restaurarIdentidadePadrao() {
+  definirCamposIdentidade(IDENTIDADE_PADRAO_ADMIN);
+  atualizarPreviaIdentidade();
+  document.getElementById('identity-feedback').textContent = 'Padrão carregado na prévia. Clique em Salvar identidade para publicar.';
+}
+
+async function salvarIdentidadeVisual(evento) {
+  evento.preventDefault();
+  const identidadeVisual = lerCamposIdentidade();
+  if (!identidadeVisual.nomeMarca || !identidadeVisual.titulo || !identidadeVisual.descricao || !identidadeVisual.botaoTexto) return alert('Preencha o nome da marca, o título, a descrição e o texto do botão.');
+  if (!(/^https:\/\//i.test(identidadeVisual.logo) || /^\/(?!\/)/.test(identidadeVisual.logo))) return alert('Informe uma URL HTTPS ou um caminho local iniciado por /.');
+  if (!FONTES_TITULO_IDENTIDADE[identidadeVisual.fonteTitulo] || !FONTES_TEXTO_IDENTIDADE[identidadeVisual.fonteTexto]) return alert('Escolha uma opção de fonte disponível.');
+  const coresValidas = [identidadeVisual.corPrimaria, identidadeVisual.corPrimariaEscura, identidadeVisual.corDestaque].every(cor => /^#[0-9A-F]{6}$/.test(cor));
+  if (!coresValidas) return alert('Revise as cores da identidade.');
+  const botao = document.getElementById('identity-save'), feedback = document.getElementById('identity-feedback');
+  botao.disabled = true; botao.textContent = 'SALVANDO...'; feedback.textContent = '';
+  try {
+    await db.collection('configuracoes').doc('geral').set({ identidadeVisual }, { merge:true });
+    feedback.textContent = '🟢 Identidade publicada no site e no aplicativo.';
+  } catch (erro) {
+    console.error('[IDENTIDADE]', erro); alert('Não foi possível salvar a identidade visual.');
+  } finally {
+    botao.disabled = false; botao.textContent = 'SALVAR IDENTIDADE';
+  }
 }
 
 function faqMarketingAdmin() {
