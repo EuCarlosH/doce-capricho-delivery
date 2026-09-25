@@ -1887,6 +1887,8 @@ async function vincularDispositivoPush() {
   if (!oneSignalClient) return false;
   try {
     await oneSignalClient.login(obterPushExternalId());
+    await oneSignalClient.User.addTag('role', 'customer');
+    await oneSignalClient.User.addTag('store', 'doce-capricho');
     return true;
   } catch (erro) {
     console.warn('[ONESIGNAL] Não foi possível vincular o dispositivo:', erro);
@@ -5270,7 +5272,8 @@ function processarConfig(doc) {
         abrirModal('modal-aviso-pausa'); 
     }
     lojaEstavaPausada = bloqueioTotal; primeiraCargaPausa = false;
-    processarAvisoPopup(configLoja.avisoPopup);
+    const campanhaAtiva = processarCampanhasMarketing(configLoja.campanhasMarketing);
+    if (!campanhaAtiva) processarAvisoPopup(configLoja.avisoPopup);
     
     configsCarregadasDB = true; 
     verificarHorario(); renderCardapio(); atualizarEstoqueNoBuilder();   
@@ -5278,7 +5281,54 @@ function processarConfig(doc) {
 }
 
 const AVISO_POPUP_STORAGE_KEY = 'dca_aviso_popup_visto';
+const AVISOS_POPUP_HISTORY_KEY = 'dca_avisos_popup_vistos';
 let avisoPopupAgendadoId = null;
+let avisoPopupAtualId = null;
+let campanhaMarketingTimer = null;
+
+function avisoPopupJaVisto(id) {
+  if (localStorage.getItem(AVISO_POPUP_STORAGE_KEY) === id) return true;
+  try { const historico=JSON.parse(localStorage.getItem(AVISOS_POPUP_HISTORY_KEY) || '[]'); return Array.isArray(historico) && historico.includes(id); }
+  catch (_) { return false; }
+}
+
+function registrarAvisoPopupVisto(id) {
+  localStorage.setItem(AVISO_POPUP_STORAGE_KEY, id);
+  let historico = [];
+  try { historico = JSON.parse(localStorage.getItem(AVISOS_POPUP_HISTORY_KEY) || '[]'); } catch (_) {}
+  if (!Array.isArray(historico)) historico = [];
+  localStorage.setItem(AVISOS_POPUP_HISTORY_KEY, JSON.stringify([id, ...historico.filter(item => item !== id)].slice(0,30)));
+}
+
+function millisCampanha(valor) {
+  if (!valor) return 0;
+  if (typeof valor.toMillis === 'function') return valor.toMillis();
+  if (valor.seconds != null) return Number(valor.seconds) * 1000 + Math.floor(Number(valor.nanoseconds || 0) / 1000000);
+  const convertido = new Date(valor).getTime();
+  return Number.isFinite(convertido) ? convertido : 0;
+}
+
+function processarCampanhasMarketing(campanhas) {
+  if (campanhaMarketingTimer) { clearTimeout(campanhaMarketingTimer); campanhaMarketingTimer = null; }
+  const lista = Array.isArray(campanhas) ? campanhas.filter(c => c && c.ativo !== false && c.canais?.popup === true) : [];
+  const agora = Date.now();
+  const ativas = lista.filter(c => {
+    const inicio = millisCampanha(c.inicioEm), fim = millisCampanha(c.fimEm);
+    return (!inicio || inicio <= agora) && (!fim || fim > agora);
+  }).sort((a,b) => (millisCampanha(b.inicioEm) || millisCampanha(b.criadaEm)) - (millisCampanha(a.inicioEm) || millisCampanha(a.criadaEm)));
+  if (ativas.length) {
+    const fimAtivo = millisCampanha(ativas[0].fimEm);
+    if (fimAtivo > agora) campanhaMarketingTimer = setTimeout(() => processarCampanhasMarketing(campanhas), Math.min(fimAtivo - agora + 250, 2147483647));
+    processarAvisoPopup(ativas[0]);
+    return true;
+  }
+  const proximoInicio = lista.map(c => millisCampanha(c.inicioEm)).filter(inicio => inicio > agora).sort((a,b) => a-b)[0];
+  if (proximoInicio) campanhaMarketingTimer = setTimeout(() => processarCampanhasMarketing(campanhas), Math.min(proximoInicio - agora + 250, 2147483647));
+  if (avisoPopupAtualId && Array.isArray(campanhas) && campanhas.some(c => c.id === avisoPopupAtualId)) {
+    fecharModal('aviso-popup-overlay'); avisoPopupAtualId = null; avisoPopupAgendadoId = null;
+  }
+  return false;
+}
 
 function destinoAvisoSeguro(destino) {
   const valor = String(destino || '').trim();
@@ -5322,7 +5372,7 @@ function processarAvisoPopup(aviso) {
   if (!aviso || aviso.ativo !== true || !aviso.id || (!aviso.titulo && !imagemValida)) return;
 
   const id = String(aviso.id);
-  if (localStorage.getItem(AVISO_POPUP_STORAGE_KEY) === id || avisoPopupAgendadoId === id) return;
+  if (avisoPopupJaVisto(id) || avisoPopupAgendadoId === id) return;
 
   avisoPopupAgendadoId = id;
   bannerJaMostrado = true;
@@ -5381,7 +5431,8 @@ function processarAvisoPopup(aviso) {
       return;
     }
 
-    localStorage.setItem(AVISO_POPUP_STORAGE_KEY, id);
+    registrarAvisoPopupVisto(id);
+    avisoPopupAtualId = id;
     abrirModal('aviso-popup-overlay');
   };
 

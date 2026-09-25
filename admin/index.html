@@ -430,6 +430,28 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .finance-table-title h3 { font-size:13px; }
 .finance-table-title span { color:var(--text-muted); font-size:9px; }
 .finance-loading { opacity:.58; pointer-events:none; }
+.marketing-layout { display:grid; grid-template-columns:minmax(320px,.9fr) minmax(420px,1.35fr); gap:14px; align-items:start; }
+.marketing-panel { padding:18px; border:1px solid var(--border-light); border-radius:16px; background:var(--bg-card); box-shadow:var(--shadow-sm); }
+.marketing-panel h3 { margin-bottom:5px; font-size:14px; }
+.marketing-panel > p { margin-bottom:15px; color:var(--text-muted); font-size:9px; line-height:1.5; }
+.marketing-form { display:grid; gap:10px; }
+.marketing-two { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.marketing-channels { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.marketing-channel { display:flex; gap:9px; align-items:flex-start; padding:11px; border:1px solid var(--border-light); border-radius:11px; background:#FFFDF9; cursor:pointer; }
+.marketing-channel input { width:17px; height:17px; accent-color:var(--bronze); }
+.marketing-channel strong { display:block; font-size:10px; }
+.marketing-channel small { display:block; margin-top:3px; color:var(--text-muted); font-size:8px; line-height:1.35; }
+.campaign-list { display:grid; gap:9px; max-height:720px; overflow:auto; padding-right:3px; }
+.campaign-card { padding:13px; border:1px solid var(--border-light); border-radius:13px; background:#FFFDFA; }
+.campaign-card-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+.campaign-card h4 { font-size:11px; margin-bottom:4px; }
+.campaign-card p { color:var(--text-muted); font-size:8px; line-height:1.45; }
+.campaign-card-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; }
+.campaign-chip { padding:5px 7px; border-radius:999px; background:#F3EADF; color:var(--bronze); font-size:7px; font-weight:800; text-transform:uppercase; }
+.campaign-chip.active { background:#E4F4EA; color:#28714B; }
+.campaign-chip.scheduled { background:#FFF3D7; color:#8A6115; }
+.campaign-chip.ended,.campaign-chip.inactive { background:#F1EEEE; color:#766E68; }
+.campaign-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
 @media (max-width:760px) {
   .admin-view { padding:14px 10px; }
   .view-heading { flex-direction:column; }
@@ -442,6 +464,8 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
   .finance-kpis { grid-template-columns:repeat(2,1fr); }
   .finance-grid { grid-template-columns:1fr; }
   .finance-panel { min-height:285px; }
+  .marketing-layout { grid-template-columns:1fr; }
+  .marketing-two,.marketing-channels { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -529,6 +553,10 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         <button class="nav-btn" id="btn-nav-catalogo" onclick="alternarTela('catalogo')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h8"></path></svg>
           Catálogo e Estoque
+        </button>
+        <button class="nav-btn" id="btn-nav-marketing" onclick="alternarTela('marketing')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 18-5v12L3 13z"></path><path d="M7 14v6h4l1-5"></path></svg>
+          Marketing
         </button>
         <button class="nav-btn" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
@@ -673,6 +701,40 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         <div class="catalog-grid" id="catalog-admin-lista"></div>
       </section>
 
+      <section class="admin-view" id="view-marketing">
+        <div class="view-heading">
+          <div><span class="hero-kicker" style="color:var(--gold-dark)">Relacionamento</span><h2>Central de campanhas</h2><p>Programe divulgações no aplicativo e notificações para os clientes que autorizaram o recebimento.</p></div>
+          <span class="status-chip" id="campaign-total">0 campanhas</span>
+        </div>
+        <div class="catalog-kpis">
+          <div class="catalog-kpi"><span>Ativas</span><strong id="campaign-kpi-active">0</strong></div>
+          <div class="catalog-kpi"><span>Agendadas</span><strong id="campaign-kpi-scheduled">0</strong></div>
+          <div class="catalog-kpi"><span>Finalizadas</span><strong id="campaign-kpi-ended">0</strong></div>
+          <div class="catalog-kpi"><span>Push enviados</span><strong id="campaign-kpi-push">0</strong></div>
+        </div>
+        <div class="marketing-layout">
+          <div class="marketing-panel">
+            <h3>Nova campanha</h3><p>Escolha quando e onde a comunicação deverá aparecer.</p>
+            <form class="marketing-form" id="campaign-form" onsubmit="publicarCampanhaMarketing(event)">
+              <label class="catalog-label">Título<input class="admin-field" id="campaign-title" maxlength="80" placeholder="Ex: Promoção especial" required></label>
+              <label class="catalog-label">Mensagem<textarea class="admin-field" id="campaign-description" maxlength="300" rows="3" placeholder="Conte a novidade ao cliente"></textarea></label>
+              <label class="catalog-label">Imagem HTTPS (opcional)<input class="admin-field" type="url" id="campaign-image" placeholder="https://.../img/divulgacao/arte.png"></label>
+              <label class="toggle-row"><span>Mostrar somente a imagem clicável</span><input type="checkbox" id="campaign-image-only"></label>
+              <div class="marketing-two"><label class="catalog-label">Texto do botão<input class="admin-field" id="campaign-button" maxlength="40" value="VER NOVIDADE"></label><label class="catalog-label">Destino<input class="admin-field" id="campaign-destination" value="#cardapio" placeholder="#cardapio ou https://..."></label></div>
+              <div><span class="catalog-label" style="margin-bottom:6px">Canais</span><div class="marketing-channels"><label class="marketing-channel"><input type="checkbox" id="campaign-popup" checked><span><strong>Pop-up no aplicativo</strong><small>Aparece ao abrir o site ou app.</small></span></label><label class="marketing-channel"><input type="checkbox" id="campaign-push"><span><strong>Notificação push</strong><small>Chega mesmo com o aplicativo fechado.</small></span></label></div></div>
+              <div class="marketing-two"><label class="catalog-label">Início<input class="admin-field" type="datetime-local" id="campaign-start"></label><label class="catalog-label">Término<input class="admin-field" type="datetime-local" id="campaign-end"></label></div>
+              <p style="font-size:8px;color:var(--text-muted);line-height:1.45">Sem horário de início, a campanha começa imediatamente. Sem término, permanece ativa até ser encerrada manualmente.</p>
+              <button class="btn-gradient" id="campaign-publish" type="submit" style="width:100%;padding:13px;margin:0">Publicar campanha</button>
+              <div id="campaign-feedback" style="min-height:14px;font-size:9px;font-weight:700;color:var(--text-muted)"></div>
+            </form>
+          </div>
+          <div class="marketing-panel">
+            <h3>Histórico de campanhas</h3><p>Consulte divulgações ativas, agendadas, encerradas e reutilize conteúdos anteriores.</p>
+            <div class="campaign-list" id="campaign-list"><div class="empty-state">Nenhuma campanha cadastrada.</div></div>
+          </div>
+        </div>
+      </section>
+
       <div id="view-relatorios">
         <div class="finance-head">
           <div><span class="hero-kicker" style="color:var(--gold-dark)">Visão financeira</span><h2>Indicadores e resultados</h2><p>Acompanhe recebimentos, descontos, taxas, cancelamentos e produtos vendidos.</p></div>
@@ -730,7 +792,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
       <button class="tab-btn" onclick="switchTab('tab-ofertas', this)">Ofertas</button>
       <button class="tab-btn" onclick="switchTab('tab-descontos', this)">Descontos</button>
       <button class="tab-btn" onclick="switchTab('tab-cupons', this)">Cupons</button>
-      <button class="tab-btn" onclick="switchTab('tab-divulgacao', this)">Divulgação</button>
+      <button class="tab-btn" onclick="fecharModalCatalogo(); alternarTela('marketing')">Divulgação</button>
     </div>
 
     <div id="tab-expediente" class="tab-content active">
@@ -1191,6 +1253,10 @@ function alternarTela(tela) {
     document.getElementById('view-catalogo').classList.add('active');
     document.getElementById('btn-nav-catalogo').classList.add('active');
     renderizarCatalogoAdmin();
+  } else if (tela === 'marketing') {
+    document.getElementById('view-marketing').classList.add('active');
+    document.getElementById('btn-nav-marketing').classList.add('active');
+    renderizarCampanhasMarketing();
   } else if (tela === 'comanda') {
     document.getElementById('view-comanda').classList.add('active');
     document.getElementById('btn-nav-comanda').classList.add('active');
@@ -1632,6 +1698,7 @@ function iniciarSistema() {
         preencherFormularioAviso(configuracoesGlobais.avisoPopup || null);
         preencherFormularioDesconto();
         renderPromocoesProgramadas();
+        renderizarCampanhasMarketing();
     }
     atualizarUIConfig();
   });
@@ -2771,6 +2838,130 @@ async function desativarPromocaoPorId(id, btn) {
   } finally {
     btn.disabled = false;
   }
+}
+
+function campanhasMarketingAdmin() {
+  return Array.isArray(configuracoesGlobais.campanhasMarketing) ? configuracoesGlobais.campanhasMarketing : [];
+}
+
+function dataCampanhaAdmin(valor) {
+  if (!valor) return null;
+  const data = valor.toDate ? valor.toDate() : new Date(valor);
+  return Number.isNaN(data.getTime()) ? null : data;
+}
+
+function estadoCampanhaAdmin(campanha) {
+  if (campanha.ativo === false) return 'inactive';
+  const agora = Date.now(), inicio = dataCampanhaAdmin(campanha.inicioEm)?.getTime() || 0, fim = dataCampanhaAdmin(campanha.fimEm)?.getTime() || 0;
+  if (fim && fim <= agora) return 'ended';
+  if (inicio > agora) return 'scheduled';
+  return 'active';
+}
+
+function formatarDataCampanha(valor, vazio) {
+  const data = dataCampanhaAdmin(valor);
+  return data ? data.toLocaleString('pt-BR', { dateStyle:'short', timeStyle:'short' }) : vazio;
+}
+
+function renderizarCampanhasMarketing() {
+  const lista = document.getElementById('campaign-list');
+  if (!lista) return;
+  const campanhas = [...campanhasMarketingAdmin()].sort((a,b) => (dataCampanhaAdmin(b.criadaEm)?.getTime()||0) - (dataCampanhaAdmin(a.criadaEm)?.getTime()||0));
+  const estados = campanhas.map(estadoCampanhaAdmin);
+  document.getElementById('campaign-total').textContent = `${campanhas.length} campanha${campanhas.length === 1 ? '' : 's'}`;
+  document.getElementById('campaign-kpi-active').textContent = estados.filter(e => e === 'active').length;
+  document.getElementById('campaign-kpi-scheduled').textContent = estados.filter(e => e === 'scheduled').length;
+  document.getElementById('campaign-kpi-ended').textContent = estados.filter(e => e === 'ended' || e === 'inactive').length;
+  document.getElementById('campaign-kpi-push').textContent = campanhas.filter(c => c.pushStatus === 'enviado').length;
+  if (!campanhas.length) { lista.innerHTML = '<div class="empty-state">Nenhuma campanha cadastrada.</div>'; return; }
+  const rotulos = { active:'Ativa', scheduled:'Agendada', ended:'Finalizada', inactive:'Encerrada' };
+  lista.innerHTML = campanhas.map(campanha => {
+    const estado = estadoCampanhaAdmin(campanha), canais = campanha.canais || {};
+    const pushRotulo = campanha.pushStatus === 'agendado' ? 'Push agendado' : campanha.pushStatus === 'enviado' ? 'Push enviado' : campanha.pushStatus === 'erro' ? 'Falha no push' : campanha.pushStatus === 'sem_assinantes' ? 'Sem assinantes push' : campanha.pushStatus === 'cancelado' ? 'Push cancelado' : '';
+    return `<article class="campaign-card"><div class="campaign-card-head"><div><h4>${esc(campanha.titulo || 'Campanha')}</h4><p>${esc(campanha.descricao || 'Sem descrição')}</p></div><span class="campaign-chip ${estado}">${rotulos[estado]}</span></div><div class="campaign-card-meta">${canais.popup ? '<span class="campaign-chip">Pop-up</span>' : ''}${canais.push ? '<span class="campaign-chip">Push</span>' : ''}${pushRotulo ? `<span class="campaign-chip">${esc(pushRotulo)}</span>` : ''}<span class="campaign-chip">Início: ${esc(formatarDataCampanha(campanha.inicioEm,'imediato'))}</span><span class="campaign-chip">Fim: ${esc(formatarDataCampanha(campanha.fimEm,'manual'))}</span></div><div class="campaign-actions"><button type="button" class="btn-secondary" onclick="reutilizarCampanhaMarketing('${esc(campanha.id)}')">Reutilizar</button>${estado === 'active' || estado === 'scheduled' ? `<button type="button" class="btn-secondary" style="color:#B4232D" onclick="desativarCampanhaMarketing('${esc(campanha.id)}')">Encerrar</button>` : ''}</div></article>`;
+  }).join('');
+}
+
+function reutilizarCampanhaMarketing(id) {
+  const campanha = campanhasMarketingAdmin().find(item => item.id === id);
+  if (!campanha) return;
+  document.getElementById('campaign-title').value = campanha.titulo || '';
+  document.getElementById('campaign-description').value = campanha.descricao || '';
+  document.getElementById('campaign-image').value = campanha.imagem || '';
+  document.getElementById('campaign-image-only').checked = campanha.somenteImagem === true;
+  document.getElementById('campaign-button').value = campanha.botaoTexto || 'VER NOVIDADE';
+  document.getElementById('campaign-destination').value = campanha.destino || '#cardapio';
+  document.getElementById('campaign-popup').checked = campanha.canais?.popup === true;
+  document.getElementById('campaign-push').checked = campanha.canais?.push === true;
+  document.getElementById('campaign-start').value = '';
+  document.getElementById('campaign-end').value = '';
+  document.getElementById('campaign-feedback').textContent = 'Conteúdo carregado. Defina a nova vigência e publique como uma nova campanha.';
+  document.getElementById('view-marketing').scrollTo({ top:0, behavior:'smooth' });
+}
+
+async function chamarApiCampanha(acao, campanha) {
+  const usuario = auth.currentUser;
+  if (!usuario) throw new Error('Sessão administrativa indisponível.');
+  const token = await usuario.getIdToken(true);
+  const resposta = await fetch('/api/notificar-campanha', { method:'POST', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` }, body:JSON.stringify({ acao, campanha }) });
+  const dados = await resposta.json().catch(() => ({}));
+  if (!resposta.ok) throw new Error(dados.error || 'Não foi possível processar a notificação.');
+  return dados;
+}
+
+async function publicarCampanhaMarketing(evento) {
+  evento.preventDefault();
+  const botao = document.getElementById('campaign-publish'), feedback = document.getElementById('campaign-feedback');
+  const titulo = document.getElementById('campaign-title').value.trim(), descricao = document.getElementById('campaign-description').value.trim();
+  const imagem = document.getElementById('campaign-image').value.trim(), somenteImagem = document.getElementById('campaign-image-only').checked;
+  const botaoTexto = document.getElementById('campaign-button').value.trim(), destino = document.getElementById('campaign-destination').value.trim();
+  const canalPopup = document.getElementById('campaign-popup').checked, canalPush = document.getElementById('campaign-push').checked;
+  const inicioTexto = document.getElementById('campaign-start').value, fimTexto = document.getElementById('campaign-end').value;
+  if (!titulo) return alert('Informe o título da campanha.');
+  if (!canalPopup && !canalPush) return alert('Escolha pelo menos um canal para a campanha.');
+  if (somenteImagem && (!canalPopup || !imagem)) return alert('A opção somente imagem exige o canal pop-up e uma imagem HTTPS.');
+  if (imagem && !/^https:\/\//i.test(imagem)) return alert('A imagem precisa usar uma URL HTTPS.');
+  if (destino && !destino.startsWith('#') && !/^https:\/\//i.test(destino)) return alert('O destino deve começar com # ou usar uma URL HTTPS.');
+  const agora = new Date(), inicio = inicioTexto ? new Date(inicioTexto) : agora, fim = fimTexto ? new Date(fimTexto) : null;
+  if (Number.isNaN(inicio.getTime()) || (fim && Number.isNaN(fim.getTime()))) return alert('Confira as datas da campanha.');
+  if (fim && fim <= inicio) return alert('O término precisa ser posterior ao início.');
+  const id = window.crypto?.randomUUID ? window.crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, caractere => { const aleatorio=Math.random()*16|0; return (caractere === 'x' ? aleatorio : (aleatorio&3|8)).toString(16); });
+  const campanha = { id, ativo:true, titulo, descricao, imagem, somenteImagem, botaoTexto:somenteImagem?'':(botaoTexto||'VER NOVIDADE'), destino:destino||'#cardapio', canais:{ popup:canalPopup, push:canalPush }, inicioEm:firebase.firestore.Timestamp.fromDate(inicio), fimEm:fim?firebase.firestore.Timestamp.fromDate(fim):null, criadaEm:firebase.firestore.Timestamp.now(), pushStatus:canalPush?'processando':'nao_solicitado', pushNotificationId:'' };
+  botao.disabled = true; botao.textContent = 'PUBLICANDO...'; feedback.textContent = '';
+  try {
+    const atualizacao = { campanhasMarketing:[campanha, ...campanhasMarketingAdmin()].slice(0,40) };
+    if (canalPopup && configuracoesGlobais.avisoPopup?.ativo) atualizacao.avisoPopup = { ...configuracoesGlobais.avisoPopup, ativo:false };
+    await db.collection('configuracoes').doc('geral').set(atualizacao, { merge:true });
+    if (canalPush) {
+      try {
+        const retorno = await chamarApiCampanha('enviar', campanha);
+        campanha.pushStatus = retorno.sent === false ? 'sem_assinantes' : retorno.scheduled ? 'agendado' : 'enviado';
+        campanha.pushNotificationId = retorno.notificationId || '';
+        const listaAtual = campanhasMarketingAdmin().filter(item => item.id !== id);
+        await db.collection('configuracoes').doc('geral').set({ campanhasMarketing:[campanha, ...listaAtual].slice(0,40) }, { merge:true });
+        feedback.textContent = retorno.sent === false ? '🟠 Campanha salva, mas ainda não há clientes habilitados para o push.' : retorno.scheduled ? '🟡 Campanha salva e notificação agendada.' : '🟢 Campanha publicada e notificação enviada.';
+      } catch (erroPush) {
+        campanha.pushStatus = 'erro'; campanha.pushErro = String(erroPush.message || erroPush).slice(0,160);
+        const listaAtual = campanhasMarketingAdmin().filter(item => item.id !== id);
+        await db.collection('configuracoes').doc('geral').set({ campanhasMarketing:[campanha, ...listaAtual].slice(0,40) }, { merge:true });
+        feedback.textContent = '🟠 Campanha salva, mas o push não pôde ser enviado.';
+      }
+    } else feedback.textContent = inicio > agora ? '🟡 Campanha agendada com sucesso.' : '🟢 Campanha publicada com sucesso.';
+    document.getElementById('campaign-form').reset();
+    document.getElementById('campaign-button').value = 'VER NOVIDADE'; document.getElementById('campaign-destination').value = '#cardapio'; document.getElementById('campaign-popup').checked = true;
+  } catch (erro) {
+    console.error('[CAMPANHA]', erro); alert('Não foi possível publicar a campanha.');
+  } finally { botao.disabled = false; botao.textContent = 'PUBLICAR CAMPANHA'; }
+}
+
+async function desativarCampanhaMarketing(id) {
+  const campanha = campanhasMarketingAdmin().find(item => item.id === id);
+  if (!campanha || !confirm(`Encerrar a campanha “${campanha.titulo || 'Campanha'}”?`)) return;
+  try {
+    if (campanha.pushStatus === 'agendado' && campanha.pushNotificationId) await chamarApiCampanha('cancelar', campanha);
+    const campanhasMarketing = campanhasMarketingAdmin().map(item => item.id === id ? { ...item, ativo:false, encerradaEm:firebase.firestore.Timestamp.now(), pushStatus:item.pushStatus === 'agendado' ? 'cancelado' : item.pushStatus } : item);
+    await db.collection('configuracoes').doc('geral').set({ campanhasMarketing }, { merge:true });
+  } catch (erro) { console.error('[CAMPANHA]', erro); alert(erro.message || 'Não foi possível encerrar a campanha.'); }
 }
 
 async function publicarAvisoPopup(e) {
