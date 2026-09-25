@@ -603,6 +603,20 @@ body.loja-fechada #cardapio { opacity: 1; pointer-events: auto; }
 :root[data-theme="dark"] .edit-cart-btn { color:var(--gold); }
 .remove-btn { background: rgba(230, 57, 70, 0.08); border: none; color: var(--danger); font-size: 20px; cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: all 0.3s var(--smooth); line-height: 1;} .remove-btn:hover { transform: scale(1.05); background: var(--danger); color:#fff; }
 .cart-empty { color: var(--text-muted); font-size: 14px; text-align: center; padding: 40px 0; font-weight: 500; display: block; width: 100%;} :root[data-theme="dark"] .cart-empty { font-weight: 400; }
+.cart-recommendations { display:none; margin:16px 0 18px; padding:15px; border:1px solid rgba(221,167,58,.28); border-radius:15px; background:linear-gradient(145deg,rgba(221,167,58,.08),rgba(255,255,255,.35)); animation:fadeIn .35s ease; }
+.cart-recommendations.show { display:block; }
+.cart-recommendations-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:11px; }
+.cart-recommendations-head strong { color:var(--text-main); font-family:'Fraunces',serif; font-size:14px; }
+.cart-recommendations-head span { color:var(--gold-dark); font-size:8px; font-weight:850; letter-spacing:1px; text-transform:uppercase; }
+.cart-recommendations-list { display:flex; gap:9px; overflow-x:auto; padding:1px 1px 7px; scroll-snap-type:x mandatory; scrollbar-width:thin; }
+.cart-recommendation-card { flex:0 0 178px; display:grid; grid-template-columns:48px minmax(0,1fr) 30px; align-items:center; gap:8px; padding:9px; border:1px solid var(--border-light); border-radius:12px; background:var(--bg-card); scroll-snap-align:start; }
+.cart-recommendation-img { width:48px; height:48px; position:relative; overflow:hidden; border-radius:9px; background:var(--img-bg); }
+.cart-recommendation-img > img { width:100%; height:100%; object-fit:cover; display:block; }
+.cart-recommendation-copy { min-width:0; }
+.cart-recommendation-copy strong { display:block; overflow:hidden; color:var(--text-main); font-size:10px; line-height:1.35; text-overflow:ellipsis; white-space:nowrap; }
+.cart-recommendation-copy small { display:block; margin-top:4px; color:var(--text-muted); font-size:9px; font-weight:700; }
+.cart-recommendation-card .btn-add { width:30px; height:30px; font-size:17px; }
+:root[data-theme="dark"] .cart-recommendations { background:rgba(212,175,55,.06); border-color:rgba(212,175,55,.2); }
 
 .review-item-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--img-bg); border: 1px solid var(--border-light); position: relative; z-index: 1;}
 .review-card { background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; margin-bottom: 15px; transition: all 0.3s ease; } :root[data-theme="dark"] .review-card { background: rgba(255,255,255,0.02); border-color: transparent;}
@@ -1431,17 +1445,10 @@ footer { background: var(--bg-card); padding: 60px 20px 140px; border-top: 1px s
         <button type="button" class="cupom-remover" id="btn-remover-cupom" onclick="removerCupomAplicado()">Remover cupom</button>
       </div>
 
-      <div id="upsell-container" style="display: none; background: rgba(221, 167, 58, 0.05); border: 1px dashed var(--gold); border-radius: 12px; padding: 15px; text-align: center; animation: fadeIn 0.5s ease;">
-        <p style="font-size: 11px; color: var(--gold-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">😋 Complete seu pedido</p>
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-          <img src="img/esf_choc_morango.jpg" alt="Esfiha Doce" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-light);" onerror="this.style.display='none'">
-          <div style="text-align: left; flex: 1;">
-            <strong style="display: block; font-size: 14px; color: var(--text-main);">Esfiha Choc. c/ Morango</strong>
-            <span id="upsell-preco" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">+ R$ 12,00</span>
-          </div>
-          <button type="button" class="btn-add ripple" onclick="adicionarUpsell('esf_choc_morango')" style="width: 36px; height: 36px; font-size: 20px;">+</button>
-        </div>
-      </div>
+      <section class="cart-recommendations" id="cart-recommendations" aria-labelledby="cart-recommendations-title">
+        <div class="cart-recommendations-head"><strong id="cart-recommendations-title">Que tal completar seu pedido?</strong><span>Sugestões para você</span></div>
+        <div class="cart-recommendations-list" id="cart-recommendations-list"></div>
+      </section>
 
       <button type="button" class="btn-finish btn-gradient ripple" id="btn-step1-avancar" style="margin-top:0;" onclick="irParaStep(2)">Avançar</button>
       <button type="button" class="btn-continue ripple" style="margin-top:0;" data-close="cart-overlay">Continuar Comprando</button>
@@ -4034,21 +4041,67 @@ function adicionar() {
   }
 }
 
-function adicionarUpsell(saborId) {
-  const novoItem = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), sabores: [saborId], extras: [], qtd: 1, obs: '' };
-  if (!validarItem(novoItem)) return; 
-  
-  let itemExistente = carrinho.find(i => saoItensIguais(i, novoItem));
-  if(itemExistente) {
-      itemExistente.qtd = Math.min(20, itemExistente.qtd + 1);
-      itemExistente.total = itemExistente.unitario * itemExistente.qtd;
-  } else {
-      carrinho.push(novoItem); 
-  }
+const RECOMENDACOES_CARRINHO_PADRAO = { ativo:true, modo:'automatico', titulo:'Que tal completar seu pedido?', limite:3, produtos:[] };
 
-  salvar(); atualizarUI();
-  showToast("Esfiha adicionada ao pedido!", "success");
-  if (navigator.vibrate) navigator.vibrate(50);
+function configuracaoRecomendacoesCarrinho() {
+  const dados = configLoja.recomendacoesCarrinho || {};
+  return { ...RECOMENDACOES_CARRINHO_PADRAO, ...dados, limite:Math.min(4,Math.max(1,Number(dados.limite)||3)), produtos:Array.isArray(dados.produtos)?dados.produtos.map(String):[] };
+}
+
+function idsPresentesNoCarrinho() {
+  return new Set(carrinho.flatMap(item => [...(item.sabores || []), ...(item.comboItens || []).map(combo => combo.id)]));
+}
+
+function pontuacaoRecomendacao(produto, indice) {
+  const categoriasCarrinho = carrinho.flatMap(item => (item.sabores || []).map(categoriaPromocionalDoSabor));
+  const temPizza = categoriasCarrinho.some(categoria => categoria.startsWith('pizzas_'));
+  const temEsfiha = categoriasCarrinho.some(categoria => categoria.startsWith('esfihas_'));
+  const temDoce = categoriasCarrinho.includes('esfihas_doces');
+  const categoria = categoriaPromocionalDoSabor(produto.id);
+  let pontos = Math.max(0, 30 - indice);
+  if (!temDoce && categoria === 'esfihas_doces') pontos += 100;
+  if (temPizza && categoria.startsWith('esfihas_')) pontos += 28;
+  if (temEsfiha && !temPizza && categoria.startsWith('pizzas_')) pontos += 48;
+  if (categoria === 'combos') pontos += 12;
+  if (produto.novo === true) pontos += 22;
+  if (produto.id === saborMaisPedido) pontos += 30;
+  pontos += percentualEfetivoPromocoes([produto.id]) * 2;
+  return pontos;
+}
+
+function produtosRecomendadosCarrinho() {
+  const config = configuracaoRecomendacoesCarrinho();
+  if (config.ativo === false || !carrinho.length) return [];
+  const presentes = idsPresentesNoCarrinho();
+  let candidatos = todosSabores().filter(produto => produto && !presentes.has(produto.id) && !itemIndisponivel(produto.id));
+  if (config.modo === 'manual') {
+    const ordem = new Map(config.produtos.map((id, indice) => [id, indice]));
+    candidatos = candidatos.filter(produto => ordem.has(produto.id)).sort((a,b) => ordem.get(a.id) - ordem.get(b.id));
+  } else {
+    candidatos = candidatos.map((produto, indice) => ({ produto, pontos:pontuacaoRecomendacao(produto, indice) })).sort((a,b) => b.pontos - a.pontos).map(item => item.produto);
+  }
+  return candidatos.slice(0, config.limite);
+}
+
+function imagemRecomendacaoHTML(produto) {
+  if (!produto.img) return placeholderProdutoHTML(`Foto de ${produto.nome || 'produto'} em preparação`);
+  return `<img src="${esc(produto.img)}" alt="" onerror="this.style.display='none'">`;
+}
+
+function renderizarRecomendacoesCarrinho() {
+  const bloco = document.getElementById('cart-recommendations'), lista = document.getElementById('cart-recommendations-list');
+  if (!bloco || !lista) return;
+  const produtos = produtosRecomendadosCarrinho(), config = configuracaoRecomendacoesCarrinho();
+  if (!produtos.length) { lista.innerHTML = ''; bloco.classList.remove('show'); return; }
+  document.getElementById('cart-recommendations-title').textContent = config.titulo || RECOMENDACOES_CARRINHO_PADRAO.titulo;
+  lista.innerHTML = produtos.map(produto => `<article class="cart-recommendation-card"><div class="cart-recommendation-img">${imagemRecomendacaoHTML(produto)}</div><div class="cart-recommendation-copy"><strong title="${esc(produto.nome)}">${esc(produto.nome)}</strong><small>${precoPromocionalHTML(produto.preco, produto.naoAcumulaDescontos === true, [produto.id])}</small></div><button type="button" class="btn-add ripple" onclick="abrirRecomendacaoCarrinho('${esc(produto.id)}')" aria-label="Adicionar ${esc(produto.nome)}">+</button></article>`).join('');
+  bloco.classList.add('show');
+}
+
+function abrirRecomendacaoCarrinho(id) {
+  if (!acharSabor(id) || itemIndisponivel(id)) { showToast('Este produto ficou indisponível.', 'warning'); atualizarUI(); return; }
+  fecharModal('cart-overlay');
+  setTimeout(() => abrirBuilder([id]), 180);
 }
 
 function alterarEsfihaRapida(id, delta) {
@@ -4185,11 +4238,6 @@ function totais() {
 
 function atualizarUI() {
   const lista = $('#cart-items-list'); const qtdTotal = carrinho.reduce((s, i) => s + i.qtd, 0);
-  const upsellPreco = document.getElementById('upsell-preco');
-  if (upsellPreco) upsellPreco.innerHTML = '+ ' + precoPromocionalHTML(1200, false, ['esf_choc_morango']);
-  
-  let temSobremesa = carrinho.some(i => i.sabores.some(s => s.startsWith('esf_choc_morango') || s.startsWith('esf_choc')));
-  if (carrinho.length > 0 && !temSobremesa) { $('#upsell-container').style.display = 'block'; } else { $('#upsell-container').style.display = 'none'; }
 
   lista.innerHTML = carrinho.length ? carrinho.map(i => {
     const det = []; 
@@ -4226,6 +4274,7 @@ function atualizarUI() {
       </li>`;
   }).join('') : '<li class="cart-empty">Seu carrinho está vazio.</li>';
   
+  renderizarRecomendacoesCarrinho();
   const t = totais();
   $('#cart-bruto-value').textContent = brl(t.bruto);
   $('#cart-subtotal-value').textContent = brl(t.subtotal);
@@ -5446,6 +5495,7 @@ function processarConfig(doc) {
     lojaEstavaPausada = bloqueioTotal; primeiraCargaPausa = false;
     processarBannersMarketingCliente(configLoja.bannersMarketing);
     renderizarFaqCliente(configLoja.faqMarketing);
+    renderizarRecomendacoesCarrinho();
     const campanhaAtiva = processarCampanhasMarketing(configLoja.campanhasMarketing);
     if (!campanhaAtiva) processarAvisoPopup(configLoja.avisoPopup);
     
