@@ -2053,6 +2053,24 @@ const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 
+function gerarNumeroPedido() {
+  return String(Date.now()).slice(-9).padStart(9, '0');
+}
+
+function numeroPedidoLegado(id) {
+  let hash = 2166136261;
+  String(id || '').split('').forEach(caractere => {
+    hash ^= caractere.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  });
+  return String(100000000 + ((hash >>> 0) % 900000000));
+}
+
+function numeroPedidoExibicao(pedido, id) {
+  const numeroSalvo = String(pedido?.numero_pedido || '').replace(/\D/g, '');
+  return numeroSalvo || numeroPedidoLegado(id);
+}
+
 function toggleMobileMenu(forcarEstado) {
   const menu = document.getElementById('nav-links');
   const botao = document.getElementById('mobile-menu-toggle');
@@ -4756,6 +4774,7 @@ function montarPedido() {
   }
 
   return {
+    numero_pedido: gerarNumeroPedido(),
     status: 'Novo',
     status_operacional: agendado ? 'Agendado' : 'Novo',
     agendado,
@@ -4972,7 +4991,7 @@ async function enviarPedidoFinal(ev) {
   
   if(id) localStorage.setItem('dca_last_order', id);
 
-  let texto = montarMensagem(pedido); if (id) texto += `\n\nCod: #${id.slice(-5).toUpperCase()}`;
+  let texto = montarMensagem(pedido); if (id) texto += `\n\nPedido: #${numeroPedidoExibicao(pedido, id)}`;
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
   if (aba) aba.location.href = url; else window.location.href = url;
   
@@ -4992,7 +5011,7 @@ function abrirRastreio() {
   if (!lastOrderId) { showToast("Você ainda não tem pedidos ativos.", "warning"); return; }
 
   const elDesc = document.getElementById('track-desc');
-  document.getElementById('track-id').textContent = `Pedido #${lastOrderId.slice(-5).toUpperCase()}`;
+  document.getElementById('track-id').textContent = `Pedido #${numeroPedidoLegado(lastOrderId)}`;
   if (elDesc) elDesc.textContent = 'Conectando...';
   abrirModal('tracking-overlay');
 
@@ -5005,6 +5024,7 @@ function abrirRastreio() {
         return;
       }
       const dados = doc.data() || {};
+      document.getElementById('track-id').textContent = `Pedido #${numeroPedidoExibicao(dados, lastOrderId)}`;
       if (elDesc) elDesc.textContent = 'Acompanhe o status em tempo real';
       atualizarTimeline(dados.status, dados.tipo_entrega);
     },
