@@ -469,6 +469,10 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .banner-admin-card p { color:var(--text-muted); font-size:8px; line-height:1.45; }
 .banner-admin-order { display:flex; gap:5px; margin-left:auto; }
 .banner-admin-order button { width:28px; height:28px; border:1px solid var(--border-light); border-radius:8px; background:#fff; color:var(--bronze); cursor:pointer; }
+.faq-admin-list { display:grid; gap:9px; }
+.faq-admin-card { padding:13px; border:1px solid var(--border-light); border-radius:13px; background:#FFFDFA; }
+.faq-admin-card h4 { margin:0 0 6px; font-size:11px; line-height:1.4; }
+.faq-admin-card p { color:var(--text-muted); font-size:8px; line-height:1.55; white-space:pre-line; }
 @media (max-width:760px) {
   .admin-view { padding:14px 10px; }
   .view-heading { flex-direction:column; }
@@ -729,6 +733,7 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         <nav class="marketing-tabs" aria-label="Seções de Marketing">
           <button type="button" class="marketing-tab-btn active" onclick="switchMarketingTab('marketing-tab-campanhas',this)">Campanhas</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-banners',this)">Banners</button>
+          <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-faq',this)">FAQ</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-promocoes',this)">Promoções</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-cupons',this)">Cupons</button>
           <button type="button" class="marketing-tab-btn" onclick="switchMarketingTab('marketing-tab-combos',this)">Combos e ofertas</button>
@@ -784,6 +789,26 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
             <div class="marketing-panel">
               <h3>Banners cadastrados</h3><p>Altere a ordem com as setas. Somente banners ativos e dentro da vigência aparecem para os clientes.</p>
               <div class="banner-admin-list" id="banner-admin-list"><div class="empty-state">Nenhum banner cadastrado.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="marketing-tab-content" id="marketing-tab-faq">
+          <div class="banner-admin-layout">
+            <div class="marketing-panel">
+              <h3 id="faq-form-title">Nova pergunta</h3><p>Cadastre respostas objetivas para as dúvidas mais comuns dos clientes.</p>
+              <form class="marketing-form" id="faq-form" onsubmit="salvarFaqMarketing(event)">
+                <input type="hidden" id="faq-id">
+                <label class="catalog-label">Pergunta<input class="admin-field" id="faq-question" maxlength="140" placeholder="Ex: Quais formas de pagamento são aceitas?" required></label>
+                <label class="catalog-label">Resposta<textarea class="admin-field" id="faq-answer" maxlength="600" rows="6" placeholder="Escreva uma resposta clara e completa" required></textarea></label>
+                <label class="toggle-row"><span>Exibir no site e aplicativo</span><input type="checkbox" id="faq-active" checked></label>
+                <button class="btn-gradient" id="faq-save" type="submit" style="width:100%;padding:13px;margin:0">Salvar pergunta</button>
+                <button class="btn-secondary" id="faq-cancel" type="button" onclick="limparFormularioFaq()" style="display:none">Cancelar edição</button>
+                <div id="faq-feedback" style="min-height:14px;font-size:9px;font-weight:700;color:var(--text-muted)"></div>
+              </form>
+            </div>
+            <div class="marketing-panel">
+              <h3>Perguntas cadastradas</h3><p>Use as setas para definir a ordem em que as respostas aparecerão para o cliente.</p>
+              <div class="faq-admin-list" id="faq-admin-list"><div class="empty-state">Nenhuma pergunta cadastrada.</div></div>
             </div>
           </div>
         </div>
@@ -1791,6 +1816,7 @@ function iniciarSistema() {
         renderPromocoesProgramadas();
         renderizarCampanhasMarketing();
         renderizarBannersMarketing();
+        renderizarFaqMarketing();
     }
     atualizarUIConfig();
   });
@@ -2930,6 +2956,83 @@ async function desativarPromocaoPorId(id, btn) {
   } finally {
     btn.disabled = false;
   }
+}
+
+function faqMarketingAdmin() {
+  return Array.isArray(configuracoesGlobais.faqMarketing) ? configuracoesGlobais.faqMarketing.filter(Boolean) : [];
+}
+
+function renderizarFaqMarketing() {
+  const lista = document.getElementById('faq-admin-list');
+  if (!lista) return;
+  const itens = faqMarketingAdmin();
+  if (!itens.length) { lista.innerHTML = '<div class="empty-state">Nenhuma pergunta cadastrada.</div>'; return; }
+  lista.innerHTML = itens.map((item, indice) => `<article class="faq-admin-card"><div class="campaign-card-head"><div><h4>${esc(item.pergunta || 'Pergunta')}</h4><p>${esc(item.resposta || 'Sem resposta')}</p></div><span class="campaign-chip ${item.ativo === false ? 'inactive' : 'active'}">${item.ativo === false ? 'Oculta' : 'Visível'}</span></div><div class="campaign-actions"><button type="button" class="btn-secondary" onclick="editarFaqMarketing('${esc(item.id)}')">Editar</button><button type="button" class="btn-secondary" onclick="alternarFaqMarketing('${esc(item.id)}')">${item.ativo === false ? 'Exibir' : 'Ocultar'}</button><button type="button" class="btn-secondary" style="color:#B4232D" onclick="excluirFaqMarketing('${esc(item.id)}')">Excluir</button><span class="banner-admin-order"><button type="button" onclick="moverFaqMarketing(${indice},-1)" ${indice === 0 ? 'disabled' : ''} aria-label="Mover para cima">↑</button><button type="button" onclick="moverFaqMarketing(${indice},1)" ${indice === itens.length - 1 ? 'disabled' : ''} aria-label="Mover para baixo">↓</button></span></div></article>`).join('');
+}
+
+function limparFormularioFaq() {
+  const form = document.getElementById('faq-form');
+  if (!form) return;
+  form.reset();
+  document.getElementById('faq-id').value = '';
+  document.getElementById('faq-active').checked = true;
+  document.getElementById('faq-form-title').textContent = 'Nova pergunta';
+  document.getElementById('faq-save').textContent = 'SALVAR PERGUNTA';
+  document.getElementById('faq-cancel').style.display = 'none';
+  document.getElementById('faq-feedback').textContent = '';
+}
+
+function editarFaqMarketing(id) {
+  const item = faqMarketingAdmin().find(faq => faq.id === id);
+  if (!item) return;
+  document.getElementById('faq-id').value = item.id;
+  document.getElementById('faq-question').value = item.pergunta || '';
+  document.getElementById('faq-answer').value = item.resposta || '';
+  document.getElementById('faq-active').checked = item.ativo !== false;
+  document.getElementById('faq-form-title').textContent = 'Editar pergunta';
+  document.getElementById('faq-save').textContent = 'SALVAR ALTERAÇÕES';
+  document.getElementById('faq-cancel').style.display = 'block';
+  document.getElementById('view-marketing').scrollTo({ top:0, behavior:'smooth' });
+}
+
+async function persistirFaqMarketing(itens) {
+  await db.collection('configuracoes').doc('geral').set({ faqMarketing:itens.slice(0,30) }, { merge:true });
+}
+
+async function salvarFaqMarketing(evento) {
+  evento.preventDefault();
+  const idAtual = document.getElementById('faq-id').value;
+  const pergunta = document.getElementById('faq-question').value.trim(), resposta = document.getElementById('faq-answer').value.trim();
+  if (!pergunta || !resposta) return alert('Informe a pergunta e a resposta.');
+  const existentes = faqMarketingAdmin(), anterior = existentes.find(item => item.id === idAtual);
+  const id = idAtual || (window.crypto?.randomUUID ? window.crypto.randomUUID() : `faq-${Date.now()}`);
+  const item = { id, pergunta, resposta, ativo:document.getElementById('faq-active').checked, criadaEm:anterior?.criadaEm || firebase.firestore.Timestamp.now(), atualizadaEm:firebase.firestore.Timestamp.now() };
+  const faqMarketing = anterior ? existentes.map(faq => faq.id === id ? item : faq) : [...existentes, item];
+  const botao = document.getElementById('faq-save'), feedback = document.getElementById('faq-feedback');
+  botao.disabled = true; botao.textContent = 'SALVANDO...';
+  try { await persistirFaqMarketing(faqMarketing); limparFormularioFaq(); feedback.textContent = '🟢 Pergunta salva com sucesso.'; }
+  catch (erro) { console.error('[FAQ]', erro); alert('Não foi possível salvar a pergunta.'); }
+  finally { botao.disabled = false; if (!document.getElementById('faq-id').value) botao.textContent = 'SALVAR PERGUNTA'; }
+}
+
+async function alternarFaqMarketing(id) {
+  try { await persistirFaqMarketing(faqMarketingAdmin().map(item => item.id === id ? { ...item, ativo:item.ativo === false, atualizadaEm:firebase.firestore.Timestamp.now() } : item)); }
+  catch (erro) { console.error('[FAQ]', erro); alert('Não foi possível alterar a pergunta.'); }
+}
+
+async function excluirFaqMarketing(id) {
+  const item = faqMarketingAdmin().find(faq => faq.id === id);
+  if (!item || !confirm(`Excluir a pergunta “${item.pergunta || 'Pergunta'}”?`)) return;
+  try { await persistirFaqMarketing(faqMarketingAdmin().filter(faq => faq.id !== id)); if (document.getElementById('faq-id').value === id) limparFormularioFaq(); }
+  catch (erro) { console.error('[FAQ]', erro); alert('Não foi possível excluir a pergunta.'); }
+}
+
+async function moverFaqMarketing(indice, direcao) {
+  const itens = [...faqMarketingAdmin()], destino = indice + direcao;
+  if (indice < 0 || destino < 0 || indice >= itens.length || destino >= itens.length) return;
+  [itens[indice], itens[destino]] = [itens[destino], itens[indice]];
+  try { await persistirFaqMarketing(itens); }
+  catch (erro) { console.error('[FAQ]', erro); alert('Não foi possível alterar a ordem.'); }
 }
 
 function bannersMarketingAdmin() {
