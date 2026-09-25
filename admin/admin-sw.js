@@ -1,8 +1,9 @@
-const ADMIN_CACHE = 'doce-capricho-admin-v12';
+const ADMIN_CACHE = 'doce-capricho-admin-v13';
 const ADMIN_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  '../catalogo-padrao.js',
   './img/admin-identidade.png',
   './icons/icon-192.png',
   './icons/icon-512.png',

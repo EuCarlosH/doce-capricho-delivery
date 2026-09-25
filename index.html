@@ -131,6 +131,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="/vendor/qrcode.js"></script>
+<script src="/catalogo-padrao.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
 <style>
@@ -2140,6 +2141,61 @@ const DEPENDENCIAS_INGREDIENTES = {
   catupiry:['catupiry'], cream:['cream_cheese'], bacon:['bacon'], alho:['alho_poro']
 };
 
+const CATEGORIAS_CATALOGO = ['tradicionais','premium','esfihas_tradicionais','esfihas_premium','esfihas_doces','combos_especiais','combos_sexta','combos_sabado'];
+
+function produtoCatalogoValido(produto) {
+  return produto && /^[a-zA-Z0-9_-]{2,64}$/.test(String(produto.id || '')) && String(produto.nome || '').trim() && Number.isInteger(Number(produto.preco)) && Number(produto.preco) >= 0;
+}
+
+function normalizarProdutoCatalogo(produto) {
+  return {
+    ...produto,
+    id:String(produto.id).trim(),
+    nome:String(produto.nome || '').trim().slice(0, 90),
+    desc:String(produto.desc || '').trim().slice(0, 350),
+    img:String(produto.img || '').trim().slice(0, 500),
+    preco:Math.max(0, Math.round(Number(produto.preco) || 0)),
+    ativo:produto.ativo !== false,
+    novo:produto.novo === true,
+    controlaEstoque:produto.controlaEstoque === true,
+    estoqueAtual:Math.max(0, Math.floor(Number(produto.estoqueAtual) || 0)),
+    estoqueMinimo:Math.max(0, Math.floor(Number(produto.estoqueMinimo) || 0)),
+    ingredientes:Array.isArray(produto.ingredientes) ? produto.ingredientes.map(String).slice(0, 40) : []
+  };
+}
+
+function aplicarCatalogoRemoto(dados) {
+  if (!dados || !dados.cardapio || typeof dados.cardapio !== 'object') return false;
+  let totalProdutos = 0;
+  CATEGORIAS_CATALOGO.forEach(categoria => {
+    if (!Array.isArray(dados.cardapio[categoria])) return;
+    const produtos = dados.cardapio[categoria].filter(produtoCatalogoValido).map(normalizarProdutoCatalogo);
+    CARDAPIO[categoria].splice(0, CARDAPIO[categoria].length, ...produtos);
+    totalProdutos += produtos.length;
+  });
+  if (!totalProdutos) return false;
+
+  if (Array.isArray(dados.extras)) {
+    const extras = dados.extras.filter(extra => extra && /^[a-zA-Z0-9_-]{2,64}$/.test(String(extra.id || '')) && extra.nome);
+    if (extras.length) EXTRAS.splice(0, EXTRAS.length, ...extras);
+  }
+  if (Array.isArray(dados.bordas)) {
+    const bordas = dados.bordas.filter(borda => borda && /^[a-zA-Z0-9_-]{2,64}$/.test(String(borda.id || '')) && borda.nome);
+    if (bordas.length) BORDAS.splice(0, BORDAS.length, ...bordas);
+  }
+  if (Array.isArray(dados.ingredientes)) {
+    const ingredientes = dados.ingredientes.filter(item => item && /^[a-zA-Z0-9_-]{2,64}$/.test(String(item.id || '')) && item.nome);
+    if (ingredientes.length) INGREDIENTES.splice(0, INGREDIENTES.length, ...ingredientes);
+  }
+  if (dados.dependencias && typeof dados.dependencias === 'object') {
+    Object.keys(DEPENDENCIAS_INGREDIENTES).forEach(chave => delete DEPENDENCIAS_INGREDIENTES[chave]);
+    Object.entries(dados.dependencias).forEach(([id, ingredientes]) => {
+      if (/^[a-zA-Z0-9_-]{2,64}$/.test(id) && Array.isArray(ingredientes)) DEPENDENCIAS_INGREDIENTES[id] = ingredientes.map(String).slice(0, 40);
+    });
+  }
+  return true;
+}
+
 const todosSabores = () => [...CARDAPIO.tradicionais, ...CARDAPIO.premium, ...CARDAPIO.esfihas_tradicionais, ...CARDAPIO.esfihas_premium, ...CARDAPIO.esfihas_doces, ...CARDAPIO.combos_especiais, ...CARDAPIO.combos_sexta, ...CARDAPIO.combos_sabado];
 const acharSabor = id => todosSabores().find(s => s.id === id);
 const acharIngrediente = id => INGREDIENTES.find(i => i.id === id);
@@ -2150,7 +2206,9 @@ function ingredientesIndisponiveisItem(id) {
   return ingredientesDoItem(id).filter(ingrediente => esgotados.has(ingrediente));
 }
 function itemIndisponivel(id) {
-  return (Array.isArray(configLoja.itensEsgotados) && configLoja.itensEsgotados.includes(id)) || ingredientesIndisponiveisItem(id).length > 0;
+  const produto = acharSabor(id);
+  const semEstoque = produto?.controlaEstoque === true && Number(produto.estoqueAtual) <= 0;
+  return produto?.ativo === false || semEstoque || (Array.isArray(configLoja.itensEsgotados) && configLoja.itensEsgotados.includes(id)) || ingredientesIndisponiveisItem(id).length > 0;
 }
 function nomesIngredientes(ids) {
   return [...new Set(ids)].map(id => acharIngrediente(id)?.nome || id);
@@ -5332,6 +5390,13 @@ function processarAvisoPopup(aviso) {
 db.collection('configuracoes').doc('geral').onSnapshot(processarConfig, error => { 
   console.error('[CONFIG]', error.code, error.message); 
 });
+db.collection('configuracoes').doc('catalogo').onSnapshot(doc => {
+  if (!doc.exists || !aplicarCatalogoRemoto(doc.data())) return;
+  renderCardapio();
+  atualizarEstoqueNoBuilder();
+  atualizarUI();
+  if (pedidoStepAtual === 4 && carrinho.length) montarRevisao();
+}, error => { console.warn('[CATÁLOGO]', error.code, error.message); });
 
 function processarEstatisticas(doc) {
   if(doc.exists) { const dados = doc.data(); if(dados && dados.sabores) { let max = 0; let idMax = null; for(const [id, count] of Object.entries(dados.sabores)) { if(count > max) { max = count; idMax = id; } } if(saborMaisPedido !== idMax) { saborMaisPedido = idMax; renderCardapio(); } } }

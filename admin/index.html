@@ -21,6 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="../catalogo-padrao.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
 <style>
@@ -382,11 +383,34 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
 .manual-summary { margin-top:14px; padding:13px; border-radius:12px; background:linear-gradient(135deg,#2B170E,#713721); color:#FFF4D4; display:flex; align-items:center; justify-content:space-between; }
 .manual-summary strong { font:700 21px 'Cinzel',serif; }
 .push-ready { color:#8FE2B2 !important; }
+.catalog-kpis { display:grid; grid-template-columns:repeat(4,minmax(130px,1fr)); gap:10px; margin-bottom:14px; }
+.catalog-kpi { padding:15px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-card); box-shadow:var(--shadow-sm); }
+.catalog-kpi span { display:block; color:var(--text-muted); font-size:8px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+.catalog-kpi strong { display:block; margin-top:5px; color:var(--text-main); font:700 22px 'Cinzel',serif; }
+.catalog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:11px; }
+.catalog-product { display:grid; grid-template-columns:62px 1fr auto; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-light); border-radius:14px; background:var(--bg-card); box-shadow:var(--shadow-sm); }
+.catalog-product.is-off { opacity:.62; }
+.catalog-product.is-low { border-color:#E2AE4B; }
+.catalog-product-image { width:62px; height:62px; border-radius:11px; object-fit:cover; background:#F5EEE4; }
+.catalog-product-copy { min-width:0; }
+.catalog-product-copy strong { display:block; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.catalog-product-copy small { display:block; margin-top:4px; color:var(--text-muted); font-size:8px; line-height:1.35; }
+.catalog-product-actions { display:grid; gap:6px; }
+.catalog-empty { grid-column:1/-1; padding:35px; text-align:center; border:1px dashed var(--border-light); border-radius:14px; color:var(--text-muted); font-size:10px; }
+.catalog-editor-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+.catalog-editor-grid .full { grid-column:1/-1; }
+.catalog-label { display:grid; gap:5px; color:var(--text-muted); font-size:8px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
+.catalog-checks { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:7px; max-height:230px; overflow:auto; padding:10px; border:1px solid var(--border-light); border-radius:10px; }
+.catalog-check { display:flex; align-items:center; gap:7px; padding:7px; border-radius:8px; background:#FAF5ED; color:var(--text-main); font-size:9px; font-weight:700; text-transform:none; letter-spacing:0; }
+.catalog-init { padding:13px; margin-bottom:14px; border:1px solid rgba(223,174,76,.32); border-radius:12px; background:#FFF9ED; display:none; align-items:center; justify-content:space-between; gap:12px; font-size:9px; line-height:1.45; }
 @media (max-width:760px) {
   .admin-view { padding:14px 10px; }
   .view-heading { flex-direction:column; }
   .manual-order-grid { grid-template-columns:1fr; }
   .manual-item { grid-template-columns:1fr 72px 105px 38px; }
+  .catalog-kpis { grid-template-columns:repeat(2,1fr); }
+  .catalog-editor-grid { grid-template-columns:1fr; }
+  .catalog-editor-grid .full { grid-column:auto; }
 }
 </style>
 </head>
@@ -471,6 +495,10 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
           Clientes
         </button>
         <div class="nav-section-label">Gestão</div>
+        <button class="nav-btn" id="btn-nav-catalogo" onclick="alternarTela('catalogo')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h8"></path></svg>
+          Catálogo e Estoque
+        </button>
         <button class="nav-btn" id="btn-nav-relatorios" onclick="alternarTela('relatorios')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
           Financeiro / KPI
@@ -592,6 +620,26 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
         </div>
         <div class="admin-toolbar"><input class="admin-field" id="clientes-busca" placeholder="Buscar por nome ou telefone" oninput="renderizarClientes()"></div>
         <div class="client-grid" id="clientes-lista"><div class="empty-state">Abra a área de clientes para carregar os dados.</div></div>
+      </section>
+
+      <section class="admin-view" id="view-catalogo">
+        <div class="view-heading">
+          <div><span class="hero-kicker" style="color:var(--gold-dark)">Cardápio central</span><h2>Catálogo e estoque</h2><p>Cadastre produtos, altere preços, imagens, disponibilidade e controle manual de estoque.</p></div>
+          <button type="button" class="btn-gradient" style="width:auto;padding:11px 16px;margin:0" onclick="abrirEditorProduto()">+ Novo produto</button>
+        </div>
+        <div class="catalog-init" id="catalog-init"><span>O catálogo ainda usa a versão padrão do site. Inicialize-o para liberar a edição no painel.</span><button type="button" class="btn-secondary" onclick="inicializarCatalogoAdmin()">Inicializar catálogo atual</button></div>
+        <div class="catalog-kpis">
+          <div class="catalog-kpi"><span>Produtos</span><strong id="catalog-kpi-total">0</strong></div>
+          <div class="catalog-kpi"><span>Disponíveis</span><strong id="catalog-kpi-ativos">0</strong></div>
+          <div class="catalog-kpi"><span>Estoque baixo</span><strong id="catalog-kpi-baixo">0</strong></div>
+          <div class="catalog-kpi"><span>Indisponíveis</span><strong id="catalog-kpi-esgotado">0</strong></div>
+        </div>
+        <div class="admin-toolbar">
+          <input class="admin-field" id="catalog-busca" placeholder="Buscar produto" oninput="renderizarCatalogoAdmin()">
+          <select class="admin-field" id="catalog-categoria" onchange="renderizarCatalogoAdmin()"><option value="">Todas as categorias</option></select>
+          <select class="admin-field" id="catalog-status" onchange="renderizarCatalogoAdmin()"><option value="">Todos os status</option><option value="ativo">Disponíveis</option><option value="baixo">Estoque baixo</option><option value="esgotado">Indisponíveis</option></select>
+        </div>
+        <div class="catalog-grid" id="catalog-admin-lista"></div>
       </section>
 
       <div id="view-relatorios">
@@ -891,6 +939,33 @@ body { background:radial-gradient(circle at 85% 5%, rgba(223,174,76,.12), transp
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal-box" style="max-width:760px">
+    <button class="close-modal" onclick="fecharEditorProduto()">&times;</button>
+    <h2 id="produto-editor-titulo">Novo produto</h2>
+    <form id="form-produto" onsubmit="salvarProdutoCatalogo(event)">
+      <div class="catalog-editor-grid">
+        <label class="catalog-label">Nome<input class="admin-field" id="produto-nome" maxlength="80" required></label>
+        <label class="catalog-label">Identificador<input class="admin-field" id="produto-id" maxlength="64" placeholder="gerado pelo nome" required></label>
+        <label class="catalog-label">Categoria<select class="admin-field" id="produto-categoria" required></select></label>
+        <label class="catalog-label">Preço (R$)<input class="admin-field" id="produto-preco" inputmode="decimal" placeholder="0,00" required></label>
+        <label class="catalog-label full">Descrição<textarea class="admin-field" id="produto-desc" rows="3" maxlength="240"></textarea></label>
+        <label class="catalog-label full">Imagem (endereço HTTPS ou caminho img/... )<input class="admin-field" id="produto-img" maxlength="500" placeholder="img/produto.jpg"></label>
+        <label class="toggle-row"><span>Disponível para venda</span><input type="checkbox" id="produto-ativo" checked></label>
+        <label class="toggle-row"><span>Destacar como novidade</span><input type="checkbox" id="produto-novo"></label>
+        <label class="toggle-row full"><span>Controlar estoque manual deste produto</span><input type="checkbox" id="produto-controla-estoque" onchange="atualizarCamposEstoqueProduto()"></label>
+        <label class="catalog-label">Quantidade atual<input class="admin-field" type="number" id="produto-estoque" min="0" step="1" value="0" disabled></label>
+        <label class="catalog-label">Avisar abaixo de<input class="admin-field" type="number" id="produto-estoque-minimo" min="0" step="1" value="0" disabled></label>
+        <div class="full"><span class="catalog-label" style="margin-bottom:6px">Ingredientes que bloqueiam este produto</span><div class="catalog-checks" id="produto-ingredientes"></div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:9px;margin-top:15px">
+        <button type="button" class="btn-secondary" id="produto-excluir" style="display:none;color:#B4232D" onclick="excluirProdutoCatalogo()">Excluir produto</button>
+        <div style="display:flex;gap:9px;margin-left:auto"><button type="button" class="btn-secondary" onclick="fecharEditorProduto()">Cancelar</button><button type="submit" class="btn-gradient" id="produto-salvar" style="width:auto;margin:0;padding:11px 18px">Salvar produto</button></div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
@@ -933,6 +1008,15 @@ let historicoPromise = null;
 let sequenciaItemComanda = 0;
 const brl = c => (c / 100).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+const CATEGORIAS_CATALOGO_ADMIN = {
+  tradicionais:'Pizzas tradicionais', premium:'Pizzas premium', esfihas_tradicionais:'Esfihas tradicionais',
+  esfihas_premium:'Esfihas premium', esfihas_doces:'Esfihas doces', combos_especiais:'Combos especiais',
+  combos_sexta:'Combos de sexta', combos_sabado:'Combos de sábado'
+};
+const clonarCatalogo = valor => JSON.parse(JSON.stringify(valor || {}));
+let catalogoAdmin = clonarCatalogo(window.DCA_CATALOGO_PADRAO || { cardapio:{}, extras:[], bordas:[], ingredientes:[], dependencias:{} });
+let catalogoRemotoExiste = false;
+let produtoEmEdicao = null;
 
 auth.onAuthStateChanged(user => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -1076,6 +1160,10 @@ function alternarTela(tela) {
     document.getElementById('view-clientes').classList.add('active');
     document.getElementById('btn-nav-clientes').classList.add('active');
     carregarHistorico().then(renderizarClientes);
+  } else if (tela === 'catalogo') {
+    document.getElementById('view-catalogo').classList.add('active');
+    document.getElementById('btn-nav-catalogo').classList.add('active');
+    renderizarCatalogoAdmin();
   } else if (tela === 'comanda') {
     document.getElementById('view-comanda').classList.add('active');
     document.getElementById('btn-nav-comanda').classList.add('active');
@@ -1322,6 +1410,180 @@ function switchTab(tabId, btn) {
 function abrirModalCatalogo() { document.getElementById('modal-catalogo').classList.add('open'); renderizarModaisConfig(); }
 function fecharModalCatalogo() { document.getElementById('modal-catalogo').classList.remove('open'); }
 
+function produtosCatalogoAdmin() {
+  const cardapio = catalogoAdmin.cardapio || {};
+  return Object.keys(CATEGORIAS_CATALOGO_ADMIN).flatMap(categoria => (Array.isArray(cardapio[categoria]) ? cardapio[categoria] : [])
+    .filter(produto => produto && /^[a-z0-9_-]{2,64}$/.test(String(produto.id || '')))
+    .map(produto => ({ ...produto, categoria })));
+}
+
+function statusProdutoCatalogo(produto) {
+  const atual = Math.max(0, Number(produto.estoqueAtual) || 0);
+  const minimo = Math.max(0, Number(produto.estoqueMinimo) || 0);
+  if (produto.ativo === false || (produto.controlaEstoque === true && atual <= 0)) return 'esgotado';
+  if (produto.controlaEstoque === true && atual <= minimo) return 'baixo';
+  return 'ativo';
+}
+
+function caminhoImagemAdmin(caminho) {
+  const valor = String(caminho || '').trim();
+  if (!valor) return 'img/admin-identidade.png';
+  if (/^https:\/\//i.test(valor) || valor.startsWith('/') || valor.startsWith('../')) return valor;
+  return `../${valor.replace(/^\.\//, '')}`;
+}
+
+function preencherCategoriasCatalogo() {
+  const opcoes = Object.entries(CATEGORIAS_CATALOGO_ADMIN).map(([id, nome]) => `<option value="${id}">${esc(nome)}</option>`).join('');
+  const filtro = document.getElementById('catalog-categoria');
+  const editor = document.getElementById('produto-categoria');
+  if (filtro && filtro.options.length <= 1) filtro.insertAdjacentHTML('beforeend', opcoes);
+  if (editor && !editor.options.length) editor.innerHTML = opcoes;
+}
+
+function renderizarCatalogoAdmin() {
+  preencherCategoriasCatalogo();
+  const produtos = produtosCatalogoAdmin();
+  const busca = String(document.getElementById('catalog-busca')?.value || '').trim().toLocaleLowerCase('pt-BR');
+  const categoria = document.getElementById('catalog-categoria')?.value || '';
+  const status = document.getElementById('catalog-status')?.value || '';
+  const totais = produtos.reduce((acc, produto) => { acc[statusProdutoCatalogo(produto)]++; return acc; }, { ativo:0, baixo:0, esgotado:0 });
+  document.getElementById('catalog-kpi-total').textContent = produtos.length;
+  document.getElementById('catalog-kpi-ativos').textContent = totais.ativo;
+  document.getElementById('catalog-kpi-baixo').textContent = totais.baixo;
+  document.getElementById('catalog-kpi-esgotado').textContent = totais.esgotado;
+  document.getElementById('catalog-init').style.display = catalogoRemotoExiste ? 'none' : 'flex';
+  const filtrados = produtos.filter(produto => {
+    const texto = `${produto.nome || ''} ${produto.desc || ''} ${produto.id || ''}`.toLocaleLowerCase('pt-BR');
+    return (!busca || texto.includes(busca)) && (!categoria || produto.categoria === categoria) && (!status || statusProdutoCatalogo(produto) === status);
+  });
+  const lista = document.getElementById('catalog-admin-lista');
+  if (!filtrados.length) { lista.innerHTML = '<div class="catalog-empty">Nenhum produto encontrado para estes filtros.</div>'; return; }
+  lista.innerHTML = filtrados.map(produto => {
+    const situacao = statusProdutoCatalogo(produto);
+    const estoque = produto.controlaEstoque === true ? `Estoque: ${Math.max(0, Number(produto.estoqueAtual)||0)} · mínimo ${Math.max(0, Number(produto.estoqueMinimo)||0)}` : 'Estoque por ingredientes';
+    const legenda = situacao === 'ativo' ? 'Disponível' : situacao === 'baixo' ? 'Estoque baixo' : 'Indisponível';
+    return `<article class="catalog-product ${situacao === 'esgotado' ? 'is-off' : ''} ${situacao === 'baixo' ? 'is-low' : ''}"><img class="catalog-product-image" src="${esc(caminhoImagemAdmin(produto.img))}" alt="" onerror="this.src='img/admin-identidade.png'"><div class="catalog-product-copy"><strong>${esc(produto.nome || produto.id)}</strong><small>${esc(CATEGORIAS_CATALOGO_ADMIN[produto.categoria] || produto.categoria)} · ${brl(Number(produto.preco)||0)}</small><small>${esc(estoque)} · ${esc(legenda)}</small></div><div class="catalog-product-actions"><button type="button" class="btn-secondary" onclick="abrirEditorProduto('${esc(produto.id)}')">Editar</button></div></article>`;
+  }).join('');
+}
+
+function renderizarIngredientesEditor(selecionados = []) {
+  const marcados = new Set(selecionados || []);
+  const ingredientes = Array.isArray(catalogoAdmin.ingredientes) ? catalogoAdmin.ingredientes : [];
+  document.getElementById('produto-ingredientes').innerHTML = ingredientes.map(item => `<label class="catalog-check"><input type="checkbox" value="${esc(item.id)}" ${marcados.has(item.id) ? 'checked' : ''}>${esc(item.nome || item.id)}</label>`).join('') || '<span style="font-size:9px;color:var(--text-muted)">Nenhum ingrediente cadastrado.</span>';
+}
+
+function atualizarCamposEstoqueProduto() {
+  const ativo = document.getElementById('produto-controla-estoque').checked;
+  document.getElementById('produto-estoque').disabled = !ativo;
+  document.getElementById('produto-estoque-minimo').disabled = !ativo;
+}
+
+function abrirEditorProduto(id = '') {
+  preencherCategoriasCatalogo();
+  const produto = id ? produtosCatalogoAdmin().find(item => item.id === id) : null;
+  produtoEmEdicao = produto ? { id:produto.id, categoria:produto.categoria } : null;
+  document.getElementById('produto-editor-titulo').textContent = produto ? 'Editar produto' : 'Novo produto';
+  document.getElementById('produto-nome').value = produto?.nome || '';
+  document.getElementById('produto-id').value = produto?.id || '';
+  document.getElementById('produto-id').readOnly = Boolean(produto);
+  document.getElementById('produto-categoria').value = produto?.categoria || 'tradicionais';
+  document.getElementById('produto-preco').value = ((Number(produto?.preco)||0) / 100).toFixed(2).replace('.', ',');
+  document.getElementById('produto-desc').value = produto?.desc || '';
+  document.getElementById('produto-img').value = produto?.img || '';
+  document.getElementById('produto-ativo').checked = produto?.ativo !== false;
+  document.getElementById('produto-novo').checked = produto?.novo === true;
+  document.getElementById('produto-controla-estoque').checked = produto?.controlaEstoque === true;
+  document.getElementById('produto-estoque').value = Math.max(0, Number(produto?.estoqueAtual)||0);
+  document.getElementById('produto-estoque-minimo').value = Math.max(0, Number(produto?.estoqueMinimo)||0);
+  document.getElementById('produto-excluir').style.display = produto ? 'block' : 'none';
+  renderizarIngredientesEditor(produto ? (catalogoAdmin.dependencias?.[produto.id] || []) : []);
+  atualizarCamposEstoqueProduto();
+  document.getElementById('modal-produto').classList.add('open');
+  if (!produto) document.getElementById('produto-nome').oninput = () => {
+    const campo = document.getElementById('produto-id');
+    if (campo.dataset.manual === 'true') return;
+    campo.value = document.getElementById('produto-nome').value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0,64);
+  };
+}
+
+function fecharEditorProduto() {
+  document.getElementById('modal-produto').classList.remove('open');
+  document.getElementById('produto-nome').oninput = null;
+  document.getElementById('produto-id').dataset.manual = '';
+  produtoEmEdicao = null;
+}
+
+async function persistirCatalogoAdmin(mensagem) {
+  const payload = clonarCatalogo(catalogoAdmin);
+  payload.versao = Math.max(1, Number(payload.versao)||1);
+  payload.atualizadoEm = firebase.firestore.FieldValue.serverTimestamp();
+  await db.collection('configuracoes').doc('catalogo').set(payload);
+  catalogoRemotoExiste = true;
+  renderizarCatalogoAdmin();
+  if (mensagem) alert(mensagem);
+}
+
+async function inicializarCatalogoAdmin() {
+  const botao = document.querySelector('#catalog-init button');
+  botao.disabled = true; botao.textContent = 'Inicializando...';
+  try { await persistirCatalogoAdmin('Catálogo inicializado. Agora você pode editar os produtos pelo painel.'); }
+  catch (erro) { console.error('[CATÁLOGO]', erro); alert('Não foi possível inicializar o catálogo.'); }
+  finally { botao.disabled = false; botao.textContent = 'Inicializar catálogo atual'; }
+}
+
+async function salvarProdutoCatalogo(evento) {
+  evento.preventDefault();
+  const id = document.getElementById('produto-id').value.trim().toLowerCase();
+  if (!/^[a-z0-9_-]{2,64}$/.test(id)) return alert('Use um identificador com letras minúsculas, números, hífen ou sublinhado.');
+  if (!produtoEmEdicao && produtosCatalogoAdmin().some(item => item.id === id)) return alert('Já existe um produto com este identificador.');
+  const categoria = document.getElementById('produto-categoria').value;
+  if (!CATEGORIAS_CATALOGO_ADMIN[categoria]) return alert('Selecione uma categoria válida.');
+  const preco = Math.round(Number(document.getElementById('produto-preco').value.replace(/\./g,'').replace(',','.')) * 100);
+  if (!Number.isFinite(preco) || preco < 0) return alert('Informe um preço válido.');
+  const controlaEstoque = document.getElementById('produto-controla-estoque').checked;
+  const existente = produtoEmEdicao ? (produtosCatalogoAdmin().find(item => item.id === produtoEmEdicao.id) || {}) : {};
+  const produto = {
+    ...existente, id, nome:document.getElementById('produto-nome').value.trim(), desc:document.getElementById('produto-desc').value.trim(),
+    img:document.getElementById('produto-img').value.trim(), preco, ativo:document.getElementById('produto-ativo').checked,
+    novo:document.getElementById('produto-novo').checked, controlaEstoque,
+    estoqueAtual:controlaEstoque ? Math.max(0, Math.floor(Number(document.getElementById('produto-estoque').value)||0)) : 0,
+    estoqueMinimo:controlaEstoque ? Math.max(0, Math.floor(Number(document.getElementById('produto-estoque-minimo').value)||0)) : 0
+  };
+  if (!produto.nome) return alert('Informe o nome do produto.');
+  catalogoAdmin.cardapio = catalogoAdmin.cardapio || {};
+  Object.keys(CATEGORIAS_CATALOGO_ADMIN).forEach(chave => { catalogoAdmin.cardapio[chave] = (catalogoAdmin.cardapio[chave] || []).filter(item => item.id !== id); });
+  catalogoAdmin.cardapio[categoria].push(produto);
+  catalogoAdmin.dependencias = catalogoAdmin.dependencias || {};
+  catalogoAdmin.dependencias[id] = [...document.querySelectorAll('#produto-ingredientes input:checked')].map(input => input.value);
+  const botao = document.getElementById('produto-salvar'); botao.disabled = true; botao.textContent = 'Salvando...';
+  try { await persistirCatalogoAdmin(); fecharEditorProduto(); }
+  catch (erro) { console.error('[CATÁLOGO]', erro); alert('Não foi possível salvar o produto.'); }
+  finally { botao.disabled = false; botao.textContent = 'Salvar produto'; }
+}
+
+async function excluirProdutoCatalogo() {
+  if (!produtoEmEdicao || !confirm('Excluir este produto do catálogo? Esta ação não altera pedidos antigos.')) return;
+  const { id } = produtoEmEdicao;
+  Object.keys(CATEGORIAS_CATALOGO_ADMIN).forEach(chave => { catalogoAdmin.cardapio[chave] = (catalogoAdmin.cardapio[chave] || []).filter(item => item.id !== id); });
+  if (catalogoAdmin.dependencias) delete catalogoAdmin.dependencias[id];
+  try { await persistirCatalogoAdmin(); fecharEditorProduto(); }
+  catch (erro) { console.error('[CATÁLOGO]', erro); alert('Não foi possível excluir o produto.'); }
+}
+
+function sincronizarCatalogoOperacionalAdmin() {
+  const produtos = produtosCatalogoAdmin();
+  const tipoCategoria = categoria => categoria.startsWith('esfihas_') ? 'esfiha' : categoria.startsWith('combos_') ? 'combo' : 'pizza';
+  CARDAPIO.splice(0, CARDAPIO.length,
+    ...produtos.map(item => ({ id:item.id, nome:item.nome, tipo:tipoCategoria(item.categoria), ativo:item.ativo, controlaEstoque:item.controlaEstoque, estoqueAtual:item.estoqueAtual })),
+    ...(catalogoAdmin.extras || []).map(item => ({ id:item.id, nome:item.nome, tipo:'extra' }))
+  );
+  const gruposAtuais = Object.fromEntries(INGREDIENTES.map(item => [item.id, item.grupo]));
+  INGREDIENTES.splice(0, INGREDIENTES.length, ...(catalogoAdmin.ingredientes || []).map(item => ({ id:item.id, nome:item.nome, grupo:item.grupo || gruposAtuais[item.id] || 'Ingredientes' })));
+  Object.keys(DEPENDENCIAS_INGREDIENTES).forEach(id => delete DEPENDENCIAS_INGREDIENTES[id]);
+  Object.assign(DEPENDENCIAS_INGREDIENTES, catalogoAdmin.dependencias || {});
+  renderizarModaisConfig();
+}
+
 function iniciarSistema() {
   document.getElementById('overlay-start').style.display = 'none';
   if(somLigado) { document.getElementById('audio-alerta').play().then(()=>document.getElementById('audio-alerta').pause()).catch(()=>{}); }
@@ -1345,6 +1607,17 @@ function iniciarSistema() {
         renderPromocoesProgramadas();
     }
     atualizarUIConfig();
+  });
+
+  db.collection('configuracoes').doc('catalogo').onSnapshot(doc => {
+    catalogoRemotoExiste = doc.exists;
+    catalogoAdmin = clonarCatalogo(doc.exists ? doc.data() : window.DCA_CATALOGO_PADRAO);
+    if (!catalogoAdmin.cardapio) catalogoAdmin = clonarCatalogo(window.DCA_CATALOGO_PADRAO);
+    sincronizarCatalogoOperacionalAdmin();
+    renderizarCatalogoAdmin();
+  }, erro => {
+    console.warn('[CATÁLOGO ADMIN]', erro.code);
+    renderizarCatalogoAdmin();
   });
 
   const inicioConsulta = new Date(); inicioConsulta.setDate(inicioConsulta.getDate() - 30); inicioConsulta.setHours(0,0,0,0);
@@ -1941,8 +2214,9 @@ function renderizarModaisConfig() {
   const renderItem = (item) => {
     const manualAtivo = !esgotados.includes(item.id);
     const faltantes = (DEPENDENCIAS_INGREDIENTES[item.id] || []).filter(id => ingredientesEsgotados.includes(id));
-    const isAtivo = manualAtivo && faltantes.length === 0;
-    const status = faltantes.length ? `Bloqueado por: ${faltantes.map(id => INGREDIENTES.find(i => i.id === id)?.nome || id).join(', ')}` : isAtivo ? 'Disponível' : 'Esgotado manualmente';
+    const bloqueadoCatalogo = item.ativo === false || (item.controlaEstoque === true && Number(item.estoqueAtual) <= 0);
+    const isAtivo = manualAtivo && !bloqueadoCatalogo && faltantes.length === 0;
+    const status = faltantes.length ? `Bloqueado por: ${faltantes.map(id => INGREDIENTES.find(i => i.id === id)?.nome || id).join(', ')}` : bloqueadoCatalogo ? 'Indisponível no catálogo' : isAtivo ? 'Disponível' : 'Esgotado manualmente';
     return `<div class="catalog-item"><div class="catalog-info"><strong>${esc(item.nome)}</strong><span style="color:${isAtivo?'#2F855A':'#E63946'}">${esc(status)}</span></div><label class="toggle-switch"><input type="checkbox" ${manualAtivo ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)"><span class="slider"></span></label></div>`;
   };
   document.getElementById('catalog-list-pizzas').innerHTML = CARDAPIO.filter(i => i.tipo === 'pizza').map(renderItem).join('');
