@@ -1,4 +1,4 @@
-const CACHE_NAME = 'doce-capricho-v19';
+const CACHE_NAME = 'doce-capricho-v21';
 
 const APP_SHELL = [
   '/',
